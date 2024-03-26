@@ -9,7 +9,7 @@ import { accountDtoFactory, setupEntities, userFactory } from '@shared/testing';
 import { IdentityManagementService } from '@infra/identity-management';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { Logger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 import { AccountConfig } from '../account-config';
 import { Account } from '../domain';
 import { AccountEntity } from '../entity/account.entity';

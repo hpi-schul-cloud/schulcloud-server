@@ -7,6 +7,7 @@ import { AccountEntity } from '../entity/account.entity';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 import { Account } from '../domain/account';
 import { AccountEntityToDoMapper } from './mapper';
+import { AccountScope } from './account-scope';
 
 @Injectable()
 export class AccountRepo {
@@ -127,6 +128,21 @@ export class AccountRepo {
 		const result = await this.em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
 		this.em.clear();
 		return AccountEntityToDoMapper.mapEntitiesToDos(result);
+	}
+
+	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+		const scope = new AccountScope();
+		const userIdScope = new AccountScope();
+
+		userIdScope.byUserIdsAndSystemId(userIds, systemId);
+
+		scope.addQuery(userIdScope.query);
+
+		const foundUsers = await this.em.find(AccountEntity, scope.query);
+
+		const result = foundUsers.filter((user) => user.userId !== undefined).map(({ userId }) => userId!.toHexString());
+
+		return result;
 	}
 
 	private async searchByUsername(

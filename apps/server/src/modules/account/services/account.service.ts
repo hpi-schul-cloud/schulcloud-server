@@ -42,6 +42,7 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from '../loggable';
+import { AccountRepo } from '../repo/account.repo';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -59,6 +60,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: Logger,
 		private readonly userRepo: UserRepo,
+		private readonly accountRepo: AccountRepo,
 		private readonly eventBus: EventBus
 	) {
 		super();
@@ -394,5 +396,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
 			throw new ValidationError(`The email address is already in use!`);
 		}
+	}
+
+	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
+		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
+
+		return foundAccounts;
 	}
 }

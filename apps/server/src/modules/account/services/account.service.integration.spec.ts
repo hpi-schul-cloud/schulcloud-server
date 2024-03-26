@@ -11,7 +11,7 @@ import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { v1 } from 'uuid';
-import { Logger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountRepo } from '../repo/account.repo';

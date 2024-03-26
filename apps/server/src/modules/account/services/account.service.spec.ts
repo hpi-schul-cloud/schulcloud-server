@@ -16,7 +16,7 @@ import {
 	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { Logger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -26,6 +26,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
 import { IdmCallbackLoggableException } from '../loggable';
+import { AccountRepo } from '../repo/account.repo';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -36,6 +37,7 @@ describe('AccountService', () => {
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<Logger>;
 	let userRepo: DeepMocked<UserRepo>;
+	let accountRepo: DeepMocked<AccountRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
 	const newAccountService = () =>
@@ -46,6 +48,7 @@ describe('AccountService', () => {
 			accountValidationService,
 			logger,
 			userRepo,
+			accountRepo,
 			eventBus
 		);
 
@@ -78,6 +81,10 @@ describe('AccountService', () => {
 					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
+					provide: AccountRepo,
+					useValue: createMock<AccountRepo>(),
+				},
+				{
 					provide: AccountValidationService,
 					useValue: {
 						isUniqueEmail: jest.fn().mockResolvedValue(true),
@@ -102,6 +109,7 @@ describe('AccountService', () => {
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 		userRepo = module.get(UserRepo);
+		accountRepo = module.get(AccountRepo);
 		eventBus = module.get(EventBus);
 
 		await setupEntities();
@@ -587,12 +595,10 @@ describe('AccountService', () => {
 	});
 
 	describe('validatePassword', () => {
-		describe('When calling validatePassword in accountService', () => {
-			it('should call validatePassword in accountServiceDb', async () => {
-				await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
-				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
-				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
-			});
+		it('should call validatePassword in accountServiceDb', async () => {
+			await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
+			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
+			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
 		});
 
 		describe('When calling validatePassword in accountService if feature is enabled', () => {
@@ -1779,6 +1785,38 @@ describe('AccountService', () => {
 					)
 				).rejects.toThrow(EntityNotFoundError);
 			});
+		});
+	});
+
+	describe('findByUserIdsAndSystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userAId = new ObjectId().toHexString();
+			const userBId = new ObjectId().toHexString();
+			const userCId = new ObjectId().toHexString();
+
+			const userIds = [userAId, userBId, userCId];
+			const expectedResult = [userAId, userBId];
+
+			accountRepo.findByUserIdsAndSystemId.mockResolvedValue(expectedResult);
+
+			return { expectedResult, systemId, userIds };
+		};
+
+		it('should call accountRepo.findByUserIdsAndSystemId with userIds and systemId', async () => {
+			const { systemId, userIds } = setup();
+
+			await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(accountRepo.findByUserIdsAndSystemId).toHaveBeenCalledWith(userIds, systemId);
+		});
+
+		it('should call deleteByUserId in accountService', async () => {
+			const { expectedResult, systemId, userIds } = setup();
+
+			const result = await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(result).toEqual(expectedResult);
 		});
 	});
 
