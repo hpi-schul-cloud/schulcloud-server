@@ -157,6 +157,7 @@
                             <code><a href="../interfaces/SharingConfig.html" target="_self" >SharingConfig</a></code>
                             <code><a href="../interfaces/IUserImportFeatures.html" target="_self" >IUserImportFeatures</a></code>
                             <code><a href="../interfaces/SchulconnexClientConfig.html" target="_self" >SchulconnexClientConfig</a></code>
+                            <code><a href="../interfaces/SynchronizationConfig.html" target="_self" >SynchronizationConfig</a></code>
                             <code><a href="../interfaces/SystemConfig.html" target="_self" >SystemConfig</a></code>
                             <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ProvisioningConfig</a></code>
             </p>
@@ -1933,6 +1934,7 @@ import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import type { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
 import { ProvisioningConfig } from &#x27;../provisioning&#x27;;
+import { SynchronizationConfig } from &#x27;../synchronization/synchronization.config&#x27;;
 import { SchulcloudTheme } from &#x27;./types/schulcloud-theme.enum&#x27;;
 import { Timezone } from &#x27;./types/timezone.enum&#x27;;
 
@@ -1965,6 +1967,7 @@ export interface ServerConfig
 		SharingConfig,
 		IUserImportFeatures,
 		SchulconnexClientConfig,
+		SynchronizationConfig,
 		SystemConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
@@ -2078,6 +2081,7 @@ const config: ServerConfig &#x3D; {
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
+	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((apiKey) &#x3D;&gt; apiKey.trim()),

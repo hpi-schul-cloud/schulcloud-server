@@ -239,6 +239,9 @@
                             <a href="#config" title="apps/server/src/modules/h5p-library-management/service/h5p-library-management.config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-library-management.config.ts)</a>
                         </li>
                         <li>
+                            <a href="#config" title="apps/server/src/modules/synchronization/uc/testing/test-config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#consentFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>consentFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
                         </li>
                         <li>
@@ -1011,6 +1014,18 @@
                         </li>
                         <li>
                             <a href="#submissionItemNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/submission-item-node.factory.ts" ><b>submissionItemNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../submission-item-node.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#synchronizationConfig" title="apps/server/src/modules/synchronization/uc/testing/test-config.ts" ><b>synchronizationConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#synchronizationEntityFactory" title="apps/server/src/modules/synchronization/repo/entity/testing/factory/synchronization.entity.factory.ts" ><b>synchronizationEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../synchronization.entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#synchronizationFactory" title="apps/server/src/modules/synchronization/domain/testing/factory/synchronization.factory.ts" ><b>synchronizationFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../synchronization.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#synchronizationTestConfig" title="apps/server/src/modules/synchronization/uc/testing/test-config.ts" ><b>synchronizationTestConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
                         </li>
                         <li>
                             <a href="#SYSTEM_REPO" title="apps/server/src/modules/system/domain/interface/system.repo.interface.ts" ><b>SYSTEM_REPO</b>&nbsp;&nbsp;&nbsp;(apps/.../system.repo.interface.ts)</a>
@@ -3690,6 +3705,7 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
+	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((apiKey) &#x3D;&gt; apiKey.trim()),
@@ -4010,6 +4026,81 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>() &#x3D;&gt; config</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/synchronization/uc/testing/test-config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="config"></a>
+                    <span class="name">
+                        <span ><b>config</b></span>
+                        <a href="#config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; synchronizationConfig</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="synchronizationConfig"></a>
+                    <span class="name">
+                        <span ><b>synchronizationConfig</b></span>
+                        <a href="#synchronizationConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="synchronizationTestConfig"></a>
+                    <span class="name">
+                        <span ><b>synchronizationTestConfig</b></span>
+                        <a href="#synchronizationTestConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {
+	const conf &#x3D; config();
+	conf.SYNCHRONIZATION_CHUNK &#x3D; 1;
+	return conf;
+}</code>
                     </td>
                 </tr>
 
@@ -12686,6 +12777,76 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		return {
 			completed: false,
 			userId: creator.id,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/synchronization/repo/entity/testing/factory/synchronization.entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="synchronizationEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>synchronizationEntityFactory</b></span>
+                        <a href="#synchronizationEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;SynchronizationEntity, SynchronizationEntityProps&gt;(
+	SynchronizationEntity,
+	() &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			count: 1,
+			failureCause: &#x27;&#x27;,
+			status: SynchronizationStatusModel.REGISTERED,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/synchronization/domain/testing/factory/synchronization.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="synchronizationFactory"></a>
+                    <span class="name">
+                        <span ><b>synchronizationFactory</b></span>
+                        <a href="#synchronizationFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DoBaseFactory.define&lt;Synchronization, SynchronizationProps&gt;(
+	Synchronization,
+	() &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			count: 1,
+			failureCause: &#x27;&#x27;,
+			status: SynchronizationStatusModel.REGISTERED,
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		};
 	}
 )</code>

@@ -2565,6 +2565,26 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/SynchronizationModule.html" data-type="entity-link" >SynchronizationModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' : 'data-bs-target="#xs-injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' :
+                                        'id="xs-injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' }>
+                                        <li class="link">
+                                            <a href="injectables/SynchronizationRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SynchronizationRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/SynchronizationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SynchronizationService</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/SystemApiModule.html" data-type="entity-link" >SystemApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -3600,6 +3620,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/SubmissionItemNode.html" data-type="entity-link" >SubmissionItemNode</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/SynchronizationEntity.html" data-type="entity-link" >SynchronizationEntity</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/SystemEntity.html" data-type="entity-link" >SystemEntity</a>
                                 </li>
                                 <li class="link">
@@ -3677,6 +3700,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/AccountSaveDto.html" data-type="entity-link" >AccountSaveDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AccountScope.html" data-type="entity-link" >AccountScope</a>
                             </li>
                             <li class="link">
                                 <a href="classes/AccountSearchListResponse.html" data-type="entity-link" >AccountSearchListResponse</a>
@@ -4567,6 +4593,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalUserDto.html" data-type="entity-link" >ExternalUserDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FailedUpdateLastSyncedAtLoggableException.html" data-type="entity-link" >FailedUpdateLastSyncedAtLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/FederalState.html" data-type="entity-link" >FederalState</a>
                             </li>
                             <li class="link">
@@ -5132,6 +5161,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/NotFoundLoggableException.html" data-type="entity-link" >NotFoundLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/NoUsersToSynchronizationLoggableException.html" data-type="entity-link" >NoUsersToSynchronizationLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Oauth2AuthorizationBodyParams.html" data-type="entity-link" >Oauth2AuthorizationBodyParams</a>
@@ -5818,6 +5850,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SortingParams.html" data-type="entity-link" >SortingParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/StartSynchronizationLoggable.html" data-type="entity-link" >StartSynchronizationLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/StatelessAuthorizationParams.html" data-type="entity-link" >StatelessAuthorizationParams</a>
                             </li>
                             <li class="link">
@@ -5887,7 +5922,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SuccessfulResponse.html" data-type="entity-link" >SuccessfulResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SucessSynchronizationLoggable.html" data-type="entity-link" >SucessSynchronizationLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SwapInternalLinksVisitor.html" data-type="entity-link" >SwapInternalLinksVisitor</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Synchronization.html" data-type="entity-link" >Synchronization</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SynchronizationMapper.html" data-type="entity-link" >SynchronizationMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SynchronizationUnknownErrorLoggableException.html" data-type="entity-link" >SynchronizationUnknownErrorLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/System.html" data-type="entity-link" >System</a>
@@ -7073,6 +7120,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/SymetricKeyEncryptionService.html" data-type="entity-link" >SymetricKeyEncryptionService</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/SynchronizationRepo.html" data-type="entity-link" >SynchronizationRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/SynchronizationService.html" data-type="entity-link" >SynchronizationService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/SynchronizationUc.html" data-type="entity-link" >SynchronizationUc</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/SystemMikroOrmRepo.html" data-type="entity-link" >SystemMikroOrmRepo</a>
                                 </li>
                                 <li class="link">
@@ -8062,6 +8118,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SynchronizationConfig.html" data-type="entity-link" >SynchronizationConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SynchronizationEntityProps.html" data-type="entity-link" >SynchronizationEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SynchronizationProps.html" data-type="entity-link" >SynchronizationProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SystemConfig.html" data-type="entity-link" >SystemConfig</a>

@@ -397,6 +397,7 @@ export interface UserProperties {
 	birthday?: Date;
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
+	lastSyncedAt?: Date;
 	consent?: ConsentEntity;
 }
 
@@ -488,6 +489,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Embedded(() &#x3D;&gt; UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
 
+	@Property({ nullable: true })
+	lastSyncedAt?: Date;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName &#x3D; props.firstName;
@@ -507,6 +511,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.birthday &#x3D; props.birthday;
 		this.customAvatarBackgroundColor &#x3D; props.customAvatarBackgroundColor;
 		this.parents &#x3D; props.parents;
+		this.lastSyncedAt &#x3D; props.lastSyncedAt;
 		this.consent &#x3D; props.consent;
 	}
 

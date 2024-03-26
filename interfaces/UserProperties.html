@@ -223,6 +223,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#lastSyncedAt" 
+>
+                                            lastSyncedAt
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#ldapDn" 
 >
                                             ldapDn
@@ -686,6 +693,44 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="lastSyncedAt"></a>
+                                        <span class="name "><b>lastSyncedAt</b>
+                                            <a href="#lastSyncedAt">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>lastSyncedAt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="ldapDn"></a>
                                         <span class="name "><b>ldapDn</b>
                                             <a href="#ldapDn">
@@ -970,6 +1015,7 @@ export interface UserProperties {
 	birthday?: Date;
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
+	lastSyncedAt?: Date;
 	consent?: ConsentEntity;
 }
 
@@ -1061,6 +1107,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Embedded(() &#x3D;&gt; UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
 
+	@Property({ nullable: true })
+	lastSyncedAt?: Date;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName &#x3D; props.firstName;
@@ -1080,6 +1129,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.birthday &#x3D; props.birthday;
 		this.customAvatarBackgroundColor &#x3D; props.customAvatarBackgroundColor;
 		this.parents &#x3D; props.parents;
+		this.lastSyncedAt &#x3D; props.lastSyncedAt;
 		this.consent &#x3D; props.consent;
 	}
 

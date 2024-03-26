@@ -161,6 +161,11 @@
                                 <a href="#findByExternalIdOrFail" >findByExternalIdOrFail</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByExternalIds" >findByExternalIds</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
@@ -192,6 +197,11 @@
                             </li>
                             <li>
                                 <a href="#saveWithoutFlush" >saveWithoutFlush</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateAllUserByLastSyncedAt" >updateAllUserByLastSyncedAt</a>
                             </li>
                             <li>
                                 <a href="#create" >create</a>
@@ -446,6 +456,76 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;User&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByExternalIds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findByExternalIds</b></span>
+                        <a href="#findByExternalIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByExternalIds(externalIds: string[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="223"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:223</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalIds</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1071,6 +1151,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="updateAllUserByLastSyncedAt"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateAllUserByLastSyncedAt</b></span>
+                        <a href="#updateAllUserByLastSyncedAt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateAllUserByLastSyncedAt(userIds: string[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="235"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:235</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userIds</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                         <span ><b>create</b></span>
@@ -1543,6 +1693,28 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 		const users: User[] &#x3D; await this._em.find(User, { school: schoolId, firstName, lastName });
 
 		return users;
+	}
+
+	public async findByExternalIds(externalIds: string[]): Promise&lt;string[]&gt; {
+		const foundUsers &#x3D; await this._em.find(
+			User,
+			{ externalId: { $in: externalIds } },
+			{ fields: [&#x27;id&#x27;, &#x27;externalId&#x27;] }
+		);
+
+		const users &#x3D; foundUsers.map(({ id }) &#x3D;&gt; id);
+
+		return users;
+	}
+
+	public async updateAllUserByLastSyncedAt(userIds: string[]): Promise&lt;void&gt; {
+		await this._em.nativeUpdate(
+			User,
+			{
+				id: { $in: userIds },
+			},
+			{ lastSyncedAt: new Date() }
+		);
 	}
 }
 </code></pre>
