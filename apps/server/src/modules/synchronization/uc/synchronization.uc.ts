@@ -49,32 +49,19 @@ export class SynchronizationUc {
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
 			this.logger.info(new SucessSynchronizationLoggable(systemId, userSyncCount));
 		} catch (error) {
-			if (error instanceof NoUsersToSynchronizationLoggableException) {
-				await this.updateSynchronization(
-					synchronizationId,
-					SynchronizationStatusModel.FAILED,
-					0,
-					error.getLogMessage()
-				);
-				this.logger.info(new NoUsersToSynchronizationLoggable(systemId));
-			} else if (error instanceof FailedUpdateLastSyncedAtLoggableException) {
-				await this.updateSynchronization(
-					synchronizationId,
-					SynchronizationStatusModel.FAILED,
-					0,
-					error.getLogMessage()
-				);
-				this.logger.info(new FailedUpdateLastSyncedAtLoggable(systemId));
-			} else {
-				const unknownSynchronizationError = new SynchronizationUnknownErrorLoggableException(systemId);
-				await this.updateSynchronization(
-					synchronizationId,
-					SynchronizationStatusModel.FAILED,
-					0,
-					unknownSynchronizationError.getLogMessage()
-				);
-				this.logger.info(new UnknowErrorSynchronizationLoggable(systemId));
-			}
+			const loggable =
+				error instanceof NoUsersToSynchronizationLoggableException ||
+				error instanceof FailedUpdateLastSyncedAtLoggableException
+					? error
+					: new SynchronizationUnknownErrorLoggableException(systemId);
+
+			await this.updateSynchronization(
+				synchronizationId,
+				SynchronizationStatusModel.FAILED,
+				0,
+				loggable.getLogMessage()
+			);
+			this.logger.info(loggable);
 		}
 	}
 
