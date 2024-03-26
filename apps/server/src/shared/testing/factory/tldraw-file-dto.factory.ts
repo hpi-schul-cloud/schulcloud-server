@@ -1,7 +1,7 @@
-import { BaseFactory } from '@shared/testing';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto } from '@modules/files-storage-client';
 import { FileDomainObjectProps } from '@modules/files-storage-client/interfaces';
+import { BaseFactory } from './base.factory';
 
 export const tldrawFileDtoFactory = BaseFactory.define<FileDto, FileDomainObjectProps>(FileDto, ({ sequence }) => {
 	return {
