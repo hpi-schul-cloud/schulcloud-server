@@ -225,14 +225,14 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
-		const foundUsers = await this.findByExternalIds(externalIds);
+		const foundUsers = await this.findMultipleByExternalIds(externalIds);
 
 		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
 
 		return verifiedUsers;
 	}
 
-	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
+	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {
 		return this.userRepo.findByExternalIds(externalIds);
 	}
 
