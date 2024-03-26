@@ -114,16 +114,12 @@ describe('AccountDbService', () => {
 				return { mockTeacherAccount };
 			};
 
-			it(
-				'should return accountDto',
-				async () => {
-					const { mockTeacherAccount } = setup();
+			it('should return accountDto', async () => {
+				const { mockTeacherAccount } = setup();
 
-					const resultAccount = await accountService.findById(externalId);
-					expect(resultAccount).toEqual(mockTeacherAccount);
-				},
-				10 * 60 * 1000
-			);
+				const resultAccount = await accountService.findById(externalId);
+				expect(resultAccount).toEqual(mockTeacherAccount);
+			});
 		});
 	});
 
@@ -586,10 +582,21 @@ describe('AccountDbService', () => {
 					systemId: '012345678912',
 					password: defaultPassword,
 				} as Account;
+				const accountInRepo = {
+					id: new ObjectId().toHexString(),
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					systemId: '012345678912',
+					password: defaultPassword,
+				} as Account;
+				accountInRepo.update = jest.fn();
+
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
-				accountRepo.findById.mockResolvedValue(accountToSave);
+				accountRepo.findById.mockResolvedValue(accountInRepo);
 				accountRepo.save.mockResolvedValue(
 					new Account({
 						id: new ObjectId().toHexString(),
@@ -600,18 +607,15 @@ describe('AccountDbService', () => {
 					})
 				);
 
-				return { accountToSave };
+				return { accountToSave, accountInRepo };
 			};
 
 			it('should encrypt password', async () => {
-				const { accountToSave } = setup();
+				const { accountToSave, accountInRepo } = setup();
 
 				const ret = await accountService.save(accountToSave);
 				expect(ret).toBeDefined();
-				expect(accountRepo.save).toBeCalledWith(
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) })
-				);
+				expect(accountInRepo.update).toHaveBeenCalledWith(accountToSave);
 			});
 		});
 

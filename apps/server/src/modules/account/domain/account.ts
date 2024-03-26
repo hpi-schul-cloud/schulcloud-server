@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
@@ -104,6 +105,24 @@ export class Account extends DomainObject<AccountProps> {
 
 	public get idmReferenceId(): string | undefined {
 		return this.props.idmReferenceId;
+	}
+
+	public async update(accountSave: AccountSave): Promise<void> {
+		this.props.userId = accountSave.userId;
+		this.props.systemId = accountSave.systemId;
+		this.props.username = accountSave.username;
+		this.props.activated = accountSave.activated;
+		this.props.expiresAt = accountSave.expiresAt;
+		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
+		if (accountSave.password) {
+			this.props.password = await this.encryptPassword(accountSave.password);
+		}
+		this.props.credentialHash = accountSave.credentialHash;
+		this.props.token = accountSave.token;
+	}
+
+	private encryptPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, 10);
 	}
 }
 

@@ -44,31 +44,13 @@ export class AccountServiceDb {
 		if (accountSave.id) {
 			const internalId = await this.getInternalId(accountSave.id);
 			account = await this.accountRepo.findById(internalId);
-			account.userId = accountSave.userId;
-			account.systemId = accountSave.systemId;
-			account.username = accountSave.username;
-			account.activated = accountSave.activated;
-			account.expiresAt = accountSave.expiresAt;
-			account.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
-			if (accountSave.password) {
-				account.password = await this.encryptPassword(accountSave.password);
-			}
-			account.credentialHash = accountSave.credentialHash;
-			account.token = accountSave.token;
 		} else {
 			account = new Account({
 				id: new ObjectId().toHexString(),
-				userId: accountSave.userId,
-				systemId: accountSave.systemId,
 				username: accountSave.username,
-				activated: accountSave.activated,
-				expiresAt: accountSave.expiresAt,
-				lasttriedFailedLogin: accountSave.lasttriedFailedLogin,
-				password: accountSave.password ? await this.encryptPassword(accountSave.password) : undefined,
-				token: accountSave.token,
-				credentialHash: accountSave.credentialHash,
 			});
 		}
+		await account.update(accountSave);
 		return this.accountRepo.save(account);
 	}
 
@@ -122,20 +104,14 @@ export class AccountServiceDb {
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
-		const internalId = await this.getInternalIdImpl(id);
+		const internalId = await this.convertExternalToInternalId(id);
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 		}
 		return internalId;
 	}
 
-	/**
-	 * Converts an external id to the internal id, if the id is already an internal id, it will be returned as is.
-	 * IMPORTANT: This method will not guarantee that the id is valid, it will only try to convert it.
-	 * @param id the id the should be converted to the internal id.
-	 * @returns the converted id or null if conversion failed.
-	 */
-	private async getInternalIdImpl(id: EntityId | ObjectId): Promise<ObjectId | null> {
+	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId | null> {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
