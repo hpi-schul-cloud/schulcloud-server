@@ -3,12 +3,17 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-client';
 import { ConfigService } from '@nestjs/config';
+import { ErrorLogMessage } from '@src/core/logger/types';
 import { SynchronizationService } from '../domain/service';
 import { Synchronization } from '../domain';
 import { SynchronizationStatusModel } from '../domain/types';
-import { SynchronizationLoggable } from '../domain/loggable';
-import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
-import { SynchronizationConfig } from '../config';
+import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from '../domain/loggable';
+import {
+	FailedUpdateLastSyncedAtLoggableException,
+	NoUsersToSynchronizationLoggableException,
+	SynchronizationUnknownErrorLoggableException,
+} from '../domain/loggable-exception';
+import { SynchronizationConfig } from '../synchronization.config';
 
 @Injectable()
 export class SynchronizationUc {
@@ -23,7 +28,7 @@ export class SynchronizationUc {
 	}
 
 	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
-		this.logger.info(new SynchronizationLoggable('Start synchronization users from systemId', systemId));
+		this.logger.info(new StartSynchronizationLoggable(systemId));
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
 
@@ -36,18 +41,21 @@ export class SynchronizationUc {
 			const userSyncCount = results.reduce((acc, curr) => +acc + +curr, 0);
 
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
-			this.logger.info(new SynchronizationLoggable('End synchronization users from systemId', systemId, userSyncCount));
+			this.logger.info(new SucessSynchronizationLoggable(systemId, userSyncCount));
 		} catch (error) {
-			let logMessage = '';
-			if (error instanceof SynchronizationErrorLoggableException) {
-				logMessage = `${error.getLogMessage()?.data?.errorMessage as string}: ${
-					error.getLogMessage()?.data?.systemId as string
-				}`;
-			} else {
-				logMessage = `Synchronisation process failed for users provided by the system ${systemId}`;
-			}
-			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.FAILED, 0, logMessage);
-			this.logger.info(new SynchronizationLoggable(logMessage, systemId));
+			const loggable =
+				error instanceof NoUsersToSynchronizationLoggableException ||
+				error instanceof FailedUpdateLastSyncedAtLoggableException
+					? error
+					: new SynchronizationUnknownErrorLoggableException(systemId);
+
+			await this.updateSynchronization(
+				synchronizationId,
+				SynchronizationStatusModel.FAILED,
+				0,
+				loggable.getLogMessage()
+			);
+			this.logger.info(loggable);
 		}
 	}
 
@@ -56,7 +64,7 @@ export class SynchronizationUc {
 		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
 		if (usersDownloaded.length === 0) {
-			throw new SynchronizationErrorLoggableException('No users to check from system', systemId);
+			throw new NoUsersToSynchronizationLoggableException(systemId);
 		}
 		usersToCheck = usersDownloaded.map((user) => user.pid);
 
@@ -71,10 +79,7 @@ export class SynchronizationUc {
 
 			return usersToSync.length;
 		} catch {
-			throw new SynchronizationErrorLoggableException(
-				'Failed to update lastSyncedAt field for users provisioned by system.',
-				systemId
-			);
+			throw new FailedUpdateLastSyncedAtLoggableException(systemId);
 		}
 	}
 
@@ -82,7 +87,7 @@ export class SynchronizationUc {
 		synchronizationId: string,
 		status: SynchronizationStatusModel,
 		userSyncCount: number,
-		failureCause?: string
+		error?: ErrorLogMessage
 	): Promise<void> {
 		const synchronizationToUpdate = await this.synchronizationService.findById(synchronizationId);
 
@@ -90,7 +95,7 @@ export class SynchronizationUc {
 			...synchronizationToUpdate,
 			count: userSyncCount,
 			status,
-			failureCause,
+			failureCause: error ? `${error?.data?.errorMessage as string}: ${error?.data?.systemId as string}` : undefined,
 		} as Synchronization);
 	}
 
