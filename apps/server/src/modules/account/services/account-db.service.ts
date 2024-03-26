@@ -100,18 +100,19 @@ export class AccountServiceDb {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
-		return bcrypt.compare(comparePassword, account.password); // hint: first get result, then return seperately
+
+		const passwordCompare = bcrypt.compare(comparePassword, account.password);
+
+		return passwordCompare;
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
 		const internalId = await this.convertExternalToInternalId(id);
-		if (!internalId) {
-			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
-		}
+
 		return internalId;
 	}
 
-	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId | null> {
+	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
@@ -119,7 +120,7 @@ export class AccountServiceDb {
 			const account = await this.idmService.findAccountById(id);
 			return new ObjectId(account.attDbcAccountId);
 		}
-		return null;
+		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}
 
 	private encryptPassword(password: string): Promise<string> {

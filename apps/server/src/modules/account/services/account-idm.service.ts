@@ -171,20 +171,12 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	private async getIdmAccountId(accountId: string): Promise<string> {
-		const externalId = await this.getExternalId(accountId);
-		if (!externalId) {
-			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
-		}
+		const externalId = await this.convertInternalToExternalId(accountId);
+
 		return externalId;
 	}
 
-	/**
-	 * Converts an internal id to the external id, if the id is already an external id, it will be returned as is.
-	 * IMPORTANT: This method will not guarantee that the id is valid, it will only try to convert it.
-	 * @param id the id the should be converted to the external id.
-	 * @returns the converted id or null if conversion failed.
-	 */
-	private async getExternalId(id: EntityId | ObjectId): Promise<string | null> {
+	private async convertInternalToExternalId(id: EntityId | ObjectId): Promise<string> {
 		if (!(id instanceof ObjectId) && !ObjectId.isValid(id)) {
 			return id;
 		}
@@ -192,6 +184,6 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const account = await this.identityManager.findAccountByDbcAccountId(id.toString());
 			return account.id;
 		}
-		return null;
+		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}
 }

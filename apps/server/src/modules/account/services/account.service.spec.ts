@@ -1399,6 +1399,29 @@ describe('AccountService', () => {
 			});
 		});
 
+		describe('When Account is not updated', () => {
+			const setup = () => {
+				const mockSchool = schoolEntityFactory.buildWithId();
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should return target account', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				const body = {} as UpdateAccount;
+				const result = await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
+
+				expect(result).toBe(mockStudentAccountDo);
+			});
+		});
+
 		describe('When new username already in use', () => {
 			const setup = () => {
 				const mockSchool = schoolEntityFactory.buildWithId();
