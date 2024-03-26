@@ -11,14 +11,17 @@ import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { SystemConfig } from '@modules/system';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
 import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { ProvisioningConfig } from '../provisioning';
+import { SchulcloudTheme } from './types/schulcloud-theme.enum';
+import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -51,7 +54,7 @@ export interface ServerConfig
 		SchulconnexClientConfig,
 		SystemConfig,
 		ProvisioningConfig {
-	NODE_ENV: string;
+	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
@@ -79,8 +82,8 @@ export interface ServerConfig
 	JWT_TIMEOUT_SECONDS: number;
 	NOT_AUTHENTICATED_REDIRECT_URL: string;
 	DOCUMENT_BASE_DIR: string;
-	SC_THEME: string; // should be enum
-	SC_TITLE: string; // should be enum
+	SC_THEME: SchulcloudTheme;
+	SC_TITLE: string;
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
@@ -90,11 +93,11 @@ export interface ServerConfig
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
-	I18N__AVAILABLE_LANGUAGES: string; // string[] / enum
-	I18N__DEFAULT_LANGUAGE: string; // should be enum
-	I18N__FALLBACK_LANGUAGE: string; // should be enum
-	I18N__DEFAULT_TIMEZONE: string; // should be enum
+	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: string[];
+	I18N__AVAILABLE_LANGUAGES: LanguageType[];
+	I18N__DEFAULT_LANGUAGE: LanguageType;
+	I18N__FALLBACK_LANGUAGE: LanguageType;
+	I18N__DEFAULT_TIMEZONE: Timezone;
 }
 
 const config: ServerConfig = {
@@ -141,14 +144,14 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
-	SC_THEME: Configuration.get('SC_THEME') as string,
+	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
-	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
+	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
@@ -170,9 +173,9 @@ const config: ServerConfig = {
 		.map((domain) => domain.trim()),
 	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
 	TLDRAW__ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.has('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST')
-		? (Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string)
-		: undefined,
+	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: (Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string).split(
+		','
+	),
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
 		'FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED'
@@ -196,10 +199,10 @@ const config: ServerConfig = {
 	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
 		? (Configuration.get('ETHERPAD__PAD_URI') as string)
 		: undefined,
-	I18N__AVAILABLE_LANGUAGES: Configuration.get('I18N__AVAILABLE_LANGUAGES') as string,
-	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as string,
-	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as string,
-	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as string,
+	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
+	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
+	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
+	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,

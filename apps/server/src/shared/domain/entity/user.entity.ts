@@ -32,7 +32,7 @@ interface UserInfo {
 	id: EntityId;
 	firstName: string;
 	lastName: string;
-	language?: string;
+	language?: LanguageType;
 	customAvatarBackgroundColor?: string;
 }
 
