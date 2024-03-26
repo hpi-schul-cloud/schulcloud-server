@@ -1,10 +1,11 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Page } from '@shared/domain/domainobject/page';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { User } from '@shared/domain/entity';
+import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -25,7 +26,8 @@ export class ExternalToolConfigurationUc {
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService
 	) {}
 
 	public async getToolContextTypes(userId: EntityId): Promise<ToolContextType[]> {
@@ -46,9 +48,11 @@ export class ExternalToolConfigurationUc {
 			}
 		);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const school: School = await this.schoolService.getSchoolById(schoolId);
 
-		await this.ensureSchoolPermissions(userId, schoolExternalToolsInUse, context);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		await this.ensureSchoolPermissions(user, schoolExternalToolsInUse, school, context);
 
 		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
 			(schoolExternalTool: SchoolExternalTool): EntityId => schoolExternalTool.toolId
@@ -92,9 +96,10 @@ export class ExternalToolConfigurationUc {
 				context: { id: contextId, type: contextType },
 			}),
 		]);
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.ensureContextPermissions(userId, contextExternalToolsInUse, context);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
+		await this.ensureContextPermissions(user, contextExternalToolsInUse, context);
 
 		const availableSchoolExternalTools: SchoolExternalTool[] =
 			this.externalToolConfigurationService.filterForAvailableSchoolExternalTools(
@@ -135,9 +140,11 @@ export class ExternalToolConfigurationUc {
 		schoolExternalToolId: EntityId
 	): Promise<ExternalTool> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		this.authorizationService.checkPermission(user, school, context);
 
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
@@ -157,9 +164,10 @@ export class ExternalToolConfigurationUc {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
-		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
@@ -180,25 +188,22 @@ export class ExternalToolConfigurationUc {
 	}
 
 	private async ensureSchoolPermissions(
-		userId: EntityId,
+		user: User,
 		tools: SchoolExternalTool[],
+		school: School,
 		context: AuthorizationContext
 	): Promise<void> {
-		await Promise.all(
-			tools.map(async (tool: SchoolExternalTool) =>
-				this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context)
-			)
-		);
+		await Promise.all(tools.map(() => this.authorizationService.checkPermission(user, school, context)));
 	}
 
 	private async ensureContextPermissions(
-		userId: EntityId,
+		user: User,
 		tools: ContextExternalTool[],
 		context: AuthorizationContext
 	): Promise<void> {
 		await Promise.all(
 			tools.map(async (tool: ContextExternalTool) =>
-				this.toolPermissionHelper.ensureContextPermissions(userId, tool, context)
+				this.toolPermissionHelper.ensureContextPermissions(user, tool, context)
 			)
 		);
 	}
