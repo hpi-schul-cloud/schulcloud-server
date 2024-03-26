@@ -12,6 +12,7 @@ import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { UserModule } from '@modules/user/user.module';
 import { HttpModule } from '@nestjs/axios';
+import { EncryptionModule } from '@infra/encryption';
 import { jwtConstants } from './constants';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -69,6 +70,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		IdentityManagementModule,
 		CacheWrapperModule,
 		UserModule,
+		EncryptionModule,
 	],
 	providers: [
 		JwtStrategy,
