@@ -1,6 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserService } from '@src/modules/user';
+import { AccountService } from '@src/modules/account';
 import { BatchDeletionUc } from './batch-deletion.uc';
 import { BatchDeletionService, ReferencesService } from '../services';
 import { QueueDeletionRequestOutput } from '../services/interface';
@@ -20,6 +22,14 @@ describe(BatchDeletionUc.name, () => {
 				{
 					provide: BatchDeletionService,
 					useValue: createMock<BatchDeletionService>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
 				},
 			],
 		}).compile();
