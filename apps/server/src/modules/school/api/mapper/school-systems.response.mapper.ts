@@ -1,6 +1,6 @@
 import { System } from '@src/modules/system';
-import { School, SystemForLdapLogin } from '../../domain';
-import { SchoolSystemResponse, SchoolSystemsResponse, SystemForLdapLoginResponse } from '../dto/response';
+import { SystemForLdapLogin } from '../../domain';
+import { ProviderConfigResponse, SchoolSystemResponse, SystemForLdapLoginResponse } from '../dto/response';
 
 export class SystemResponseMapper {
 	public static mapToLdapLoginResponses(systems: SystemForLdapLogin[]): SystemForLdapLoginResponse[] {
@@ -21,14 +21,25 @@ export class SystemResponseMapper {
 		return res;
 	}
 
-	public static mapToSchoolSystemsResponse(school: School, systems: System[]): SchoolSystemsResponse {
-		const systemsDto = systems.map((system) => new SchoolSystemResponse(system.getProps()));
+	public static mapToSchoolSystemResponse(systems: System[]): SchoolSystemResponse[] {
+		const systemsDto = systems.map((system) => {
+			const params = this.prepareParams(system);
+			const schoolSystemResponse = new SchoolSystemResponse(params);
 
-		const res = new SchoolSystemsResponse({
-			id: school.id,
-			systems: systemsDto,
+			return schoolSystemResponse;
 		});
 
-		return res;
+		return systemsDto;
+	}
+
+	private static prepareParams(system: System): SchoolSystemResponse {
+		const { ldapConfig, oauthConfig } = system.getProps();
+		const params = {
+			...system.getProps(),
+			ldapConfig: ldapConfig ? new ProviderConfigResponse(ldapConfig) : undefined,
+			oauthConfig: oauthConfig ? new ProviderConfigResponse(oauthConfig) : undefined,
+		};
+
+		return params;
 	}
 }
