@@ -3,7 +3,7 @@ export * from './federal-state.response';
 export * from './school-exists.response';
 export * from './school-for-external-invite.response';
 export * from './school-for-ldap-login.response';
-export * from './school-systems.response';
+export * from './school-system.response';
 export * from './school-year.response';
 export * from './school.response';
 export * from './system-for-ldap-login.response';
