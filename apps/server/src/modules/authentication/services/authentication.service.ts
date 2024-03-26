@@ -1,5 +1,5 @@
 import { AccountService } from '@modules/account';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 // invalid import
@@ -12,11 +12,12 @@ import { System, SystemService } from '@modules/system';
 import { UserDO } from '@shared/domain/domainobject';
 import { UserService } from '@modules/user';
 import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 import { LoginDto } from '../uc/dto';
-import {firstValueFrom} from "rxjs";
 
 interface KeycloakLogoutDto {
 	client_id?: string;
@@ -33,7 +34,8 @@ export class AuthenticationService {
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly userService: UserService,
 		private readonly systemService: SystemService,
-		private readonly httpService: HttpService
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService
 	) {}
 
 	async loadAccount(username: string, systemId?: string): Promise<AccountDto> {
@@ -82,7 +84,7 @@ export class AuthenticationService {
 
 		const dto: KeycloakLogoutDto = {
 			client_id: system?.oauthConfig?.clientId,
-			client_secret: system?.oauthConfig?.clientSecret,
+			client_secret: this.oAuthEncryptionService.decrypt(system?.oauthConfig?.clientSecret as string),
 			refresh_token: user.sessionToken,
 		};
 
