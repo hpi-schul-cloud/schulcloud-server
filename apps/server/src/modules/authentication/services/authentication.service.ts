@@ -14,7 +14,7 @@ import { UserService } from '@modules/user';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { AxiosResponse } from 'axios';
+import {AxiosRequestConfig, AxiosResponse} from 'axios';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
@@ -84,15 +84,21 @@ export class AuthenticationService {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		const dto: KeycloakLogoutDto = {
-			client_id: system?.oauthConfig?.clientId,
-			client_secret: this.oAuthEncryptionService.decrypt(system?.oauthConfig?.clientSecret as string),
 			refresh_token: user.sessionToken,
+		};
+
+		const config: AxiosRequestConfig = {
+			auth: {
+				username: system?.oauthConfig?.clientId as string,
+				password: this.oAuthEncryptionService.decrypt(system?.oauthConfig?.clientSecret as string),
+			},
 		};
 
 		const resp: AxiosResponse = await firstValueFrom(
 			this.httpService.post(
 				'https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout',
-				dto
+				dto,
+				config
 			)
 		);
 		console.log(resp.headers);
