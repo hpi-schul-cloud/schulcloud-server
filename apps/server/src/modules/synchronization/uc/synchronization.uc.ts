@@ -7,13 +7,7 @@ import { ErrorLogMessage } from '@src/core/logger/types';
 import { SynchronizationService } from '../domain/service';
 import { Synchronization } from '../domain';
 import { SynchronizationStatusModel } from '../domain/types';
-import {
-	FailedUpdateLastSyncedAtLoggable,
-	NoUsersToSynchronizationLoggable,
-	StartSynchronizationLoggable,
-	SucessSynchronizationLoggable,
-	UnknowErrorSynchronizationLoggable,
-} from '../domain/loggable';
+import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from '../domain/loggable';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
