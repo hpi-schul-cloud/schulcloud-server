@@ -5,7 +5,7 @@ export class UpdatedAccountPasswordLoggable implements Loggable {
 
 	getLogMessage(): LogMessage {
 		const message = {
-			message: `Updated password ...`,
+			message: `Updated password`,
 			data: { accountId: this.accountId },
 		};
 
