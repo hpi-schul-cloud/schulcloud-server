@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsInt, IsMongoId, IsOptional, IsPositive } from 'class-validator';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
 
@@ -23,7 +23,7 @@ export class ShareTokenBodyParams {
 	@IsInt()
 	@IsOptional()
 	@IsPositive()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'when defined, the sharetoken will expire after the given number of days.',
 		required: false,
 		nullable: true,
@@ -33,7 +33,7 @@ export class ShareTokenBodyParams {
 
 	@IsBoolean()
 	@IsOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'when defined, the sharetoken will be usable exclusively by members of the users school.',
 		required: false,
 		nullable: true,
