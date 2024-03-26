@@ -178,7 +178,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/me/api/dto/me.response.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/me/api/dto/me.response.ts:69</a></div>
                             </td>
                         </tr>
 
@@ -250,7 +250,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">apps/server/src/modules/me/api/dto/me.response.ts:65</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/me/api/dto/me.response.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -286,7 +286,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/me/api/dto/me.response.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/me/api/dto/me.response.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -306,6 +306,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 
 export class MeAccountResponse {
 	@ApiProperty()
@@ -393,8 +394,11 @@ export class MeResponse {
 	@ApiProperty()
 	permissions: string[];
 
-	@ApiPropertyOptional()
-	language?: string;
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: &#x27;LanguageType&#x27;,
+	})
+	language?: LanguageType;
 
 	@ApiProperty()
 	account: MeAccountResponse;

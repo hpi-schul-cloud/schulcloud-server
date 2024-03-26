@@ -421,7 +421,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(LanguageType)<br />@IsOptional()<br />@ApiPropertyOptional({enum: LanguageType})<br />
+                            @IsEnum(LanguageType)<br />@IsOptional()<br />@ApiPropertyOptional({enum: LanguageType, enumName: &#x27;LanguageType&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -681,7 +681,7 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 
 	@IsEnum(LanguageType)
 	@IsOptional()
-	@ApiPropertyOptional({ enum: LanguageType })
+	@ApiPropertyOptional({ enum: LanguageType, enumName: &#x27;LanguageType&#x27; })
 	language?: LanguageType;
 
 	@IsEnum(SchoolFeature, { each: true })

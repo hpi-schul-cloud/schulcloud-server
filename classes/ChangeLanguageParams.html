@@ -194,13 +194,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({enum: LanguageType})<br />@IsEnum(LanguageType)<br />
+                            @ApiProperty({enum: LanguageType, enumName: &#x27;LanguageType&#x27;})<br />@IsEnum(LanguageType)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/user/controller/dto/user.params.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user/controller/dto/user.params.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -224,7 +224,10 @@ import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import { IsEnum } from &#x27;class-validator&#x27;;
 
 export class ChangeLanguageParams {
-	@ApiProperty({ enum: LanguageType })
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: &#x27;LanguageType&#x27;,
+	})
 	@IsEnum(LanguageType)
 	language!: LanguageType;
 }

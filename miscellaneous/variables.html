@@ -3595,7 +3595,7 @@ This allows adding console commands to execute provider methods.</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
-	AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;),
+	AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;) as LanguageType[],
 }</code>
                     </td>
                 </tr>
@@ -3669,14 +3669,14 @@ This allows adding console commands to execute provider methods.</p>
 	JWT_TIMEOUT_SECONDS: Configuration.get(&#x27;JWT_TIMEOUT_SECONDS&#x27;) as number,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get(&#x27;NOT_AUTHENTICATED_REDIRECT_URL&#x27;) as string,
 	DOCUMENT_BASE_DIR: Configuration.get(&#x27;DOCUMENT_BASE_DIR&#x27;) as string,
-	SC_THEME: Configuration.get(&#x27;SC_THEME&#x27;) as string,
+	SC_THEME: Configuration.get(&#x27;SC_THEME&#x27;) as SchulcloudTheme,
 	SC_TITLE: Configuration.get(&#x27;SC_TITLE&#x27;) as string,
 	SC_DOMAIN: Configuration.get(&#x27;SC_DOMAIN&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;) as number,
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,
 	EXIT_ON_ERROR: Configuration.get(&#x27;EXIT_ON_ERROR&#x27;) as boolean,
-	AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;),
+	AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;) as LanguageType[],
 	NODE_ENV: Configuration.get(&#x27;NODE_ENV&#x27;) as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get(&#x27;LOGIN_BLOCK_TIME&#x27;) as number,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
@@ -3698,9 +3698,9 @@ This allows adding console commands to execute provider methods.</p>
 		.map((domain) &#x3D;&gt; domain.trim()),
 	TLDRAW__ASSETS_ENABLED: Configuration.get(&#x27;TLDRAW__ASSETS_ENABLED&#x27;) as boolean,
 	TLDRAW__ASSETS_MAX_SIZE: Configuration.get(&#x27;TLDRAW__ASSETS_MAX_SIZE&#x27;) as number,
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.has(&#x27;TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST&#x27;)
-		? (Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST&#x27;) as string)
-		: undefined,
+	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: (Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST&#x27;) as string).split(
+		&#x27;,&#x27;
+	),
 	FEATURE_TLDRAW_ENABLED: Configuration.get(&#x27;FEATURE_TLDRAW_ENABLED&#x27;) as boolean,
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
 		&#x27;FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED&#x27;
@@ -3724,10 +3724,10 @@ This allows adding console commands to execute provider methods.</p>
 	ETHERPAD__PAD_URI: Configuration.has(&#x27;ETHERPAD__PAD_URI&#x27;)
 		? (Configuration.get(&#x27;ETHERPAD__PAD_URI&#x27;) as string)
 		: undefined,
-	I18N__AVAILABLE_LANGUAGES: Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string,
-	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as string,
-	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as string,
-	I18N__DEFAULT_TIMEZONE: Configuration.get(&#x27;I18N__DEFAULT_TIMEZONE&#x27;) as string,
+	I18N__AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;) as LanguageType[],
+	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as unknown as LanguageType,
+	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as unknown as LanguageType,
+	I18N__DEFAULT_TIMEZONE: Configuration.get(&#x27;I18N__DEFAULT_TIMEZONE&#x27;) as Timezone,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;
 	) as number,

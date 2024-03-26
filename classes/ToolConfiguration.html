@@ -198,12 +198,13 @@
 		maxExternalToolLogoSizeInBytes: Configuration.get(&#x27;CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES&#x27;) as number,
 		backEndUrl: Configuration.get(&#x27;PUBLIC_BACKEND_URL&#x27;) as string,
 		ctlToolsCopyEnabled: Configuration.get(&#x27;FEATURE_CTL_TOOLS_COPY_ENABLED&#x27;) as boolean,
+		ctlToolsReloadTimeMs: Configuration.get(&#x27;CTL_TOOLS_RELOAD_TIME_MS&#x27;) as number,
 	}</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/tool/tool-config.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/tool-config.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -235,6 +236,7 @@ export interface IToolFeatures {
 	maxExternalToolLogoSizeInBytes: number;
 	backEndUrl: string;
 	ctlToolsCopyEnabled: boolean;
+	ctlToolsReloadTimeMs: number;
 }
 
 export default class ToolConfiguration {
@@ -247,6 +249,7 @@ export default class ToolConfiguration {
 		maxExternalToolLogoSizeInBytes: Configuration.get(&#x27;CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES&#x27;) as number,
 		backEndUrl: Configuration.get(&#x27;PUBLIC_BACKEND_URL&#x27;) as string,
 		ctlToolsCopyEnabled: Configuration.get(&#x27;FEATURE_CTL_TOOLS_COPY_ENABLED&#x27;) as boolean,
+		ctlToolsReloadTimeMs: Configuration.get(&#x27;CTL_TOOLS_RELOAD_TIME_MS&#x27;) as number,
 	};
 }
 </code></pre>
