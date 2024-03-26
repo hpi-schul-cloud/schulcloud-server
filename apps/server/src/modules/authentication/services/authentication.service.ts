@@ -14,7 +14,7 @@ import { UserService } from '@modules/user';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import {AxiosRequestConfig, AxiosResponse} from 'axios';
+import { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
@@ -87,11 +87,15 @@ export class AuthenticationService {
 			refresh_token: user.sessionToken,
 		};
 
+		const headers: AxiosHeaders = new AxiosHeaders();
+		headers.setContentType('application/x-www-form-urlencoded');
+
 		const config: AxiosRequestConfig = {
 			auth: {
 				username: system?.oauthConfig?.clientId as string,
 				password: this.oAuthEncryptionService.decrypt(system?.oauthConfig?.clientSecret as string),
 			},
+			headers,
 		};
 
 		const resp: AxiosResponse = await firstValueFrom(
