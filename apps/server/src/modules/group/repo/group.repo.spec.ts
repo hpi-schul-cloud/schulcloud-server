@@ -152,7 +152,7 @@ describe('GroupRepo', () => {
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
 					undefined,
 					undefined,
-					groups[1].name
+					groups[1].name.slice(-3)
 				);
 
 				expect(result.data.length).toEqual(1);
@@ -256,7 +256,12 @@ describe('GroupRepo', () => {
 			it('should return groups according to name query', async () => {
 				const { user, groups } = await setup();
 
-				const result: Page<Group> = await repo.findAvailableByUser(user, undefined, undefined, groups[2].name);
+				const result: Page<Group> = await repo.findAvailableByUser(
+					user,
+					undefined,
+					undefined,
+					groups[2].name.slice(-3)
+				);
 
 				expect(result.data.length).toEqual(1);
 				expect(result.data[0].id).toEqual(groups[2].id);
@@ -361,7 +366,7 @@ describe('GroupRepo', () => {
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
 					undefined,
 					undefined,
-					groups[1].name
+					groups[1].name.slice(-3)
 				);
 
 				expect(result.data.length).toEqual(1);
@@ -457,7 +462,12 @@ describe('GroupRepo', () => {
 			it('should return groups according to name query', async () => {
 				const { school, groups } = await setup();
 
-				const result: Page<Group> = await repo.findAvailableBySchoolId(school.id, undefined, undefined, groups[2].name);
+				const result: Page<Group> = await repo.findAvailableBySchoolId(
+					school.id,
+					undefined,
+					undefined,
+					groups[2].name.slice(-3)
+				);
 
 				expect(result.data.length).toEqual(1);
 				expect(result.data[0].id).toEqual(groups[2].id);
