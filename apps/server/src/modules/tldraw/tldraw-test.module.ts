@@ -5,6 +5,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger, LoggerModule } from '@src/core/logger';
+import { TldrawRedisFactory, TldrawRedisService } from './redis';
 import { config } from './config';
 import { TldrawController } from './controller/tldraw.controller';
 import { MetricsService } from './metrics';
@@ -17,7 +18,7 @@ const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	HttpModule,
 ];
-const providers = [Logger, TldrawService, TldrawRepo, MetricsService];
+const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory, TldrawRedisService];
 @Module({
 	imports,
 	providers,
