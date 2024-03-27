@@ -406,4 +406,23 @@ describe('School', () => {
 			});
 		});
 	});
+
+	describe('removeSystem', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const otherSystemId = new ObjectId().toHexString();
+			const school = schoolFactory.build({ systemIds: [systemId, otherSystemId] });
+
+			return { school, systemId, otherSystemId };
+		};
+
+		it('should remove the given systemId from the systemIds array', () => {
+			const { school, systemId, otherSystemId } = setup();
+
+			school.removeSystem(systemId);
+
+			expect(school.getProps().systemIds).not.toContain(systemId);
+			expect(school.getProps().systemIds).toContain(otherSystemId);
+		});
+	});
 });
