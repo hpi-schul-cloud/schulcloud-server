@@ -695,6 +695,73 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('findMultipleByExternalIds', () => {
+		describe('when a users with external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const externalIds: string[] = ['111', '222'];
+				const expectedResult = [userA.id, userB.id];
+
+				userRepo.findByExternalIds.mockResolvedValue(expectedResult);
+
+				return {
+					expectedResult,
+					externalIds,
+				};
+			};
+
+			it('should call userRepo.findByExternalIds', async () => {
+				const { externalIds } = setup();
+
+				await service.findMultipleByExternalIds(externalIds);
+
+				expect(userRepo.findByExternalIds).toBeCalledWith(externalIds);
+			});
+
+			it('should return array with Users id', async () => {
+				const { externalIds, expectedResult } = setup();
+
+				const result = await service.findMultipleByExternalIds(externalIds);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when users with this external id do not exist', () => {
+			it('should return empty array', async () => {
+				userRepo.findByExternalIds.mockResolvedValue([]);
+
+				const result = await service.findMultipleByExternalIds(['externalId1', 'externalId2']);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('updateLastSyncedAt', () => {
+		describe('when a users with thess external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const userIds = [userA.id, userB.id];
+
+				return {
+					userIds,
+				};
+			};
+
+			it('should call userRepo.updateAllUserByLastSyncedAt', async () => {
+				const { userIds } = setup();
+
+				await service.updateLastSyncedAt(userIds);
+
+				expect(userRepo.updateAllUserByLastSyncedAt).toBeCalledWith(userIds);
+			});
+		});
+	});
+
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();
@@ -735,6 +802,56 @@ describe('UserService', () => {
 				await service.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+	});
+
+	describe('findByExternalIdsAndProvidedBySystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userA = userFactory.buildWithId({ externalId: '111' });
+			const userB = userFactory.buildWithId({ externalId: '222' });
+
+			const externalIds: string[] = ['111', '222'];
+			const foundUsers = [userA.id, userB.id];
+
+			return {
+				externalIds,
+				foundUsers,
+				systemId,
+			};
+		};
+
+		describe('when find users By externalIds and systemId', () => {
+			it('should call findMultipleByExternalIds in userService with externalIds', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(service.findMultipleByExternalIds).toHaveBeenCalledWith(externalIds);
+			});
+
+			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(foundUsers, systemId);
+			});
+
+			it('should return array with verified Users', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(accountService, 'findByUserIdsAndSystemId').mockResolvedValueOnce(foundUsers);
+
+				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(result).toEqual(foundUsers);
 			});
 		});
 	});

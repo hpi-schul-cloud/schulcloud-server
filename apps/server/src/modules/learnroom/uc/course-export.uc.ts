@@ -20,7 +20,8 @@ export class CourseExportUc {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics: string[]
+		topics: string[],
+		tasks: string[]
 	): Promise<Buffer> {
 		this.checkFeatureEnabled();
 		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
@@ -31,7 +32,7 @@ export class CourseExportUc {
 			context
 		);
 
-		return this.courseExportService.exportCourse(courseId, userId, version, topics);
+		return this.courseExportService.exportCourse(courseId, userId, version, topics, tasks);
 	}
 
 	private checkFeatureEnabled(): void {

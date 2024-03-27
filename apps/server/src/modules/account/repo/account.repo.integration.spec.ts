@@ -255,4 +255,62 @@ describe('account repo', () => {
 			expect(foundAccounts).toHaveLength(mockAccounts.length - offset);
 		});
 	});
+
+	describe('findByUserIdsAndSystemId', () => {
+		describe('when accounts exist', () => {
+			const setup = async () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+				const userCId = new ObjectId().toHexString();
+
+				const accountA = accountFactory.withSystemId(systemId).build({ userId: userAId });
+				const accountB = accountFactory.withSystemId(systemId).build({ userId: userBId });
+				const accountC = accountFactory.withSystemId(new ObjectId().toHexString()).build({ userId: userCId });
+
+				await em.persistAndFlush([accountA, accountB, accountC]);
+				em.clear();
+
+				const userIds = [userAId, userBId, userCId];
+				const expectedUserIds = [userAId, userBId];
+
+				return {
+					expectedUserIds,
+					systemId,
+					userIds,
+				};
+			};
+
+			it('should return array of verified userIds', async () => {
+				const { expectedUserIds, systemId, userIds } = await setup();
+
+				const verifiedUserIds = await repo.findByUserIdsAndSystemId(userIds, systemId);
+
+				expect(verifiedUserIds).toEqual(expectedUserIds);
+			});
+		});
+
+		describe('when accounts do not exist', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+
+				const userIds = [userAId, userBId];
+
+				return {
+					systemId,
+					userIds,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { systemId, userIds } = setup();
+
+				const result = await repo.findByUserIdsAndSystemId(userIds, systemId);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
 });

@@ -18,6 +18,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -26,6 +27,7 @@ describe('AccountService', () => {
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
+	let accountRepo: DeepMocked<AccountRepo>;
 	let logger: DeepMocked<LegacyLogger>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -54,6 +56,10 @@ describe('AccountService', () => {
 					useValue: createMock<ConfigService<ServerConfig, true>>(),
 				},
 				{
+					provide: AccountRepo,
+					useValue: createMock<AccountRepo>(),
+				},
+				{
 					provide: AccountValidationService,
 					useValue: {
 						isUniqueEmail: jest.fn().mockResolvedValue(true),
@@ -72,6 +78,7 @@ describe('AccountService', () => {
 		accountService = module.get(AccountService);
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
+		accountRepo = module.get(AccountRepo);
 		logger = module.get(LegacyLogger);
 		eventBus = module.get(EventBus);
 	});
@@ -255,6 +262,7 @@ describe('AccountService', () => {
 				accountServiceIdm,
 				configService,
 				accountValidationService,
+				accountRepo,
 				logger,
 				eventBus
 			);
@@ -408,6 +416,7 @@ describe('AccountService', () => {
 				accountServiceIdm,
 				configService,
 				accountValidationService,
+				accountRepo,
 				logger,
 				eventBus
 			);
@@ -525,6 +534,38 @@ describe('AccountService', () => {
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 				expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
 			});
+		});
+	});
+
+	describe('findByUserIdsAndSystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userAId = new ObjectId().toHexString();
+			const userBId = new ObjectId().toHexString();
+			const userCId = new ObjectId().toHexString();
+
+			const userIds = [userAId, userBId, userCId];
+			const expectedResult = [userAId, userBId];
+
+			accountRepo.findByUserIdsAndSystemId.mockResolvedValue(expectedResult);
+
+			return { expectedResult, systemId, userIds };
+		};
+
+		it('should call accountRepo.findByUserIdsAndSystemId with userIds and systemId', async () => {
+			const { systemId, userIds } = setup();
+
+			await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(accountRepo.findByUserIdsAndSystemId).toHaveBeenCalledWith(userIds, systemId);
+		});
+
+		it('should call deleteByUserId in accountService', async () => {
+			const { expectedResult, systemId, userIds } = setup();
+
+			const result = await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(result).toEqual(expectedResult);
 		});
 	});
 

@@ -17,6 +17,10 @@ describe('ShareTokenParentTypeMapper', () => {
 			expect(ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(ShareTokenParentType.Task)).toBe(
 				AuthorizableReferenceType.Task
 			));
+		it('should return allowed type equal BoardNode', () =>
+			expect(ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(ShareTokenParentType.ColumnBoard)).toBe(
+				AuthorizableReferenceType.BoardNode
+			));
 		it('should throw Error', () => {
 			const exec = () => {
 				ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType('' as ShareTokenParentType);
