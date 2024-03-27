@@ -11,6 +11,7 @@ export interface IToolFeatures {
 	maxExternalToolLogoSizeInBytes: number;
 	backEndUrl: string;
 	ctlToolsCopyEnabled: boolean;
+	ctlToolsReloadTimeMs: number;
 }
 
 export default class ToolConfiguration {
@@ -23,5 +24,6 @@ export default class ToolConfiguration {
 		maxExternalToolLogoSizeInBytes: Configuration.get('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES') as number,
 		backEndUrl: Configuration.get('PUBLIC_BACKEND_URL') as string,
 		ctlToolsCopyEnabled: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
+		ctlToolsReloadTimeMs: Configuration.get('CTL_TOOLS_RELOAD_TIME_MS') as number,
 	};
 }
