@@ -25,8 +25,8 @@ export class AccountValidationService {
 	}
 
 	async isUniqueEmailForUser(email: string, userId: EntityId): Promise<boolean> {
-		const account = await this.accountRepo.findByUserIdOrFail(userId);
-		return this.isUniqueEmail(email, userId, account.id, account.systemId?.toString());
+		const account = await this.accountRepo.findByUserId(userId);
+		return this.isUniqueEmail(email, userId, account?.id, account?.systemId?.toString());
 	}
 
 	async isUniqueEmailForAccount(email: string, accountId: EntityId): Promise<boolean> {
