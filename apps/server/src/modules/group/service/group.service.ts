@@ -3,7 +3,7 @@ import { Course } from '@modules/learnroom/domain';
 import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { type UserDO } from '@shared/domain/domainobject';
+import { Page, type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Group, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
@@ -40,8 +40,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
-	): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes, skip, limit, nameQuery);
+	): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes, skip, limit, nameQuery);
 
 		return groups;
 	}
@@ -51,8 +51,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
-	): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findAvailableByUser(user, skip, limit, nameQuery);
+	): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findAvailableByUser(user, skip, limit, nameQuery);
 
 		return groups;
 	}
@@ -63,8 +63,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
-	): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(
+	): Promise<Page<Group>> {
+		const group: Page<Group> = await this.groupRepo.findBySchoolIdAndGroupTypes(
 			schoolId,
 			groupTypes,
 			skip,
@@ -80,8 +80,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
-	): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findAvailableBySchoolId(schoolId, skip, limit, nameQuery);
+	): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findAvailableBySchoolId(schoolId, skip, limit, nameQuery);
 
 		return groups;
 	}

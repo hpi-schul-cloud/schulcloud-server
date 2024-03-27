@@ -5,7 +5,7 @@ import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { UserDO } from '@shared/domain/domainobject';
+import { Page, UserDO } from '@shared/domain/domainobject';
 import { groupFactory, userDoFactory } from '@shared/testing';
 import { Group, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
@@ -135,8 +135,9 @@ describe('GroupService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const groups: Group[] = groupFactory.buildList(2);
+				const page: Page<Group> = new Page<Group>(groups, groups.length);
 
-				groupRepo.findByUserAndGroupTypes.mockResolvedValue(groups);
+				groupRepo.findByUserAndGroupTypes.mockResolvedValue(page);
 
 				return {
 					user,
@@ -147,9 +148,9 @@ describe('GroupService', () => {
 			it('should return the groups', async () => {
 				const { user, groups } = setup();
 
-				const result: Group[] = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
+				const result: Page<Group> = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
 
-				expect(result).toEqual(groups);
+				expect(result.data).toEqual(groups);
 			});
 
 			it('should call the repo with given group types', async () => {
@@ -171,7 +172,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
-				groupRepo.findByUserAndGroupTypes.mockResolvedValue([]);
+				groupRepo.findByUserAndGroupTypes.mockResolvedValue(new Page<Group>([], 0));
 
 				return {
 					user,
@@ -181,9 +182,9 @@ describe('GroupService', () => {
 			it('should return empty array', async () => {
 				const { user } = setup();
 
-				const result: Group[] = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
+				const result: Page<Group> = await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS]);
 
-				expect(result).toEqual([]);
+				expect(result.data).toEqual([]);
 			});
 		});
 	});
@@ -194,7 +195,7 @@ describe('GroupService', () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const groups: Group[] = groupFactory.buildList(2);
 
-				groupRepo.findAvailableByUser.mockResolvedValue([groups[1]]);
+				groupRepo.findAvailableByUser.mockResolvedValue(new Page<Group>([groups[1]], 1));
 
 				return {
 					user,
@@ -213,9 +214,9 @@ describe('GroupService', () => {
 			it('should return groups', async () => {
 				const { user, groups } = setup();
 
-				const result: Group[] = await service.findAvailableGroupsByUser(user);
+				const result: Page<Group> = await service.findAvailableGroupsByUser(user);
 
-				expect(result).toEqual([groups[1]]);
+				expect(result.data).toEqual([groups[1]]);
 			});
 		});
 
@@ -223,7 +224,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
-				groupRepo.findAvailableByUser.mockResolvedValue([]);
+				groupRepo.findAvailableByUser.mockResolvedValue(new Page<Group>([], 0));
 
 				return {
 					user,
@@ -233,9 +234,9 @@ describe('GroupService', () => {
 			it('should return empty array', async () => {
 				const { user } = setup();
 
-				const result: Group[] = await service.findAvailableGroupsByUser(user);
+				const result: Page<Group> = await service.findAvailableGroupsByUser(user);
 
-				expect(result).toEqual([]);
+				expect(result.data).toEqual([]);
 			});
 		});
 	});
@@ -245,8 +246,9 @@ describe('GroupService', () => {
 			const setup = () => {
 				const schoolId: string = new ObjectId().toHexString();
 				const groups: Group[] = groupFactory.buildList(3);
+				const page: Page<Group> = new Page<Group>(groups, groups.length);
 
-				groupRepo.findBySchoolIdAndGroupTypes.mockResolvedValue(groups);
+				groupRepo.findBySchoolIdAndGroupTypes.mockResolvedValue(page);
 
 				return {
 					schoolId,
@@ -275,9 +277,9 @@ describe('GroupService', () => {
 			it('should return the groups', async () => {
 				const { schoolId, groups } = setup();
 
-				const result: Group[] = await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [GroupTypes.CLASS]);
+				const result: Page<Group> = await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [GroupTypes.CLASS]);
 
-				expect(result).toEqual(groups);
+				expect(result.data).toEqual(groups);
 			});
 		});
 	});
@@ -288,7 +290,7 @@ describe('GroupService', () => {
 				const schoolId: string = new ObjectId().toHexString();
 				const groups: Group[] = groupFactory.buildList(2);
 
-				groupRepo.findAvailableBySchoolId.mockResolvedValue([groups[1]]);
+				groupRepo.findAvailableBySchoolId.mockResolvedValue(new Page<Group>([groups[1]], 1));
 
 				return {
 					schoolId,
@@ -307,9 +309,9 @@ describe('GroupService', () => {
 			it('should return groups', async () => {
 				const { schoolId, groups } = setup();
 
-				const result: Group[] = await service.findAvailableGroupsBySchoolId(schoolId);
+				const result: Page<Group> = await service.findAvailableGroupsBySchoolId(schoolId);
 
-				expect(result).toEqual([groups[1]]);
+				expect(result.data).toEqual([groups[1]]);
 			});
 		});
 
@@ -317,7 +319,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const schoolId: string = new ObjectId().toHexString();
 
-				groupRepo.findAvailableBySchoolId.mockResolvedValue([]);
+				groupRepo.findAvailableBySchoolId.mockResolvedValue(new Page<Group>([], 0));
 
 				return {
 					schoolId,
@@ -327,9 +329,9 @@ describe('GroupService', () => {
 			it('should return empty array', async () => {
 				const { schoolId } = setup();
 
-				const result: Group[] = await service.findAvailableGroupsBySchoolId(schoolId);
+				const result: Page<Group> = await service.findAvailableGroupsBySchoolId(schoolId);
 
-				expect(result).toEqual([]);
+				expect(result.data).toEqual([]);
 			});
 		});
 	});

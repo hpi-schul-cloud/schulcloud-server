@@ -231,9 +231,11 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce(
+					new Page<Group>([group, groupWithSystem], 2)
+				);
 				systemService.findById.mockResolvedValue(system);
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
 					if (userId === teacherUser.id) {
@@ -651,7 +653,9 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				classService.findClassesForSchool.mockResolvedValueOnce([...clazzes, clazz]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce(
+					new Page<Group>([group, groupWithSystem], 2)
+				);
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -945,7 +949,7 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz]);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([group]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(new Page<Group>([group], 1));
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -1214,8 +1218,10 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				groupService.findAvailableGroupsBySchoolId.mockResolvedValue([availableGroupInSchool]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValue([groupInSchool, availableGroupInSchool]);
+				groupService.findAvailableGroupsBySchoolId.mockResolvedValue(new Page<Group>([availableGroupInSchool], 1));
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValue(
+					new Page<Group>([groupInSchool, availableGroupInSchool], 2)
+				);
 				userService.findByIdOrNull.mockResolvedValue(userDto);
 				roleService.findById.mockResolvedValue(userRole);
 
@@ -1236,50 +1242,53 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id);
 
-					expect(response).toMatchObject([
-						{
-							id: groupInSchool.id,
-							name: groupInSchool.name,
-							type: GroupTypes.CLASS,
-							externalSource: groupInSchool.externalSource,
-							organizationId: groupInSchool.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
+					expect(response).toMatchObject({
+						data: [
+							{
+								id: groupInSchool.id,
+								name: groupInSchool.name,
+								type: GroupTypes.CLASS,
+								externalSource: groupInSchool.externalSource,
+								organizationId: groupInSchool.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
+								],
+							},
+							{
+								id: availableGroupInSchool.id,
+								name: availableGroupInSchool.name,
+								type: GroupTypes.CLASS,
+								externalSource: availableGroupInSchool.externalSource,
+								organizationId: availableGroupInSchool.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-								},
-							],
-						},
-						{
-							id: availableGroupInSchool.id,
-							name: availableGroupInSchool.name,
-							type: GroupTypes.CLASS,
-							externalSource: availableGroupInSchool.externalSource,
-							organizationId: availableGroupInSchool.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
-									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
-									},
-								},
-							],
-						},
-					]);
+								],
+							},
+						],
+						total: 2,
+					});
 				});
 
 				it('should not return group not in school', async () => {
@@ -1287,29 +1296,32 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id);
 
-					expect(response).not.toMatchObject([
-						{
-							id: groupInOtherSchool.id,
-							name: groupInOtherSchool.name,
-							type: GroupTypes.CLASS,
-							externalSource: groupInOtherSchool.externalSource,
-							organizationId: groupInOtherSchool.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
+					expect(response).not.toMatchObject({
+						data: [
+							{
+								id: groupInOtherSchool.id,
+								name: groupInOtherSchool.name,
+								type: GroupTypes.CLASS,
+								externalSource: groupInOtherSchool.externalSource,
+								organizationId: groupInOtherSchool.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
-									},
-								},
-							],
-						},
-					]);
+								],
+							},
+						],
+						total: 1,
+					});
 				});
 			});
 
@@ -1319,29 +1331,32 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
 
-					expect(response).toMatchObject([
-						{
-							id: availableGroupInSchool.id,
-							name: availableGroupInSchool.name,
-							type: GroupTypes.CLASS,
-							externalSource: availableGroupInSchool.externalSource,
-							organizationId: availableGroupInSchool.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
+					expect(response).toMatchObject({
+						data: [
+							{
+								id: availableGroupInSchool.id,
+								name: availableGroupInSchool.name,
+								type: GroupTypes.CLASS,
+								externalSource: availableGroupInSchool.externalSource,
+								organizationId: availableGroupInSchool.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
-									},
-								},
-							],
-						},
-					]);
+								],
+							},
+						],
+						total: 1,
+					});
 				});
 			});
 		});
@@ -1377,8 +1392,10 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.hasAllPermissions.mockReturnValue(false);
-				groupService.findAvailableGroupsByUser.mockResolvedValue([availableTeachersGroup]);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue([teachersGroup, availableTeachersGroup]);
+				groupService.findAvailableGroupsByUser.mockResolvedValue(new Page<Group>([availableTeachersGroup], 1));
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(
+					new Page<Group>([teachersGroup, availableTeachersGroup], 2)
+				);
 				userService.findByIdOrNull.mockResolvedValue(userDto);
 				roleService.findById.mockResolvedValue(userRole);
 
@@ -1399,50 +1416,53 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id);
 
-					expect(response).toMatchObject([
-						{
-							id: teachersGroup.id,
-							name: teachersGroup.name,
-							type: GroupTypes.CLASS,
-							externalSource: teachersGroup.externalSource,
-							organizationId: teachersGroup.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
+					expect(response).toMatchObject({
+						data: [
+							{
+								id: teachersGroup.id,
+								name: teachersGroup.name,
+								type: GroupTypes.CLASS,
+								externalSource: teachersGroup.externalSource,
+								organizationId: teachersGroup.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
+								],
+							},
+							{
+								id: availableTeachersGroup.id,
+								name: availableTeachersGroup.name,
+								type: GroupTypes.CLASS,
+								externalSource: availableTeachersGroup.externalSource,
+								organizationId: availableTeachersGroup.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-								},
-							],
-						},
-						{
-							id: availableTeachersGroup.id,
-							name: availableTeachersGroup.name,
-							type: GroupTypes.CLASS,
-							externalSource: availableTeachersGroup.externalSource,
-							organizationId: availableTeachersGroup.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
-									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
-									},
-								},
-							],
-						},
-					]);
+								],
+							},
+						],
+						total: 2,
+					});
 				});
 
 				it('should not return group without the teacher', async () => {
@@ -1450,29 +1470,32 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id);
 
-					expect(response).not.toMatchObject([
-						{
-							id: notTeachersGroup.id,
-							name: notTeachersGroup.name,
-							type: GroupTypes.CLASS,
-							externalSource: notTeachersGroup.externalSource,
-							organizationId: notTeachersGroup.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
+					expect(response).not.toMatchObject({
+						data: [
+							{
+								id: notTeachersGroup.id,
+								name: notTeachersGroup.name,
+								type: GroupTypes.CLASS,
+								externalSource: notTeachersGroup.externalSource,
+								organizationId: notTeachersGroup.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
-									},
-								},
-							],
-						},
-					]);
+								],
+							},
+						],
+						total: 1,
+					});
 				});
 			});
 
@@ -1482,29 +1505,32 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
 
-					expect(response).toMatchObject([
-						{
-							id: availableTeachersGroup.id,
-							name: availableTeachersGroup.name,
-							type: GroupTypes.CLASS,
-							externalSource: availableTeachersGroup.externalSource,
-							organizationId: availableTeachersGroup.organizationId,
-							users: [
-								{
-									user: {
-										id: user.id,
-										firstName: user.firstName,
-										lastName: user.lastName,
-										email: user.email,
+					expect(response).toMatchObject({
+						data: [
+							{
+								id: availableTeachersGroup.id,
+								name: availableTeachersGroup.name,
+								type: GroupTypes.CLASS,
+								externalSource: availableTeachersGroup.externalSource,
+								organizationId: availableTeachersGroup.organizationId,
+								users: [
+									{
+										user: {
+											id: user.id,
+											firstName: user.firstName,
+											lastName: user.lastName,
+											email: user.email,
+										},
+										role: {
+											id: user.roles[0].id,
+											name: user.roles[0].name,
+										},
 									},
-									role: {
-										id: user.roles[0].id,
-										name: user.roles[0].name,
-									},
-								},
-							],
-						},
-					]);
+								],
+							},
+						],
+						total: 1,
+					});
 				});
 			});
 		});
