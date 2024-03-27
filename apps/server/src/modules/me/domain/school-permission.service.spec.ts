@@ -2,17 +2,17 @@ import { Test } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { schoolFactory } from '@src/modules/school/testing';
-import { PermissionService } from './permission.service';
+import { SchoolPermissionService } from './school-permission.service';
 
-describe('PermissionService', () => {
-	let service: PermissionService;
+describe('SchoolPermissionService', () => {
+	let service: SchoolPermissionService;
 
 	beforeAll(async () => {
 		await setupEntities();
 
-		const module = await Test.createTestingModule({ providers: [PermissionService] }).compile();
+		const module = await Test.createTestingModule({ providers: [SchoolPermissionService] }).compile();
 
-		service = module.get(PermissionService);
+		service = module.get(SchoolPermissionService);
 	});
 
 	describe('resolvePermissions', () => {

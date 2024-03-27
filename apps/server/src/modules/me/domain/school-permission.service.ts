@@ -4,7 +4,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { School } from '@src/modules/school';
 
 @Injectable()
-export class PermissionService {
+export class SchoolPermissionService {
 	public resolvePermissions(user: User, school: School): Set<string> {
 		const userPermissions = user.resolvePermissions();
 		const schoolPermissions = school.getPermissions();
