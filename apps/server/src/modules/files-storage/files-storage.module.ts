@@ -9,6 +9,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
@@ -41,7 +42,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,

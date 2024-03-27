@@ -11,6 +11,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { H5PContent, InstalledLibrary } from './entity';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
@@ -33,7 +34,7 @@ const imports = [
 	RabbitMQWrapperModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
-		type: 'mongo',
+		driver: MongoDriver,
 		// TODO add mongoose options as mongo options (see database.js)
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,

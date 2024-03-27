@@ -8,6 +8,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { HttpModule } from '@nestjs/axios';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { TldrawDrawing } from './entities';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
@@ -30,7 +31,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: TLDRAW_DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

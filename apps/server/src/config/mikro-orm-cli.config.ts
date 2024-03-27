@@ -3,13 +3,14 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
 import path from 'path';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './index';
 
 const migrationsPath = path.resolve(__dirname, '..', 'migrations', 'mikro-orm');
 
 export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	// TODO repeats server module definitions
-	type: 'mongo',
+	driver: MongoDriver,
 	clientUrl: DB_URL,
 	password: DB_PASSWORD,
 	user: DB_USERNAME,

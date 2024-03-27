@@ -6,6 +6,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { CoreModule } from '@src/core';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller';
@@ -25,7 +26,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: TLDRAW_DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

@@ -5,6 +5,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { ManagementModule } from './management.module';
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -19,7 +20,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			// TODO repeats server module definitions
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,

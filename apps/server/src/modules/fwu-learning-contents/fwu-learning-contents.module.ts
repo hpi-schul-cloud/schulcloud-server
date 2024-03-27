@@ -10,6 +10,7 @@ import { Account, Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } fro
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
@@ -31,7 +32,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,

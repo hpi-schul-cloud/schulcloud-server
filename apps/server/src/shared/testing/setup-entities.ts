@@ -1,4 +1,5 @@
 import { AnyEntity, EntityClass, MikroORM } from '@mikro-orm/core';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 
 /**
@@ -7,7 +8,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
  */
 export const setupEntities = async (entities: EntityClass<AnyEntity>[] = ALL_ENTITIES): Promise<MikroORM> => {
 	const orm = await MikroORM.init({
-		type: 'mongo',
+		driver: MongoDriver,
 		dbName: 'dummy',
 		entities,
 		allowGlobalContext: true,

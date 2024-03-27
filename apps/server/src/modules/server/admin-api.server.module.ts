@@ -8,6 +8,7 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@sr
 import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
+import { MongoDriver } from '@mikro-orm/mongodb';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
@@ -27,7 +28,7 @@ const serverModules = [
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			type: 'mongo',
+			driver: MongoDriver,
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
