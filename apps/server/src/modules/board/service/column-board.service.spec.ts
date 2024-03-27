@@ -8,7 +8,7 @@ import {
 	ColumnBoard,
 	ContentElementFactory,
 } from '@shared/domain/domainobject';
-import { cardFactory, columnBoardNodeFactory, drawingElementFactory, setupEntities } from '@shared/testing';
+import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
@@ -58,11 +58,9 @@ describe(ColumnBoardService.name, () => {
 	});
 
 	const setup = () => {
-		const drawing = drawingElementFactory.build();
-		const card = cardFactory.build({ children: [drawing] });
-		const column = columnFactory.build({ children: [card] });
-		const board = columnBoardFactory.build({ children: [column] });
+		const board = columnBoardFactory.build();
 		const boardId = board.id;
+		const column = columnFactory.build();
 		const courseId = new ObjectId().toHexString();
 		const externalReference: BoardExternalReference = {
 			id: courseId,
@@ -241,34 +239,6 @@ describe(ColumnBoardService.name, () => {
 					updatedAt: expect.any(Date),
 				})
 			);
-		});
-	});
-
-	describe('hasDrawingChild', () => {
-		it('should find drawing as child of board', () => {
-			const { board } = setup();
-
-			expect(service.hasDrawingChild(board)).toEqual(true);
-		});
-
-		it('should not find drawing as child of board', () => {
-			const board = columnBoardFactory.build();
-
-			expect(service.hasDrawingChild(board)).toEqual(false);
-		});
-	});
-
-	describe('hasColumnDrawingChild', () => {
-		it('should find drawing as child of column', () => {
-			const { column } = setup();
-
-			expect(service.hasColumnDrawingChild(column)).toEqual(true);
-		});
-
-		it('should not find drawing as child of column', () => {
-			const column = columnFactory.build();
-
-			expect(service.hasColumnDrawingChild(column)).toEqual(false);
 		});
 	});
 });

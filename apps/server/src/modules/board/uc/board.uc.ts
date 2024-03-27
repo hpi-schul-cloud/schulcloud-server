@@ -136,14 +136,4 @@ export class BoardUc extends BaseUc {
 
 		await this.columnBoardService.updateBoardVisibility(board, isVisible);
 	}
-
-	async hasDrawingChild(userId: EntityId, boardId: EntityId): Promise<boolean> {
-		this.logger.debug({ action: 'checking hasDrawingChild', userId, boardId });
-
-		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
-
-		const result = this.columnBoardService.hasDrawingChild(board);
-		return result;
-	}
 }

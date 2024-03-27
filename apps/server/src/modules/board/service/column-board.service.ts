@@ -4,7 +4,6 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	ColumnBoard,
-	isDrawingElement,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -85,26 +84,5 @@ export class ColumnBoardService {
 	async updateBoardVisibility(board: ColumnBoard, isVisible: boolean): Promise<void> {
 		board.isVisible = isVisible;
 		await this.boardDoRepo.save(board);
-	}
-
-	hasDrawingChild(board: ColumnBoard): boolean {
-		let result = false;
-		for (const column of board.children) {
-			result = this.hasColumnDrawingChild(column);
-			if (result) {
-				break;
-			}
-		}
-		return result;
-	}
-
-	hasColumnDrawingChild(column: AnyBoardDo) {
-		for (const card of column.children) {
-			const hasDrawingElement = card.children.some((value) => isDrawingElement(value));
-			if (hasDrawingElement) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

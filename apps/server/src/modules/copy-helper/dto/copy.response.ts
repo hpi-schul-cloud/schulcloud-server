@@ -45,4 +45,11 @@ export class CopyApiResponse {
 		description: 'List of included sub elements with recursive type structure',
 	})
 	elements?: CopyApiResponse[];
+
+	@ApiPropertyOptional({
+		isArray: true,
+		enum: CopyElementType,
+		description: 'List of included sub elements types with recursive type structure',
+	})
+	elementsTypes?: CopyElementType[];
 }
