@@ -3,6 +3,7 @@ import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Pa
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
+import { SchoolRemoveSystemUrlParams } from './dto/param/school-remove-system-url.params';
 import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
@@ -81,5 +82,14 @@ export class SchoolController {
 		const res = await this.schoolUc.updateSchool(user.userId, urlParams.schoolId, body);
 
 		return res;
+	}
+
+	@Patch('schoolId/:schoolId/systemId/:systemId/remove')
+	@Authenticate('jwt')
+	public async removeSystemFromSchool(
+		@Param() urlParams: SchoolRemoveSystemUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<void> {
+		await this.schoolUc.removeSystemFromSchool(urlParams.schoolId, urlParams.systemId, user.userId);
 	}
 }

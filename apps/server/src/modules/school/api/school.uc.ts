@@ -103,6 +103,23 @@ export class SchoolUc {
 		return responseDto;
 	}
 
+	public async removeSystemFromSchool(schoolId: EntityId, systemId: EntityId, userId: EntityId): Promise<void> {
+		const [user, school] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId),
+		]);
+
+		this.authorizationService.checkPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT])
+		);
+
+		school.removeSystem(systemId);
+
+		await this.schoolService.saveSchool(school);
+	}
+
 	private mapToSchoolResponseDto(school: School, schoolYears: SchoolYear[]): SchoolResponse {
 		const { activeYear, lastYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
 		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);

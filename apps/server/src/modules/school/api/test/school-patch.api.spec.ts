@@ -439,4 +439,46 @@ describe('School Controller (API)', () => {
 			});
 		});
 	});
+
+	describe('PATCH /schoolId/:schoolId/systemId/:systemId/remove', () => {
+		describe('when user is not logged in', () => {
+			it('should return 401', async () => {
+				const someSchoolId = new ObjectId().toHexString();
+				const someSystemId = new ObjectId().toHexString();
+
+				const response = await testApiClient.patch(`/schoolId/${someSchoolId}/systemId/${someSystemId}/remove`).send({
+					name: 'new name',
+				});
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user is logged in', () => {
+			describe('when user is an admin with needed permissions', () => {
+				const setup = async () => {
+					const system = systemEntityFactory.build();
+					const school = schoolEntityFactory.build({ systems: [system] });
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+					await em.persistAndFlush([adminAccount, adminUser, school, system]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					return { loggedInClient, school, system };
+				};
+
+				it('should remove the given systemId from the systemIds of the school', async () => {
+					const { loggedInClient, school, system } = await setup();
+
+					const response = await loggedInClient.patch(`schoolId/${school.id}/systemId/${system.id}/remove`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					const updatedSchool = await em.findOneOrFail(SchoolEntity, { id: school.id });
+					expect(updatedSchool.systems.getIdentifiers()).not.toContain(system.id);
+				});
+			});
+		});
+	});
 });
