@@ -873,22 +873,20 @@ describe('UserService', () => {
 		};
 
 		describe('when findUnsynchronizedUserIds is called', () => {
-			it('should call findUnsynchronizedUserIds with unsyncedForMinutes parameter and retrun array with found users', async () => {
+			it('should call findUnsynchronizedUserIds and retrun array with found users', async () => {
 				const { unsyncedForMinutes, foundUsers } = setup();
 
-				jest.spyOn(service, 'findUnsynchronizedUserIds').mockResolvedValueOnce(foundUsers);
+				userRepo.findUnsynchronizedUserIds.mockResolvedValueOnce(foundUsers);
 
 				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
 
-				expect(service.findUnsynchronizedUserIds).toHaveBeenCalledWith(unsyncedForMinutes);
 				expect(result).toEqual(foundUsers);
 			});
 
-			it('should call findUnsynchronizedUserIds with unsyncedForMinutes parameter and return empty array', async () => {
+			it('should call findUnsynchronizedUserIds and return empty array', async () => {
 				const { unsyncedForMinutes } = setup();
 
-				jest.spyOn(service, 'findUnsynchronizedUserIds').mockResolvedValueOnce([]);
-
+				userRepo.findUnsynchronizedUserIds.mockResolvedValueOnce([]);
 				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
 
 				expect(result).toEqual([]);
