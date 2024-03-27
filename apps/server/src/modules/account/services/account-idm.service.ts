@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
+import { IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { AccountConfig } from '../account-config';
@@ -31,16 +31,21 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
-		const results = new Array<IdmAccount>();
-		for await (const userId of userIds) {
-			try {
-				results.push(await this.identityManager.findAccountByDbcUserId(userId));
-			} catch {
-				this.logger.warning(new FindAccountByDbcUserIdLoggable(userId));
+		const resultAccounts = new Array<Account>();
+
+		const promises = userIds.map((userId) => this.identityManager.findAccountByDbcUserId(userId).catch(() => null));
+		const idmAccounts = await Promise.allSettled(promises);
+
+		idmAccounts.forEach((idmAccount, index) => {
+			if (idmAccount.status === 'fulfilled' && idmAccount.value) {
+				const accountDo = this.accountIdmToDoMapper.mapToDo(idmAccount.value);
+				resultAccounts.push(accountDo);
+			} else {
+				this.logger.warning(new FindAccountByDbcUserIdLoggable(userIds[index]));
 			}
-		}
-		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
-		return accounts;
+		});
+
+		return resultAccounts;
 	}
 
 	async findByUserId(userId: EntityId): Promise<Account | null> {

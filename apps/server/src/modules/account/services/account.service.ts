@@ -73,13 +73,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount) {
-		if (account.systemId) {
-			throw new ForbiddenOperationError('External account details can not be changed.');
-		}
-
-		if (!updateData.passwordOld || !(await this.validatePassword(account, updateData.passwordOld))) {
-			throw new AuthorizationError('Your old password is not correct.');
-		}
+		await this.checkUpdateMyAccountPrerequisites(updateData, account);
 
 		let updateUser = false;
 		let updateAccount = false;
@@ -122,6 +116,16 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			} catch (err) {
 				throw new EntityNotFoundError(AccountEntity.name);
 			}
+		}
+	}
+
+	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account) {
+		if (account.systemId) {
+			throw new ForbiddenOperationError('External account details can not be changed.');
+		}
+
+		if (!updateData.passwordOld || !(await this.validatePassword(account, updateData.passwordOld))) {
+			throw new AuthorizationError('Your old password is not correct.');
 		}
 	}
 

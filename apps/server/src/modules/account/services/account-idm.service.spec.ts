@@ -366,7 +366,7 @@ describe('AccountIdmService', () => {
 					if (element) {
 						return Promise.resolve(element);
 					}
-					throw new Error();
+					return Promise.reject(new Error());
 				});
 			};
 
