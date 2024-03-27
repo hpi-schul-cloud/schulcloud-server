@@ -24,67 +24,67 @@
 <title>cluster_LegacySchoolApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 693,-195 693,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LegacySchoolApiModule_providers</title>
-<polygon fill="none" stroke="black" points="453,-78 453,-130 685,-130 685,-78 453,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_LegacySchoolApiModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 445,-130 445,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="256,-78 256,-130 685,-130 685,-78 256,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LegacySchoolApiModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 248,-130 248,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="436.81,-122 433.81,-126 412.81,-126 409.81,-122 299.19,-122 299.19,-86 436.81,-86 436.81,-122"/>
-<text text-anchor="middle" x="368" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="676.81,-122 673.81,-126 652.81,-126 649.81,-122 539.19,-122 539.19,-86 676.81,-86 676.81,-122"/>
+<text text-anchor="middle" x="608" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- LegacySchoolApiModule -->
 <g id="node4" class="node">
 <title>LegacySchoolApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="370.13,-187 367.13,-191 346.13,-191 343.13,-187 209.87,-187 209.87,-151 370.13,-151 370.13,-187"/>
-<text text-anchor="middle" x="290" y="-164.8" font-family="Times,serif" font-size="14.00">LegacySchoolApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="463.13,-187 460.13,-191 439.13,-191 436.13,-187 302.87,-187 302.87,-151 463.13,-151 463.13,-187"/>
+<text text-anchor="middle" x="383" y="-164.8" font-family="Times,serif" font-size="14.00">LegacySchoolApiModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;LegacySchoolApiModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;LegacySchoolApiModule</title>
-<path fill="none" stroke="black" d="M334.83,-122.11C334.83,-122.11 334.83,-140.99 334.83,-140.99"/>
-<polygon fill="black" stroke="black" points="331.33,-140.99 334.83,-150.99 338.33,-140.99 331.33,-140.99"/>
+<path fill="none" stroke="black" d="M608,-122.11C608,-141.34 608,-169 608,-169 608,-169 473.28,-169 473.28,-169"/>
+<polygon fill="black" stroke="black" points="473.28,-165.5 463.28,-169 473.28,-172.5 473.28,-165.5"/>
 </g>
 <!-- LegacySchoolModule -->
 <g id="node2" class="node">
 <title>LegacySchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="281.63,-122 278.63,-126 257.63,-126 254.63,-122 142.37,-122 142.37,-86 281.63,-86 281.63,-122"/>
-<text text-anchor="middle" x="212" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="521.63,-122 518.63,-126 497.63,-126 494.63,-122 382.37,-122 382.37,-86 521.63,-86 521.63,-122"/>
+<text text-anchor="middle" x="452" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;LegacySchoolApiModule -->
 <g id="edge2" class="edge">
 <title>LegacySchoolModule&#45;&gt;LegacySchoolApiModule</title>
-<path fill="none" stroke="black" d="M245.75,-122.11C245.75,-122.11 245.75,-140.99 245.75,-140.99"/>
-<polygon fill="black" stroke="black" points="242.25,-140.99 245.75,-150.99 249.25,-140.99 242.25,-140.99"/>
+<path fill="none" stroke="black" d="M422.75,-122.11C422.75,-122.11 422.75,-140.99 422.75,-140.99"/>
+<polygon fill="black" stroke="black" points="419.25,-140.99 422.75,-150.99 426.25,-140.99 419.25,-140.99"/>
 </g>
 <!-- SystemModule -->
 <g id="node3" class="node">
 <title>SystemModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="124.27,-122 121.27,-126 100.27,-126 97.27,-122 23.73,-122 23.73,-86 124.27,-86 124.27,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">SystemModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="364.27,-122 361.27,-126 340.27,-126 337.27,-122 263.73,-122 263.73,-86 364.27,-86 364.27,-122"/>
+<text text-anchor="middle" x="314" y="-99.8" font-family="Times,serif" font-size="14.00">SystemModule</text>
 </g>
 <!-- SystemModule&#45;&gt;LegacySchoolApiModule -->
 <g id="edge3" class="edge">
 <title>SystemModule&#45;&gt;LegacySchoolApiModule</title>
-<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 199.57,-169 199.57,-169"/>
-<polygon fill="black" stroke="black" points="199.57,-172.5 209.57,-169 199.57,-165.5 199.57,-172.5"/>
+<path fill="none" stroke="black" d="M333.54,-122.11C333.54,-122.11 333.54,-140.99 333.54,-140.99"/>
+<polygon fill="black" stroke="black" points="330.04,-140.99 333.54,-150.99 337.04,-140.99 330.04,-140.99"/>
 </g>
 <!-- SchoolSystemOptionsUc -->
 <g id="node5" class="node">
 <title>SchoolSystemOptionsUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="569" cy="-104" rx="108.27" ry="18"/>
-<text text-anchor="middle" x="569" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="132" cy="-104" rx="108.27" ry="18"/>
+<text text-anchor="middle" x="132" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolSystemOptionsUc</text>
 </g>
 <!-- SchoolSystemOptionsUc&#45;&gt;LegacySchoolApiModule -->
 <g id="edge4" class="edge">
 <title>SchoolSystemOptionsUc&#45;&gt;LegacySchoolApiModule</title>
-<path fill="none" stroke="black" d="M569,-122.11C569,-141.34 569,-169 569,-169 569,-169 380.32,-169 380.32,-169"/>
-<polygon fill="black" stroke="black" points="380.32,-165.5 370.32,-169 380.32,-172.5 380.32,-165.5"/>
+<path fill="none" stroke="black" d="M132,-122.11C132,-141.34 132,-169 132,-169 132,-169 292.55,-169 292.55,-169"/>
+<polygon fill="black" stroke="black" points="292.55,-172.5 302.55,-169 292.55,-165.5 292.55,-172.5"/>
 </g>
 </g>
 </svg>

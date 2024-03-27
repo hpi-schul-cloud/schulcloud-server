@@ -165,7 +165,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, permissionService: <a href="../injectables/PermissionService.html" target="_self">PermissionService</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, schoolPermissionService: <a href="../injectables/SchoolPermissionService.html" target="_self">SchoolPermissionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -212,10 +212,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>permissionService</td>
+                                                        <td>schoolPermissionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/PermissionService.html" target="_self" >PermissionService</a></code>
+                                                                        <code><a href="../injectables/SchoolPermissionService.html" target="_self" >SchoolPermissionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -341,7 +341,7 @@
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
-import { PermissionService } from &#x27;../domain/permission.service&#x27;;
+import { SchoolPermissionService } from &#x27;../domain/school-permission.service&#x27;;
 import { MeResponse } from &#x27;./dto&#x27;;
 import { MeResponseMapper } from &#x27;./mapper&#x27;;
 
@@ -350,7 +350,7 @@ export class MeUc {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
-		private readonly permissionService: PermissionService
+		private readonly schoolPermissionService: SchoolPermissionService
 	) {}
 
 	public async getMe(userId: EntityId, schoolId: EntityId, accountId: EntityId): Promise&lt;MeResponse&gt; {
@@ -359,7 +359,7 @@ export class MeUc {
 			this.userService.getUserEntityWithRoles(userId), // TODO: replace when user domain object is available
 		]);
 
-		const permissions &#x3D; this.permissionService.resolvePermissions(user, school);
+		const permissions &#x3D; this.schoolPermissionService.resolvePermissions(user, school);
 
 		const dto &#x3D; MeResponseMapper.mapToResponse(school, user, accountId, permissions);
 

@@ -98,7 +98,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >PermissionService</li>
+  <li class="breadcrumb-item" >SchoolPermissionService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/service/permission.service.ts</code>
+            <code>apps/server/src/modules/me/domain/school-permission.service.ts</code>
         </p>
 
 
@@ -143,14 +143,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#hasUserAllSchoolPermissions" class="deprecated-name">hasUserAllSchoolPermissions</a>
-                            </li>
-                            <li>
-                                <a href="#resolvePermissions" class="deprecated-name">resolvePermissions</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#resolvePermissionsByRoles" >resolvePermissionsByRoles</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#resolvePermissions" >resolvePermissions</a>
                             </li>
                         </ul>
                     </td>
@@ -174,186 +168,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="hasUserAllSchoolPermissions"></a>
-                    <span class="name">
-                        <span class="deprecated-name"><b>hasUserAllSchoolPermissions</b></span>
-                        <a href="#hasUserAllSchoolPermissions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>hasUserAllSchoolPermissions(user: <a href="../interfaces/User.html" target="_self">User</a>, requiredPermissions: string[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:51</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>user</td>
-                                            <td>
-                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>requiredPermissions</td>
-                                            <td>
-                                                        <code>string[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="resolvePermissions"></a>
                     <span class="name">
-                        <span class="deprecated-name"><b>resolvePermissions</b></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>resolvePermissions</b></span>
                         <a href="#resolvePermissions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>resolvePermissions(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-description"><p>Recursively resolve all roles and permissions of a user.
-IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.
-Please make sure you populate them before calling this method.</p>
-</div>
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>user</td>
-                                            <td>
-                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>string[]</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="resolvePermissionsByRoles"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>resolvePermissionsByRoles</b></span>
-                        <a href="#resolvePermissionsByRoles"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>resolvePermissionsByRoles(inputRoles: <a href="../entitys/Role.html" target="_self">Role[]</a>)</code>
+                    <code>resolvePermissions(user: <a href="../interfaces/User.html" target="_self">User</a>, school: <a href="../classes/School.html" target="_self">School</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/modules/me/domain/school-permission.service.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -374,9 +208,21 @@ Please make sure you populate them before calling this method.</p>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>inputRoles</td>
+                                                <td>user</td>
                                             <td>
-                                                            <code><a href="../entitys/Role.html" target="_self" >Role[]</a></code>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
                                             </td>
 
                                             <td>
@@ -389,7 +235,7 @@ Please make sure you populate them before calling this method.</p>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>string[]</code>
+                            <b>Returns : </b>    <code>Set&lt;string&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -406,62 +252,39 @@ Please make sure you populate them before calling this method.</p>
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Role } from &#x27;../entity/role.entity&#x27;;
-import { User } from &#x27;../entity/user.entity&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
+import { Permission, RoleName } from &#x27;@shared/domain/interface&#x27;;
+import { School } from &#x27;@src/modules/school&#x27;;
 
-// TODO: Remove the PermissionService because it duplicates methods from the AuthorizationService.
-// Do not use this service, use the AuthorizationService!
 @Injectable()
-export class PermissionService {
-	/**
-	 * Recursively resolve all roles and permissions of a user.
-	 * IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.
-	 * Please make sure you populate them before calling this method.
-	 * @param user
-	 * @deprecated
-	 * @returns
-	 */
-	resolvePermissions(user: User): string[] {
-		if (!user.roles.isInitialized(true)) {
-			throw new Error(&#x27;Roles items are not loaded.&#x27;);
+export class SchoolPermissionService {
+	public resolvePermissions(user: User, school: School): Set&lt;string&gt; {
+		const userPermissions &#x3D; user.resolvePermissions();
+		const schoolPermissions &#x3D; school.getPermissions();
+
+		const permissions &#x3D; new Set(userPermissions);
+
+		if (user.getRoles().some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.ADMINISTRATOR)) {
+			return permissions;
 		}
-		const rolesAndPermissions &#x3D; this.resolvePermissionsByRoles(user.roles.getItems());
 
-		return rolesAndPermissions;
-	}
-
-	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
-		let permissions: string[] &#x3D; [];
-
-		for (let i &#x3D; 0; i &lt; inputRoles.length; i +&#x3D; 1) {
-			const role &#x3D; inputRoles[i];
-			if (!role.roles.isInitialized(true)) {
-				throw new Error(&#x27;Roles items are not loaded.&#x27;);
-			}
-			const innerRoles &#x3D; role.roles.getItems();
-			permissions &#x3D; [...permissions, ...role.permissions];
-
-			if (innerRoles.length &gt; 0) {
-				const subPermissions &#x3D; this.resolvePermissionsByRoles(innerRoles);
-				permissions &#x3D; [...permissions, ...subPermissions];
+		if (user.getRoles().some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.STUDENT)) {
+			if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+				permissions.add(Permission.LERNSTORE_VIEW);
+			} else {
+				permissions.delete(Permission.LERNSTORE_VIEW);
 			}
 		}
 
-		permissions &#x3D; [...new Set(permissions)];
+		if (user.getRoles().some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.TEACHER)) {
+			if (schoolPermissions?.teacher?.STUDENT_LIST) {
+				permissions.add(Permission.STUDENT_LIST);
+			} else {
+				permissions.delete(Permission.STUDENT_LIST);
+			}
+		}
 
 		return permissions;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
-		if (!Array.isArray(requiredPermissions) || requiredPermissions.length &#x3D;&#x3D;&#x3D; 0) {
-			return false;
-		}
-		const usersPermissions &#x3D; this.resolvePermissions(user);
-		const hasPermissions &#x3D; requiredPermissions.every((p) &#x3D;&gt; usersPermissions.includes(p));
-		return hasPermissions;
 	}
 }
 </code></pre>
@@ -507,7 +330,7 @@ export class PermissionService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'PermissionService-1.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolPermissionService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
