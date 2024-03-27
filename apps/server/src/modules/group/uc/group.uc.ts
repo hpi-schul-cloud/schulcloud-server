@@ -398,7 +398,7 @@ export class GroupUc {
 			})
 		);
 
-		const page: Page<ResolvedGroupDto> = new Page<ResolvedGroupDto>(resolvedGroups, resolvedGroups.length);
+		const page: Page<ResolvedGroupDto> = new Page<ResolvedGroupDto>(resolvedGroups, groups.total);
 
 		return page;
 	}

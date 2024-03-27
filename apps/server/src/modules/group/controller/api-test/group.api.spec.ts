@@ -393,7 +393,7 @@ describe('Group (API)', () => {
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({
 						data: [expectGroup],
-						total: 1,
+						total: 2,
 					});
 				});
 
@@ -429,7 +429,7 @@ describe('Group (API)', () => {
 					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true, skip: 1, limit: 1 });
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({ data: [], total: 0 });
+					expect(response.body).toEqual({ data: [], total: 1 });
 				});
 
 				it('should return available groups according to name query', async () => {
@@ -543,14 +543,14 @@ describe('Group (API)', () => {
 				});
 
 				it('should return all groups according to pagination', async () => {
-					const { loggedInClient, expectGroup, teacherUser } = await setup();
+					const { loggedInClient, expectGroup } = await setup();
 
 					const response = await loggedInClient.get().query({ skip: 1, limit: 1 });
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({
 						data: [expectGroup],
-						total: 1,
+						total: 2,
 					});
 				});
 
@@ -586,7 +586,7 @@ describe('Group (API)', () => {
 					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true, skip: 1, limit: 1 });
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({ data: [], total: 0 });
+					expect(response.body).toEqual({ data: [], total: 1 });
 				});
 
 				it('should return all available groups according to name query', async () => {
