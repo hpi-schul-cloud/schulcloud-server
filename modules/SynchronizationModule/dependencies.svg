@@ -28,13 +28,13 @@
 <title>cluster_SynchronizationModule_imports</title>
 <polygon fill="none" stroke="black" points="454,-78 454,-130 556,-130 556,-78 454,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SynchronizationModule_exports</title>
-<polygon fill="none" stroke="black" points="258,-208 258,-260 428,-260 428,-208 258,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_SynchronizationModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 446,-130 446,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SynchronizationModule_exports</title>
+<polygon fill="none" stroke="black" points="258,-208 258,-260 428,-260 428,-208 258,-208"/>
 </g>
 <!-- UserModule -->
 <g id="node1" class="node">
