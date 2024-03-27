@@ -6,12 +6,14 @@ import {
 	SystemEntityProps,
 } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
 	withOauthConfig(): this {
 		const params: DeepPartial<SystemEntityProps> = {
+			type: SystemTypeEnum.OAUTH,
 			oauthConfig: new OauthConfigEntity({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
@@ -33,6 +35,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 
 	withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
 		const params: DeepPartial<SystemEntityProps> = {
+			type: SystemTypeEnum.LDAP,
 			ldapConfig: new LdapConfigEntity({
 				url: 'ldaps:mock.de:389',
 				active: true,
@@ -45,6 +48,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 
 	withOidcConfig(): this {
 		const params = {
+			type: SystemTypeEnum.OIDC,
 			oidcConfig: new OidcConfigEntity({
 				clientId: 'mock-client-id',
 				clientSecret: 'mock-client-secret',
