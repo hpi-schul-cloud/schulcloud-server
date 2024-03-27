@@ -4,6 +4,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { CustomParameterEntity } from './custom-parameter';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
 import { ToolContextType } from '../../common/enum';
+import { ExternalToolMediumEntity } from './external-tool-medium.entity';
 
 export type IExternalToolProperties = Readonly<Omit<ExternalToolEntity, keyof BaseEntityWithTimestamps>>;
 
@@ -12,6 +13,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()
 	name: string;
+
+	@Property({ nullable: true })
+	description?: string;
 
 	@Property({ nullable: true })
 	url?: string;
@@ -43,9 +47,13 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	restrictToContexts?: ToolContextType[];
 
+	@Property({ nullable: true })
+	medium?: ExternalToolMediumEntity;
+
 	constructor(props: IExternalToolProperties) {
 		super();
 		this.name = props.name;
+		this.description = props.description;
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
 		this.logoBase64 = props.logoBase64;
@@ -56,5 +64,6 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
+		this.medium = props.medium;
 	}
 }
