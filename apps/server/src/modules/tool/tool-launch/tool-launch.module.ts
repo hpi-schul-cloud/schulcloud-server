@@ -14,8 +14,8 @@ import {
 	AutoContextNameStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoMediumIdStrategy,
 } from './service/auto-parameter-strategy';
-import { AutoMediumIdStrategy } from './service/auto-parameter-strategy/auto-medium-id.strategy';
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
 
 @Module({

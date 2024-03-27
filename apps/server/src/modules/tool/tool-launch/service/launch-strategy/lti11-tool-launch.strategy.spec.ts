@@ -24,8 +24,8 @@ import {
 	AutoContextNameStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoMediumIdStrategy,
 } from '../auto-parameter-strategy';
-import { AutoMediumIdStrategy } from '../auto-parameter-strategy/auto-medium-id.strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
