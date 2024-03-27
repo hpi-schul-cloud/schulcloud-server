@@ -75,7 +75,7 @@ export class GroupController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of all groups.' })
-	@ApiResponse({ status: HttpStatus.OK, type: [GroupResponse] })
+	@ApiResponse({ status: HttpStatus.OK, type: GroupListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
