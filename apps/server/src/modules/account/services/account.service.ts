@@ -22,6 +22,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -33,6 +34,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
+		private readonly accountRepo: AccountRepo,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus
 	) {
@@ -220,5 +222,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			}
 		}
 		return null;
+	}
+
+	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
+		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
+
+		return foundAccounts;
 	}
 }
