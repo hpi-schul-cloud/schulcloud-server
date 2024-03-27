@@ -11,6 +11,10 @@ export class PermissionService {
 
 		const permissions = new Set(userPermissions);
 
+		if (user.getRoles().some((role) => role.name === RoleName.ADMINISTRATOR)) {
+			return permissions;
+		}
+
 		if (user.getRoles().some((role) => role.name === RoleName.STUDENT)) {
 			if (schoolPermissions?.student?.LERNSTORE_VIEW) {
 				permissions.add(Permission.LERNSTORE_VIEW);

@@ -35,6 +35,25 @@ describe('PermissionService', () => {
 			});
 		});
 
+		describe('when the user is an admin', () => {
+			const setup = () => {
+				const somePermission = 'somePermission' as Permission;
+				const someRole = roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions: [somePermission] });
+				const someUser = userFactory.build({ roles: [someRole] });
+				const school = schoolFactory.build();
+
+				return { someUser, school, somePermission };
+			};
+
+			it('should return permissions from user', () => {
+				const { someUser, school, somePermission } = setup();
+
+				const permissions = service.resolvePermissions(someUser, school);
+
+				expect(permissions).toEqual(new Set([somePermission]));
+			});
+		});
+
 		describe('when the user is a student', () => {
 			describe('when student role has LERNSTORE_VIEW permission by default', () => {
 				const setupStudent = () => {
@@ -215,6 +234,26 @@ describe('PermissionService', () => {
 
 					expect(permissions).not.toContain(Permission.STUDENT_LIST);
 				});
+			});
+		});
+
+		// There are more variations for users with multiple roles, but we restrict the tests to this most relevant one.
+		describe('when the user is both teacher and admin and school permission for STUDENT_LIST is falsy', () => {
+			const setup = () => {
+				const teacherRole = roleFactory.build({ name: RoleName.TEACHER });
+				const adminRole = roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions: [Permission.STUDENT_LIST] });
+				const user = userFactory.build({ roles: [teacherRole, adminRole] });
+				const school = schoolFactory.build();
+
+				return { user, school };
+			};
+
+			it('should not withdraw STUDENT_LIST permissions', () => {
+				const { user, school } = setup();
+
+				const permissions = service.resolvePermissions(user, school);
+
+				expect(permissions).toContain(Permission.STUDENT_LIST);
 			});
 		});
 	});
