@@ -3,7 +3,7 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { AuthenticationModule } from '@modules/authentication';
 import { MeUc, MeController } from './api';
-import { SchoolPermissionService } from './domain/permission.service';
+import { SchoolPermissionService } from './domain/school-permission.service';
 
 @Module({
 	imports: [SchoolModule, UserModule, AuthenticationModule],
