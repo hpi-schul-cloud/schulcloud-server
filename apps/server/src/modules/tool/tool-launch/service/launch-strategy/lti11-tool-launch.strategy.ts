@@ -15,6 +15,7 @@ import {
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
+import { AutoMediumIdStrategy } from '../auto-parameter-strategy/auto-medium-id.strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
@@ -28,9 +29,16 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
-		autoContextNameStrategy: AutoContextNameStrategy
+		autoContextNameStrategy: AutoContextNameStrategy,
+		autoMediumIdStrategy: AutoMediumIdStrategy
 	) {
-		super(autoSchoolIdStrategy, autoSchoolNumberStrategy, autoContextIdStrategy, autoContextNameStrategy);
+		super(
+			autoSchoolIdStrategy,
+			autoSchoolNumberStrategy,
+			autoContextIdStrategy,
+			autoContextNameStrategy,
+			autoMediumIdStrategy
+		);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
