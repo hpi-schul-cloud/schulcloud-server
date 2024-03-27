@@ -1,5 +1,5 @@
 import { FindOptions } from '@mikro-orm/core';
-import { AutoPath, EntityData, EntityName } from '@mikro-orm/core/typings';
+import { EntityData, EntityName, Populate } from '@mikro-orm/core/typings';
 import { Injectable } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
@@ -33,7 +33,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		const entity = await this.em.findOneOrFail(
 			SchoolEntity,
 			{ id: schoolId },
-			{ populate: ['federalState', 'currentYear'] }
+			{ populate: ['federalState', 'currentYear'] },
 		);
 
 		const school = SchoolEntityMapper.mapToDo(entity);
@@ -45,7 +45,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		const entities = await this.em.find(
 			SchoolEntity,
 			{ systems: { $in: systemIds } },
-			{ populate: ['federalState', 'currentYear'] }
+			{ populate: ['federalState', 'currentYear'] },
 		);
 
 		const schools = SchoolEntityMapper.mapToDos(entities);
@@ -59,9 +59,9 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return entityProps;
 	}
 
-	private mapToMikroOrmOptions<P extends string = never>(
+	private mapToMikroOrmOptions<P extends string>(
 		options?: IFindOptions<SchoolProps>,
-		populate?: AutoPath<SchoolEntity, P>[]
+		populate?: Populate<SchoolEntity, P>,
 	): FindOptions<SchoolEntity, P> {
 		const findOptions: FindOptions<SchoolEntity, P> = {
 			offset: options?.pagination?.skip,

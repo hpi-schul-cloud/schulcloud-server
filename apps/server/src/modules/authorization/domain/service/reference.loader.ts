@@ -51,7 +51,7 @@ export class ReferenceLoader {
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
-		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
+		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -78,7 +78,7 @@ export class ReferenceLoader {
 
 	async loadAuthorizableObject(
 		objectName: AuthorizableReferenceType,
-		objectId: EntityId
+		objectId: EntityId,
 	): Promise<AuthorizableObject | BaseDO> {
 		const repoLoader: RepoLoader = this.resolveRepo(objectName);
 

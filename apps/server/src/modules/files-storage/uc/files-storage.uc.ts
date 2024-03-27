@@ -40,7 +40,7 @@ export class FilesStorageUC {
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService,
 		// maybe better to pass the request context from controller and avoid em at this place
-		private readonly em: EntityManager
+		private readonly em: EntityManager,
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -49,7 +49,7 @@ export class FilesStorageUC {
 		userId: EntityId,
 		parentType: FileRecordParentType,
 		parentId: EntityId,
-		context: AuthorizationContext
+		context: AuthorizationContext,
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
@@ -80,7 +80,7 @@ export class FilesStorageUC {
 			bb.on('file', (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
-				fileRecordPromise = RequestContext.createAsync(this.em, () => {
+				fileRecordPromise = RequestContext.create(this.em, () => {
 					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
 
 					return record;
@@ -115,7 +115,7 @@ export class FilesStorageUC {
 	}
 
 	private async getResponse(
-		params: FileRecordParams & FileUrlParams
+		params: FileRecordParams & FileUrlParams,
 	): Promise<AxiosResponse<internal.Readable, unknown>> {
 		const config: AxiosRequestConfig = {
 			headers: params.headers,
@@ -165,7 +165,7 @@ export class FilesStorageUC {
 		userId: EntityId,
 		params: DownloadFileParams,
 		previewParams: PreviewParams,
-		bytesRange?: string
+		bytesRange?: string,
 	): Promise<GetFileResponse> {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
@@ -223,7 +223,7 @@ export class FilesStorageUC {
 	public async copyFilesOfParent(
 		userId: string,
 		params: FileRecordParams,
-		copyFilesParams: CopyFilesOfParentParams
+		copyFilesParams: CopyFilesOfParentParams,
 	): Promise<Counted<CopyFileResponse[]>> {
 		await Promise.all([
 			this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create),
@@ -231,7 +231,7 @@ export class FilesStorageUC {
 				userId,
 				copyFilesParams.target.parentType,
 				copyFilesParams.target.parentId,
-				FileStorageAuthorizationContext.create
+				FileStorageAuthorizationContext.create,
 			),
 		]);
 
@@ -243,7 +243,7 @@ export class FilesStorageUC {
 	public async copyOneFile(
 		userId: string,
 		params: SingleFileParams,
-		copyFileParams: CopyFileParams
+		copyFileParams: CopyFileParams,
 	): Promise<CopyFileResponse> {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
@@ -254,7 +254,7 @@ export class FilesStorageUC {
 				userId,
 				copyFileParams.target.parentType,
 				copyFileParams.target.parentId,
-				FileStorageAuthorizationContext.create
+				FileStorageAuthorizationContext.create,
 			),
 		]);
 

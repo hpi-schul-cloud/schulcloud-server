@@ -26,7 +26,7 @@ export class YMongodb {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly repo: TldrawRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
 	) {
 		this.logger.setContext(YMongodb.name);
 
@@ -43,7 +43,7 @@ export class YMongodb {
 			nextTr = (async () => {
 				await currTr;
 
-				let res: YTransaction | null;
+				let res: YTransaction | null = null;
 				try {
 					res = await fn();
 				} catch (err) {
@@ -112,7 +112,7 @@ export class YMongodb {
 					$lt: binary.BITS32,
 				},
 			},
-			{ reverse: true, limit: 1 }
+			{ reverse: true, limit: 1 },
 		);
 
 		const clock = this.extractClock(updates);
@@ -228,7 +228,7 @@ export class YMongodb {
 				const chunk = value.subarray(start, end);
 
 				putPromises.push(
-					this.repo.put({ ...KeyFactory.createForUpdate(docName, clock + 1), part: i + 1 }, { value: chunk })
+					this.repo.put({ ...KeyFactory.createForUpdate(docName, clock + 1), part: i + 1 }, { value: chunk }),
 				);
 			}
 

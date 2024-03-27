@@ -1,14 +1,4 @@
-import {
-	Collection,
-	Entity,
-	IdentifiedReference,
-	Index,
-	ManyToMany,
-	ManyToOne,
-	OneToMany,
-	Property,
-	wrap,
-} from '@mikro-orm/core';
+import { Collection, Entity, Ref, Index, ManyToMany, ManyToOne, OneToMany, Property, wrap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { Course } from './course.entity';
@@ -52,8 +42,8 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	references = new Collection<Course>(this);
 
 	@Index()
-	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
-	dashboard: IdentifiedReference<DashboardModelEntity>;
+	@ManyToOne('DashboardModelEntity', { ref: true })
+	dashboard: Ref<DashboardModelEntity>;
 }
 
 export interface DashboardModelProperties {
@@ -77,8 +67,8 @@ export class DashboardModelEntity extends BaseEntityWithTimestamps {
 
 	// userId
 	@Index()
-	@ManyToOne('User', { fieldName: 'userId', wrappedReference: true })
-	user: IdentifiedReference<User>;
+	@ManyToOne('User', { fieldName: 'userId', ref: true })
+	user: Ref<User>;
 
 	// sizetype
 }

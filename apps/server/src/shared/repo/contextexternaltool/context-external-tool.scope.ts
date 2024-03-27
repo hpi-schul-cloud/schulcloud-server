@@ -1,5 +1,5 @@
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 
@@ -29,7 +29,10 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 
 	byContextType(contextType: ToolContextType | undefined): ContextExternalToolScope {
 		if (contextType !== undefined) {
-			this.addQuery({ contextType });
+			// TODO we should use one enum to prevent the cast and potential conflicts between the values
+			const value: ContextExternalToolType = contextType as unknown as ContextExternalToolType;
+
+			this.addQuery({ contextType: value });
 		}
 		return this;
 	}

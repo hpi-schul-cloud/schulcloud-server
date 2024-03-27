@@ -12,7 +12,7 @@ export abstract class BaseEntity implements IEntity, AuthorizableObject {
 }
 
 /**
- * Describes the properties available for entities when used as @IdentifiedReference
+ * Describes the properties available for entities when used as @Ref
  */
 export type BaseEntityReference = 'id' | '_id';
 

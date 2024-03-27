@@ -1,4 +1,4 @@
-import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import { Collection, Entity, Ref, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
@@ -25,8 +25,8 @@ export class Board extends BaseEntityWithTimestamps {
 		this.course = wrap(props.course).toReference();
 	}
 
-	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
-	course: IdentifiedReference<Course>;
+	@OneToOne({ type: 'Course', fieldName: 'courseId', ref: true, unique: true, owner: true })
+	course: Ref<Course>;
 
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<BoardElement>(this);

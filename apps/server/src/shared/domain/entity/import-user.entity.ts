@@ -1,6 +1,6 @@
-import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { Entity, Enum, Ref, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { EntityWithSchool, RoleName } from '../interface';
-import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from './base.entity';
 import { SchoolEntity } from './school.entity';
 import { SystemEntity } from './system.entity';
 import type { User } from './user.entity';
@@ -37,7 +37,7 @@ export enum MatchCreator {
 export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSchool {
 	constructor(props: ImportUserProperties) {
 		super();
-		this.school = wrap(props.school).toReference();
+		this.school = props.school;
 		this.system = wrap(props.system).toReference();
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;
@@ -50,11 +50,11 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		if (props.flagged && props.flagged === true) this.flagged = true;
 	}
 
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', wrappedReference: true, eager: true })
-	school: IdentifiedReference<SchoolEntity>;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', eager: true })
+	school: SchoolEntity;
 
-	@ManyToOne(() => SystemEntity, { wrappedReference: true })
-	system: IdentifiedReference<SystemEntity, BaseEntityReference>;
+	@ManyToOne(() => SystemEntity, { ref: true })
+	system: Ref<SystemEntity>;
 
 	@Property()
 	ldapDn: string;

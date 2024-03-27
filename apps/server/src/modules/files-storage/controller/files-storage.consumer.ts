@@ -1,6 +1,6 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { CreateRequestContext, MikroORM } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
@@ -16,7 +16,7 @@ export class FilesStorageConsumer {
 		private readonly previewService: PreviewService,
 		private logger: LegacyLogger,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		private readonly orm: MikroORM // don't remove it, we need it for @UseRequestContext
+		private readonly orm: MikroORM, // don't remove it, we need it for @CreateRequestContext
 	) {
 		this.logger.setContext(FilesStorageConsumer.name);
 	}
@@ -26,9 +26,9 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.COPY_FILES_OF_PARENT,
 		queue: FilesStorageEvents.COPY_FILES_OF_PARENT,
 	})
-	@UseRequestContext()
+	@CreateRequestContext()
 	public async copyFilesOfParent(
-		@RabbitPayload() payload: CopyFilesOfParentPayload
+		@RabbitPayload() payload: CopyFilesOfParentPayload,
 	): Promise<RpcMessage<CopyFileDO[]>> {
 		this.logger.debug({ action: 'copyFilesOfParent', payload });
 
@@ -43,7 +43,7 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.LIST_FILES_OF_PARENT,
 		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
-	@UseRequestContext()
+	@CreateRequestContext()
 	public async getFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'getFilesOfParent', payload });
 
@@ -58,7 +58,7 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 		queue: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 	})
-	@UseRequestContext()
+	@CreateRequestContext()
 	public async deleteFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
@@ -77,7 +77,7 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.DELETE_FILES,
 		queue: FilesStorageEvents.DELETE_FILES,
 	})
-	@UseRequestContext()
+	@CreateRequestContext()
 	public async deleteFiles(@RabbitPayload() payload: EntityId[]): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'deleteFiles', payload });
 
@@ -97,7 +97,7 @@ export class FilesStorageConsumer {
 		routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
 		queue: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
 	})
-	@UseRequestContext()
+	@CreateRequestContext()
 	public async removeCreatorIdFromFileRecords(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords', payload });
 

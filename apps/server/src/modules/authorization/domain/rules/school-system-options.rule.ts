@@ -1,4 +1,4 @@
-import { AnyProvisioningOptions, SchoolSystemOptions } from '@modules/legacy-school';
+import { SchoolSystemOptions } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';
@@ -9,7 +9,7 @@ export class SchoolSystemOptionsRule implements Rule<SchoolSystemOptions> {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, domainObject: SchoolSystemOptions): boolean {
-		const isMatched: boolean = domainObject instanceof SchoolSystemOptions<AnyProvisioningOptions>;
+		const isMatched: boolean = domainObject instanceof SchoolSystemOptions;
 
 		return isMatched;
 	}
