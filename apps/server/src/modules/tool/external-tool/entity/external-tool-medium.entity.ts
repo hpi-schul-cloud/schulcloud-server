@@ -5,7 +5,6 @@ export class ExternalToolMediumEntity {
 	@Property({ nullable: false })
 	mediumId: string;
 
-	// TODO: can this be empty?
 	@Property({ nullable: true })
 	publisher?: string;
 
