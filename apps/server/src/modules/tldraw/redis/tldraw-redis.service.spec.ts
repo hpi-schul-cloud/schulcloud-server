@@ -1,0 +1,100 @@
+import { INestApplication } from '@nestjs/common';
+import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
+import { Test } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import * as Yjs from 'yjs';
+import * as AwarenessProtocol from 'y-protocols/awareness';
+import { tldrawTestConfig } from '../testing';
+import { TldrawRedisFactory } from './tldraw-redis.factory';
+import { TldrawRedisService } from './tldraw-redis.service';
+import { WsSharedDocDo } from '../domain';
+
+jest.mock('yjs', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('yjs'),
+	};
+	return moduleMock;
+});
+jest.mock('y-protocols/awareness', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('y-protocols/awareness'),
+	};
+	return moduleMock;
+});
+jest.mock('y-protocols/sync', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('y-protocols/sync'),
+	};
+	return moduleMock;
+});
+
+describe('TldrawRedisService', () => {
+	let app: INestApplication;
+	let service: TldrawRedisService;
+
+	beforeAll(async () => {
+		const testingModule = await Test.createTestingModule({
+			imports: [ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig))],
+			providers: [
+				TldrawRedisService,
+				TldrawRedisFactory,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
+		}).compile();
+
+		service = testingModule.get(TldrawRedisService);
+		app = testingModule.createNestApplication();
+		await app.init();
+	});
+
+	afterAll(async () => {
+		await app.close();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.restoreAllMocks();
+	});
+
+	describe('redisMessageHandler', () => {
+		const setup = () => {
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate').mockReturnValueOnce();
+
+			const doc = new WsSharedDocDo('TEST');
+			doc.awarenessChannel = 'TEST-awareness';
+
+			return {
+				doc,
+				applyUpdateSpy,
+				applyAwarenessUpdateSpy,
+			};
+		};
+
+		describe('when channel name is the same as docName', () => {
+			it('should call applyUpdate', () => {
+				const { doc, applyUpdateSpy } = setup();
+				service.handleMessage('TEST', Buffer.from('message'), doc);
+
+				expect(applyUpdateSpy).toHaveBeenCalled();
+			});
+		});
+
+		describe('when channel name is the same as docAwarenessChannel name', () => {
+			it('should call applyAwarenessUpdate', () => {
+				const { doc, applyAwarenessUpdateSpy } = setup();
+				service.handleMessage('TEST-awareness', Buffer.from('message'), doc);
+
+				expect(applyAwarenessUpdateSpy).toHaveBeenCalled();
+			});
+		});
+	});
+});
