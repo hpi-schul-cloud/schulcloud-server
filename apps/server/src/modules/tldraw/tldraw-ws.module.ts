@@ -34,6 +34,15 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb, MetricsService, TldrawRedisFactory, TldrawRedisService],
+	providers: [
+		TldrawWs,
+		TldrawWsService,
+		TldrawBoardRepo,
+		TldrawRepo,
+		YMongodb,
+		MetricsService,
+		TldrawRedisFactory,
+		TldrawRedisService,
+	],
 })
 export class TldrawWsModule {}
