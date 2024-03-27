@@ -30,6 +30,7 @@ import {
 	CourseGroupService,
 	CourseService,
 	DashboardService,
+	GroupDeletedHandlerService,
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
@@ -73,6 +74,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LegacyBoardRepo,
 		RoomsService,
 		UserRepo,
+		GroupDeletedHandlerService,
 	],
 	exports: [
 		CourseCopyService,
