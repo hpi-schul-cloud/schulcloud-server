@@ -17,6 +17,21 @@ import { EduSharingUC } from '../uc';
 export class EduSharingController {
 	constructor(private readonly eduSharingUC: EduSharingUC) {}
 
+	@ApiOperation({ summary: 'Returns the required XML for registering the service against an edu-sharing repository.' })
+	@ApiResponse({ status: 200, type: String })
+	@ApiResponse({ status: 206, type: String })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: 406, type: NotAcceptableException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@Get('/register')
+	getEduAppXMLData(): string {
+		const xmlData = this.eduSharingUC.getEduAppXMLData();
+
+		return xmlData;
+	}
+
 	@ApiOperation({ summary: 'Fetches the edu-sharing ticket for a given username.' })
 	@ApiResponse({ status: 200, type: String })
 	@ApiResponse({ status: 206, type: String })
@@ -25,7 +40,7 @@ export class EduSharingController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Get('/edu-sharing')
+	@Get('/')
 	async getTicketForUser(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
 		const ticket = await this.eduSharingUC.getTicketForUser(currentUser.userId);
 

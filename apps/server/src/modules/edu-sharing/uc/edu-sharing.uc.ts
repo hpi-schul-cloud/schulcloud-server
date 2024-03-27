@@ -8,6 +8,10 @@ export class EduSharingUC {
 		this.logger.setContext(EduSharingUC.name);
 	}
 
+	public getEduAppXMLData(): string {
+		return this.eduSharingService.getEduAppXMLData();
+	}
+
 	public async getTicketForUser(username: string): Promise<string> {
 		return this.eduSharingService.getTicketForUser(username);
 	}

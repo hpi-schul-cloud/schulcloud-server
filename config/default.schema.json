@@ -227,12 +227,27 @@
 					"default": "http://localhost:4450",
 					"description": "The URI of the edu-sharing service"
 				},
+				"APP_ID": {
+					"type": "string",
+					"description": "The app ID for the edu-sharing repository.",
+					"default": ""
+				},
 				"DOMAIN": {
 					"type": "string",
 					"format": "uri",
 					"pattern": ".*(?<!/)$",
 					"description": "The URL for the edu-sharing repository.",
 					"default": "https://mv-repo.schul-cloud.org"
+				},
+				"PRIVATE_KEY": {
+					"type": "string",
+					"description": "The private key for the edu-sharing repository.",
+					"default": ""
+				},
+				"PUBLIC_KEY": {
+					"type": "string",
+					"description": "The public key for the edu-sharing repository.",
+					"default": ""
 				},
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",

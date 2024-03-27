@@ -1,13 +1,14 @@
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { EduSharingService } from './service/edu-sharing.service';
 
-const imports = [LoggerModule];
+const imports = [HttpModule, LoggerModule];
 const providers = [EduSharingService];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
