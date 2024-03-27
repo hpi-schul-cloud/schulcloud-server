@@ -86,10 +86,9 @@ export class DeletionQueueConsole {
 			options.deleteInMinutes,
 			options.callsDelayMs
 		);
-		this.consoleWriter.info(JSON.stringify(summary));
 
 		this.consoleWriter.info(
-			JSON.stringify({ message: 'successfully finished queueing unsynchronized entities for deletion' })
+			JSON.stringify({ message: 'successfully finished queueing unsynchronized entities for deletion', summary })
 		);
 	}
 }
