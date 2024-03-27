@@ -855,4 +855,44 @@ describe('UserService', () => {
 			});
 		});
 	});
+	describe('findUnsynchronizedUserIds', () => {
+		const setup = () => {
+			const currentDate = new Date();
+			const dateA = new Date(currentDate.getTime() - 120 * 60000);
+			const dateB = new Date(currentDate.getTime() - 3600 * 60000);
+			const unsyncedForMinutes = 60;
+			const userA = userFactory.buildWithId({ lastSyncedAt: dateA });
+			const userB = userFactory.buildWithId({ lastSyncedAt: dateB });
+
+			const foundUsers = [userA.id, userB.id];
+
+			return {
+				foundUsers,
+				unsyncedForMinutes,
+			};
+		};
+
+		describe('when findUnsynchronizedUserIds is called', () => {
+			it('should call findUnsynchronizedUserIds with unsyncedForMinutes parameter and retrun array with found users', async () => {
+				const { unsyncedForMinutes, foundUsers } = setup();
+
+				jest.spyOn(service, 'findUnsynchronizedUserIds').mockResolvedValueOnce(foundUsers);
+
+				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
+
+				expect(service.findUnsynchronizedUserIds).toHaveBeenCalledWith(unsyncedForMinutes);
+				expect(result).toEqual(foundUsers);
+			});
+
+			it('should call findUnsynchronizedUserIds with unsyncedForMinutes parameter and return empty array', async () => {
+				const { unsyncedForMinutes } = setup();
+
+				jest.spyOn(service, 'findUnsynchronizedUserIds').mockResolvedValueOnce([]);
+
+				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
 });
