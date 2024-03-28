@@ -16,7 +16,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { TldrawRedisFactory } from '../redis';
+import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 import { TldrawWs } from '../controller';
 import { TldrawDrawing } from '../entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
@@ -74,6 +74,7 @@ describe('TldrawWSService', () => {
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				TldrawRedisService,
 				{
 					provide: TldrawBoardRepo,
 					useValue: createMock<TldrawBoardRepo>(),

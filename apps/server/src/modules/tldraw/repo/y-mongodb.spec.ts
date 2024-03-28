@@ -8,7 +8,7 @@ import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { HttpService } from '@nestjs/axios';
-import { TldrawRedisFactory } from '../redis';
+import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -46,6 +46,7 @@ describe('YMongoDb', () => {
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				TldrawRedisService,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),

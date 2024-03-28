@@ -17,7 +17,7 @@ import { TldrawWs } from '../controller';
 import { MetricsService } from '../metrics';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
-import { TldrawRedisFactory } from '../redis';
+import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -36,6 +36,7 @@ describe('TldrawBoardRepo', () => {
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				TldrawRedisService,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),
