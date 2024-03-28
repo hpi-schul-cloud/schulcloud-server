@@ -63,6 +63,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"tldraw-console": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/tldraw-console.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"files-storage": {
 			"type": "application",
 			"root": "apps/server",
