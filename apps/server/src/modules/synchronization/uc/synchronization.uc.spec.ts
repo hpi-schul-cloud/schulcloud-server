@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Logger } from '@src/core/logger';
 import { UserService } from '@modules/user';
-import { SanisResponse, SchulconnexRestClient, schulconnexResponseFactory } from '@src/infra/schulconnex-client';
+import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@src/infra/schulconnex-client';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { SynchronizationService } from '../domain/service';
@@ -319,13 +319,11 @@ describe(SynchronizationUc.name, () => {
 				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 				const userSyncCount = 2;
 				const status = SynchronizationStatusModel.SUCCESS;
-				const synchronizationToUpdate = {
-					...synchronization,
-					count: userSyncCount,
+				const synchronizationToUpdate = new Synchronization({
+					id: synchronizationId,
 					status,
-				} as Synchronization;
-
-				synchronizationService.findById.mockResolvedValueOnce(synchronization);
+					count: userSyncCount,
+				});
 
 				return {
 					status,
@@ -337,15 +335,7 @@ describe(SynchronizationUc.name, () => {
 				};
 			};
 
-			it('should call the synchronizationService.findById to find the synchronization', async () => {
-				const { synchronizationId, status, userSyncCount } = setup();
-
-				await uc.updateSynchronization(synchronizationId, status, userSyncCount);
-
-				expect(synchronizationService.findById).toHaveBeenCalledWith(synchronizationId);
-			});
-
-			it('should call the synchronizationService.update to log detainls about synchronization of systemId', async () => {
+			it('should call the synchronizationService.update to log details about synchronization of systemId', async () => {
 				const { synchronizationId, synchronizationToUpdate, status, userSyncCount } = setup();
 
 				await uc.updateSynchronization(synchronizationId, status, userSyncCount);
