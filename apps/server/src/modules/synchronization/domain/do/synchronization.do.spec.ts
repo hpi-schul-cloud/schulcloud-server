@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Synchronization } from './synchronization.do';
-import { synchronizationFactory } from './testing';
-import { SynchronizationStatusModel } from './types';
+import { synchronizationFactory } from '../testing';
+import { SynchronizationStatusModel } from '../types';
 
 describe(Synchronization.name, () => {
 	describe('constructor', () => {
