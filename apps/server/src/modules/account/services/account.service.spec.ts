@@ -303,16 +303,6 @@ describe('AccountService', () => {
 	});
 
 	describe('saveWithValidation', () => {
-		describe('When calling with an account id that is not an ObjectId', () => {
-			it('should throw an ValidationError', async () => {
-				const params: AccountSave = {
-					username: 'John Doe',
-					id: 'notAnObjectId',
-				} as AccountSave;
-				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
-			});
-		});
-
 		describe('When calling with an empty username', () => {
 			it('should throw an ValidationError', async () => {
 				const params: AccountSave = {
@@ -327,26 +317,6 @@ describe('AccountService', () => {
 				const params: AccountSave = {
 					username: 'John Doe',
 					password: 'pass',
-				} as AccountSave;
-				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
-			});
-		});
-
-		describe('When calling with an userId that is not an ObjectId', () => {
-			it('should throw an ValidationError', async () => {
-				const params: AccountSave = {
-					username: 'John Doe',
-					userId: 'notAnObjectId',
-				} as AccountSave;
-				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
-			});
-		});
-
-		describe('When calling with an systemId that is not an ObjectId', () => {
-			it('should throw an ValidationError', async () => {
-				const params: AccountSave = {
-					username: 'John Doe',
-					systemId: 'notAnObjectId',
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
 			});

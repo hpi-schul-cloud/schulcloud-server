@@ -17,7 +17,7 @@ import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { Logger } from '@src/core/logger';
-import { isEmail, isMongoId, isNotEmpty, matches } from 'class-validator';
+import { isEmail, isNotEmpty, matches } from 'class-validator';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -265,24 +265,12 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
-		if (accountSave.id && !isMongoId(accountSave.id)) {
-			throw new ValidationError('id has to be a mongo id');
-		}
-
 		if (!isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
 		}
 
 		if (accountSave.password && !matches(accountSave.password, passwordPattern)) {
 			throw new ValidationError('password does not match the pattern');
-		}
-
-		if (accountSave.userId && !isMongoId(accountSave.userId)) {
-			throw new ValidationError('userId has to be a mongo id');
-		}
-
-		if (accountSave.systemId && !isMongoId(accountSave.systemId)) {
-			throw new ValidationError('systemId has to be a mongo id');
 		}
 
 		// sanatizeUsername ✔
