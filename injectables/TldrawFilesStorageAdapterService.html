@@ -143,6 +143,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addFileRecordIdToDeletionList" >addFileRecordIdToDeletionList</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteUnusedFilesForDocument" >deleteUnusedFilesForDocument</a>
@@ -150,6 +154,10 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#foundAssetsForDeletion" >foundAssetsForDeletion</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isOlderThanRequiredDate" >isOlderThanRequiredDate</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -225,6 +233,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="addFileRecordIdToDeletionList"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>addFileRecordIdToDeletionList</b></span>
+                        <a href="#addFileRecordIdToDeletionList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addFileRecordIdToDeletionList(fileRecord: <a href="../classes/FileDto.html" target="_self">FileDto</a>, fileRecordIdsForDeletion: string[], usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileRecord</td>
+                                            <td>
+                                                            <code><a href="../classes/FileDto.html" target="_self" >FileDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fileRecordIdsForDeletion</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>usedAssets</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#TldrawAsset" target="_self" >TldrawAsset[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteUnusedFilesForDocument"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -237,7 +338,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteUnusedFilesForDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>)</code>
+                    <code>deleteUnusedFilesForDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>, createdBeforeDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
                 </td>
             </tr>
 
@@ -289,6 +390,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>createdBeforeDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -318,15 +431,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>foundAssetsForDeletion(fileRecords: <a href="../interfaces/File.html" target="_self">FileDto[]</a>, usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>)</code>
+                    <code>foundAssetsForDeletion(fileRecords: <a href="../interfaces/File.html" target="_self">FileDto[]</a>, usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>, createdBeforeDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -370,11 +483,104 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>createdBeforeDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isOlderThanRequiredDate"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isOlderThanRequiredDate</b></span>
+                        <a href="#isOlderThanRequiredDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isOlderThanRequiredDate(fileRecord: <a href="../classes/FileDto.html" target="_self">FileDto</a>, createdBeforeDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileRecord</td>
+                                            <td>
+                                                            <code><a href="../classes/FileDto.html" target="_self" >FileDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>createdBeforeDate</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -406,8 +612,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -479,9 +685,13 @@ import { TldrawAsset } from &#x27;../types&#x27;;
 export class TldrawFilesStorageAdapterService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
-	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise&lt;void&gt; {
+	public async deleteUnusedFilesForDocument(
+		docName: string,
+		usedAssets: TldrawAsset[],
+		createdBeforeDate: Date
+	): Promise&lt;void&gt; {
 		const fileRecords &#x3D; await this.filesStorageClientAdapterService.listFilesOfParent(docName);
-		const fileRecordIdsForDeletion &#x3D; this.foundAssetsForDeletion(fileRecords, usedAssets);
+		const fileRecordIdsForDeletion &#x3D; this.foundAssetsForDeletion(fileRecords, usedAssets, createdBeforeDate);
 
 		if (fileRecordIdsForDeletion.length &#x3D;&#x3D;&#x3D; 0) {
 			return;
@@ -490,17 +700,36 @@ export class TldrawFilesStorageAdapterService {
 		await this.filesStorageClientAdapterService.deleteFiles(fileRecordIdsForDeletion);
 	}
 
-	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[]): string[] {
+	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[], createdBeforeDate: Date): string[] {
 		const fileRecordIdsForDeletion: string[] &#x3D; [];
 
 		for (const fileRecord of fileRecords) {
-			const foundAsset &#x3D; usedAssets.some((asset) &#x3D;&gt; this.matchAssetWithFileRecord(asset, fileRecord));
-			if (!foundAsset) {
-				fileRecordIdsForDeletion.push(fileRecord.id);
+			if (this.isOlderThanRequiredDate(fileRecord, createdBeforeDate)) {
+				this.addFileRecordIdToDeletionList(fileRecord, fileRecordIdsForDeletion, usedAssets);
 			}
 		}
 
 		return fileRecordIdsForDeletion;
+	}
+
+	private addFileRecordIdToDeletionList(
+		fileRecord: FileDto,
+		fileRecordIdsForDeletion: string[],
+		usedAssets: TldrawAsset[]
+	) {
+		const foundAsset &#x3D; usedAssets.some((asset) &#x3D;&gt; this.matchAssetWithFileRecord(asset, fileRecord));
+		if (!foundAsset) {
+			fileRecordIdsForDeletion.push(fileRecord.id);
+		}
+	}
+
+	private isOlderThanRequiredDate(fileRecord: FileDto, createdBeforeDate: Date) {
+		if (!fileRecord.createdAt) {
+			return false;
+		}
+
+		const isOlder &#x3D; new Date(fileRecord.createdAt) &lt; createdBeforeDate;
+		return isOlder;
 	}
 
 	private matchAssetWithFileRecord(asset: TldrawAsset, fileRecord: FileDto) {

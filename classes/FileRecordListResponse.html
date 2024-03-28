@@ -194,7 +194,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:60</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:68</a></div>
                             </td>
                         </tr>
 
@@ -308,7 +308,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:67</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:75</a></code>
 </div>
                         </td>
                     </tr>
@@ -478,6 +478,8 @@ export class FileRecordResponse {
 		this.isUploading &#x3D; fileRecord.isUploading;
 		this.deletedSince &#x3D; fileRecord.deletedSince;
 		this.previewStatus &#x3D; fileRecord.getPreviewStatus();
+		this.createdAt &#x3D; fileRecord.createdAt;
+		this.updatedAt &#x3D; fileRecord.updatedAt;
 	}
 
 	@ApiProperty()
@@ -516,6 +518,12 @@ export class FileRecordResponse {
 
 	@ApiPropertyOptional()
 	deletedSince?: Date;
+
+	@ApiPropertyOptional()
+	createdAt?: Date;
+
+	@ApiPropertyOptional()
+	updatedAt?: Date;
 }
 
 export class FileRecordListResponse extends PaginationResponse&lt;FileRecordResponse[]&gt; {
