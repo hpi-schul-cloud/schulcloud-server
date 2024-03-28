@@ -34,8 +34,7 @@ export class IdpSyncConsole {
 		this.consoleWriter.info(
 			JSON.stringify({
 				message: 'starting synchronization',
-				systemType: options.systemType,
-				systemId: options.systemId,
+				options,
 			})
 		);
 
@@ -44,7 +43,7 @@ export class IdpSyncConsole {
 		this.consoleWriter.info(
 			JSON.stringify({
 				message: 'successfully finished synchronization',
-				result: {},
+				options,
 			})
 		);
 	}
