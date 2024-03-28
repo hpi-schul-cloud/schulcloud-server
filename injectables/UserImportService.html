@@ -573,11 +573,12 @@ export class UserImportService {
 	}
 
 	public async matchUsers(importUsers: ImportUser[]): Promise&lt;ImportUser[]&gt; {
-		const importUserMap: Map&lt;string, ImportUser&gt; &#x3D; new Map();
+		const importUserMap: Map&lt;string, number&gt; &#x3D; new Map();
 
 		importUsers.forEach((importUser) &#x3D;&gt; {
 			const key &#x3D; &#x60;${importUser.school.id}_${importUser.firstName}_${importUser.lastName}&#x60;;
-			importUserMap.set(key, importUser);
+			const count &#x3D; importUserMap.get(key) || 0;
+			importUserMap.set(key, count + 1);
 		});
 
 		const matchedImportUsers: ImportUser[] &#x3D; await Promise.all(
@@ -589,9 +590,8 @@ export class UserImportService {
 				);
 
 				const key &#x3D; &#x60;${importUser.school.id}_${importUser.firstName}_${importUser.lastName}&#x60;;
-				const nameCount &#x3D; importUserMap.has(key) ? 1 : 0;
 
-				if (user.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; nameCount &#x3D;&#x3D;&#x3D; 1) {
+				if (user.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; importUserMap.get(key) &#x3D;&#x3D;&#x3D; 1) {
 					importUser.user &#x3D; user[0];
 					importUser.matchedBy &#x3D; MatchCreator.AUTO;
 				}
