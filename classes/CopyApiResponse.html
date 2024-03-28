@@ -166,6 +166,11 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
+                                <a href="#elementsTypes" >elementsTypes</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#id" >id</a>
                             </li>
                             <li>
@@ -315,6 +320,43 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/copy-helper/dto/copy.response.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elementsTypes"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>elementsTypes</b></span>
+                        <a href="#elementsTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#CopyElementType" target="_self" >CopyElementType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional({isArray: true, enum: CopyElementType, description: &#x27;Array with listed types of all sub elements&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/copy-helper/dto/copy.response.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -526,6 +568,13 @@ export class CopyApiResponse {
 		description: &#x27;List of included sub elements with recursive type structure&#x27;,
 	})
 	elements?: CopyApiResponse[];
+
+	@ApiPropertyOptional({
+		isArray: true,
+		enum: CopyElementType,
+		description: &#x27;Array with listed types of all sub elements&#x27;,
+	})
+	elementsTypes?: CopyElementType[];
 }
 </code></pre>
     </div>

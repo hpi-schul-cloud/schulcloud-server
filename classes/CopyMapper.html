@@ -149,6 +149,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#mapElementsToTypes" >mapElementsToTypes</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapLessonCopyToDomain" >mapLessonCopyToDomain</a>
                             </li>
                             <li>
@@ -178,6 +182,93 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapElementsToTypes"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapElementsToTypes</b></span>
+                        <a href="#mapElementsToTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapElementsToTypes(element: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus</a>, types: <a href="../undefineds/CopyElementType.html" target="_self">CopyElementType[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/copy-helper/mapper/copy.mapper.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >CopyStatus</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>types</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#CopyElementType" target="_self" >CopyElementType[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>[]</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#CopyElementType" target="_self" >CopyElementType[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -426,7 +517,7 @@ import { TaskCopyParentParams } from &#x27;@modules/task/types&#x27;;
 import { LessonEntity, Task } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CopyApiResponse } from &#x27;../dto/copy.response&#x27;;
-import { CopyStatus, CopyStatusEnum } from &#x27;../types/copy.types&#x27;;
+import { CopyElementType, CopyStatus, CopyStatusEnum } from &#x27;../types/copy.types&#x27;;
 
 export class CopyMapper {
 	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
@@ -466,6 +557,21 @@ export class CopyMapper {
 		};
 
 		return dto;
+	}
+
+	static mapElementsToTypes(element: CopyStatus, types: CopyElementType[] &#x3D; []): CopyElementType[] {
+		const indexOfFound &#x3D; types.indexOf(element.type);
+		if (indexOfFound &#x3D;&#x3D;&#x3D; -1) {
+			types.push(element.type);
+		}
+
+		if (element.elements) {
+			element.elements.forEach((child) &#x3D;&gt; {
+				this.mapElementsToTypes(child, types);
+			});
+		}
+
+		return types;
 	}
 }
 </code></pre>
