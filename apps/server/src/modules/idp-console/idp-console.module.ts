@@ -7,7 +7,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { AccountModule } from '@modules/account';
 import { OauthAdapterService } from '@modules/oauth';
@@ -25,12 +25,11 @@ import {
 	SynchronizationService,
 	SynchronizationUc,
 } from '@modules/synchronization';
-import { idpConsoleConfig } from './idp-console.config';
 import { IdpSyncConsole } from './idp-sync-console';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(createConfigModuleOptions(idpConsoleConfig)),
+		ConfigModule.forRoot({ isGlobal: true }),
 		ConsoleModule,
 		ConsoleWriterModule,
 		LoggerModule,
