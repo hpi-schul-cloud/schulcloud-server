@@ -4,7 +4,6 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	ColumnBoard,
-	ContentElementFactory,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -13,11 +12,7 @@ import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
-		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
-	) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
 		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
