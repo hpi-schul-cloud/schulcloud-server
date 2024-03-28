@@ -1,4 +1,4 @@
-import { BoardModule } from '@modules/board/board.module';
+import { BoardModule } from '@modules/board';
 import { forwardRef, Module } from '@nestjs/common';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';

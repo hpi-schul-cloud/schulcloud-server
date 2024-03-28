@@ -1,4 +1,4 @@
-import { GroupModule } from '@modules/group/group.module';
+import { GroupModule } from '@modules/group';
 import { forwardRef, Module } from '@nestjs/common';
 import { FederalStateRepo, LegacySchoolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';

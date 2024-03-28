@@ -1,8 +1,8 @@
 import { AuthorizationModule } from '@modules/authorization';
-import { BoardModule } from '@modules/board/board.module';
+import { BoardModule } from '@modules/board';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';

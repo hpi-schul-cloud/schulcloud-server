@@ -1,4 +1,4 @@
-import { Group } from '@modules/group';
+import type { Group } from '@modules/group';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepoInterface } from '@shared/repo/base-domain-object.repo.interface';
 import { Course } from '../do';

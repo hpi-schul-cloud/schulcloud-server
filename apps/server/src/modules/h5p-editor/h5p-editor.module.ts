@@ -4,7 +4,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';

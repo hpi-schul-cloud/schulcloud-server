@@ -1,8 +1,8 @@
-import { BoardModule } from '@modules/board/board.module';
+import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { PseudonymModule } from '@modules/pseudonym';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';

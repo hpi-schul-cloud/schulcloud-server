@@ -4,7 +4,7 @@ import { S3ClientModule } from '@infra/s3-client';
 import { AuthenticationModule } from '@modules/authentication';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';

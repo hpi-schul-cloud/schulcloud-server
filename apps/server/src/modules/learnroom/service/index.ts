@@ -7,3 +7,4 @@ export { CourseDoService } from './course-do.service';
 export * from './coursegroup.service';
 export * from './dashboard.service';
 export * from './rooms.service';
+export { GroupDeletedHandlerService } from './group-deleted-handler.service';
