@@ -38,6 +38,7 @@ import { RegistrationPinRepo } from '../registration-pin/repo';
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
+			allowGlobalContext: true,
 			entities: [...ALL_ENTITIES, FileEntity],
 			debug: true,
 		}),
