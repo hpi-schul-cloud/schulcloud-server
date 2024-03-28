@@ -1,7 +1,9 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
+import { User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { System, SystemService } from '@src/modules/system';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import { SchoolUpdateBodyParams } from './dto/param';
 import {
@@ -19,7 +21,8 @@ export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly systemService: SystemService
 	) {}
 
 	public async getSchoolById(schoolId: EntityId, userId: EntityId): Promise<SchoolResponse> {
@@ -104,9 +107,10 @@ export class SchoolUc {
 	}
 
 	public async removeSystemFromSchool(schoolId: EntityId, systemId: EntityId, userId: EntityId): Promise<void> {
-		const [user, school] = await Promise.all([
+		const [user, school, system] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.schoolService.getSchoolById(schoolId),
+			this.systemService.findById(systemId),
 		]);
 
 		this.authorizationService.checkPermission(
@@ -114,6 +118,10 @@ export class SchoolUc {
 			school,
 			AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT])
 		);
+
+		if (system?.isDeletable()) {
+			await this.deleteSystem(user, system);
+		}
 
 		school.removeSystem(systemId);
 
@@ -127,5 +135,18 @@ export class SchoolUc {
 		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
 
 		return dto;
+	}
+
+	private async deleteSystem(user: User, system: System) {
+		// TODO: Or shall we use checkPermission and throw an error if not authorized?
+		const hasPermission = this.authorizationService.hasPermission(
+			user,
+			system,
+			AuthorizationContextBuilder.write([Permission.SYSTEM_CREATE])
+		);
+
+		if (hasPermission) {
+			await this.systemService.delete(system);
+		}
 	}
 }

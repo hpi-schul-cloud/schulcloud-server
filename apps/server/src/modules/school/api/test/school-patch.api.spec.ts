@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -455,9 +455,9 @@ describe('School Controller (API)', () => {
 		});
 
 		describe('when user is logged in', () => {
-			describe('when user is an admin with needed permissions', () => {
+			describe('when user is an admin with needed permissions and the system is not deletable', () => {
 				const setup = async () => {
-					const system = systemEntityFactory.build();
+					const system = systemEntityFactory.build({ ldapConfig: {} });
 					const school = schoolEntityFactory.build({ systems: [system] });
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
@@ -469,14 +469,43 @@ describe('School Controller (API)', () => {
 					return { loggedInClient, school, system };
 				};
 
-				it('should remove the given systemId from the systemIds of the school', async () => {
+				it('should remove the given systemId from the systemIds of the school but not the system itself', async () => {
 					const { loggedInClient, school, system } = await setup();
 
 					const response = await loggedInClient.patch(`schoolId/${school.id}/systemId/${system.id}/remove`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					const updatedSchool = await em.findOneOrFail(SchoolEntity, { id: school.id });
-					expect(updatedSchool.systems.getIdentifiers()).not.toContain(system.id);
+					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
+					expect(updatedSchool?.systems.getIdentifiers()).not.toContain(system.id);
+					const systemAfterUpdate = await em.findOne(SystemEntity, { id: system.id });
+					expect(systemAfterUpdate).not.toBeNull();
+				});
+			});
+
+			describe('when user is an admin with needed permissions and the system is deletable', () => {
+				const setup = async () => {
+					const system = systemEntityFactory.build({ ldapConfig: { provider: 'general' } });
+					const school = schoolEntityFactory.build({ systems: [system] });
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+					await em.persistAndFlush([adminAccount, adminUser, school, system]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					return { loggedInClient, school, system };
+				};
+
+				it('should remove the given systemId from the systemIds of the school and delete the system itself', async () => {
+					const { loggedInClient, school, system } = await setup();
+
+					const response = await loggedInClient.patch(`schoolId/${school.id}/systemId/${system.id}/remove`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
+					expect(updatedSchool?.systems.getIdentifiers()).not.toContain(system.id);
+					const systemAfterUpdate = await em.findOne(SystemEntity, { id: system.id });
+					expect(systemAfterUpdate).toBeNull();
 				});
 			});
 		});
