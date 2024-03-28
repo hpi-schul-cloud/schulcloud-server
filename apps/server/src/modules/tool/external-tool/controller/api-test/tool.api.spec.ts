@@ -365,6 +365,7 @@ describe('ToolController (API)', () => {
 	describe('[POST] tools/external-tools/:externalToolId', () => {
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
+			description: 'This is a tool description',
 			parameters: [
 				{
 					name: 'key',
@@ -389,6 +390,10 @@ describe('ToolController (API)', () => {
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
+			medium: {
+				mediumId: 'mediumId',
+				publisher: 'publisher',
+			},
 		};
 
 		describe('when valid data is given', () => {
@@ -397,6 +402,7 @@ describe('ToolController (API)', () => {
 				const params = { ...postParams, id: toolId };
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
 					.withBase64Logo()
+					.withMedium()
 					.buildWithId({ version: 1 }, toolId);
 
 				const base64Logo: string = externalToolEntity.logoBase64 as string;
@@ -432,7 +438,8 @@ describe('ToolController (API)', () => {
 				expect(body.id).toBeDefined();
 				expect(body).toEqual<ExternalToolResponse>({
 					id: body.id,
-					name: 'Tool 1',
+					name: params.name,
+					description: params.description,
 					parameters: [
 						{
 							name: 'key',
@@ -458,6 +465,10 @@ describe('ToolController (API)', () => {
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
 					version: 2,
+					medium: {
+						mediumId: params.medium?.mediumId ?? '',
+						publisher: params.medium?.publisher,
+					},
 				});
 			});
 		});

@@ -50,9 +50,8 @@ export class ExternalToolUc {
 
 		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
 
-		await this.toolValidationService.validateUpdate(toolId, externalTool);
-
 		const loaded: ExternalTool = await this.externalToolService.findById(toolId);
+
 		const configToUpdate: ExternalToolConfig = { ...loaded.config, ...externalTool.config };
 		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
@@ -60,6 +59,8 @@ export class ExternalToolUc {
 			config: configToUpdate,
 			version: loaded.version,
 		});
+
+		await this.toolValidationService.validateUpdate(toolId, toUpdate);
 
 		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
 

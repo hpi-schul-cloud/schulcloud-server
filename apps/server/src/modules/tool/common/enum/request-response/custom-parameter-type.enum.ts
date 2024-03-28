@@ -6,4 +6,5 @@ export enum CustomParameterTypeParams {
 	AUTO_CONTEXTNAME = 'auto_contextname',
 	AUTO_SCHOOLID = 'auto_schoolid',
 	AUTO_SCHOOLNUMBER = 'auto_schoolnumber',
+	AUTO_MEDIUMID = 'auto_mediumid',
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { CustomParameter } from '../../common/domain';
-import { autoParameters, CustomParameterScope } from '../../common/enum';
+import { autoParameters, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { ToolParameterTypeValidationUtil } from '../../common/service';
 import { ExternalTool } from '../domain';
 import { ExternalToolService } from './external-tool.service';
@@ -10,7 +10,7 @@ import { ExternalToolService } from './external-tool.service';
 export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCommon(externalTool: ExternalTool | Partial<ExternalTool>): Promise<void> {
+	async validateCommon(externalTool: ExternalTool): Promise<void> {
 		if (!(await this.isNameUnique(externalTool))) {
 			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
 		}
@@ -36,6 +36,12 @@ export class ExternalToolParameterValidationService {
 				if (!this.isAutoParameterGlobal(param)) {
 					throw new ValidationError(
 						`tool_param_auto_requires_global: The custom parameter "${param.name}" with type "${param.type}" must have the scope "global", since it is automatically filled.`
+					);
+				}
+
+				if (!this.isAutoParameterMediumIdValid(param, externalTool)) {
+					throw new ValidationError(
+						`tool_param_auto_medium_id: The custom parameter "${param.name}" with type "${param.type}" must have the mediumId set.`
 					);
 				}
 
@@ -70,7 +76,7 @@ export class ExternalToolParameterValidationService {
 		return !param.name || !param.displayName;
 	}
 
-	private async isNameUnique(externalTool: ExternalTool | Partial<ExternalTool>): Promise<boolean> {
+	private async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
 		if (!externalTool.name) {
 			return true;
 		}
@@ -150,5 +156,13 @@ export class ExternalToolParameterValidationService {
 		const isGlobal: boolean = customParameter.scope === CustomParameterScope.GLOBAL;
 
 		return isGlobal;
+	}
+
+	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
+		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
+			return false;
+		}
+
+		return true;
 	}
 }

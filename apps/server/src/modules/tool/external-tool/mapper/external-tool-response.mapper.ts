@@ -11,11 +11,12 @@ import {
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolMediumResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { BasicToolConfig, ExternalTool, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -37,6 +38,7 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 	[CustomParameterType.AUTO_CONTEXTNAME]: CustomParameterTypeParams.AUTO_CONTEXTNAME,
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
+	[CustomParameterType.AUTO_MEDIUMID]: CustomParameterTypeParams.AUTO_MEDIUMID,
 };
 
 @Injectable()
@@ -58,6 +60,7 @@ export class ExternalToolResponseMapper {
 		return new ExternalToolResponse({
 			id: externalTool.id ?? '',
 			name: externalTool.name,
+			description: externalTool.description,
 			url: externalTool.url,
 			logoUrl: externalTool.logoUrl,
 			config: mappedConfig,
@@ -67,7 +70,16 @@ export class ExternalToolResponseMapper {
 			openNewTab: externalTool.openNewTab,
 			version: externalTool.version,
 			restrictToContexts: externalTool.restrictToContexts,
+			medium: this.mapMediumToResponse(externalTool.medium),
 		});
+	}
+
+	private static mapMediumToResponse(medium?: ExternalToolMedium): ExternalToolMediumResponse | undefined {
+		if (!medium) {
+			return undefined;
+		}
+
+		return new ExternalToolMediumResponse({ ...medium });
 	}
 
 	private static mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {

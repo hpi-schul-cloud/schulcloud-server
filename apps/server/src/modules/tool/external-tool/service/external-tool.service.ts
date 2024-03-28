@@ -47,6 +47,7 @@ export class ExternalToolService {
 		await this.updateOauth2ToolConfig(toUpdate);
 		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
+
 		return externalTool;
 	}
 

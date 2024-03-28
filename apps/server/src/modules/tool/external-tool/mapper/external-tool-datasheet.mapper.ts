@@ -163,6 +163,8 @@ export class ExternalToolDatasheetMapper {
 				return 'Auto Schul-ID';
 			case CustomParameterType.AUTO_SCHOOLNUMBER:
 				return 'Auto Schulnummer';
+			case CustomParameterType.AUTO_MEDIUMID:
+				return 'Auto Medium-ID';
 			default:
 				return 'unbekannt';
 		}

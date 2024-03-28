@@ -292,6 +292,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				customParameterFactory.build({ type: CustomParameterType.AUTO_SCHOOLID }),
 				customParameterFactory.build({ type: CustomParameterType.AUTO_CONTEXTID }),
 				customParameterFactory.build({ type: CustomParameterType.AUTO_CONTEXTNAME }),
+				customParameterFactory.build({ type: CustomParameterType.AUTO_MEDIUMID }),
 				customParameterFactory.build({ type: undefined, scope: undefined }),
 			];
 			const externalTool = externalToolFactory.build({ parameters: params });
@@ -327,6 +328,10 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				}),
 				externalToolParameterDatasheetTemplateDataFactory.build({
 					type: 'Auto Kontext-Name',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Auto Medium-ID',
 					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
 				}),
 				externalToolParameterDatasheetTemplateDataFactory.build({
