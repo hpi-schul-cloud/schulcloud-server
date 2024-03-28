@@ -165,6 +165,25 @@ describe('YMongoDb', () => {
 		});
 	});
 
+	describe('getAllDocumentNames', () => {
+		const setup = async () => {
+			const drawing1 = tldrawEntityFactory.build({ docName: 'test-name1', version: 'v1_sv' });
+			const drawing2 = tldrawEntityFactory.build({ docName: 'test-name2', version: 'v1_sv' });
+			const drawing3 = tldrawEntityFactory.build({ docName: 'test-name3', version: 'v1_sv' });
+
+			await em.persistAndFlush([drawing1, drawing2, drawing3]);
+			em.clear();
+		};
+
+		it('should return all document names', async () => {
+			await setup();
+
+			const docNames = await mdb.getAllDocumentNames();
+
+			expect(docNames).toEqual(['test-name1', 'test-name2', 'test-name3']);
+		});
+	});
+
 	describe('getYDoc', () => {
 		describe('when getting document with well defined parts', () => {
 			const setup = async () => {
