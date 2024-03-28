@@ -1,9 +1,9 @@
 export * from './board-copy.service';
-export * from './column-board-target.service';
 export * from './common-cartridge-export.service';
 export * from './common-cartridge-import.service';
 export * from './course-copy.service';
 export * from './course.service';
+export { CourseDoService } from './course-do.service';
 export * from './coursegroup.service';
 export * from './dashboard.service';
 export * from './rooms.service';

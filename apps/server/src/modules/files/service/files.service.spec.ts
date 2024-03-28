@@ -5,6 +5,15 @@ import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
@@ -14,6 +23,7 @@ describe(FilesService.name, () => {
 	let module: TestingModule;
 	let service: FilesService;
 	let repo: DeepMocked<FilesRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,11 +37,18 @@ describe(FilesService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesService);
 		repo = module.get(FilesRepo);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -142,6 +159,9 @@ describe(FilesService.name, () => {
 				0,
 				[]
 			);
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+			]);
 
 			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(
 				DomainName.FILE,
@@ -149,6 +169,9 @@ describe(FilesService.name, () => {
 				3,
 				[entity1.id, entity2.id, entity3.id]
 			);
+			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
 
 			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(
 				DomainName.FILE,
@@ -156,6 +179,9 @@ describe(FilesService.name, () => {
 				3,
 				[entity4.id, entity5.id, entity6.id]
 			);
+			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
+			]);
 
 			return {
 				entity1,
@@ -295,15 +321,22 @@ describe(FilesService.name, () => {
 				0,
 				[]
 			);
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+			]);
 
 			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 				entity1.id,
+			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [entity1.id]),
 			]);
 
 			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 3, [
 				entity1.id,
 				entity2.id,
 				entity3.id,
+			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
 			]);
 
 			return {
@@ -361,6 +394,135 @@ describe(FilesService.name, () => {
 
 				expect(repo.findByOwnerUserId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith(entities);
+			});
+		});
+	});
+
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const entity1 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity2 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity3 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const userPermission = filePermissionEntityFactory.build({ refId: userId });
+
+			const entity4 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity5 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity6 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+			});
+
+			const expectedResultForMarkingFiles = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
+
+			const expectedResultForRemoveUserPermission = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
+			]);
+
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 6, [
+					entity1.id,
+					entity2.id,
+					entity3.id,
+					entity4.id,
+					entity5.id,
+					entity6.id,
+				]),
+			]);
+
+			return {
+				expectedResult,
+				expectedResultForMarkingFiles,
+				expectedResultForRemoveUserPermission,
+				userId,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call markFilesOwnedByUserForDeletion with userId', async () => {
+				const { userId, expectedResultForMarkingFiles } = setup();
+				jest.spyOn(service, 'markFilesOwnedByUserForDeletion').mockResolvedValueOnce(expectedResultForMarkingFiles);
+
+				await service.deleteUserData(userId);
+
+				expect(service.markFilesOwnedByUserForDeletion).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call removeUserPermissionsOrCreatorReferenceToAnyFiles with userId', async () => {
+				const { userId, expectedResultForRemoveUserPermission } = setup();
+
+				jest
+					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
+					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
+
+				await service.deleteUserData(userId);
+
+				expect(service.removeUserPermissionsOrCreatorReferenceToAnyFiles).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return domainOperation object with information about deleted user data', async () => {
+				const { userId, expectedResult, expectedResultForMarkingFiles, expectedResultForRemoveUserPermission } =
+					setup();
+
+				jest.spyOn(service, 'markFilesOwnedByUserForDeletion').mockResolvedValueOnce(expectedResultForMarkingFiles);
+				jest
+					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
+					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
+
+				const result = await service.deleteUserData(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILE;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

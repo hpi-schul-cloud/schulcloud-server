@@ -1,7 +1,7 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -9,9 +9,24 @@ import { DeletionService, DomainDeletionReport } from '@shared/domain/interface'
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { LessonRepo } from '../repository';
 
 @Injectable()
+export class LessonService implements AuthorizationLoaderService, DeletionService, IEventHandler<UserDeletedEvent> {
+@EventsHandler(UserDeletedEvent)
 export class LessonService implements AuthorizationLoaderService, DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
@@ -25,6 +40,11 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 	async handle({ deletionRequest }: UserDeletedEvent) {
 		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
@@ -48,6 +68,7 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 	}
 
 	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Lessons',

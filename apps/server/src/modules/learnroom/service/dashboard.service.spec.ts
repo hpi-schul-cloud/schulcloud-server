@@ -1,12 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { DomainName, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
-import { DashboardEntity, GridElement } from '@shared/domain/entity';
+import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { ObjectId } from 'bson';
+import { EventBus } from '@nestjs/cqrs';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
@@ -18,6 +27,7 @@ const learnroomMock = (id: string, name: string) => {
 				title: name,
 				shortTitle: name.substr(0, 2),
 				displayColor: '#ACACAC',
+				isSynchronized: false,
 			};
 		},
 	};
@@ -29,6 +39,7 @@ describe(DashboardService.name, () => {
 	let dashboardRepo: IDashboardRepo;
 	let dashboardElementRepo: DeepMocked<DashboardElementRepo>;
 	let dashboardService: DeepMocked<DashboardService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -51,12 +62,19 @@ describe(DashboardService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 		dashboardService = module.get(DashboardService);
 		userRepo = module.get(UserRepo);
 		dashboardRepo = module.get('DASHBOARD_REPO');
 		dashboardElementRepo = module.get(DashboardElementRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -83,6 +101,9 @@ describe(DashboardService.name, () => {
 			userRepo.findById.mockResolvedValue(user);
 
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [dashboardId]);
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [dashboardId]),
+			]);
 
 			return { dashboard, expectedResult, user };
 		};
@@ -124,6 +145,50 @@ describe(DashboardService.name, () => {
 				const result = await dashboardService.deleteUserData(user.id);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in dashboardService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(dashboardService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await dashboardService.handle({ deletionRequestId, targetRefId });
+
+				expect(dashboardService.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(dashboardService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await dashboardService.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

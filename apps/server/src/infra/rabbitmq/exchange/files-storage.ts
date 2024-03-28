@@ -26,6 +26,7 @@ export enum FileRecordParentType {
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
+	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
 }
 
@@ -57,4 +58,6 @@ export interface FileDO {
 	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
 }

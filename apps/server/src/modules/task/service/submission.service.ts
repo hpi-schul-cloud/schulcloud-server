@@ -3,14 +3,31 @@ import { Injectable } from '@nestjs/common';
 import { IEventHandler, EventBus } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { Submission } from '@shared/domain/entity';
 import { DeletionService, DomainDeletionReport, DomainOperationReport } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReport,
+	DataDeletionDomainOperationLoggable,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 
 @Injectable()
+export class SubmissionService implements DeletionService, IEventHandler<UserDeletedEvent> {
+@EventsHandler(UserDeletedEvent)
 export class SubmissionService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly submissionRepo: SubmissionRepo,
@@ -22,6 +39,16 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 	async handle({ deletionRequest }: UserDeletedEvent) {
 		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	}
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
+		this.logger.setContext(SubmissionService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findById(submissionId: EntityId): Promise<Submission> {
@@ -52,6 +79,18 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 	}
 
 	async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise<DomainOperationReport> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+		const [submissionsDeleted, submissionsModified] = await Promise.all([
+			this.deleteSingleSubmissionsOwnedByUser(userId),
+			this.removeUserReferencesFromSubmissions(userId),
+		]);
+
+		const result = DomainDeletionReportBuilder.build(DomainName.SUBMISSIONS, [submissionsDeleted, submissionsModified]);
+
+		return result;
+	}
+
+	public async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise<DomainOperationReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting single Submissions owned by user',
@@ -92,6 +131,7 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 	}
 
 	async removeUserReferencesFromSubmissions(userId: EntityId): Promise<DomainOperationReport> {
+	public async removeUserReferencesFromSubmissions(userId: EntityId): Promise<DomainOperationReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user references from Submissions',

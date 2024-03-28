@@ -10,4 +10,10 @@ export class TypeGuard {
 
 		return isNumber;
 	}
+
+	static isArrayWithElements(value: unknown): value is [] {
+		const isArrayWithElements = Array.isArray(value) && value.length > 0;
+
+		return isArrayWithElements;
+	}
 }

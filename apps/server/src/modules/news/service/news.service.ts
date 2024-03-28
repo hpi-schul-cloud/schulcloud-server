@@ -1,15 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { NewsRepo } from '@shared/repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
 import { IEventHandler, EventBus } from '@nestjs/cqrs';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletionDomainOperationLoggable,
+	StatusModel,
+} from '@modules/deletion';
 
 @Injectable()
+export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly newsRepo: NewsRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
+@EventsHandler(UserDeletedEvent)
 export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly newsRepo: NewsRepo,
@@ -22,6 +41,12 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 	async handle({ deletionRequest }: UserDeletedEvent) {
 		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	}
+
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {

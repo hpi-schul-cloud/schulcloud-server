@@ -1,5 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
 import { BsonConverter } from './bson.converter';
 
 describe('BsonConverter', () => {
@@ -40,8 +40,13 @@ describe('BsonConverter', () => {
 
 	describe('When deserialize from bson', () => {
 		it('should convert dates and object ids', () => {
-			const result = converter.deserialize([bson]);
-			expect(result).toEqual([pojo]);
+			const [result] = converter.deserialize([bson]) as {
+				_id: ObjectId;
+				dueDate: Date;
+			}[];
+
+			expect(result._id.toString()).toEqual(pojo._id.toString());
+			expect(result.dueDate).toEqual(pojo.dueDate);
 		});
 	});
 });

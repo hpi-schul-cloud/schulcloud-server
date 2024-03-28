@@ -51,6 +51,10 @@ describe(CardService.name, () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('findById', () => {
 		describe('when finding one specific card', () => {
 			const setup = () => {
@@ -158,6 +162,26 @@ describe(CardService.name, () => {
 					expect.anything(),
 					ContentElementType.RICH_TEXT
 				);
+			});
+		});
+	});
+
+	describe('createMany', () => {
+		describe('when creating many cards', () => {
+			const setup = () => {
+				const column = columnFactory.build();
+				const cardInitProps = cardFactory.buildList(3);
+
+				return { column, cardInitProps };
+			};
+
+			it('should save a list of cards using the boardDo repo', async () => {
+				const { column, cardInitProps } = setup();
+
+				const result = await service.createMany(column, cardInitProps);
+
+				expect(result).toHaveLength(3);
+				expect(boardDoRepo.save).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

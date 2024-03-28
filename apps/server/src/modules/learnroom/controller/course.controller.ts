@@ -1,8 +1,10 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
+	Body,
 	Controller,
 	Get,
-	NotFoundException,
+	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Query,
@@ -11,7 +13,6 @@ import {
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiBadRequestResponse,
@@ -19,17 +20,18 @@ import {
 	ApiConsumes,
 	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiOperation,
 	ApiTags,
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
-import { CourseImportUc } from '../uc';
-import { CourseExportUc } from '../uc/course-export.uc';
-import { CourseUc } from '../uc/course.uc';
+import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
+import { CourseExportBodyParams } from './dto/course-export.body.params';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -39,7 +41,7 @@ export class CourseController {
 		private readonly courseUc: CourseUc,
 		private readonly courseExportUc: CourseExportUc,
 		private readonly courseImportUc: CourseImportUc,
-		private readonly configService: ConfigService
+		private readonly courseSyncUc: CourseSyncUc
 	) {}
 
 	@Get()
@@ -55,19 +57,27 @@ export class CourseController {
 		return result;
 	}
 
-	@Get(':courseId/export')
+	@Post(':courseId/export')
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
 		@Query() queryParams: CourseQueryParams,
+		@Body() bodyParams: CourseExportBodyParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
-		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
+		const result = await this.courseExportUc.exportCourse(
+			urlParams.courseId,
+			currentUser.userId,
+			queryParams.version,
+			bodyParams.topics,
+			bodyParams.tasks
+		);
+
 		response.set({
 			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',
 		});
+
 		return new StreamableFile(result);
 	}
 
@@ -85,5 +95,17 @@ export class CourseController {
 		file: Express.Multer.File
 	): Promise<void> {
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
+	}
+
+	@Post(':courseId/stop-sync')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Stop the synchronization of a course with a group.' })
+	@ApiNoContentResponse({ description: 'The course was successfully disconnected from a group.' })
+	@ApiUnprocessableEntityResponse({ description: 'The course is not synchronized with a group.' })
+	public async stopSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise<void> {
+		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
 	}
 }

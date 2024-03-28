@@ -5,6 +5,16 @@ import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing'
 import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
+import { ObjectId } from 'bson';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { CourseGroupService } from './coursegroup.service';
 
 describe('CourseGroupService', () => {
@@ -12,6 +22,7 @@ describe('CourseGroupService', () => {
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let courseGroupService: CourseGroupService;
 	let userRepo: DeepMocked<UserRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -30,11 +41,18 @@ describe('CourseGroupService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 		courseGroupRepo = module.get(CourseGroupRepo);
 		courseGroupService = module.get(CourseGroupService);
 		userRepo = module.get(UserRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -91,6 +109,8 @@ describe('CourseGroupService', () => {
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 2, [
 				courseGroup1.id,
 				courseGroup2.id,
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [courseGroup1.id, courseGroup2.id]),
 			]);
 
 			return {
@@ -113,6 +133,50 @@ describe('CourseGroupService', () => {
 			const result = await courseGroupService.deleteUserData(user.id);
 
 			expect(result).toEqual(expectedResult);
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in courseGroupService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(courseGroupService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await courseGroupService.handle({ deletionRequestId, targetRefId });
+
+				expect(courseGroupService.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(courseGroupService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await courseGroupService.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
 		});
 	});
 });

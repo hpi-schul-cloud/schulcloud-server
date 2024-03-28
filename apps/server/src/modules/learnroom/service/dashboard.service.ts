@@ -4,11 +4,27 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EntityId } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 
 @Injectable()
+export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
+@EventsHandler(UserDeletedEvent)
 export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
@@ -25,6 +41,12 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 	}
 
 	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	}
+
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',

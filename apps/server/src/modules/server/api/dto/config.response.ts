@@ -1,5 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LanguageType } from '@shared/domain/interface';
 import type { ServerConfig } from '../..';
+import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
+import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -27,6 +30,9 @@ export class ConfigResponse {
 	FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED: boolean;
 
 	@ApiProperty()
+	CTL_TOOLS_RELOAD_TIME_MS: number;
+
+	@ApiProperty()
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 
 	@ApiProperty()
@@ -47,8 +53,8 @@ export class ConfigResponse {
 	@ApiProperty()
 	TLDRAW__ASSETS_MAX_SIZE: number;
 
-	@ApiPropertyOptional()
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
+	@ApiProperty()
+	TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST: string[];
 
 	@ApiProperty()
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
@@ -105,6 +111,9 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_COLUMN_BOARD_SHARE: boolean;
+
+	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
 
 	@ApiProperty()
@@ -126,10 +135,16 @@ export class ConfigResponse {
 	FEATURE_CONSENT_NECESSARY: boolean;
 
 	@ApiProperty()
-	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
+	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
@@ -145,17 +160,27 @@ export class ConfigResponse {
 
 	// LERNSTORE_MODE: boolean; looks like not in use anymore
 
-	@ApiProperty()
-	I18N__AVAILABLE_LANGUAGES: string; // enum 'de,en,es,ua' -> Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',')
+	@ApiProperty({
+		isArray: true,
+		enum: LanguageType,
+		enumName: 'LanguageType',
+	})
+	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 
-	@ApiProperty()
-	I18N__DEFAULT_LANGUAGE: string; // enum
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: 'LanguageType',
+	})
+	I18N__DEFAULT_LANGUAGE: LanguageType;
 
-	@ApiProperty()
-	I18N__FALLBACK_LANGUAGE: string; // enum
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: 'LanguageType',
+	})
+	I18N__FALLBACK_LANGUAGE: LanguageType;
 
-	@ApiProperty()
-	I18N__DEFAULT_TIMEZONE: string; // enum
+	@ApiProperty({ enum: Timezone, enumName: 'Timezone' })
+	I18N__DEFAULT_TIMEZONE: Timezone;
 
 	@ApiProperty()
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
@@ -169,8 +194,8 @@ export class ConfigResponse {
 	@ApiProperty()
 	DOCUMENT_BASE_DIR: string;
 
-	@ApiProperty()
-	SC_THEME: string;
+	@ApiProperty({ enum: SchulcloudTheme, enumName: 'SchulcloudTheme' })
+	SC_THEME: SchulcloudTheme;
 
 	@ApiProperty()
 	SC_TITLE: string;
@@ -195,6 +220,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED;
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
+		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
 		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
 		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
@@ -202,7 +228,8 @@ export class ConfigResponse {
 		this.FEATURE_USER_MIGRATION_ENABLED = config.userMigrationEnabled;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
 		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
-		this.FEATURE_IMSCC_COURSE_EXPORT_ENABLED = config.FEATURE_IMSCC_COURSE_EXPORT_ENABLED;
+		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED;
+		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED;
 		this.FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED = config.FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED;
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
 		this.FEATURE_NEST_SYSTEMS_API_ENABLED = config.FEATURE_NEST_SYSTEMS_API_ENABLED;
@@ -226,6 +253,7 @@ export class ConfigResponse {
 		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
 		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
 		this.FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED = config.contextConfigurationEnabled;
+		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
 		this.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED = config.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED;
 		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.ctlToolsCopyEnabled;
 		this.FEATURE_SHOW_MIGRATION_WIZARD = config.FEATURE_SHOW_MIGRATION_WIZARD;
@@ -233,7 +261,8 @@ export class ConfigResponse {
 		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
 		this.TLDRAW__ASSETS_ENABLED = config.TLDRAW__ASSETS_ENABLED;
 		this.TLDRAW__ASSETS_MAX_SIZE = config.TLDRAW__ASSETS_MAX_SIZE;
-		this.TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST = config.TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST;
+		this.TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST = config.TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST;
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.enabled;
+		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED;
 	}
 }

@@ -27,6 +27,7 @@ describe('NewsUc', () => {
 	const exampleCourseNews = {
 		_id: newsId,
 		displayAt,
+		updater: undefined,
 		targetModel: NewsTargetModel.Course,
 		target: {
 			id: courseTargetId,
@@ -281,6 +282,7 @@ describe('NewsUc', () => {
 			const updatedNews = await service.update(newsId, userId, params);
 			expect(updatedNews.title).toBe(params.title);
 			expect(updatedNews.content).toBe(params.content);
+			expect(updatedNews.updater).toBe(userId);
 		});
 
 		it('should throw Unauthorized exception if user has no NEWS_EDIT permissions', async () => {

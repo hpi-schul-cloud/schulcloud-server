@@ -1,30 +1,71 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { LanguageType } from '@shared/domain/entity';
-import { SchoolFeature } from '@shared/domain/types';
-import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { FileStorageType, SchoolUpdateBody } from '../../../domain';
+import { SanitizeHtml } from '@shared/controller';
+import { LanguageType, Permission } from '@shared/domain/interface';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
+import {
+	FileStorageType,
+	SchoolPermissions,
+	SchoolUpdateBody,
+	StudentPermission,
+	TeacherPermission,
+} from '../../../domain';
+
+export class SchoolLogo {
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	dataUrl?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	@SanitizeHtml()
+	name?: string;
+}
+
+class TeacherPermissionParams implements TeacherPermission {
+	@ApiPropertyOptional()
+	@IsBoolean()
+	[Permission.STUDENT_LIST]?: boolean;
+}
+
+class StudentPermissionParams implements StudentPermission {
+	@ApiPropertyOptional()
+	@IsBoolean()
+	[Permission.LERNSTORE_VIEW]?: boolean;
+}
+
+class SchoolPermissionsParams implements SchoolPermissions {
+	@IsOptional()
+	@ValidateNested()
+	@ApiPropertyOptional()
+	teacher?: TeacherPermissionParams;
+
+	@IsOptional()
+	@ValidateNested()
+	@ApiPropertyOptional()
+	student?: StudentPermissionParams;
+}
 
 export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
+	@SanitizeHtml()
 	name?: string;
 
 	@IsString()
+	@Matches(/^[a-zA-Z0-9-]+$/)
 	@IsOptional()
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
 
-	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
-	logo_dataUrl?: string;
-
-	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	logo_name?: string;
+	@ValidateNested()
+	logo?: SchoolLogo;
 
 	@IsEnum(FileStorageType)
 	@IsOptional()
@@ -33,12 +74,28 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 
 	@IsEnum(LanguageType)
 	@IsOptional()
-	@ApiPropertyOptional({ enum: LanguageType })
+	@ApiPropertyOptional({ enum: LanguageType, enumName: 'LanguageType' })
 	language?: LanguageType;
 
 	@IsEnum(SchoolFeature, { each: true })
 	@IsOptional()
-	@ApiPropertyOptional({ enum: SchoolFeature, isArray: true })
-	@Type(() => Set)
+	@ApiPropertyOptional({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
+	@Transform(({ value }: { value: SchoolFeature[] }) => new Set(value))
 	features?: Set<SchoolFeature>;
+
+	@Type(() => SchoolPermissionsParams)
+	@IsOptional()
+	@ApiPropertyOptional()
+	@ValidateNested()
+	permissions?: SchoolPermissionsParams;
+
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional()
+	countyId?: EntityId;
+
+	@IsBoolean()
+	@IsOptional()
+	@ApiPropertyOptional()
+	enableStudentTeamCreation?: boolean;
 }

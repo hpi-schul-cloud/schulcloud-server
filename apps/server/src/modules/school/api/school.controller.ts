@@ -3,7 +3,7 @@ import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Pa
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
-import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
+import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolUc } from './school.uc';
@@ -45,6 +45,23 @@ export class SchoolController {
 	@Get('/list-for-ldap-login')
 	public async getSchoolListForLadpLogin(): Promise<SchoolForLdapLoginResponse[]> {
 		const res = await this.schoolUc.getSchoolListForLdapLogin();
+
+		return res;
+	}
+
+	@ApiOperation({ summary: 'Get systems from school' })
+	@ApiResponse({ status: 200, type: SchoolSystemResponse, isArray: true })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Authenticate('jwt')
+	@Get('/:schoolId/systems')
+	public async getSchoolSystems(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolSystemResponse[]> {
+		const { schoolId } = urlParams;
+		const res = await this.schoolUc.getSchoolSystems(schoolId, user.userId);
 
 		return res;
 	}

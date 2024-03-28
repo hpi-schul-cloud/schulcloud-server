@@ -362,8 +362,8 @@
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
 					"minimum": 0,
-					"default": 10000,
-					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+					"default": 600000,
+					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds ."
 				},
 				"LIBRARY_LIST_PATH": {
 					"type": "string",
@@ -1150,6 +1150,11 @@
 			"default": false,
 			"description": "Toggle for the task sharing feature."
 		},
+		"FEATURE_COLUMN_BOARD_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board sharing feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1165,11 +1170,18 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
 		},
+		"GEOGEBRA_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://www.geogebra.org",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of GeoGebra materials"
+    },
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1607,6 +1619,16 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
+		},
+		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the synchronization of courses with linked groups during provisioning."
+		},
+		"SYNCHRONIZATION_CHUNK": {
+			"type": "number",
+			"default": 10000,
+			"description": "Size of chunk for synchronization"
 		}
 	},
 	"required": []

@@ -4,12 +4,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountDto, AccountService } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
+import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { LanguageType, Role, User } from '@shared/domain/entity';
-import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
+import { Role, User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
@@ -18,8 +19,20 @@ import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shar
 import { NotFoundException } from '@nestjs/common';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
+import { EventBus } from '@nestjs/cqrs';
+import { RegistrationPinService } from '@modules/registration-pin';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+	DeletionErrorLoggableException,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { UserService } from './user.service';
+import { UserQuery } from './user-query.type';
+import { UserDto } from '../uc/dto/user.dto';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -30,6 +43,8 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	let registrationPinService: DeepMocked<RegistrationPinService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -60,8 +75,18 @@ describe('UserService', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
+					provide: RegistrationPinService,
+					useValue: createMock<RegistrationPinService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
 				},
 			],
 		}).compile();
@@ -72,6 +97,8 @@ describe('UserService', () => {
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		registrationPinService = module.get(RegistrationPinService);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -428,7 +455,73 @@ describe('UserService', () => {
 		});
 	});
 
-	describe('deleteUser', () => {
+	describe('removeUserRegistrationPin', () => {
+		describe('when registrationPinService.deleteUserData return DomainDeletionReport', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userId = user.id;
+				const userRegistrationPinId = new ObjectId().toHexString();
+
+				const results = [
+					DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+					]),
+				];
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+				]);
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
+				registrationPinService.deleteUserData.mockResolvedValue(results[0]);
+
+				return {
+					expectedResult,
+					userId,
+					user,
+				};
+			};
+
+			it('should return domainOperation object with information about deleted registrationsPin', async () => {
+				const { userId, expectedResult } = setup();
+
+				const result = await service.removeUserRegistrationPin(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when no emails for registrationPin found', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId({ email: undefined });
+				const userId = user.id;
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+				]);
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
+
+				return {
+					expectedResult,
+					userId,
+					user,
+				};
+			};
+
+			it('should return domainOperation object with proper information: count=0, and empty refs array', async () => {
+				const { userId, expectedResult } = setup();
+
+				const result = await service.removeUserRegistrationPin(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
@@ -476,10 +569,17 @@ describe('UserService', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.USER, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id]),
+				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
 				]);
 
+				const expectedResult = DomainDeletionReportBuilder.build(
+					DomainName.USER,
+					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id])],
+					[registrationPinDeleted]
+				);
+
+				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
@@ -514,14 +614,21 @@ describe('UserService', () => {
 			});
 		});
 
-		describe('when user exists and failed to delete this user', () => {
+		describe('when user exists but userRepo.deleteUser return 0', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 
-				const expectedError = `Failed to delete user '${user.id}' from User collection`;
+				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
+				]);
 
+				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
-				userRepo.deleteUser.mockResolvedValueOnce(0);
+				userRepo.deleteUser.mockResolvedValue(0);
+
+				const expectedError = new DeletionErrorLoggableException(
+					`Failed to delete user '${user.id}' from User collection`
+				);
 
 				return {
 					expectedError,
@@ -535,6 +642,7 @@ describe('UserService', () => {
 				await expect(service.deleteUserData(user.id)).rejects.toThrowError(
 					new DeletionErrorLoggableException(expectedError)
 				);
+				await expect(service.deleteUserData(user.id)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
@@ -590,6 +698,167 @@ describe('UserService', () => {
 				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
 
 				expect(result).toEqual(users);
+			});
+		});
+	});
+
+	describe('findMultipleByExternalIds', () => {
+		describe('when a users with external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const externalIds: string[] = ['111', '222'];
+				const expectedResult = [userA.id, userB.id];
+
+				userRepo.findByExternalIds.mockResolvedValue(expectedResult);
+
+				return {
+					expectedResult,
+					externalIds,
+				};
+			};
+
+			it('should call userRepo.findByExternalIds', async () => {
+				const { externalIds } = setup();
+
+				await service.findMultipleByExternalIds(externalIds);
+
+				expect(userRepo.findByExternalIds).toBeCalledWith(externalIds);
+			});
+
+			it('should return array with Users id', async () => {
+				const { externalIds, expectedResult } = setup();
+
+				const result = await service.findMultipleByExternalIds(externalIds);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when users with this external id do not exist', () => {
+			it('should return empty array', async () => {
+				userRepo.findByExternalIds.mockResolvedValue([]);
+
+				const result = await service.findMultipleByExternalIds(['externalId1', 'externalId2']);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('updateLastSyncedAt', () => {
+		describe('when a users with thess external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const userIds = [userA.id, userB.id];
+
+				return {
+					userIds,
+				};
+			};
+
+			it('should call userRepo.updateAllUserByLastSyncedAt', async () => {
+				const { userIds } = setup();
+
+				await service.updateLastSyncedAt(userIds);
+
+				expect(userRepo.updateAllUserByLastSyncedAt).toBeCalledWith(userIds);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in userService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+	});
+
+	describe('findByExternalIdsAndProvidedBySystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userA = userFactory.buildWithId({ externalId: '111' });
+			const userB = userFactory.buildWithId({ externalId: '222' });
+
+			const externalIds: string[] = ['111', '222'];
+			const foundUsers = [userA.id, userB.id];
+
+			return {
+				externalIds,
+				foundUsers,
+				systemId,
+			};
+		};
+
+		describe('when find users By externalIds and systemId', () => {
+			it('should call findMultipleByExternalIds in userService with externalIds', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(service.findMultipleByExternalIds).toHaveBeenCalledWith(externalIds);
+			});
+
+			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(foundUsers, systemId);
+			});
+
+			it('should return array with verified Users', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(accountService, 'findByUserIdsAndSystemId').mockResolvedValueOnce(foundUsers);
+
+				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(result).toEqual(foundUsers);
 			});
 		});
 	});

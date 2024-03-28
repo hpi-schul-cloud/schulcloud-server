@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LanguageType } from '@shared/domain/interface';
 
 export class MeAccountResponse {
 	@ApiProperty()
@@ -50,28 +51,24 @@ export class MeUserResponse {
 	lastName: string;
 
 	@ApiPropertyOptional()
-	language?: string;
-
-	@ApiPropertyOptional()
 	customAvatarBackgroundColor?: string;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
-		this.language = props.language;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 	}
 }
 
-export class MeRolesReponse {
+export class MeRoleResponse {
 	@ApiProperty()
 	id: string;
 
 	@ApiProperty()
 	name: string;
 
-	constructor(props: MeRolesReponse) {
+	constructor(props: MeRoleResponse) {
 		this.id = props.id;
 		this.name = props.name;
 	}
@@ -84,11 +81,17 @@ export class MeResponse {
 	@ApiProperty()
 	user: MeUserResponse;
 
-	@ApiProperty({ type: [MeRolesReponse] })
-	roles: MeRolesReponse[];
+	@ApiProperty({ type: [MeRoleResponse] })
+	roles: MeRoleResponse[];
 
 	@ApiProperty()
 	permissions: string[];
+
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: 'LanguageType',
+	})
+	language?: LanguageType;
 
 	@ApiProperty()
 	account: MeAccountResponse;
@@ -98,6 +101,7 @@ export class MeResponse {
 		this.user = props.user;
 		this.roles = props.roles;
 		this.permissions = props.permissions;
+		this.language = props.language;
 		this.account = props.account;
 	}
 }

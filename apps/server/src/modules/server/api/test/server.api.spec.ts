@@ -1,6 +1,6 @@
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@modules/server';
 import { TestApiClient } from '@shared/testing';
 import { ConfigResponse } from '../dto';
 
@@ -37,6 +37,7 @@ describe('Server Controller (API)', () => {
 				'ACCESSIBILITY_REPORT_EMAIL',
 				'ADMIN_TABLES_DISPLAY_CONSENT_COLUMN',
 				'ALERT_STATUS_URL',
+				'CTL_TOOLS_RELOAD_TIME_MS',
 				'DOCUMENT_BASE_DIR',
 				'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED',
 				'FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED',
@@ -44,6 +45,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED',
 				'FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED',
 				'FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED',
+				'FEATURE_COLUMN_BOARD_SHARE',
 				'FEATURE_CONSENT_NECESSARY',
 				'FEATURE_COPY_SERVICE_ENABLED',
 				'FEATURE_COURSE_SHARE',
@@ -53,7 +55,8 @@ describe('Server Controller (API)', () => {
 				'FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION',
 				'FEATURE_ES_COLLECTIONS_ENABLED',
 				'FEATURE_EXTENSIONS_ENABLED',
-				'FEATURE_IMSCC_COURSE_EXPORT_ENABLED',
+				'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED',
+				'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED',
 				'FEATURE_LERNSTORE_ENABLED',
 				'FEATURE_LESSON_SHARE',
 				'FEATURE_LOGIN_LINK_ENABLED',
@@ -87,8 +90,10 @@ describe('Server Controller (API)', () => {
 				'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE',
 				'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT',
 				'TEACHER_STUDENT_VISIBILITY__IS_VISIBLE',
+				'TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST',
 				'TLDRAW__ASSETS_ENABLED',
 				'TLDRAW__ASSETS_MAX_SIZE',
+				'FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

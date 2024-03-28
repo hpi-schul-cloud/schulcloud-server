@@ -1,3 +1,15 @@
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
 import { EventBus, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -6,12 +18,23 @@ import { Course } from '@shared/domain/entity';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { Course as CourseEntity } from '@shared/domain/entity';
+import { Counted, EntityId } from '@shared/domain/types';
+import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
 
 @Injectable()
 export class CourseService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(private readonly repo: CourseRepo, private readonly logger: Logger, private readonly eventBus: EventBus) {
+@EventsHandler(UserDeletedEvent)
+export class CourseService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly repo: LegacyCourseRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(CourseService.name);
 	}
 
@@ -20,11 +43,16 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
-	async findById(courseId: EntityId): Promise<Course> {
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	}
+
+	async findById(courseId: EntityId): Promise<CourseEntity> {
 		return this.repo.findById(courseId);
 	}
 
-	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<Course[]>> {
+	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<CourseEntity[]>> {
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
 		return [courses, count];
@@ -41,7 +69,7 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		);
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
-		courses.forEach((course: Course) => course.removeUser(userId));
+		courses.forEach((course: CourseEntity) => course.removeUser(userId));
 
 		await this.repo.save(courses);
 
@@ -63,21 +91,21 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		return result;
 	}
 
-	async findAllByUserId(userId: EntityId): Promise<Course[]> {
+	async findAllByUserId(userId: EntityId): Promise<CourseEntity[]> {
 		const [courses] = await this.repo.findAllByUserId(userId);
 
 		return courses;
 	}
 
-	async create(course: Course): Promise<void> {
+	async create(course: CourseEntity): Promise<void> {
 		await this.repo.createCourse(course);
 	}
 
-	private getCoursesId(courses: Course[]): EntityId[] {
+	private getCoursesId(courses: CourseEntity[]): EntityId[] {
 		return courses.map((course) => course.id);
 	}
 
-	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<Course> {
+	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<CourseEntity> {
 		const course = await this.repo.findOne(courseId, userId);
 		return course;
 	}

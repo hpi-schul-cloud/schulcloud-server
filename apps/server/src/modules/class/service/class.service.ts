@@ -1,15 +1,24 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainDeletionReport, DeletionService } from '@shared/domain/interface';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion/event';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DataDeletedEvent,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+	DataDeletionDomainOperationLoggable,
+} from '@modules/deletion';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class ClassService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly classesRepo: ClassesRepo,
@@ -19,9 +28,9 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		this.logger.setContext(ClassService.name);
 	}
 
-	async handle({ deletionRequest }: UserDeletedEvent) {
-		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {

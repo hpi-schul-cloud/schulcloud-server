@@ -12,9 +12,27 @@ import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shar
 import { IEventHandler, EventBus } from '@nestjs/cqrs';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { PseudonymSearchQuery } from '../domain';
+import { EntityId } from '@shared/domain/types';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import { IFindOptions } from '@shared/domain/interface';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { PseudonymSearchQuery } from '../domain';
 
 @Injectable()
+export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
+@EventsHandler(UserDeletedEvent)
 export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
@@ -28,6 +46,11 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 	async handle({ deletionRequest }: UserDeletedEvent) {
 		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {

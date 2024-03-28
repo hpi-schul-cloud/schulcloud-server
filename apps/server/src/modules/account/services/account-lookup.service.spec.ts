@@ -3,7 +3,7 @@ import { IdentityManagementService } from '@infra/identity-management';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { v1 } from 'uuid';
 import { AccountLookupService } from './account-lookup.service';
 

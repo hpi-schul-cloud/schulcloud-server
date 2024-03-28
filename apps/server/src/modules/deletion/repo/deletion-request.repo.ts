@@ -2,10 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionRequestEntity } from '../entity';
-import { DeletionRequestScope } from './deletion-request-scope';
-import { DeletionRequestMapper } from './mapper/deletion-request.mapper';
+import { DeletionRequest } from '../domain/do';
+import { DeletionRequestEntity } from './entity';
+import { DeletionRequestMapper } from './mapper';
+import { DeletionRequestScope } from './scope';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -38,6 +38,8 @@ export class DeletionRequestRepo {
 			.byDeleteAfter(currentDate)
 			.byStatusRegisteredOrFailed()
 			.byStatusPending(fifteenMinutesAgo);
+		const fifteenMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
+		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(fifteenMinutesAgo);
 		const order = { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {

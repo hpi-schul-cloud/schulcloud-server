@@ -1,5 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course } from '@modules/learnroom/domain';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
+import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
@@ -13,6 +16,7 @@ describe('GroupService', () => {
 	let service: GroupService;
 
 	let groupRepo: DeepMocked<GroupRepo>;
+	let courseService: DeepMocked<CourseDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,11 +26,16 @@ describe('GroupService', () => {
 					provide: GroupRepo,
 					useValue: createMock<GroupRepo>(),
 				},
+				{
+					provide: CourseDoService,
+					useValue: createMock<CourseDoService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(GroupService);
 		groupRepo = module.get(GroupRepo);
+		courseService = module.get(CourseDoService);
 	});
 
 	afterAll(async () => {
@@ -290,12 +299,20 @@ describe('GroupService', () => {
 	});
 
 	describe('delete', () => {
-		describe('when saving a group', () => {
+		describe('when deleting a group', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
+				const course: Course = courseFactory.build({
+					syncedWithGroup: group.id,
+					teacherIds: [new ObjectId().toHexString()],
+					studentIds: [new ObjectId().toHexString()],
+				});
+
+				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
 
 				return {
 					group,
+					course,
 				};
 			};
 
@@ -305,6 +322,20 @@ describe('GroupService', () => {
 				await service.delete(group);
 
 				expect(groupRepo.delete).toHaveBeenCalledWith(group);
+			});
+
+			it('should remove all sync references from courses', async () => {
+				const { group, course } = setup();
+
+				await service.delete(group);
+
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: undefined,
+						studentIds: [],
+					}),
+				]);
 			});
 		});
 	});

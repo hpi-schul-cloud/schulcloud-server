@@ -34,7 +34,6 @@ export interface CourseProperties {
 const DEFAULT = {
 	color: '#ACACAC',
 	name: 'Kurse',
-	description: '',
 };
 
 export enum CourseFeatures {
@@ -52,10 +51,10 @@ export class UsersList {
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps implements Learnroom, EntityWithSchool, TaskParent, LessonParent {
 	@Property()
-	name: string = DEFAULT.name;
+	name: string;
 
-	@Property()
-	description: string = DEFAULT.description;
+	@Property({ nullable: true })
+	description?: string;
 
 	@Index()
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
@@ -108,7 +107,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 
 	constructor(props: CourseProperties) {
 		super();
-		if (props.name) this.name = props.name;
+		this.name = props.name ?? DEFAULT.name;
 		if (props.description) this.description = props.description;
 		this.school = props.school;
 		this.students.set(props.students || []);
@@ -227,6 +226,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 			untilDate: this.untilDate,
 			startDate: this.startDate,
 			copyingSince: this.copyingSince,
+			isSynchronized: !!this.syncedWithGroup,
 		};
 	}
 

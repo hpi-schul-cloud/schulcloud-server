@@ -7,7 +7,16 @@ import { DomainName, OperationType } from '@shared/domain/types';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinService } from '.';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DeletionErrorLoggableException,
+} from '@modules/deletion';
 import { registrationPinEntityFactory } from '../entity/testing';
+import { RegistrationPinService } from '.';
+import { RegistrationPinRepo } from '../repo';
 
 describe(RegistrationPinService.name, () => {
 	let module: TestingModule;
@@ -52,6 +61,9 @@ describe(RegistrationPinService.name, () => {
 				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(0);
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 0, []);
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+				]);
 
 				return {
 					expectedResult,
@@ -78,6 +90,8 @@ describe(RegistrationPinService.name, () => {
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 1, [
 					registrationPin.id,
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [registrationPin.id]),
 				]);
 
 				return {

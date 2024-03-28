@@ -8,12 +8,22 @@ import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
 import { DataDeletedEvent } from '@src/modules/deletion/event';
+import { EventBus } from '@nestjs/cqrs';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -22,6 +32,7 @@ describe('AccountService', () => {
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
+	let accountRepo: DeepMocked<AccountRepo>;
 	let logger: DeepMocked<LegacyLogger>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -50,6 +61,10 @@ describe('AccountService', () => {
 					useValue: createMock<ConfigService<ServerConfig, true>>(),
 				},
 				{
+					provide: AccountRepo,
+					useValue: createMock<AccountRepo>(),
+				},
+				{
 					provide: AccountValidationService,
 					useValue: {
 						isUniqueEmail: jest.fn().mockResolvedValue(true),
@@ -68,6 +83,7 @@ describe('AccountService', () => {
 		accountService = module.get(AccountService);
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
+		accountRepo = module.get(AccountRepo);
 		logger = module.get(LegacyLogger);
 		eventBus = module.get(EventBus);
 	});
@@ -254,6 +270,15 @@ describe('AccountService', () => {
 				logger,
 				eventBus
 			);
+			return new AccountService(
+				accountServiceDb,
+				accountServiceIdm,
+				configService,
+				accountValidationService,
+				accountRepo,
+				logger,
+				eventBus
+			);
 		};
 		it('should call validatePassword in accountServiceDb', async () => {
 			await expect(accountService.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
@@ -404,6 +429,15 @@ describe('AccountService', () => {
 				accountServiceIdm,
 				configService,
 				accountValidationService,
+				logger,
+				eventBus
+			);
+			return new AccountService(
+				accountServiceDb,
+				accountServiceIdm,
+				configService,
+				accountValidationService,
+				accountRepo,
 				logger,
 				eventBus
 			);
@@ -597,6 +631,117 @@ describe('AccountService', () => {
 				await accountService.handle({ deletionRequest });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
+			});
+		});
+	});
+
+	describe('findByUserIdsAndSystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userAId = new ObjectId().toHexString();
+			const userBId = new ObjectId().toHexString();
+			const userCId = new ObjectId().toHexString();
+
+			const userIds = [userAId, userBId, userCId];
+			const expectedResult = [userAId, userBId];
+
+			accountRepo.findByUserIdsAndSystemId.mockResolvedValue(expectedResult);
+
+			return { expectedResult, systemId, userIds };
+		};
+
+		it('should call accountRepo.findByUserIdsAndSystemId with userIds and systemId', async () => {
+			const { systemId, userIds } = setup();
+
+			await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(accountRepo.findByUserIdsAndSystemId).toHaveBeenCalledWith(userIds, systemId);
+		});
+
+		it('should call deleteByUserId in accountService', async () => {
+			const { expectedResult, systemId, userIds } = setup();
+
+			const result = await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(result).toEqual(expectedResult);
+		});
+	});
+
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const accountId = new ObjectId().toHexString();
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
+			]);
+
+			return {
+				accountId,
+				expectedData,
+				userId,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call deleteByUserId in accountService', async () => {
+				const { accountId, userId } = setup();
+				jest.spyOn(accountService, 'deleteByUserId').mockResolvedValueOnce([accountId]);
+
+				await accountService.deleteUserData(userId);
+
+				expect(accountService.deleteByUserId).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call deleteByUserId in accountService', async () => {
+				const { accountId, expectedData, userId } = setup();
+				jest.spyOn(accountService, 'deleteByUserId').mockResolvedValueOnce([accountId]);
+
+				const result = await accountService.deleteUserData(userId);
+
+				expect(result).toEqual(expectedData);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.ACCOUNT;
+			const accountId = new ObjectId().toHexString();
+			const deletionRequest = deletionRequestFactory.buildWithId({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in accountService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await accountService.handle({ deletionRequestId, targetRefId });
+
+				expect(accountService.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await accountService.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

@@ -17,6 +17,7 @@ describe(BoardNode.name, () => {
 					parent: board,
 					title: 'column #1',
 					context: { type: BoardExternalReferenceType.Course, id: 'course1' },
+					isVisible: true,
 				});
 				column.title = 'hate to get useless sonar lint errors';
 			}).toThrowError();

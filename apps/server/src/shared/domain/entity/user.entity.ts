@@ -1,17 +1,11 @@
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { EntityWithSchool } from '../interface';
+import { EntityWithSchool, LanguageType } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-
-export enum LanguageType {
-	DE = 'de',
-	EN = 'en',
-	ES = 'es',
-	UK = 'uk',
-}
 
 export interface UserProperties {
 	email: string;
@@ -31,13 +25,15 @@ export interface UserProperties {
 	birthday?: Date;
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
+	lastSyncedAt?: Date;
+	consent?: ConsentEntity;
 }
 
 interface UserInfo {
 	id: EntityId;
 	firstName: string;
 	lastName: string;
-	language?: string;
+	language?: LanguageType;
 	customAvatarBackgroundColor?: string;
 }
 
@@ -115,8 +111,14 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
 
+	@Embedded(() => ConsentEntity, { nullable: true, object: true })
+	consent?: ConsentEntity;
+
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
+
+	@Property({ nullable: true })
+	lastSyncedAt?: Date;
 
 	constructor(props: UserProperties) {
 		super();
@@ -137,6 +139,8 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.birthday = props.birthday;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.parents = props.parents;
+		this.lastSyncedAt = props.lastSyncedAt;
+		this.consent = props.consent;
 	}
 
 	public resolvePermissions(): string[] {
@@ -168,6 +172,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			id: this.id,
 			firstName: this.firstName,
 			lastName: this.lastName,
+			language: this.language,
 			customAvatarBackgroundColor: this.customAvatarBackgroundColor,
 		};
 

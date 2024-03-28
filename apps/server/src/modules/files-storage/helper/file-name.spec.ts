@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { FileRecord } from '../entity';

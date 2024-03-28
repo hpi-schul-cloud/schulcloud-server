@@ -2,13 +2,24 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
-import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent } from '@src/modules/deletion/event';
 import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
@@ -16,6 +27,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -27,6 +39,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
+		private readonly logger: LegacyLogger,
+		private readonly eventBus: EventBus
+		private readonly accountRepo: AccountRepo,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus
 	) {
@@ -42,6 +57,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	async handle({ deletionRequest }: UserDeletedEvent) {
 		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findById(id: string): Promise<AccountDto> {
@@ -169,7 +189,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		});
 	}
 
-	async deleteByUserId(userId: string): Promise<EntityId[]> {
+	public async deleteByUserId(userId: string): Promise<EntityId[]> {
 		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () => {
 			this.logger.debug(`Deleting account with userId ${userId} ...`);
@@ -182,6 +202,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	async deleteUserData(userId: string): Promise<DomainDeletionReport> {
+		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);
 
@@ -214,5 +236,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			}
 		}
 		return null;
+	}
+
+	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
+		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
+
+		return foundAccounts;
 	}
 }

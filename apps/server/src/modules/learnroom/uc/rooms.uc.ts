@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
@@ -11,7 +11,7 @@ export class RoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly userRepo: UserRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: RoomsAuthorisationService,
 		private readonly roomsService: RoomsService
@@ -19,16 +19,18 @@ export class RoomsUc {
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userRepo.findById(userId, true);
+		// TODO no authorisation check here?
 		const course = await this.courseRepo.findOne(roomId, userId);
-		const board = await this.boardRepo.findByCourseId(roomId);
+		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);
 
-		await this.roomsService.updateBoard(board, roomId, userId);
+		// TODO this must be rewritten. Board auto-creation must be treated separately
+		await this.roomsService.updateLegacyBoard(legacyBoard, roomId, userId);
 
-		const roomBoardDTO = this.factory.createDTO({ room: course, board, user });
+		const roomBoardDTO = this.factory.createDTO({ room: course, board: legacyBoard, user });
 		return roomBoardDTO;
 	}
 
-	async updateVisibilityOfBoardElement(
+	async updateVisibilityOfLegacyBoardElement(
 		roomId: EntityId,
 		elementId: EntityId,
 		userId: EntityId,
@@ -39,24 +41,37 @@ export class RoomsUc {
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}
-		const board = await this.boardRepo.findByCourseId(course.id);
-		const element = board.getByTargetId(elementId);
+		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
+		const element = legacyBoard.getByTargetId(elementId);
 		if (visibility) {
 			element.publish();
 		} else {
 			element.unpublish();
 		}
-		await this.boardRepo.save(board);
+
+		await this.legacyBoardRepo.save(legacyBoard);
+		// TODO if the element is a columnboard, then the visibility must be in sync with it
+		// TODO call columnBoard service to update the visibility of the columnboard, based on reference
+
+		// if (element instanceof ColumnboardBoardElement) {
+		// await this.updateColumnBoardVisibility(element.target._columnBoardId, visibility);
+		// }
 	}
 
+	/*
+	private async updateColumnBoardVisibility(columbBoardId: EntityId, visibility: boolean) {
+		// TODO
+		// await this.columnBoardService.updateBoardVisibility(columbBoardId, visibility);
+	}
+*/
 	async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
 		const user = await this.userRepo.findById(userId);
 		const course = await this.courseRepo.findOne(roomId, userId);
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}
-		const board = await this.boardRepo.findByCourseId(course.id);
-		board.reorderElements(orderedList);
-		await this.boardRepo.save(board);
+		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
+		legacyBoard.reorderElements(orderedList);
+		await this.legacyBoardRepo.save(legacyBoard);
 	}
 }

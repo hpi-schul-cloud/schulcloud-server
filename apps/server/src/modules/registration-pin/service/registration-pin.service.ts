@@ -6,7 +6,20 @@ import { DeletionService, DomainDeletionReport } from '@shared/domain/interface'
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RegistrationPinRepo } from '../repo';
+import { EntityId } from '@shared/domain/types';
+import {
+	DeletionService,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DeletionErrorLoggableException,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { RegistrationPinEntity } from '../entity';
+import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
 export class RegistrationPinService implements DeletionService {
@@ -15,6 +28,7 @@ export class RegistrationPinService implements DeletionService {
 	}
 
 	async deleteUserData(email: string): Promise<DomainDeletionReport> {
+	public async deleteUserData(email: string): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from RegistrationPin',

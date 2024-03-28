@@ -2,7 +2,7 @@ enum DatabaseAction {
 	UPDATE = 'update',
 }
 
-enum Version {
+export enum Version {
 	V1_SV = 'v1_sv',
 	V1 = 'v1',
 }

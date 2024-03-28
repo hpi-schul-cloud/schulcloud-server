@@ -44,7 +44,7 @@ export class RoomsController {
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.updateVisibilityOfBoardElement(
+		await this.roomsUc.updateVisibilityOfLegacyBoardElement(
 			urlParams.roomId,
 			urlParams.elementId,
 			currentUser.userId,
@@ -69,6 +69,7 @@ export class RoomsController {
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
+		dto.elementsTypes = CopyMapper.mapElementsToTypes(copyStatus);
 		return dto;
 	}
 
