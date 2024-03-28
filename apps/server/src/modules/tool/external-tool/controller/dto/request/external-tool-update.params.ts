@@ -37,7 +37,7 @@ export class ExternalToolUpdateParams {
 	logoUrl?: string;
 
 	@ValidateNested()
-	@Type(/* istanbul ignore next */ () => ExternalToolConfigCreateParams, {
+	@Type(() => ExternalToolConfigCreateParams, {
 		keepDiscriminatorProperty: true,
 		discriminator: {
 			property: 'type',
@@ -62,7 +62,7 @@ export class ExternalToolUpdateParams {
 	@IsArray()
 	@IsOptional()
 	@ApiPropertyOptional({ type: [CustomParameterPostParams], description: 'Custom parameters of the external tool' })
-	@Type(/* istanbul ignore next */ () => CustomParameterPostParams)
+	@Type(() => CustomParameterPostParams)
 	parameters?: CustomParameterPostParams[];
 
 	@IsBoolean()

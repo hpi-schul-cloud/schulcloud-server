@@ -33,7 +33,7 @@ export class ExternalToolCreateParams {
 	logoUrl?: string;
 
 	@ValidateNested()
-	@Type(/* istanbul ignore next */ () => ExternalToolConfigCreateParams, {
+	@Type(() => ExternalToolConfigCreateParams, {
 		keepDiscriminatorProperty: true,
 		discriminator: {
 			property: 'type',
