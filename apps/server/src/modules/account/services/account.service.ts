@@ -4,6 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
 	UserDeletedEvent,
@@ -34,6 +39,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
+		private readonly logger: LegacyLogger,
+		private readonly eventBus: EventBus
 		private readonly accountRepo: AccountRepo,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus
@@ -45,6 +52,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		} else {
 			this.accountImpl = accountDb;
 		}
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
@@ -189,6 +201,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return deletedAccounts;
 	}
 
+	async deleteUserData(userId: string): Promise<DomainDeletionReport> {
+		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);

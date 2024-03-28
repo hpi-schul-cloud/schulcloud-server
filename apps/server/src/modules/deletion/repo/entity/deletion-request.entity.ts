@@ -61,4 +61,8 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	public pending(): void {
 		this.status = StatusModel.PENDING;
 	}
+
+	public pending(): void {
+		this.status = DeletionStatusModel.PENDING;
+	}
 }

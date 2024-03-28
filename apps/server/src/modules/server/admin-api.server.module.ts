@@ -8,6 +8,8 @@ import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { CqrsModule } from '@nestjs/cqrs';
+import { DeletionApiModule } from '../deletion/deletion-api.module';
+import { CqrsModule } from '@nestjs/cqrs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
 import { UserAdminApiModule } from '@modules/user/user-admin-api.module';

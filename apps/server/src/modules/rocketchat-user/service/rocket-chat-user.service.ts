@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReport } from '@shared/domain/interface';
 import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat';
 import {
@@ -42,6 +45,7 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		return user;
 	}
 
+	public async deleteByUserId(userId: EntityId): Promise<DomainDeletionReport> {
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -60,6 +64,9 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 					this.rocketChatUserRepo.deleteByUserId(rocketChatUser[0].userId),
 				]);
 
+		const result = DomainDeletionReportBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+			rocketChatUser[0].id,
+		]);
 				const result = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, rocketChatUserDeleted, [rocketChatUser[0].id])],

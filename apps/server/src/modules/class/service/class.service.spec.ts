@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainDeletionReportBuilder,

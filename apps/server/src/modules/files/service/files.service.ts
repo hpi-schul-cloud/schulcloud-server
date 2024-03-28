@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
 	DataDeletedEvent,
@@ -34,6 +37,7 @@ export class FilesService implements DeletionService, IEventHandler<UserDeletedE
 	}
 
 	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainDeletionReport> {
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Files',
@@ -53,6 +57,12 @@ export class FilesService implements DeletionService, IEventHandler<UserDeletedE
 
 		const numberOfUpdatedFiles = entities.length;
 
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.FILE,
+			OperationType.UPDATE,
+			numberOfUpdatedFiles,
+			this.getFilesId(entities)
+		);
 		const result = DomainDeletionReportBuilder.build(DomainName.FILE, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedFiles, this.getFilesId(entities)),
 		]);
@@ -76,6 +86,7 @@ export class FilesService implements DeletionService, IEventHandler<UserDeletedE
 	}
 
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainDeletionReport> {
+	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Marking user files to deletion',
@@ -92,6 +103,12 @@ export class FilesService implements DeletionService, IEventHandler<UserDeletedE
 
 		const numberOfMarkedForDeletionFiles = entities.length;
 
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.FILE,
+			OperationType.UPDATE,
+			numberOfMarkedForDeletionFiles,
+			this.getFilesId(entities)
+		);
 		const result = DomainDeletionReportBuilder.build(DomainName.FILE, [
 			DomainOperationReportBuilder.build(
 				OperationType.UPDATE,

@@ -15,6 +15,10 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { NotFoundException } from '@nestjs/common';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import { UserDto } from '../uc/dto/user.dto';
 import { EventBus } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';
 import {
@@ -635,6 +639,9 @@ describe('UserService', () => {
 			it('should throw an error', async () => {
 				const { expectedError, user } = setup();
 
+				await expect(service.deleteUserData(user.id)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
 				await expect(service.deleteUserData(user.id)).rejects.toThrowError(expectedError);
 			});
 		});

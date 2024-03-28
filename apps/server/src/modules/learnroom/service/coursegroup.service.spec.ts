@@ -3,6 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroupRepo, UserRepo } from '@shared/repo';
 import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import { ObjectId } from 'bson';
 import {
@@ -104,6 +106,9 @@ describe('CourseGroupService', () => {
 			userRepo.findById.mockResolvedValue(user);
 			courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);
 
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 2, [
+				courseGroup1.id,
+				courseGroup2.id,
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [courseGroup1.id, courseGroup2.id]),
 			]);

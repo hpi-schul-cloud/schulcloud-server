@@ -5,6 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
+import { LessonRepo } from '../repository';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainDeletionReportBuilder,
@@ -166,6 +169,9 @@ describe('LessonService', () => {
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 2, [
+					lesson1.id,
+					lesson2.id,
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
 					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [lesson1.id, lesson2.id]),
 				]);

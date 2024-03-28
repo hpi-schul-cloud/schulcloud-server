@@ -8,6 +8,8 @@ import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject'
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainDeletionReportBuilder,
@@ -436,6 +438,12 @@ describe('PseudonymService', () => {
 					new ObjectId().toHexString(),
 				];
 
+				const expectedResult = DomainDeletionReportBuilder.build(
+					DomainName.PSEUDONYMS,
+					OperationType.DELETE,
+					pseudonymsDeleted.length + externalPseudonymsDeleted.length,
+					[...pseudonymsDeleted, ...externalPseudonymsDeleted]
+				);
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
 					DomainOperationReportBuilder.build(
 						OperationType.DELETE,

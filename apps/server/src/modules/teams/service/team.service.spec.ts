@@ -3,6 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { ObjectId } from 'bson';
 import {
@@ -99,6 +101,9 @@ describe('TeamService', () => {
 
 				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 2, [
+					team1.id,
+					team2.id,
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
 					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [team1.id, team2.id]),
 				]);

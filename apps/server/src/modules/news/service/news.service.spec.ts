@@ -4,6 +4,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { NewsRepo } from '@shared/repo';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainDeletionReportBuilder,
@@ -75,14 +77,26 @@ describe(NewsService.name, () => {
 				updater: user2,
 			});
 
+			const expectedResultWithDeletedCreator = DomainDeletionReportBuilder.build(DomainName.NEWS, OperationType.UPDATE, 2, [
+				news1.id,
+				news3.id,
 			const expectedResultWithDeletedCreator = DomainDeletionReportBuilder.build(DomainName.NEWS, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [news1.id, news3.id]),
 			]);
 
+			const expectedResultWithDeletedUpdater = DomainDeletionReportBuilder.build(DomainName.NEWS, OperationType.UPDATE, 2, [
+				news2.id,
+				news3.id,
 			const expectedResultWithDeletedUpdater = DomainDeletionReportBuilder.build(DomainName.NEWS, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [news2.id, news3.id]),
 			]);
 
+			const expectedResultWithoutUpdatedNews = DomainDeletionReportBuilder.build(
+				DomainName.NEWS,
+				OperationType.UPDATE,
+				0,
+				[]
+			);
 			const expectedResultWithoutUpdatedNews = DomainDeletionReportBuilder.build(DomainName.NEWS, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
 			]);

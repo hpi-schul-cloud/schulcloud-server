@@ -3,8 +3,15 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { DeletionService, DomainDeletionReport, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { PseudonymSearchQuery } from '../domain';
 import { EntityId } from '@shared/domain/types';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { IFindOptions } from '@shared/domain/interface';
@@ -24,6 +31,7 @@ import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymSearchQuery } from '../domain';
 
 @Injectable()
+export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 @EventsHandler(UserDeletedEvent)
 export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
@@ -33,6 +41,11 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(PseudonymService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {

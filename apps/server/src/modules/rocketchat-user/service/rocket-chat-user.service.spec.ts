@@ -3,6 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainName, OperationType } from '@shared/domain/types';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReport } from '@shared/domain/interface';
 import { EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import {
@@ -144,12 +147,14 @@ describe(RocketChatUserService.name, () => {
 		describe('when rocketChatUser exists', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
 				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
 				rocketChatService.deleteUser.mockResolvedValueOnce({ success: true });
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+					rocketChatUser.id,
+				]);
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser.id])],
@@ -194,6 +199,7 @@ describe(RocketChatUserService.name, () => {
 			it('should return domainOperation object with information about deleted user', async () => {
 				const { userId, expectedResult } = setup();
 
+				const result: DomainDeletionReport = await service.deleteByUserId(userId);
 				const result: DomainDeletionReport = await service.deleteUserData(userId);
 
 				expect(result).toEqual(expectedResult);

@@ -5,6 +5,7 @@ import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
 import {
@@ -99,6 +100,7 @@ describe(DashboardService.name, () => {
 			});
 			userRepo.findById.mockResolvedValue(user);
 
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [dashboardId]);
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
 				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [dashboardId]),
 			]);

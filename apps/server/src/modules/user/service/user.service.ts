@@ -7,10 +7,19 @@ import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { LanguageType, User } from '@shared/domain/entity';
+import { DeletionService, DomainDeletionReport, IFindOptions } from '@shared/domain/interface';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
+import { UserConfig } from '../interfaces';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { User } from '@shared/domain/entity';
@@ -44,11 +53,18 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(UserService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
@@ -158,6 +174,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		}
 	}
 
+	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
@@ -192,6 +209,9 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
 		}
 
+		const result = DomainDeletionReportBuilder.build(DomainName.USER, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId]),
+		]);
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.USER,
 			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],

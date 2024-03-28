@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import { RegistrationPinRepo } from '../repo';
 import { EntityId } from '@shared/domain/types';
 import {
 	DeletionService,
@@ -21,6 +27,7 @@ export class RegistrationPinService implements DeletionService {
 		this.logger.setContext(RegistrationPinService.name);
 	}
 
+	async deleteUserData(email: string): Promise<DomainDeletionReport> {
 	public async deleteUserData(email: string): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

@@ -3,6 +3,11 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
+import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
+import { DataDeletedEvent } from '@src/modules/deletion/event';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainDeletionReportBuilder,
@@ -262,6 +267,14 @@ describe('AccountService', () => {
 				accountServiceIdm,
 				configService,
 				accountValidationService,
+				logger,
+				eventBus
+			);
+			return new AccountService(
+				accountServiceDb,
+				accountServiceIdm,
+				configService,
+				accountValidationService,
 				accountRepo,
 				logger,
 				eventBus
@@ -416,6 +429,14 @@ describe('AccountService', () => {
 				accountServiceIdm,
 				configService,
 				accountValidationService,
+				logger,
+				eventBus
+			);
+			return new AccountService(
+				accountServiceDb,
+				accountServiceIdm,
+				configService,
+				accountValidationService,
 				accountRepo,
 				logger,
 				eventBus
@@ -533,6 +554,83 @@ describe('AccountService', () => {
 				setup();
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 				expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const accountId = new ObjectId().toHexString();
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
+			]);
+
+			return {
+				accountId,
+				expectedData,
+				userId,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call deleteByUserId in accountService', async () => {
+				const { accountId, userId } = setup();
+				jest.spyOn(accountService, 'deleteByUserId').mockResolvedValueOnce([accountId]);
+
+				await accountService.deleteUserData(userId);
+
+				expect(accountService.deleteByUserId).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call deleteByUserId in accountService', async () => {
+				const { accountId, expectedData, userId } = setup();
+				jest.spyOn(accountService, 'deleteByUserId').mockResolvedValueOnce([accountId]);
+
+				const result = await accountService.deleteUserData(userId);
+
+				expect(result).toEqual(expectedData);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.ACCOUNT;
+			const accountId = new ObjectId().toHexString();
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
+			]);
+
+			return {
+				deletionRequest,
+				expectedData,
+			};
+		};
+
+		describe('when UserDeletedEvent', () => {
+			it('should call deleteUserData in accountService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await accountService.handle({ deletionRequest });
+
+				expect(accountService.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+			});
+
+			it('should call deleteByUserId in accountService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await accountService.handle({ deletionRequest });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
 			});
 		});
 	});

@@ -3,6 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainDeletionReportBuilder,
@@ -151,14 +153,32 @@ describe(FilesService.name, () => {
 
 			const entities = [entity4, entity5, entity6];
 
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(
+				DomainName.FILE,
+				OperationType.UPDATE,
+				0,
+				[]
+			);
 			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
 			]);
 
+			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(
+				DomainName.FILE,
+				OperationType.UPDATE,
+				3,
+				[entity1.id, entity2.id, entity3.id]
+			);
 			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(DomainName.FILE, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
 			]);
 
+			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(
+				DomainName.FILE,
+				OperationType.UPDATE,
+				3,
+				[entity4.id, entity5.id, entity6.id]
+			);
 			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(DomainName.FILE, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
 			]);
@@ -295,14 +315,26 @@ describe(FilesService.name, () => {
 			const entity3 = fileEntityFactory.buildWithId({ ownerId: userId });
 			const entities = [entity1, entity2, entity3];
 
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(
+				DomainName.FILE,
+				OperationType.UPDATE,
+				0,
+				[]
+			);
 			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
 			]);
 
+			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+				entity1.id,
 			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [entity1.id]),
 			]);
 
+			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 3, [
+				entity1.id,
+				entity2.id,
+				entity3.id,
 			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
 			]);

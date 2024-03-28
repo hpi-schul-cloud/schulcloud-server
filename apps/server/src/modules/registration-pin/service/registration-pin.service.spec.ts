@@ -2,6 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import { RegistrationPinRepo } from '../repo';
+import { RegistrationPinService } from '.';
 import {
 	DomainDeletionReportBuilder,
 	DomainName,
@@ -55,6 +60,7 @@ describe(RegistrationPinService.name, () => {
 				registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[], 0]);
 				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(0);
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 0, []);
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
 					DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
 				]);
@@ -82,6 +88,8 @@ describe(RegistrationPinService.name, () => {
 				registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[registrationPin], 1]);
 				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(1);
 
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 1, [
+					registrationPin.id,
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [registrationPin.id]),
 				]);

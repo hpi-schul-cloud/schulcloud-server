@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
+import { DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { CopyFileDto, FileDto } from '../dto';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import {
 	UserDeletedEvent,
@@ -65,9 +68,16 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 		return fileInfos;
 	}
 
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainDeletionReport> {
 	async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.FILERECORDS,
+			OperationType.UPDATE,
+			response.length,
+			this.getFileRecordsId(response)
+		);
 		const result = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, response.length, this.getFileRecordsId(response)),
 		]);
