@@ -7,6 +7,7 @@ import { createConfigModuleOptions } from '@src/config';
 import * as Yjs from 'yjs';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { HttpService } from '@nestjs/axios';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { TldrawWs } from '../controller';
 import { TldrawWsService } from '../service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
@@ -14,7 +15,6 @@ import { MetricsService } from '../metrics';
 import { WsSharedDocDo } from '../domain';
 import { TldrawRedisFactory, TldrawRedisService } from '.';
 import { tldrawTestConfig } from '../testing';
-import { WsAdapter } from "@nestjs/platform-ws";
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
