@@ -116,6 +116,8 @@ describe('FilesStorageMapper', () => {
 				parentType: fileRecord.parentType,
 				deletedSince: fileRecord.deletedSince,
 				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
+				createdAt: fileRecord.createdAt,
+				updatedAt: fileRecord.updatedAt,
 			};
 
 			expect(result).toEqual(expectedFileRecordResponse);

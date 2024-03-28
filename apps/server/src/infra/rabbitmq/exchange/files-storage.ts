@@ -58,4 +58,6 @@ export interface FileDO {
 	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
 }
