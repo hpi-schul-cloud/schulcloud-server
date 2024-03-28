@@ -9,6 +9,7 @@ export class ExternalToolMediumParams {
 
 	@IsString()
 	@IsOptional()
+	@IsNotEmpty()
 	@ApiPropertyOptional({ type: String, description: 'Publisher of the medium' })
 	publisher?: string;
 }

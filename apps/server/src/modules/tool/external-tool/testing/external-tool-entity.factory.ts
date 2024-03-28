@@ -13,10 +13,10 @@ import {
 	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
+	ExternalToolMediumEntity,
 } from '@modules/tool/external-tool/entity';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { ExternalToolMediumEntity } from '../entity/external-tool-medium.entity';
 
 export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, IExternalToolProperties> {
 	withName(name: string): this {

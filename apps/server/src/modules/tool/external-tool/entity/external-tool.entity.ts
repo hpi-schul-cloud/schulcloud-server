@@ -47,7 +47,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	restrictToContexts?: ToolContextType[];
 
-	@Property({ nullable: true })
+	@Embedded(() => ExternalToolMediumEntity, { nullable: true, object: true })
 	medium?: ExternalToolMediumEntity;
 
 	constructor(props: IExternalToolProperties) {

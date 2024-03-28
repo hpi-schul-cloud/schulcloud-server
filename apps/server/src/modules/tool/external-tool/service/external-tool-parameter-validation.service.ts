@@ -10,7 +10,7 @@ import { ExternalToolService } from './external-tool.service';
 export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCommon(externalTool: ExternalTool | Partial<ExternalTool>): Promise<void> {
+	async validateCommon(externalTool: ExternalTool): Promise<void> {
 		if (!(await this.isNameUnique(externalTool))) {
 			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
 		}
@@ -76,7 +76,7 @@ export class ExternalToolParameterValidationService {
 		return !param.name || !param.displayName;
 	}
 
-	private async isNameUnique(externalTool: ExternalTool | Partial<ExternalTool>): Promise<boolean> {
+	private async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
 		if (!externalTool.name) {
 			return true;
 		}
@@ -158,15 +158,8 @@ export class ExternalToolParameterValidationService {
 		return isGlobal;
 	}
 
-	private isAutoParameterMediumIdValid(
-		customParameter: CustomParameter,
-		externalTool: ExternalTool | Partial<ExternalTool>
-	) {
-		if (customParameter.type !== CustomParameterType.AUTO_MEDIUMID) {
-			return true;
-		}
-
-		if (!externalTool.medium?.mediumId) {
+	private isAutoParameterMediumIdValid(customParameter: CustomParameter, externalTool: ExternalTool) {
+		if (customParameter.type === CustomParameterType.AUTO_MEDIUMID && !externalTool.medium?.mediumId) {
 			return false;
 		}
 

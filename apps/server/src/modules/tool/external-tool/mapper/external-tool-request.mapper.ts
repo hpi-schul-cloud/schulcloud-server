@@ -20,8 +20,8 @@ import {
 	Oauth2ToolConfigCreateParams,
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
+	ExternalToolMediumParams,
 } from '../controller/dto';
-import { ExternalToolMediumParams } from '../controller/dto/request/external-tool-medium.params';
 import { ExternalTool } from '../domain';
 import {
 	BasicToolConfigDto,
