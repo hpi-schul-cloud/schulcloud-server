@@ -1,5 +1,5 @@
-import { Synchronization } from '../../domain';
 import { SynchronizationEntity } from '../entity';
+import { Synchronization } from '../../domain/do';
 
 export class SynchronizationMapper {
 	static mapToDO(entity: SynchronizationEntity): Synchronization {

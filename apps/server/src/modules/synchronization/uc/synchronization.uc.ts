@@ -55,7 +55,6 @@ export class SynchronizationUc {
 				0,
 				loggable.getLogMessage()
 			);
-			this.logger.info(loggable);
 		}
 	}
 
@@ -89,14 +88,14 @@ export class SynchronizationUc {
 		userSyncCount: number,
 		error?: ErrorLogMessage
 	): Promise<void> {
-		const synchronizationToUpdate = await this.synchronizationService.findById(synchronizationId);
-
-		await this.synchronizationService.update({
-			...synchronizationToUpdate,
-			count: userSyncCount,
+		const newSynchronization = new Synchronization({
+			id: synchronizationId,
 			status,
+			count: userSyncCount,
 			failureCause: error ? `${error?.data?.errorMessage as string}: ${error?.data?.systemId as string}` : undefined,
-		} as Synchronization);
+		});
+
+		await this.synchronizationService.update(newSynchronization);
 	}
 
 	chunkArray(array: string[], chunkSize: number): string[][] {

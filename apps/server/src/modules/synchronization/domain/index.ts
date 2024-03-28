@@ -1,1 +1,2 @@
-export * from './synchronization.do';
+export * from './do';
+export * from './service';
