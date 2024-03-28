@@ -96,6 +96,12 @@ export class SchoolService {
 		return updatedSchool;
 	}
 
+	public async saveSchool(school: School): Promise<School> {
+		const savedSchool = await this.schoolRepo.save(school);
+
+		return savedSchool;
+	}
+
 	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {
 		const schoolProps = school.getProps();
 

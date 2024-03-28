@@ -96,6 +96,12 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
+
+	public removeSystem(systemId: EntityId) {
+		if (this.props.systemIds) {
+			this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
+		}
+	}
 }
 
 export interface SchoolProps extends AuthorizableObject {
