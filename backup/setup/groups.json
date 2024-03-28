@@ -111,5 +111,39 @@
     "organization": {
       "$oid": "5fa2c5ccb229544f2c69666c"
     }
+  },
+  {
+    "_id": {
+      "$oid": "65f05d71a8f2d4f69be427e3"
+    },
+    "createdAt": {
+      "$date": {
+        "$numberLong": "1710251377370"
+      }
+    },
+    "updatedAt": {
+      "$date": {
+        "$numberLong": "1710251377370"
+      }
+    },
+    "name": "Group_X",
+    "type": "class",
+    "externalSource_externalId": "e51ee7a3-5027-4e97-a637-ea5d54fe8732",
+    "externalSource_system": {
+      "$oid": "0000d186816abba584714c93"
+    },
+    "users": [
+      {
+        "user": {
+          "$oid": "65ef12a673d2123fba102b04"
+        },
+        "role": {
+          "$oid": "0000d186816abba584714c98"
+        }
+      }
+    ],
+    "organization": {
+      "$oid": "65ef12a673d2123fba102b03"
+    }
   }
 ]

@@ -31,4 +31,11 @@ export class GroupScope extends Scope<GroupEntity> {
 		}
 		return this;
 	}
+
+	byNameQuery(nameQuery: string): this {
+		if (nameQuery) {
+			this.addQuery({ name: new RegExp(nameQuery, 'i') });
+		}
+		return this;
+	}
 }
