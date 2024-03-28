@@ -151,6 +151,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -172,6 +173,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -193,6 +195,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findMultipleByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -214,6 +217,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUserIdOrFail).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -235,6 +239,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When calling save in accountService if feature is enabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -247,6 +252,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call save in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -254,6 +260,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When calling save in accountService if feature is disabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
@@ -266,6 +273,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should not call save in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -273,6 +281,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.save).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -284,6 +293,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call idm implementation', async () => {
 				const service = setup();
 				await expect(service.save({ username: 'username' } as AccountSave)).resolves.not.toThrow();
@@ -293,6 +303,55 @@ describe('AccountService', () => {
 	});
 
 	describe('saveWithValidation', () => {
+		describe('When calling with an account id that is not an ObjectId', () => {
+			it('should throw an ValidationError', async () => {
+				const params: AccountSave = {
+					username: 'John Doe',
+					id: 'notAnObjectId',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('When calling with an empty username', () => {
+			it('should throw an ValidationError', async () => {
+				const params: AccountSave = {
+					username: '',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('When calling with a password that does not match the password pattern', () => {
+			it('should throw an ValidationError', async () => {
+				const params: AccountSave = {
+					username: 'John Doe',
+					password: 'pass',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('When calling with an userId that is not an ObjectId', () => {
+			it('should throw an ValidationError', async () => {
+				const params: AccountSave = {
+					username: 'John Doe',
+					userId: 'notAnObjectId',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('When calling with an systemId that is not an ObjectId', () => {
+			it('should throw an ValidationError', async () => {
+				const params: AccountSave = {
+					username: 'John Doe',
+					systemId: 'notAnObjectId',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
+			});
+		});
+
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountService, 'save');
@@ -306,12 +365,13 @@ describe('AccountService', () => {
 
 				return spy;
 			};
+
 			it('should not sanitize username for external user', async () => {
 				const spy = setup();
 
 				const params: AccountSave = {
 					username: ' John.Doe@domain.tld ',
-					systemId: 'ABC123',
+					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
 				await accountService.saveWithValidation(params);
 				expect(spy).toHaveBeenCalledWith(
@@ -327,7 +387,7 @@ describe('AccountService', () => {
 			it('should throw username is not an email error', async () => {
 				const params: AccountSave = {
 					username: 'John Doe',
-					password: 'JohnsPassword',
+					password: 'JohnsPassword_123',
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username is not an email');
 			});
@@ -347,7 +407,7 @@ describe('AccountService', () => {
 				setup();
 				const params: AccountSave = {
 					username: 'John Doe',
-					systemId: 'ABC123',
+					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
@@ -367,7 +427,7 @@ describe('AccountService', () => {
 				setup();
 				const params: AccountSave = {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
-					systemId: 'ABC123',
+					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
@@ -386,8 +446,8 @@ describe('AccountService', () => {
 			it('should throw account already exists', async () => {
 				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
-					password: 'JohnsPassword',
-					userId: 'userId123',
+					password: 'JohnsPassword_123',
+					userId: new ObjectId().toHexString(),
 				} as AccountSave;
 				accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
@@ -398,11 +458,12 @@ describe('AccountService', () => {
 			const setup = () => {
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
 			};
+
 			it('should throw username already exists', async () => {
 				setup();
 				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
-					password: 'JohnsPassword',
+					password: 'JohnsPassword_123',
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
 			});
@@ -423,7 +484,7 @@ describe('AccountService', () => {
 			it('should call idm implementation', async () => {
 				const service = setup();
 				await expect(
-					service.saveWithValidation({ username: 'username@mail.tld', password: 'password' } as AccountSave)
+					service.saveWithValidation({ username: 'username@mail.tld', password: 'Password_123' } as AccountSave)
 				).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
@@ -450,6 +511,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call updateUsername in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -470,6 +532,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should not call updateUsername in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -477,6 +540,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.updateUsername).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -505,6 +569,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -546,6 +611,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call updatePassword in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -566,6 +632,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should not call updatePassword in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -606,6 +673,7 @@ describe('AccountService', () => {
 				configService.get.mockReturnValue(true);
 				return newAccountService();
 			};
+
 			it('should call validatePassword in accountServiceIdm', async () => {
 				const service = setup();
 				await expect(service.validatePassword({} as Account, 'password')).resolves.not.toThrow();
@@ -627,6 +695,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(true);
 			};
+
 			it('should call delete in accountServiceIdm', async () => {
 				setup();
 
@@ -639,6 +708,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
 			};
+
 			it('should not call delete in accountServiceIdm', async () => {
 				setup();
 
@@ -646,6 +716,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.delete).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -674,6 +745,7 @@ describe('AccountService', () => {
 				accountServiceDb.deleteByUserId.mockResolvedValueOnce(['accountId']);
 				accountServiceIdm.deleteByUserId.mockResolvedValueOnce(['accountId']);
 			};
+
 			it('should call deleteByUserId in accountServiceIdm', async () => {
 				setup();
 
@@ -686,6 +758,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
 			};
+
 			it('should not call deleteByUserId in accountServiceIdm', async () => {
 				setup();
 
@@ -693,6 +766,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.deleteByUserId).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -773,12 +847,14 @@ describe('AccountService', () => {
 				configService.get.mockReturnValue(true);
 				return newAccountService();
 			};
+
 			it('should call idm implementation', async () => {
 				const service = setup();
 				await expect(service.findById('accountId')).resolves.not.toThrow();
 				expect(accountServiceIdm.findById).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('searchByUsernamePartialMatch', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -800,6 +876,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -827,6 +904,7 @@ describe('AccountService', () => {
 
 				return { testError, spyLogger };
 			};
+
 			it('should call executeIdmMethod and throw an error object', async () => {
 				const { testError, spyLogger } = setup();
 
@@ -846,6 +924,7 @@ describe('AccountService', () => {
 				});
 				return { spyLogger };
 			};
+
 			it('should call executeIdmMethod and throw a non error object', async () => {
 				const { spyLogger } = setup();
 
@@ -876,6 +955,7 @@ describe('AccountService', () => {
 
 				return { mockExternalUser, mockExternalAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockExternalUser, mockExternalAccount } = setup();
 
@@ -905,6 +985,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccount };
 			};
+
 			it('should throw AuthorizationError', async () => {
 				const { mockStudentUser, mockStudentAccount } = setup();
 				await expect(
@@ -933,6 +1014,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should allow to update with strong password', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -967,6 +1049,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave };
 			};
+
 			it('should not update password', async () => {
 				const { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave } = setup();
 				await accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
@@ -1002,6 +1085,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should allow to update email', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -1035,6 +1119,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy };
 			};
+
 			it('should use email as account user name in lower case', async () => {
 				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy } = setup();
 
@@ -1071,6 +1156,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, userUpdateSpy };
 			};
+
 			it('should use email as user email in lower case', async () => {
 				const { mockStudentUser, mockStudentAccountDo, userUpdateSpy } = setup();
 				const testMail = 'AN@AVAILABLE.MAIL';
@@ -1083,6 +1169,7 @@ describe('AccountService', () => {
 				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 			});
 		});
+
 		describe('When email is given', () => {
 			const setup = () => {
 				const mockSchool = schoolEntityFactory.buildWithId();
@@ -1105,6 +1192,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy };
 			};
+
 			it('should always update account user name AND user email together.', async () => {
 				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy } = setup();
 				const testMail = 'an@available.mail';
@@ -1137,6 +1225,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -1166,6 +1255,7 @@ describe('AccountService', () => {
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
+
 			it('should allow to update first and last name', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
 				await expect(
@@ -1202,6 +1292,7 @@ describe('AccountService', () => {
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
 				await expect(
@@ -1234,6 +1325,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -1267,6 +1359,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount, mockStudentAccountDo, mockStudentUser };
 			};
+
 			it('should update target account password', async () => {
 				const { mockStudentAccount, mockStudentAccountDo, mockStudentUser } = setup();
 				const previousPasswordHash = mockStudentAccount.password;
@@ -1301,6 +1394,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should update target account username', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const newUsername = 'newUsername';
@@ -1333,6 +1427,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should update target account activation state', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { activated: false } as UpdateAccount;
@@ -1361,6 +1456,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { username: 'fail@to.update' } as UpdateAccount;
@@ -1389,6 +1485,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { username: 'user-fail@to.update' } as UpdateAccount;
@@ -1413,6 +1510,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should return target account', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = {} as UpdateAccount;
@@ -1448,6 +1546,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
 			};
+
 			it('should throw ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount } = setup();
 				const body = { username: mockOtherTeacherAccount.username } as UpdateAccount;
@@ -1482,6 +1581,7 @@ describe('AccountService', () => {
 
 				return { mockUserWithoutAccount };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockUserWithoutAccount } = setup();
 				await expect(
@@ -1494,6 +1594,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				userRepo.findById.mockRejectedValueOnce(undefined);
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				setup();
 				await expect(
@@ -1523,6 +1624,7 @@ describe('AccountService', () => {
 
 				return { mockExternalUserAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockExternalUserAccount } = setup();
 				await expect(
@@ -1555,6 +1657,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1588,6 +1691,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1621,6 +1725,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw Error', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1632,6 +1737,7 @@ describe('AccountService', () => {
 				).rejects.toThrow(Error);
 			});
 		});
+
 		describe('When the admin manipulate the users password', () => {
 			const setup = () => {
 				const mockSchool = schoolEntityFactory.buildWithId();
@@ -1653,6 +1759,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
 
@@ -1687,6 +1794,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
 
@@ -1722,6 +1830,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1762,6 +1871,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1798,6 +1908,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
