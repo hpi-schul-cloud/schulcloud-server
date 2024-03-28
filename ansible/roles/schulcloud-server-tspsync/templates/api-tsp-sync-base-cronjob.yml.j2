@@ -20,7 +20,7 @@ spec:
         spec:
           containers:
           - name: api-tsp-sync-base-cronjob
-            image: schulcloud/infra-tools:latest
+            image: quay.io/schulcloudverbund/infra-tools:latest
             envFrom:
             - secretRef:
                 name: api-secret
