@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, Role, SchoolEntity, TargetModels, User, VideoConference } from '@shared/domain/entity';
+import { Course, Role, SchoolEntity, TargetModels, User, VideoConference } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
@@ -18,6 +18,7 @@ import {
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { Response } from 'supertest';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
@@ -569,7 +570,7 @@ describe('VideoConferenceController (API)', () => {
 					});
 
 					const expertUser: User = userFactory.buildWithId({ school, roles: [expertRole] });
-					const expertAccount: Account = accountFactory.buildWithId({ userId: expertUser.id });
+					const expertAccount: AccountEntity = accountFactory.buildWithId({ userId: expertUser.id });
 
 					const course: Course = courseFactory.buildWithId({ school, students: [expertUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({

@@ -21,20 +21,21 @@ import {
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Account, ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
@@ -111,7 +112,7 @@ describe('ImportUser Controller (API)', () => {
 
 		describe('Generic Errors', () => {
 			describe('When feature is not enabled', () => {
-				let account: Account;
+				let account: AccountEntity;
 				beforeEach(async () => {
 					({ account } = await authenticatedUser([
 						Permission.SCHOOL_IMPORT_USERS_MIGRATE,
@@ -170,7 +171,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('When authorization is missing', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let system: SystemEntity;
 
 				beforeEach(async () => {
@@ -218,7 +219,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('When school is LDAP Migration Pilot School', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let school: SchoolEntity;
 				let system: SystemEntity;
 
@@ -241,7 +242,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_VIEW', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let school: SchoolEntity;
 				let system: SystemEntity;
 				beforeEach(async () => {
@@ -292,7 +293,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let user: User;
 				let school: SchoolEntity;
 				let system: SystemEntity;
@@ -354,7 +355,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('When current user has permissions Permission.SCHOOL_IMPORT_USERS_MIGRATE', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let system: SystemEntity;
 
 				beforeEach(async () => {
@@ -403,7 +404,7 @@ describe('ImportUser Controller (API)', () => {
 		});
 
 		describe('Business Errors', () => {
-			let account: Account;
+			let account: AccountEntity;
 			let school: SchoolEntity;
 
 			beforeEach(async () => {
@@ -508,7 +509,7 @@ describe('ImportUser Controller (API)', () => {
 			};
 
 			describe('find', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let school: SchoolEntity;
 
 				beforeEach(async () => {
@@ -920,7 +921,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('updates', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let school: SchoolEntity;
 
 				beforeEach(async () => {
@@ -1050,7 +1051,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('[migrate]', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let school: SchoolEntity;
 
 				beforeEach(async () => {
@@ -1078,7 +1079,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 
 			describe('[startUserMigration]', () => {
-				let account: Account;
+				let account: AccountEntity;
 				let system: SystemEntity;
 
 				describe('POST user/import/startUserMigration', () => {

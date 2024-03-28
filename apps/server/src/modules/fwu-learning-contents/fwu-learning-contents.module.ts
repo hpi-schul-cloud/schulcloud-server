@@ -6,7 +6,7 @@ import { AuthorizationModule } from '@modules/authorization';
 import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Account, Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
@@ -14,6 +14,7 @@ import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
+import { AccountEntity } from '../account/entity/account.entity';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -36,7 +37,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
+			entities: [User, AccountEntity, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
 
 			// debug: true, // use it for locally debugging of querys
 		}),

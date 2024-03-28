@@ -2,7 +2,7 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Course, SchoolEntity, User } from '@shared/domain/entity';
+import { Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
@@ -13,6 +13,7 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
@@ -381,7 +382,7 @@ describe('ToolContextController (API)', () => {
 				Permission.CONTEXT_TOOL_ADMIN,
 			]);
 			const otherTeacherUser: User = userFactory.buildWithId({ roles: [], school: otherSchool });
-			const otherTeacherAccount: Account = accountFactory.buildWithId({ userId: otherTeacherUser.id });
+			const otherTeacherAccount: AccountEntity = accountFactory.buildWithId({ userId: otherTeacherUser.id });
 
 			const course: Course = courseFactory.buildWithId({
 				students: [teacherUser],

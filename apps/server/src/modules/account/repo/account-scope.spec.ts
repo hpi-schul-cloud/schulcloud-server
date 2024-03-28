@@ -1,8 +1,8 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { Account } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { EmptyResultQuery } from '@shared/repo/query';
 import { AccountScope } from './account-scope';
+import { AccountEntity } from '../entity/account.entity';
 
 describe(AccountScope.name, () => {
 	describe('byUserIdAndSystemId', () => {
@@ -23,7 +23,7 @@ describe(AccountScope.name, () => {
 							systemId: new ObjectId(systemId),
 						},
 					],
-				} as FilterQuery<Account>;
+				} as FilterQuery<AccountEntity>;
 
 				return { scope, userIds, systemId, expected };
 			};

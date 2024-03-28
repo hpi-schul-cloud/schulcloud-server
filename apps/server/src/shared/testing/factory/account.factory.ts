@@ -1,12 +1,15 @@
 /* istanbul ignore file */
-import { Account, IdmAccountProperties, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
+import { AccountEntity, IdmAccountProperties } from '@modules/account/entity/account.entity';
 import { BaseFactory } from './base.factory';
 
-class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
+export const defaultTestPassword = 'DummyPasswd!1';
+export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial<IdmAccountProperties> = { systemId: id };
 
@@ -22,12 +25,38 @@ class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
 
 		return this.params(params);
 	}
+
+	withAllProperties(): this {
+		return this.params({
+			userId: new ObjectId(),
+			username: 'username',
+			activated: true,
+			credentialHash: 'credentialHash',
+			expiresAt: new Date(),
+			lasttriedFailedLogin: new Date(),
+			password: defaultTestPassword,
+			systemId: new ObjectId(),
+			token: 'token',
+		}).afterBuild((acc) => {
+			return {
+				...acc,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			};
+		});
+	}
+
+	withoutSystemAndUserId(): this {
+		return this.params({
+			username: 'username',
+			systemId: undefined,
+			userId: undefined,
+		});
+	}
 }
 
-export const defaultTestPassword = 'DummyPasswd!1';
-export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 // !!! important username should not be contain a space !!!
-export const accountFactory = AccountFactory.define(Account, ({ sequence }) => {
+export const accountFactory = AccountFactory.define(AccountEntity, ({ sequence }) => {
 	return {
 		username: `account${sequence}`,
 		password: defaultTestPasswordHash,

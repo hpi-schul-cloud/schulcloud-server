@@ -137,7 +137,8 @@
 			"GROUP_LIST",
 			"GROUP_FULL_ADMIN",
 			"SCHOOL_SYSTEM_EDIT",
-			"SCHOOL_SYSTEM_VIEW"
+			"SCHOOL_SYSTEM_VIEW",
+			"USER_CHANGE_OWN_NAME"
 		],
 		"__v": 2
 	},
@@ -195,7 +196,10 @@
 			"TOOL_EDIT",
 			"YEARS_EDIT",
 			"GROUP_LIST",
-			"GROUP_FULL_ADMIN"
+			"GROUP_FULL_ADMIN",
+			"USER_CHANGE_OWN_NAME",
+			"ACCOUNT_VIEW",
+			"ACCOUNT_DELETE"
 		],
 		"__v": 2
 	},
@@ -253,7 +257,8 @@
 			"HOMEWORK_EDIT",
 			"CONTEXT_TOOL_ADMIN",
 			"JOIN_MEETING",
-			"GROUP_LIST"
+			"GROUP_LIST",
+			"USER_CHANGE_OWN_NAME"
 		],
 		"__v": 2
 	},

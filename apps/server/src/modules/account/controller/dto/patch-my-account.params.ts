@@ -24,6 +24,7 @@ export class PatchMyAccountParams {
 	passwordNew?: string;
 
 	@IsEmail()
+	@SanitizeHtml()
 	@IsOptional()
 	@ApiProperty({
 		description: 'The new email address for the current user.',
@@ -33,6 +34,7 @@ export class PatchMyAccountParams {
 	email?: string;
 
 	@IsString()
+	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
 	@ApiProperty({
@@ -43,6 +45,7 @@ export class PatchMyAccountParams {
 	firstName?: string;
 
 	@IsString()
+	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
 	@ApiProperty({

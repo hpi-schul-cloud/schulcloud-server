@@ -4,14 +4,14 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { TldrawDrawing } from '@modules/tldraw/entities';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
-import { Account } from './account.entity';
+import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import {
 	BoardNode,
 	CardNode,
@@ -31,9 +31,9 @@ import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.mod
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
+	ColumnboardBoardElement,
 	LegacyBoard,
 	LegacyBoardElement,
-	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -54,7 +54,7 @@ import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
-	Account,
+	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
 	BoardNode,
