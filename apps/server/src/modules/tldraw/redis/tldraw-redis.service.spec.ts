@@ -14,6 +14,7 @@ import { MetricsService } from '../metrics';
 import { WsSharedDocDo } from '../domain';
 import { TldrawRedisFactory, TldrawRedisService } from '.';
 import { tldrawTestConfig } from '../testing';
+import { WsAdapter } from "@nestjs/platform-ws";
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -72,6 +73,7 @@ describe('TldrawRedisService', () => {
 
 		service = testingModule.get(TldrawRedisService);
 		app = testingModule.createNestApplication();
+		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
 	});
 
