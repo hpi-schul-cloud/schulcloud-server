@@ -1,5 +1,6 @@
 export const enum DomainName {
 	ACCOUNT = 'account',
+	CALENDAR = 'calendar',
 	CLASS = 'class',
 	COURSEGROUP = 'courseGroup',
 	COURSE = 'course',
