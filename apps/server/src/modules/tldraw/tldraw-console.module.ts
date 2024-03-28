@@ -4,14 +4,16 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config
 import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { CoreModule } from '@src/core';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { ConsoleWriterModule } from '@infra/console';
+import { ConsoleModule } from 'nestjs-console';
+import { FilesStorageClientModule } from '../files-storage-client';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
-import { TldrawController } from './controller';
-import { TldrawService } from './service';
-import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-// TODO must be fixed, direct import of a file from another module in not allowed
-import { XApiKeyStrategy } from '../authentication/strategy/x-api-key.strategy';
+import { TldrawFilesStorageAdapterService } from './service';
+import { TldrawRepo, YMongodb } from './repo';
+import { TldrawFilesConsole } from './job';
+import { TldrawDeleteFilesUc } from './uc';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -21,8 +23,11 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
+		ConsoleModule,
+		ConsoleWriterModule,
+		RabbitMQWrapperModule,
+		FilesStorageClientModule,
 		LoggerModule,
-		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -33,7 +38,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb, XApiKeyStrategy],
-	controllers: [TldrawController],
+	providers: [TldrawRepo, YMongodb, TldrawFilesConsole, TldrawFilesStorageAdapterService, TldrawDeleteFilesUc],
 })
-export class TldrawModule {}
+export class TldrawConsoleModule {}

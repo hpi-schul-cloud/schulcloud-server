@@ -31,6 +31,8 @@ export class FilesStorageClientMapper {
 			name: fileRecordResponse.name,
 			parentType,
 			parentId: fileRecordResponse.parentId,
+			createdAt: fileRecordResponse.createdAt,
+			updatedAt: fileRecordResponse.updatedAt,
 		});
 
 		return fileDto;
