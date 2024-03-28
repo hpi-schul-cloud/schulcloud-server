@@ -1,9 +1,11 @@
+import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@infra/console';
 import { createMock } from '@golevelup/ts-jest';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { BatchDeletionUc } from './uc';
+import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
 
 describe(DeletionQueueConsole.name, () => {
 	let module: TestingModule;
@@ -73,6 +75,36 @@ describe(DeletionQueueConsole.name, () => {
 				await console.pushDeletionRequests(options);
 
 				expect(spy).toBeCalledWith(refsFilePath, targetRefDomain, deleteInMinutes, callsDelayMs);
+			});
+		});
+	});
+
+	describe('unsyncedEntities', () => {
+		describe('when called with an invalid "unsyncedForMinutes" option', () => {
+			const setup = () => {
+				const options = UnsyncedEntitiesOptionsBuilder.build(new ObjectId().toHexString(), 15);
+
+				return { options };
+			};
+
+			it('should throw an exception', async () => {
+				const { options } = setup();
+
+				await expect(console.unsyncedEntities(options)).rejects.toThrow();
+			});
+		});
+
+		describe('when called with valid options', () => {
+			const setup = () => {
+				const options = UnsyncedEntitiesOptionsBuilder.build(new ObjectId().toHexString(), 3600);
+
+				return { options };
+			};
+
+			it('should not throw any exception indicating invalid options', async () => {
+				const { options } = setup();
+
+				await expect(console.unsyncedEntities(options)).resolves.not.toThrow();
 			});
 		});
 	});

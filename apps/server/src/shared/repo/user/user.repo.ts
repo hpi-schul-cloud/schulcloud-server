@@ -241,4 +241,14 @@ export class UserRepo extends BaseRepo<User> {
 			{ lastSyncedAt: new Date() }
 		);
 	}
+
+	public async findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom: Date): Promise<string[]> {
+		const foundUsers = await this._em.find(User, {
+			lastSyncedAt: {
+				$lte: dateOfLastSyncToBeLookedFrom,
+			},
+		});
+
+		return foundUsers.map((user) => user.id);
+	}
 }

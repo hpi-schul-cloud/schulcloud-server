@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { AccountService } from '@src/modules/account';
+import { UserService } from '@src/modules/user';
 import { BatchDeletionSummaryBuilder, BatchDeletionSummaryDetailBuilder } from '../builder';
 import { BatchDeletionService, ReferencesService } from '../services';
 import { QueueDeletionRequestInputBuilder } from '../services/builder';
@@ -7,7 +9,11 @@ import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from './inter
 
 @Injectable()
 export class BatchDeletionUc {
-	constructor(private readonly batchDeletionService: BatchDeletionService) {}
+	constructor(
+		private readonly batchDeletionService: BatchDeletionService,
+		private readonly userService: UserService,
+		private readonly accountService: AccountService
+	) {}
 
 	async deleteRefsFromTxtFile(
 		refsFilePath: string,
@@ -18,13 +24,44 @@ export class BatchDeletionUc {
 		// First, load all the references from the provided text file (with given path).
 		const refsFromTxtFile = ReferencesService.loadFromTxtFile(refsFilePath);
 
+		return this.buildInputsQueueDeletionRequestsAndReturnSummary(
+			refsFromTxtFile,
+			targetRefDomain,
+			deleteInMinutes,
+			callsDelayMilliseconds
+		);
+	}
+
+	async deleteUnsynchronizedRefs(
+		systemId: string,
+		unsyncedForMinutes = 10080,
+		targetRefDomain = 'user',
+		deleteInMinutes = 43200, // 43200 minutes = 720 hours = 30 days
+		callsDelayMilliseconds?: number
+	): Promise<BatchDeletionSummary> {
+		const unsynchronizedUserIds = await this.userService.findUnsynchronizedUserIds(unsyncedForMinutes);
+
+		const accountIds = await this.accountService.findByUserIdsAndSystemId(unsynchronizedUserIds, systemId);
+
+		return this.buildInputsQueueDeletionRequestsAndReturnSummary(
+			accountIds,
+			targetRefDomain,
+			deleteInMinutes,
+			callsDelayMilliseconds
+		);
+	}
+
+	private async buildInputsQueueDeletionRequestsAndReturnSummary(
+		refs: string[],
+		targetRefDomain: string,
+		deleteInMinutes: number,
+		callsDelayMilliseconds?: number
+	): Promise<BatchDeletionSummary> {
 		const inputs: QueueDeletionRequestInput[] = [];
 
 		// For each reference found in a given file, add it to the inputs
 		// array (with added targetRefDomain and deleteInMinutes fields).
-		refsFromTxtFile.forEach((ref) =>
-			inputs.push(QueueDeletionRequestInputBuilder.build(targetRefDomain, ref, deleteInMinutes))
-		);
+		refs.forEach((ref) => inputs.push(QueueDeletionRequestInputBuilder.build(targetRefDomain, ref, deleteInMinutes)));
 
 		// Measure the overall queueing execution time by setting the start...
 		const startTime = performance.now();

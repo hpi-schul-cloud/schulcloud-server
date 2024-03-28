@@ -679,4 +679,38 @@ describe('user repo', () => {
 			});
 		});
 	});
+
+	describe('findUnsynchronizedUserIds', () => {
+		describe('when user meets criteria', () => {
+			const setup = async () => {
+				const currentDate = new Date();
+				const dateB = new Date(currentDate.getTime() - 120 * 60000);
+				const dateC = new Date(currentDate.getTime() - 3600 * 60000);
+				const dateToCheckFrom = new Date(currentDate.getTime() - 60 * 60000);
+				const userA = userFactory.buildWithId({ lastSyncedAt: currentDate });
+				const userB = userFactory.buildWithId({ lastSyncedAt: dateB });
+				const userC = userFactory.buildWithId({ lastSyncedAt: dateC });
+
+				await em.persistAndFlush([userA, userB, userC]);
+				em.clear();
+
+				const userIds = [userB.id, userC.id];
+
+				return {
+					userIds,
+					dateToCheckFrom,
+				};
+			};
+
+			it('should find users with appropriate value of lastSyncedAt field', async () => {
+				const { userIds, dateToCheckFrom } = await setup();
+
+				const result = await repo.findUnsynchronizedUserIds(dateToCheckFrom);
+
+				expect(result.length).toBe(2);
+				expect(result).toContain(userIds[0]);
+				expect(result).toContain(userIds[1]);
+			});
+		});
+	});
 });
