@@ -2,11 +2,20 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { HttpService } from '@nestjs/axios';
-import { InternalServerErrorException } from '@nestjs/common';
+import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
+import { Logger } from '@src/core/logger';
+import { EventBus } from '@nestjs/cqrs';
+import { EntityId } from '@shared/domain/types';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@src/modules/deletion';
 import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
 
@@ -26,7 +35,6 @@ describe('CalendarServiceSpec', () => {
 					return null;
 			}
 		});
-
 		module = await Test.createTestingModule({
 			providers: [
 				CalendarService,
@@ -37,6 +45,16 @@ describe('CalendarServiceSpec', () => {
 				{
 					provide: CalendarMapper,
 					useValue: createMock<CalendarMapper>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
 				},
 			],
 		}).compile();
@@ -82,13 +100,105 @@ describe('CalendarServiceSpec', () => {
 		});
 
 		it('should throw if event cannot be found, because of invalid parameters', async () => {
-			const error = 'error';
+			const error = 'error1';
 			httpService.get.mockReturnValue(throwError(() => error));
 
 			// Act & Assert
 			await expect(service.findEvent('invalid userId', 'invalid eventId')).rejects.toThrow(
 				InternalServerErrorException
 			);
+		});
+	});
+
+	describe('deleteEventsByScopeId', () => {
+		describe('when calling the delete events method', () => {
+			const setup = () => {
+				httpService.delete.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: '',
+							status: HttpStatus.NO_CONTENT,
+							statusText: 'NO_CONTENT',
+						})
+					)
+				);
+			};
+
+			it('should call axios delete method', async () => {
+				setup();
+				await service.deleteEventsByScopeId('test');
+				expect(httpService.delete).toHaveBeenCalled();
+			});
+		});
+		describe('When calling the delete events method with scopeId which does not exist', () => {
+			it('should throw error if cannot delete a events', async () => {
+				const error = 'error';
+				httpService.delete.mockReturnValue(throwError(() => error));
+
+				await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
+		});
+		describe('when calling the delete events method', () => {
+			const setupError = () => {
+				httpService.delete.mockReturnValueOnce(
+					of(
+						axiosResponseFactory.build({
+							data: '',
+							status: HttpStatus.CONFLICT,
+						})
+					)
+				);
+			};
+
+			it('should throw error if cannot delete a events cause of invalid response Http status', async () => {
+				setupError();
+				await expect(service.deleteEventsByScopeId('scopeId')).rejects.toThrow(
+					new Error('invalid HTTP status code in a response from the server instead of 204')
+				);
+			});
+		});
+
+		describe('when calling the deleteUserEvent events method', () => {
+			const setup = () => {
+				httpService.delete.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: '',
+							status: HttpStatus.NO_CONTENT,
+							statusText: 'NO_CONTENT',
+						})
+					)
+				);
+				const userId: EntityId = '1';
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, Number.NaN, [userId]),
+				]);
+
+				return {
+					expectedResult,
+					userId,
+				};
+			};
+
+			it('should call service.deleteEventsByScopeId with userId', async () => {
+				const { userId } = setup();
+				const spy = jest.spyOn(service, 'deleteEventsByScopeId');
+
+				await service.deleteUserData(userId);
+
+				expect(spy).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return domainOperation object with information about deleted user', async () => {
+				const { expectedResult, userId } = setup();
+
+				const result = await service.deleteUserData(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
 		});
 	});
 });
