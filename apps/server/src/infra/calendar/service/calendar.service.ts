@@ -18,7 +18,7 @@ import {
 	OperationType,
 	StatusModel,
 	UserDeletedEvent,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { EntityId } from '@shared/domain/types';
 import { CalendarEventDto } from '../dto/calendar-event.dto';
 import { CalendarEvent } from '../interface/calendar-event.interface';
@@ -63,7 +63,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 		await this.deleteEventsByScopeId(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, Number.NaN, [userId]),
+			DomainOperationReportBuilder.build(OperationType.DELETE, 0, [userId]),
 		]);
 
 		this.logger.info(
@@ -73,7 +73,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 				userId,
 				StatusModel.FINISHED,
 				0,
-				Number.NaN
+				0
 			)
 		);
 

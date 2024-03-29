@@ -15,7 +15,7 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
 
@@ -131,10 +131,13 @@ describe('CalendarServiceSpec', () => {
 			});
 		});
 		describe('When calling the delete events method with scopeId which does not exist', () => {
-			it('should throw error if cannot delete a events', async () => {
+			const setup = () => {
 				const error = 'error';
 				httpService.delete.mockReturnValue(throwError(() => error));
+			};
 
+			it('should throw error if cannot delete a events', async () => {
+				setup();
 				await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrowError(
 					InternalServerErrorException
 				);
@@ -174,7 +177,7 @@ describe('CalendarServiceSpec', () => {
 				const userId: EntityId = '1';
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, Number.NaN, [userId]),
+					DomainOperationReportBuilder.build(OperationType.DELETE, 0, [userId]),
 				]);
 
 				return {
