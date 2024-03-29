@@ -20,7 +20,6 @@ import { UserService } from '../user';
 import { AccountModule } from '../account';
 import { defaultMikroOrmOptions } from '../server';
 import { FileEntity } from '../files/entity';
-import { UserModule } from '../user/user.module';
 import { RoleService } from '../role';
 import { RegistrationPinService } from '../registration-pin';
 import { RegistrationPinRepo } from '../registration-pin/repo';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AccountService } from '@src/modules/account';
-import { UserService } from '@src/modules/user';
+import { AccountService } from '@modules/account';
+import { UserService } from '@modules/user';
 import { BatchDeletionSummaryBuilder, BatchDeletionSummaryDetailBuilder } from '../builder';
 import { BatchDeletionService, ReferencesService } from '../services';
 import { QueueDeletionRequestInputBuilder } from '../services/builder';
