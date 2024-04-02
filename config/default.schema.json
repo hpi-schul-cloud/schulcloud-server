@@ -678,7 +678,7 @@
 		},
 		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
-			"default": "scan_file",
+			"default": "scan_file_v2",
 			"description": "rabbitmq routing key"
 		},
 		"DOCUMENT_BASE_DIR": {
