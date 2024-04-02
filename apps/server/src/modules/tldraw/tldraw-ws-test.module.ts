@@ -11,7 +11,7 @@ import { TldrawWsService } from './service';
 import { config } from './config';
 import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';
-import { TldrawRedisFactory } from './redis';
+import { TldrawRedisFactory, TldrawRedisService } from './redis';
 
 const imports = [
 	HttpModule,
@@ -28,6 +28,7 @@ const providers = [
 	YMongodb,
 	MetricsService,
 	TldrawRedisFactory,
+	TldrawRedisService,
 ];
 @Module({
 	imports,
