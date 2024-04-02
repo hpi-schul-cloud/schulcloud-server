@@ -72,7 +72,7 @@ export class GroupUc {
 
 		let combinedClassInfo: ClassInfoDto[];
 		if (canSeeFullList || calledFromCourse) {
-			combinedClassInfo = await this.findCombinedClassListForSchool(schoolId, schoolYearQueryType);
+			combinedClassInfo = await this.findCombinedClassListForSchool(school, schoolYearQueryType);
 		} else {
 			combinedClassInfo = await this.findCombinedClassListForUser(userId, schoolYearQueryType);
 		}
@@ -89,15 +89,15 @@ export class GroupUc {
 	}
 
 	private async findCombinedClassListForSchool(
-		schoolId: EntityId,
+		school: School,
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise<ClassInfoDto[]> {
 		let classInfosFromGroups: ClassInfoDto[] = [];
 
-		const classInfosFromClasses = await this.findClassesForSchool(schoolId, schoolYearQueryType);
+		const classInfosFromClasses = await this.findClassesForSchool(school.id, schoolYearQueryType);
 
 		if (!schoolYearQueryType || schoolYearQueryType === SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups = await this.findGroupsForSchool(schoolId);
+			classInfosFromGroups = await this.findGroupsForSchool(school);
 		}
 
 		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
@@ -225,9 +225,9 @@ export class GroupUc {
 		return classInfosFromClasses;
 	}
 
-	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
+	private async findGroupsForSchool(school: School): Promise<ClassInfoDto[]> {
 		const groups: Page<Group> = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
-			schoolId,
+			school,
 			this.ALLOWED_GROUP_TYPES,
 			0
 		);
@@ -384,7 +384,7 @@ export class GroupUc {
 
 		let groups: Page<Group>;
 		if (canSeeFullList) {
-			groups = await this.getGroupsForSchool(schoolId, skip, limit, availableGroupsForCourseSync, nameQuery);
+			groups = await this.getGroupsForSchool(school, skip, limit, availableGroupsForCourseSync, nameQuery);
 		} else {
 			groups = await this.getGroupsForUser(userId, skip, limit, availableGroupsForCourseSync, nameQuery);
 		}
@@ -404,7 +404,7 @@ export class GroupUc {
 	}
 
 	private async getGroupsForSchool(
-		schoolId: EntityId,
+		school: School,
 		skip?: number,
 		limit?: number,
 		availableGroupsForCourseSync?: boolean,
@@ -412,10 +412,10 @@ export class GroupUc {
 	): Promise<Page<Group>> {
 		let foundGroups: Page<Group>;
 		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			foundGroups = await this.groupService.findAvailableGroupsBySchoolId(schoolId, skip, limit, nameQuery);
+			foundGroups = await this.groupService.findAvailableGroupsBySchoolId(school, skip, limit, nameQuery);
 		} else {
 			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
-				schoolId,
+				school,
 				this.ALLOWED_GROUP_TYPES,
 				skip,
 				limit,

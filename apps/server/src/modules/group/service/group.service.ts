@@ -1,6 +1,7 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Course } from '@modules/learnroom/domain';
 import { CourseDoService } from '@modules/learnroom/service/course-do.service';
+import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, type UserDO } from '@shared/domain/domainobject';
@@ -58,14 +59,14 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	}
 
 	public async findGroupsBySchoolIdAndGroupTypes(
-		schoolId: EntityId,
+		school: School,
 		groupTypes?: GroupTypes[],
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
 	): Promise<Page<Group>> {
 		const group: Page<Group> = await this.groupRepo.findBySchoolIdAndGroupTypes(
-			schoolId,
+			school,
 			groupTypes,
 			skip,
 			limit,
@@ -76,12 +77,12 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	}
 
 	public async findAvailableGroupsBySchoolId(
-		schoolId: EntityId,
+		school: School,
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
 	): Promise<Page<Group>> {
-		const groups: Page<Group> = await this.groupRepo.findAvailableBySchoolId(schoolId, skip, limit, nameQuery);
+		const groups: Page<Group> = await this.groupRepo.findAvailableBySchoolId(school, skip, limit, nameQuery);
 
 		return groups;
 	}

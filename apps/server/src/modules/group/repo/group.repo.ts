@@ -1,5 +1,6 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { Page, type UserDO } from '@shared/domain/domainobject';
@@ -73,8 +74,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 			}
 		}
 
-		const total: number = await this.em.count(GroupEntity, scope.query);
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query, { offset: skip, limit });
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, { offset: skip, limit });
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
@@ -96,7 +96,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	}
 
 	public async findBySchoolIdAndGroupTypes(
-		schoolId: EntityId,
+		school: School,
 		groupTypes?: GroupTypes[],
 		skip?: number,
 		limit?: number,
@@ -107,17 +107,16 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
 		}
 
-		let scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId).byTypes(groupEntityTypes);
+		let scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(school.id).byTypes(groupEntityTypes);
 
 		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
 			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				scope = new GroupScope().byOrganizationId(schoolId).byTypes(groupEntityTypes).byNameQuery(escapedName);
+				scope = new GroupScope().byOrganizationId(school.id).byTypes(groupEntityTypes).byNameQuery(escapedName);
 			}
 		}
 
-		const total: number = await this.em.count(GroupEntity, scope.query);
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query, { offset: skip, limit });
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, { offset: skip, limit });
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
@@ -127,12 +126,12 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	}
 
 	public async findAvailableBySchoolId(
-		schoolId: EntityId,
+		school: School,
 		skip?: number,
 		limit?: number,
 		nameQuery?: string
 	): Promise<Page<Group>> {
-		const pipelineStage: unknown[] = [{ $match: { organization: new ObjectId(schoolId) } }];
+		const pipelineStage: unknown[] = [{ $match: { organization: new ObjectId(school.id) } }];
 
 		const availableGroups: Page<Group> = await this.findAvailableGroup(pipelineStage, skip, limit, nameQuery);
 
