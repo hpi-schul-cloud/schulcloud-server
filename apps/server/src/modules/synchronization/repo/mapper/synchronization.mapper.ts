@@ -5,6 +5,7 @@ export class SynchronizationMapper {
 	static mapToDO(entity: SynchronizationEntity): Synchronization {
 		return new Synchronization({
 			id: entity.id,
+			systemId: entity.systemId,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			count: entity.count,
@@ -16,6 +17,7 @@ export class SynchronizationMapper {
 	static mapToEntity(domainObject: Synchronization): SynchronizationEntity {
 		return new SynchronizationEntity({
 			id: domainObject.id,
+			systemId: domainObject.systemId,
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			count: domainObject.count,

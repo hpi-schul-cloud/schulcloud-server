@@ -35,6 +35,7 @@ describe(Synchronization.name, () => {
 			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
+					systemId: new ObjectId().toHexString(),
 					count: 1,
 					failureCause: '',
 					status: SynchronizationStatusModel.REGISTERED,
@@ -52,6 +53,7 @@ describe(Synchronization.name, () => {
 
 				const gettersValues = {
 					id: synchronizationsDo.id,
+					systemId: synchronizationsDo.systemId,
 					count: synchronizationsDo.count,
 					failureCause: synchronizationsDo?.failureCause,
 					status: synchronizationsDo?.status,

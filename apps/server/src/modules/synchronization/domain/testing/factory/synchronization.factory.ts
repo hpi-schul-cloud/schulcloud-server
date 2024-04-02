@@ -8,6 +8,7 @@ export const synchronizationFactory = DoBaseFactory.define<Synchronization, Sync
 	() => {
 		return {
 			id: new ObjectId().toHexString(),
+			systemId: new ObjectId().toHexString(),
 			count: 1,
 			failureCause: '',
 			status: SynchronizationStatusModel.REGISTERED,

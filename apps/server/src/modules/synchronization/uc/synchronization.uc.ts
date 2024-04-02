@@ -30,7 +30,7 @@ export class SynchronizationUc {
 	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
 		this.logger.info(new StartSynchronizationLoggable(systemId));
 
-		const synchronizationId = await this.synchronizationService.createSynchronization();
+		const synchronizationId = await this.synchronizationService.createSynchronization(systemId);
 
 		try {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
