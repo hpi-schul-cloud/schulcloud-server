@@ -92,6 +92,34 @@ describe('User Entity', () => {
 		});
 	});
 
+	describe('when user is an admin', () => {
+		describe('when school permissions are false', () => {
+			const setup = () => {
+				const role = roleFactory.build({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW],
+				});
+				const school = schoolEntityFactory.build({
+					permissions: {
+						teacher: { [Permission.STUDENT_LIST]: false },
+						student: { [Permission.LERNSTORE_VIEW]: false },
+					},
+				});
+				const user = userFactory.build({ roles: [role], school });
+
+				return { user };
+			};
+
+			it('should return the permissions of the user and not remove the school permissions', () => {
+				const { user } = setup();
+
+				const result = user.resolvePermissions();
+
+				expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW].sort());
+			});
+		});
+	});
+
 	describe('when user is a teacher', () => {
 		describe('when school permissions `STUDENT_LIST` is true', () => {
 			const setup = () => {
