@@ -2789,13 +2789,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawApiTestModule.html" data-type="entity-link" >TldrawApiTestModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawApiTestModule-51f85feadd442dfe95a28774140f20aaa7075d9c41f375d747401fc27027ade2bb3e66bb462f44f381b33063d6bfbe8f58dc2a21fdaabd2ccf7179ce2ad25be1"' : 'data-bs-target="#xs-injectables-links-module-TldrawApiTestModule-51f85feadd442dfe95a28774140f20aaa7075d9c41f375d747401fc27027ade2bb3e66bb462f44f381b33063d6bfbe8f58dc2a21fdaabd2ccf7179ce2ad25be1"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawApiTestModule-43c56bbe075ab4364e1c9d9454af446c313905318d1dbc9b7324824b2e8889770e994216d4b3a3d6c173179463d4f88fbf83d10940567fa1ba3d3e8463d6d406"' : 'data-bs-target="#xs-injectables-links-module-TldrawApiTestModule-43c56bbe075ab4364e1c9d9454af446c313905318d1dbc9b7324824b2e8889770e994216d4b3a3d6c173179463d4f88fbf83d10940567fa1ba3d3e8463d6d406"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawApiTestModule-51f85feadd442dfe95a28774140f20aaa7075d9c41f375d747401fc27027ade2bb3e66bb462f44f381b33063d6bfbe8f58dc2a21fdaabd2ccf7179ce2ad25be1"' :
-                                        'id="xs-injectables-links-module-TldrawApiTestModule-51f85feadd442dfe95a28774140f20aaa7075d9c41f375d747401fc27027ade2bb3e66bb462f44f381b33063d6bfbe8f58dc2a21fdaabd2ccf7179ce2ad25be1"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawApiTestModule-43c56bbe075ab4364e1c9d9454af446c313905318d1dbc9b7324824b2e8889770e994216d4b3a3d6c173179463d4f88fbf83d10940567fa1ba3d3e8463d6d406"' :
+                                        'id="xs-injectables-links-module-TldrawApiTestModule-43c56bbe075ab4364e1c9d9454af446c313905318d1dbc9b7324824b2e8889770e994216d4b3a3d6c173179463d4f88fbf83d10940567fa1ba3d3e8463d6d406"' }>
                                         <li class="link">
                                             <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
                                         </li>
@@ -2804,6 +2804,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisFactory</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TldrawRedisService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRepo</a>
@@ -2861,13 +2864,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsModule.html" data-type="entity-link" >TldrawWsModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsModule-42aef5f10a40054f6c594d212f82d23e902eb0e23966d711f9c460f3c3f7dca4b59329fb47748f7318de0da8de1d93ffd69dab1b5703ead091506dbc3eb114b8"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-42aef5f10a40054f6c594d212f82d23e902eb0e23966d711f9c460f3c3f7dca4b59329fb47748f7318de0da8de1d93ffd69dab1b5703ead091506dbc3eb114b8"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' :
-                                        'id="xs-injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-42aef5f10a40054f6c594d212f82d23e902eb0e23966d711f9c460f3c3f7dca4b59329fb47748f7318de0da8de1d93ffd69dab1b5703ead091506dbc3eb114b8"' :
+                                        'id="xs-injectables-links-module-TldrawWsModule-42aef5f10a40054f6c594d212f82d23e902eb0e23966d711f9c460f3c3f7dca4b59329fb47748f7318de0da8de1d93ffd69dab1b5703ead091506dbc3eb114b8"' }>
                                         <li class="link">
                                             <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
@@ -2876,6 +2879,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisFactory</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TldrawRedisService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRepo</a>
@@ -2893,13 +2899,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsTestModule.html" data-type="entity-link" >TldrawWsTestModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsTestModule-9491929383edfbaa58a05a555d33014be9fd611c208f4bb541fefa51d3be8850ebd12e4b05222d2ab618398a30e13d7e13e35d42139a1d9267688a0f6670b6da"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsTestModule-9491929383edfbaa58a05a555d33014be9fd611c208f4bb541fefa51d3be8850ebd12e4b05222d2ab618398a30e13d7e13e35d42139a1d9267688a0f6670b6da"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' :
-                                        'id="xs-injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsTestModule-9491929383edfbaa58a05a555d33014be9fd611c208f4bb541fefa51d3be8850ebd12e4b05222d2ab618398a30e13d7e13e35d42139a1d9267688a0f6670b6da"' :
+                                        'id="xs-injectables-links-module-TldrawWsTestModule-9491929383edfbaa58a05a555d33014be9fd611c208f4bb541fefa51d3be8850ebd12e4b05222d2ab618398a30e13d7e13e35d42139a1d9267688a0f6670b6da"' }>
                                         <li class="link">
                                             <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
@@ -2908,6 +2914,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisFactory</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TldrawRedisService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRepo</a>
@@ -7240,6 +7249,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" >TldrawRedisFactory</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/TldrawRedisService.html" data-type="entity-link" >TldrawRedisService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/TldrawRepo.html" data-type="entity-link" >TldrawRepo</a>
