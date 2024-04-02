@@ -17,7 +17,7 @@ import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { Logger } from '@src/core/logger';
-import { isEmail, isNotEmpty, matches } from 'class-validator';
+import { isEmail, isNotEmpty } from 'class-validator';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -43,7 +43,6 @@ import {
 	UpdatingLastFailedLoginLoggable,
 } from '../loggable';
 import { AccountRepo } from '../repo/account.repo';
-import { passwordPattern } from '../controller/dto/password-pattern';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -268,10 +267,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		if (!isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
 		}
-
-		// if (accountSave.password && !matches(accountSave.password, passwordPattern)) {
-		// 	throw new ValidationError('password does not match the pattern');
-		// }
 
 		// sanatizeUsername ✔
 		if (!accountSave.systemId) {

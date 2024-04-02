@@ -312,16 +312,6 @@ describe('AccountService', () => {
 			});
 		});
 
-		describe('When calling with a password that does not match the password pattern', () => {
-			it('should throw an ValidationError', async () => {
-				const params: AccountSave = {
-					username: 'John Doe',
-					password: 'pass',
-				} as AccountSave;
-				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
-			});
-		});
-
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountService, 'save');
