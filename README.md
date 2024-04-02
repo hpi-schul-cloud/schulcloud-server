@@ -70,3 +70,4 @@ Default branch: `main`
 5. Run the tests (see above)
 6. Commit with a meaningful commit message(!) even at 4 a.m. and not stuff like "dfsdfsf"
 7. Start a pull request (see above) to branch develop to merge your changes
+8. hope
