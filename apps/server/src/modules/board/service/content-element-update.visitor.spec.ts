@@ -4,10 +4,13 @@ import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
-	externalToolElementFactory,
 	drawingElementFactory,
+	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
@@ -55,6 +58,34 @@ describe(ContentElementUpdateVisitor.name, () => {
 			it('should throw an error', async () => {
 				const { submissionItem, updater } = setup();
 				await expect(() => updater.visitSubmissionItemAsync(submissionItem)).rejects.toThrow();
+			});
+		});
+
+		describe('when component is a media board', () => {
+			it('should throw an error', async () => {
+				const { updater } = setup();
+				const board = mediaBoardFactory.build();
+
+				await expect(updater.visitMediaBoardAsync(board)).rejects.toThrow();
+			});
+		});
+
+		describe('when component is a media line', () => {
+			it('should throw an error', async () => {
+				const { updater } = setup();
+				const line = mediaLineFactory.build();
+
+				await expect(() => updater.visitMediaLineAsync(line)).rejects.toThrow();
+			});
+		});
+
+		describe('when component is a media external tool element', () => {
+			it('should throw an error', async () => {
+				const { updater } = setup();
+
+				const element = mediaExternalToolElementFactory.build();
+
+				await expect(() => updater.visitMediaExternalToolElementAsync(element)).rejects.toThrow();
 			});
 		});
 	});

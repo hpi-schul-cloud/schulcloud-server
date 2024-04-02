@@ -10,6 +10,9 @@ import {
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
+	MediaBoardNode,
+	MediaExternalToolElementNode,
+	MediaLineNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -23,6 +26,9 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
 	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
@@ -243,6 +249,76 @@ describe(RecursiveSaveVisitor.name, () => {
 			const expectedNode: Partial<ExternalToolElementNodeEntity> = {
 				id: externalToolElement.id,
 				type: BoardNodeType.EXTERNAL_TOOL,
+				contextExternalTool,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a media board composite', () => {
+		it('should create or update the node', () => {
+			const board = mediaBoardFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitMediaBoard(board);
+
+			const expectedNode: Partial<MediaBoardNode> = {
+				id: board.id,
+				type: BoardNodeType.MEDIA_BOARD,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+
+		it('should visit the children', () => {
+			const line = mediaLineFactory.build();
+			jest.spyOn(line, 'accept');
+			const board = mediaBoardFactory.build({ children: [line] });
+
+			board.accept(visitor);
+
+			expect(line.accept).toHaveBeenCalledWith(visitor);
+		});
+	});
+
+	describe('when visiting a media line composite', () => {
+		it('should create or update the node', () => {
+			const line = mediaLineFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitMediaLine(line);
+
+			const expectedNode: Partial<MediaLineNode> = {
+				id: line.id,
+				type: BoardNodeType.MEDIA_LINE,
+				title: line.title,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+
+		it('should visit the children', () => {
+			const element = mediaExternalToolElementFactory.build();
+			jest.spyOn(element, 'accept');
+			const line = mediaLineFactory.build({ children: [element] });
+
+			line.accept(visitor);
+
+			expect(element.accept).toHaveBeenCalledWith(visitor);
+		});
+	});
+
+	describe('when visiting a media external tool element', () => {
+		it('should create or update the node', () => {
+			const contextExternalTool = contextExternalToolEntityFactory.buildWithId();
+			const mediaExternalToolElement = mediaExternalToolElementFactory.build({
+				contextExternalToolId: contextExternalTool.id,
+			});
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitMediaExternalToolElement(mediaExternalToolElement);
+
+			const expectedNode: Partial<MediaExternalToolElementNode> = {
+				id: mediaExternalToolElement.id,
+				type: BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT,
 				contextExternalTool,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));

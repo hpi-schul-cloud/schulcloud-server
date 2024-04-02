@@ -1,9 +1,11 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { LinkElement } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
@@ -11,8 +13,6 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { drawingElementFactory } from '@shared/testing/factory/domainobject/board/drawing-element.do.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { SwapInternalLinksVisitor } from './swap-internal-links.visitor';
 
 describe('swap internal links visitor', () => {

@@ -1,4 +1,5 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -12,13 +13,15 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
@@ -279,6 +282,22 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 
 		return Promise.resolve();
+	}
+
+	visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {
+		return this.rejectNotHandled(mediaBoard);
+	}
+
+	visitMediaLineAsync(mediaLine: MediaLine): Promise<void> {
+		return this.rejectNotHandled(mediaLine);
+	}
+
+	visitMediaExternalToolElementAsync(mediaElement: MediaExternalToolElement): Promise<void> {
+		return this.rejectNotHandled(mediaElement);
+	}
+
+	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
+		return Promise.reject(new Error(`Cannot copy element of type: '${component.constructor.name}'`));
 	}
 
 	async visitChildrenOf(boardDo: AnyBoardDo) {
