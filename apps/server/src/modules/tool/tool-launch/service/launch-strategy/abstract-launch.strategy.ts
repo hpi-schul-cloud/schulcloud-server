@@ -12,6 +12,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, To
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoParameterStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
@@ -27,13 +28,15 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
-		autoContextNameStrategy: AutoContextNameStrategy
+		autoContextNameStrategy: AutoContextNameStrategy,
+		autoMediumIdStrategy: AutoMediumIdStrategy
 	) {
 		this.autoParameterStrategyMap = new Map<CustomParameterType, AutoParameterStrategy>([
 			[CustomParameterType.AUTO_SCHOOLID, autoSchoolIdStrategy],
 			[CustomParameterType.AUTO_SCHOOLNUMBER, autoSchoolNumberStrategy],
 			[CustomParameterType.AUTO_CONTEXTID, autoContextIdStrategy],
 			[CustomParameterType.AUTO_CONTEXTNAME, autoContextNameStrategy],
+			[CustomParameterType.AUTO_MEDIUMID, autoMediumIdStrategy],
 		]);
 	}
 

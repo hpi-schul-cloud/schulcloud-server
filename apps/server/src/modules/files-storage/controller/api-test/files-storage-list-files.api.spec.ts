@@ -190,6 +190,8 @@ describe(`${baseRouteName} (api)`, () => {
 				name: expect.any(String),
 				url: expect.any(String),
 				parentId: expect.any(String),
+				createdAt: expect.any(String),
+				updatedAt: expect.any(String),
 				parentType: 'schools',
 				mimeType: 'application/octet-stream',
 				securityCheckStatus: 'pending',
