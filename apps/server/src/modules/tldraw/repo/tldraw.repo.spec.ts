@@ -7,7 +7,7 @@ import { createConfigModuleOptions } from '@src/config';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
-import { TldrawWsTestModule } from '..';
+import { TldrawWsTestModule } from '../tldraw-ws-test.module';
 
 describe('TldrawRepo', () => {
 	let testingModule: TestingModule;

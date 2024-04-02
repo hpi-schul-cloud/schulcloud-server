@@ -6,10 +6,10 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { config } from './config';
-import { TldrawController } from './controller/tldraw.controller';
+import { TldrawController } from './controller';
 import { MetricsService } from './metrics';
-import { TldrawRepo } from './repo/tldraw.repo';
-import { TldrawService } from './service/tldraw.service';
+import { TldrawRepo } from './repo';
+import { TldrawService } from './service';
 import { TldrawRedisFactory } from './redis';
 
 const imports = [
@@ -23,10 +23,10 @@ const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedi
 	imports,
 	providers,
 })
-export class TldrawTestModule {
+export class TldrawApiTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
-			module: TldrawTestModule,
+			module: TldrawApiTestModule,
 			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
 			controllers: [TldrawController],
 			providers,
