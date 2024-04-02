@@ -269,9 +269,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			throw new ValidationError('username can not be empty');
 		}
 
-		if (accountSave.password && !matches(accountSave.password, passwordPattern)) {
-			throw new ValidationError('password does not match the pattern');
-		}
+		// if (accountSave.password && !matches(accountSave.password, passwordPattern)) {
+		// 	throw new ValidationError('password does not match the pattern');
+		// }
 
 		// sanatizeUsername ✔
 		if (!accountSave.systemId) {
