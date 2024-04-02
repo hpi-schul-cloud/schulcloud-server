@@ -10,18 +10,18 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
+import { UserService } from '@modules/user';
+import { AccountModule } from '@modules/account';
+import { RoleService } from '@modules/role';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { DeletionClient } from './deletion-client';
 import { getDeletionClientConfig } from './deletion-client/deletion-client.config';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
-import { UserService } from '../user';
-import { AccountModule } from '../account';
 import { defaultMikroOrmOptions } from '../server';
 import { FileEntity } from '../files/entity';
-import { RoleService } from '../role';
-import { RegistrationPinService } from '../registration-pin';
 import { RegistrationPinRepo } from '../registration-pin/repo';
 
 @Module({
