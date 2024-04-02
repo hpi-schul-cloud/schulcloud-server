@@ -84,7 +84,7 @@ export class SchoolController {
 		return res;
 	}
 
-	@Patch('schoolId/:schoolId/systemId/:systemId/remove')
+	@Patch('/:schoolId/system/:systemId/remove')
 	@Authenticate('jwt')
 	public async removeSystemFromSchool(
 		@Param() urlParams: SchoolRemoveSystemUrlParams,

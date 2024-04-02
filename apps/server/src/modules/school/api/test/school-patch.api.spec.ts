@@ -440,13 +440,13 @@ describe('School Controller (API)', () => {
 		});
 	});
 
-	describe('PATCH /schoolId/:schoolId/systemId/:systemId/remove', () => {
+	describe('PATCH /:schoolId/system/:systemId/remove', () => {
 		describe('when user is not logged in', () => {
 			it('should return 401', async () => {
 				const someSchoolId = new ObjectId().toHexString();
 				const someSystemId = new ObjectId().toHexString();
 
-				const response = await testApiClient.patch(`/schoolId/${someSchoolId}/systemId/${someSystemId}/remove`).send({
+				const response = await testApiClient.patch(`/${someSchoolId}/system/${someSystemId}/remove`).send({
 					name: 'new name',
 				});
 
@@ -472,7 +472,7 @@ describe('School Controller (API)', () => {
 				it('should remove the given systemId from the systemIds of the school but not the system itself', async () => {
 					const { loggedInClient, school, system } = await setup();
 
-					const response = await loggedInClient.patch(`schoolId/${school.id}/systemId/${system.id}/remove`);
+					const response = await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
@@ -499,7 +499,7 @@ describe('School Controller (API)', () => {
 				it('should remove the given systemId from the systemIds of the school and delete the system itself', async () => {
 					const { loggedInClient, school, system } = await setup();
 
-					const response = await loggedInClient.patch(`schoolId/${school.id}/systemId/${system.id}/remove`);
+					const response = await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
