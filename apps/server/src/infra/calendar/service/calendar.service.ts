@@ -6,7 +6,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
 import { Logger } from '@src/core/logger';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -25,6 +25,7 @@ import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class CalendarService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	private readonly baseURL: string;
 

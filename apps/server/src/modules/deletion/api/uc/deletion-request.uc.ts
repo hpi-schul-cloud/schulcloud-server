@@ -39,6 +39,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			'user',
 			'submissions',
 			'news',
+			'calendar',
 		];
 	}
 
