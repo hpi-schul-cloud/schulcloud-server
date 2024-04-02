@@ -4,12 +4,15 @@ import { ToolVersion } from '../../common/interface';
 import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
 import { CustomParameter } from '../../common/domain';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
+import { ExternalToolMedium } from './external-tool-medium.do';
 
 export interface ExternalToolProps {
 	id?: string;
 
 	name: string;
 
+	description?: string;
+
 	url?: string;
 
 	logoUrl?: string;
@@ -29,11 +32,15 @@ export interface ExternalToolProps {
 	version: number;
 
 	restrictToContexts?: ToolContextType[];
+
+	medium?: ExternalToolMedium;
 }
 
 export class ExternalTool extends BaseDO implements ToolVersion {
 	name: string;
 
+	description?: string;
+
 	url?: string;
 
 	logoUrl?: string;
@@ -54,10 +61,13 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	restrictToContexts?: ToolContextType[];
 
+	medium?: ExternalToolMedium;
+
 	constructor(props: ExternalToolProps) {
 		super(props.id);
 
 		this.name = props.name;
+		this.description = props.description;
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
 		this.logo = props.logo;
@@ -76,6 +86,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
+		this.medium = props.medium;
 	}
 
 	getVersion(): number {
