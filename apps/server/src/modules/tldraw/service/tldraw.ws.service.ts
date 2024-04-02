@@ -1,18 +1,15 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
-import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
+import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
-import { applyUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
-import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
 import { YMap } from 'yjs/dist/src/types/YMap';
-import { TldrawRedisFactory } from '../redis';
+import { TldrawRedisService } from '../redis';
 import {
 	CloseConnectionLoggable,
-	RedisPublishErrorLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
 	WsSharedDocErrorLoggable,
@@ -20,7 +17,6 @@ import {
 import { TldrawConfig } from '../config';
 import {
 	AwarenessConnectionsUpdate,
-	RedisConnectionTypeEnum,
 	TldrawAsset,
 	TldrawShape,
 	UpdateOrigin,
@@ -35,23 +31,16 @@ import { MetricsService } from '../metrics';
 export class TldrawWsService {
 	public docs = new Map<string, WsSharedDocDo>();
 
-	public readonly sub: Redis;
-
-	private readonly pub: Redis;
-
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory
+		private readonly tldrawRedisService: TldrawRedisService
 	) {
 		this.logger.setContext(TldrawWsService.name);
 
-		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
-		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
-
-		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
+		this.tldrawRedisService.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}
 
 	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
@@ -85,7 +74,7 @@ export class TldrawWsService {
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		if (this.isFromConnectedWebSocket(doc, origin)) {
-			this.publishUpdateToRedis(doc, update, UpdateType.DOCUMENT);
+			this.tldrawRedisService.publishUpdateToRedis(doc, update, UpdateType.DOCUMENT);
 		}
 
 		this.sendUpdateToConnectedClients(update, doc);
@@ -126,7 +115,7 @@ export class TldrawWsService {
 
 		this.registerAwarenessUpdateHandler(doc);
 		this.registerUpdateHandler(doc);
-		this.subscribeToRedisChannels(doc);
+		this.tldrawRedisService.subscribeToRedisChannels(doc);
 		this.registerDatabaseUpdateHandler(doc);
 
 		this.docs.set(docName, doc);
@@ -175,7 +164,7 @@ export class TldrawWsService {
 
 	private handleAwarenessMessage(doc: WsSharedDocDo, decoder: decoding.Decoder) {
 		const update = decoding.readVarUint8Array(decoder);
-		this.publishUpdateToRedis(doc, update, UpdateType.AWARENESS);
+		this.tldrawRedisService.publishUpdateToRedis(doc, update, UpdateType.AWARENESS);
 	}
 
 	public redisMessageHandler = (channel: Buffer, update: Buffer): void => {
@@ -186,11 +175,7 @@ export class TldrawWsService {
 			return;
 		}
 
-		if (channelId.includes(UpdateType.AWARENESS)) {
-			applyAwarenessUpdate(doc.awareness, update, UpdateOrigin.REDIS);
-		} else {
-			applyUpdate(doc, update, UpdateOrigin.REDIS);
-		}
+		this.tldrawRedisService.handleMessage(channelId, update, doc);
 	};
 
 	public async setupWsConnection(ws: WebSocket, docName: string) {
@@ -278,7 +263,7 @@ export class TldrawWsService {
 		doc.isFinalizing = true;
 
 		try {
-			this.unsubscribeFromRedisChannels(doc);
+			this.tldrawRedisService.unsubscribeFromRedisChannels(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
@@ -376,25 +361,6 @@ export class TldrawWsService {
 
 	private registerDatabaseUpdateHandler(doc: WsSharedDocDo) {
 		doc.on('update', (update: Uint8Array, origin) => this.databaseUpdateHandler(doc.name, update, origin));
-	}
-
-	private subscribeToRedisChannels(doc: WsSharedDocDo) {
-		this.sub.subscribe(doc.name, doc.awarenessChannel).catch((err) => {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
-		});
-	}
-
-	private unsubscribeFromRedisChannels(doc: WsSharedDocDo) {
-		this.sub.unsubscribe(doc.name, doc.awarenessChannel).catch((err) => {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err));
-		});
-	}
-
-	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: UpdateType) {
-		const channel = type === UpdateType.AWARENESS ? doc.awarenessChannel : doc.name;
-		this.pub.publish(channel, Buffer.from(update)).catch((err) => {
-			this.logger.warning(new RedisPublishErrorLoggable(type, err));
-		});
 	}
 
 	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
