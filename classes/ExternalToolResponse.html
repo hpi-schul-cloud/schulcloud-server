@@ -152,6 +152,11 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#description" >description</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#id" >id</a>
                             </li>
                             <li>
@@ -166,6 +171,11 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#logoUrl" >logoUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#medium" >medium</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -217,7 +227,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:58</a></div>
                             </td>
                         </tr>
 
@@ -283,13 +293,50 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;Configuration of the external tool&#x27;, oneOf: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="description"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>description</b></span>
+                        <a href="#description"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional({type: String, description: &#x27;Description of the external tool&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -319,13 +366,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: String, description: &#x27;Id of the external tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -355,13 +402,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: Boolean, description: &#x27;Is the external tool deactivated&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -391,13 +438,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: Boolean, description: &#x27;Is the external tool hidden&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -428,13 +475,50 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiPropertyOptional()<br />
+                            @ApiPropertyOptional({type: String, description: &#x27;URL of the logo of the external tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="medium"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>medium</b></span>
+                        <a href="#medium"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/ExternalToolMediumResponse.html" target="_self" >ExternalToolMediumResponse</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional({type: ExternalToolMediumResponse, description: &#x27;Medium of the external tool&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -464,13 +548,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: String, description: &#x27;Name of the external tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -500,13 +584,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: Boolean, description: &#x27;Should the external tool be opened in a new tab&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -536,13 +620,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: undefined, description: &#x27;Custom parameters of the external tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -573,13 +657,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiPropertyOptional({enum: ToolContextType, enumName: &#x27;ToolContextType&#x27;, isArray: true})<br />
+                            @ApiPropertyOptional({enum: ToolContextType, enumName: &#x27;ToolContextType&#x27;, isArray: true, description: &#x27;Contexts in which the external tool is restricted&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -610,13 +694,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiPropertyOptional()<br />
+                            @ApiPropertyOptional({type: String, description: &#x27;URL of the external tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -646,13 +730,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({type: Number, description: &#x27;Version of the external tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/response/external-tool.response.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -671,48 +755,69 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
+import { BasicToolConfigParams, Lti11ToolConfigCreateParams, Oauth2ToolConfigCreateParams } from &#x27;../request&#x27;;
 import { BasicToolConfigResponse, Oauth2ToolConfigResponse, Lti11ToolConfigResponse } from &#x27;./config&#x27;;
 import { CustomParameterResponse } from &#x27;./custom-parameter.response&#x27;;
 import { ToolContextType } from &#x27;../../../../common/enum&#x27;;
+import { ExternalToolMediumResponse } from &#x27;./external-tool-medium.response&#x27;;
 
 export class ExternalToolResponse {
-	@ApiProperty()
+	@ApiProperty({ type: String, description: &#x27;Id of the external tool&#x27; })
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ type: String, description: &#x27;Name of the external tool&#x27; })
 	name: string;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: String, description: &#x27;Description of the external tool&#x27; })
+	description?: string;
+
+	@ApiPropertyOptional({ type: String, description: &#x27;URL of the external tool&#x27; })
 	url?: string;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: String, description: &#x27;URL of the logo of the external tool&#x27; })
 	logoUrl?: string;
 
-	@ApiProperty()
+	@ApiProperty({
+		description: &#x27;Configuration of the external tool&#x27;,
+		oneOf: [
+			{ $ref: getSchemaPath(BasicToolConfigParams) },
+			{ $ref: getSchemaPath(Lti11ToolConfigCreateParams) },
+			{ $ref: getSchemaPath(Oauth2ToolConfigCreateParams) },
+		],
+	})
 	config: BasicToolConfigResponse | Oauth2ToolConfigResponse | Lti11ToolConfigResponse;
 
-	@ApiProperty()
+	@ApiProperty({ type: [CustomParameterResponse], description: &#x27;Custom parameters of the external tool&#x27; })
 	parameters: CustomParameterResponse[];
 
-	@ApiProperty()
+	@ApiProperty({ type: Boolean, description: &#x27;Is the external tool hidden&#x27; })
 	isHidden: boolean;
 
-	@ApiProperty()
+	@ApiProperty({ type: Boolean, description: &#x27;Is the external tool deactivated&#x27; })
 	isDeactivated: boolean;
 
-	@ApiProperty()
+	@ApiProperty({ type: Boolean, description: &#x27;Should the external tool be opened in a new tab&#x27; })
 	openNewTab: boolean;
 
-	@ApiProperty()
+	@ApiProperty({ type: Number, description: &#x27;Version of the external tool&#x27; })
 	version: number;
 
-	@ApiPropertyOptional({ enum: ToolContextType, enumName: &#x27;ToolContextType&#x27;, isArray: true })
+	@ApiPropertyOptional({
+		enum: ToolContextType,
+		enumName: &#x27;ToolContextType&#x27;,
+		isArray: true,
+		description: &#x27;Contexts in which the external tool is restricted&#x27;,
+	})
 	restrictToContexts?: ToolContextType[];
+
+	@ApiPropertyOptional({ type: ExternalToolMediumResponse, description: &#x27;Medium of the external tool&#x27; })
+	medium?: ExternalToolMediumResponse;
 
 	constructor(response: ExternalToolResponse) {
 		this.id &#x3D; response.id;
 		this.name &#x3D; response.name;
+		this.description &#x3D; response.description;
 		this.url &#x3D; response.url;
 		this.logoUrl &#x3D; response.logoUrl;
 		this.config &#x3D; response.config;
@@ -722,6 +827,7 @@ export class ExternalToolResponse {
 		this.openNewTab &#x3D; response.openNewTab;
 		this.version &#x3D; response.version;
 		this.restrictToContexts &#x3D; response.restrictToContexts;
+		this.medium &#x3D; response.medium;
 	}
 }
 </code></pre>

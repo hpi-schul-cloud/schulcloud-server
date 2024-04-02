@@ -354,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -504,8 +504,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -586,8 +586,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -667,8 +667,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -761,8 +761,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -842,8 +842,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -923,8 +923,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -1133,9 +1133,8 @@ export class ExternalToolUc {
 
 		externalTool.logo &#x3D; await this.externalToolLogoService.fetchLogo(externalTool);
 
-		await this.toolValidationService.validateUpdate(toolId, externalTool);
-
 		const loaded: ExternalTool &#x3D; await this.externalToolService.findById(toolId);
+
 		const configToUpdate: ExternalToolConfig &#x3D; { ...loaded.config, ...externalTool.config };
 		const toUpdate: ExternalTool &#x3D; new ExternalTool({
 			...loaded,
@@ -1143,6 +1142,8 @@ export class ExternalToolUc {
 			config: configToUpdate,
 			version: loaded.version,
 		});
+
+		await this.toolValidationService.validateUpdate(toolId, toUpdate);
 
 		const saved: ExternalTool &#x3D; await this.externalToolService.updateExternalTool(toUpdate, loaded);
 

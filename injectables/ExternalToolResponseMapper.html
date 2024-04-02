@@ -159,6 +159,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Static</span>
+                                <a href="#mapMediumToResponse" >mapMediumToResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapOauth2ToolConfigDOToResponse" >mapOauth2ToolConfigDOToResponse</a>
                             </li>
                             <li>
@@ -206,8 +211,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -275,8 +280,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -345,8 +350,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -396,6 +401,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mapMediumToResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Static</span>
+                        <span ><b>mapMediumToResponse</b></span>
+                        <a href="#mapMediumToResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapMediumToResponse(medium?: <a href="../classes/ExternalToolMedium.html" target="_self">ExternalToolMedium</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>medium</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalToolMedium.html" target="_self" >ExternalToolMedium</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>ExternalToolMediumResponse | undefined</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapOauth2ToolConfigDOToResponse"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -415,8 +490,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -484,8 +559,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -550,11 +625,12 @@ import {
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolMediumResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from &#x27;../controller/dto&#x27;;
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from &#x27;../domain&#x27;;
+import { BasicToolConfig, ExternalTool, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from &#x27;../domain&#x27;;
 
 const scopeMapping: Record&lt;CustomParameterScope, CustomParameterScopeTypeParams&gt; &#x3D; {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -576,6 +652,7 @@ const typeMapping: Record&lt;CustomParameterType, CustomParameterTypeParams&gt; 
 	[CustomParameterType.AUTO_CONTEXTNAME]: CustomParameterTypeParams.AUTO_CONTEXTNAME,
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
+	[CustomParameterType.AUTO_MEDIUMID]: CustomParameterTypeParams.AUTO_MEDIUMID,
 };
 
 @Injectable()
@@ -597,6 +674,7 @@ export class ExternalToolResponseMapper {
 		return new ExternalToolResponse({
 			id: externalTool.id ?? &#x27;&#x27;,
 			name: externalTool.name,
+			description: externalTool.description,
 			url: externalTool.url,
 			logoUrl: externalTool.logoUrl,
 			config: mappedConfig,
@@ -606,7 +684,16 @@ export class ExternalToolResponseMapper {
 			openNewTab: externalTool.openNewTab,
 			version: externalTool.version,
 			restrictToContexts: externalTool.restrictToContexts,
+			medium: this.mapMediumToResponse(externalTool.medium),
 		});
+	}
+
+	private static mapMediumToResponse(medium?: ExternalToolMedium): ExternalToolMediumResponse | undefined {
+		if (!medium) {
+			return undefined;
+		}
+
+		return new ExternalToolMediumResponse({ ...medium });
 	}
 
 	private static mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {

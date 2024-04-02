@@ -2177,6 +2177,7 @@
 	CustomParameterType.AUTO_CONTEXTNAME,
 	CustomParameterType.AUTO_SCHOOLID,
 	CustomParameterType.AUTO_SCHOOLNUMBER,
+	CustomParameterType.AUTO_MEDIUMID,
 ]</code>
                     </td>
                 </tr>
@@ -6340,6 +6341,7 @@ To filter by consentStatus, it has to created first</p>
 	({ sequence }): IExternalToolProperties &#x3D;&gt; {
 		return {
 			name: &#x60;external-tool-${sequence}&#x60;,
+			description: &#x27;This is a tool description&#x27;,
 			url: &#x27;&#x27;,
 			logoUrl: &#x27;https://logourl.com&#x27;,
 			config: new BasicToolConfigEntity({
@@ -9788,6 +9790,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	[CustomParameterTypeParams.AUTO_CONTEXTNAME]: CustomParameterType.AUTO_CONTEXTNAME,
 	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
 	[CustomParameterTypeParams.AUTO_SCHOOLNUMBER]: CustomParameterType.AUTO_SCHOOLNUMBER,
+	[CustomParameterTypeParams.AUTO_MEDIUMID]: CustomParameterType.AUTO_MEDIUMID,
 }</code>
                     </td>
                 </tr>
@@ -9885,6 +9888,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	[CustomParameterType.AUTO_CONTEXTNAME]: CustomParameterTypeParams.AUTO_CONTEXTNAME,
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
+	[CustomParameterType.AUTO_MEDIUMID]: CustomParameterTypeParams.AUTO_MEDIUMID,
 }</code>
                     </td>
                 </tr>

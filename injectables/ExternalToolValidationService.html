@@ -547,7 +547,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateUpdate(toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">Partial&lt;ExternalTool&gt;</a>)</code>
+                    <code>validateUpdate(toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -590,7 +590,7 @@
                                         <tr>
                                                 <td>externalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ExternalTool.html" target="_self" >Partial&lt;ExternalTool&gt;</a></code>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                             </td>
 
                                             <td>
@@ -644,7 +644,7 @@ export class ExternalToolValidationService {
 		this.externalToolLogoService.validateLogoSize(externalTool);
 	}
 
-	async validateUpdate(toolId: string, externalTool: Partial&lt;ExternalTool&gt;): Promise&lt;void&gt; {
+	async validateUpdate(toolId: string, externalTool: ExternalTool): Promise&lt;void&gt; {
 		if (toolId !&#x3D;&#x3D; externalTool.id) {
 			throw new ValidationError(&#x60;tool_id_mismatch: The tool has no id or it does not match the path parameter.&#x60;);
 		}
