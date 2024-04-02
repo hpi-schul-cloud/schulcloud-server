@@ -12,11 +12,11 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, To
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoParameterStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
-import { AutoMediumIdStrategy } from '../auto-parameter-strategy/auto-medium-id.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 import { ToolLaunchStrategy } from './tool-launch-strategy.interface';
 
