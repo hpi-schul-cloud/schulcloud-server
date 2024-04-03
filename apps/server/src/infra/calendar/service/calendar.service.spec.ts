@@ -84,7 +84,7 @@ describe('CalendarServiceSpec', () => {
 				data: [
 					{
 						attributes: {
-							id: id,
+							id,
 							'x-sc-teamid': teamId,
 							summary: title,
 						},
@@ -128,7 +128,7 @@ describe('CalendarServiceSpec', () => {
 				data: [
 					{
 						attributes: {
-							id: id,
+							id,
 							'x-sc-teamid': teamId,
 							summary: title,
 						},
@@ -235,7 +235,7 @@ describe('CalendarServiceSpec', () => {
 					data: [
 						{
 							attributes: {
-								id: id,
+								id,
 								'x-sc-teamid': teamId,
 								summary: title,
 							},
