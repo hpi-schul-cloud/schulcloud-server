@@ -8,6 +8,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -37,6 +38,10 @@ describe('BasicToolLaunchStrategy', () => {
 				{
 					provide: AutoContextNameStrategy,
 					useValue: createMock<AutoContextNameStrategy>(),
+				},
+				{
+					provide: AutoMediumIdStrategy,
+					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 			],
 		}).compile();

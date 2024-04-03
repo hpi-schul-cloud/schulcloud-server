@@ -12,7 +12,7 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
 import { config, TLDRAW_DB_URL } from './config';
-import { TldrawRedisFactory } from './redis';
+import { TldrawRedisFactory, TldrawRedisService } from './redis';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -34,6 +34,15 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb, MetricsService, TldrawRedisFactory],
+	providers: [
+		TldrawWs,
+		TldrawWsService,
+		TldrawBoardRepo,
+		TldrawRepo,
+		YMongodb,
+		MetricsService,
+		TldrawRedisFactory,
+		TldrawRedisService,
+	],
 })
 export class TldrawWsModule {}
