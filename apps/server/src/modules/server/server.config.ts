@@ -31,8 +31,8 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-// Envirement keys should be added over configs from modules, directly adding is only allow for legacy stuff
-// Maye some of them must be outsource to additional microservice config endpoints.
+// Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
+// Maye some of them must be outsourced to additional microservice config endpoints.
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
@@ -170,7 +170,7 @@ const config: ServerConfig = {
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
-		.map((apiKey) => apiKey.trim()),
+		.map((part) => (part.split(':').pop() ?? '').trim()),
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
