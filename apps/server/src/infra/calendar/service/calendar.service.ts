@@ -143,7 +143,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 		});
 
 		if (resp.status !== 204) {
-			throw new Error(`invalid HTTP status code in a response from the server instead of 204`);
+			throw new Error(`invalid HTTP status code = ${resp.status} in a response from the server instead of 204`);
 		}
 	}
 
