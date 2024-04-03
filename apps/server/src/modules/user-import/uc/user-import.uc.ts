@@ -1,4 +1,4 @@
-import { AccountService } from '@modules/account/services/account.service';
+import { AccountService, Account, AccountSave } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -11,7 +11,6 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { Account, AccountSave } from '@modules/account/domain/account';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,

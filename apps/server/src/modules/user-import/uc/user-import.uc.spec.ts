@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -24,7 +24,6 @@ import {
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
-import { Account } from '@modules/account/domain';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
 import { UserImportService } from '../service';

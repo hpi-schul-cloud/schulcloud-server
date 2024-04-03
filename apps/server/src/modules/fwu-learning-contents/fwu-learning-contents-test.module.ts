@@ -5,7 +5,6 @@ import { S3ClientModule } from '@infra/s3-client';
 import { AccountEntity } from '@modules/account/entity/account.entity';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { AuthorizationModule } from '@modules/authorization';
-import { FwuLearningContentsUc } from '@modules/fwu-learning-contents/uc/fwu-learning-contents.uc';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -13,6 +12,7 @@ import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@share
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
 

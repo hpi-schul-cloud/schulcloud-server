@@ -1,5 +1,4 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { Account } from '@modules/account/domain';
+import { AccountService, Account } from '@modules/account';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';

@@ -11,14 +11,14 @@ import {
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
+import { ServerTestModule } from '@modules/server/server.module';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
 	AccountSearchType,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
-} from '@modules/account/controller/dto';
-import { ServerTestModule } from '@modules/server/server.module';
+} from '../dto';
 import { AccountEntity } from '../../entity/account.entity';
 
 describe('Account Controller (API)', () => {

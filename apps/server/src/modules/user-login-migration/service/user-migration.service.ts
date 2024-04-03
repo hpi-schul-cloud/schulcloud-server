@@ -1,5 +1,4 @@
-import { AccountService } from '@modules/account/services/account.service';
-import { Account } from '@modules/account/domain';
+import { AccountService, Account } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';

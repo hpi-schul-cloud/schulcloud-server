@@ -2,8 +2,8 @@ import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
 import { PermissionService } from '@shared/domain/service';
 import { UserRepo } from '@shared/repo';
-import { AccountUc } from '@modules/account/uc/account.uc';
 import { LoggerModule } from '@src/core/logger';
+import { AccountUc } from './uc/account.uc';
 import { AccountModule } from './account.module';
 import { AccountController } from './controller/account.controller';
 

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
@@ -14,7 +14,6 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { Account } from '@modules/account/domain';
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';

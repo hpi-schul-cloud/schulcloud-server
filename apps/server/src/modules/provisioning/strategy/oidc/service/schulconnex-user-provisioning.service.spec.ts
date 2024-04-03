@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService } from '@modules/account/services/account.service';
+import { AccountService, AccountSave } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
@@ -8,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
-import { AccountSave } from '@modules/account/domain';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
 import { SchulconnexUserProvisioningService } from './schulconnex-user-provisioning.service';

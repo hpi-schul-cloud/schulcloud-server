@@ -1,10 +1,9 @@
-import { AccountService } from '@modules/account';
+import { AccountService, AccountSave } from '@modules/account';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { AccountSave } from '@modules/account/domain';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
 
