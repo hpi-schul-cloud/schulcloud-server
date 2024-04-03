@@ -1,5 +1,6 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { EntityWithSchool, LanguageType } from '../interface';
+import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { ConsentEntity } from './consent';
@@ -156,9 +157,45 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			permissions = [...permissions, ...rolePermissions];
 		});
 
-		const uniquePermissions = [...new Set(permissions)];
+		const setOfPermission = this.resolveSchoolPermissions(permissions, roles);
+
+		const uniquePermissions = [...setOfPermission];
 
 		return uniquePermissions;
+	}
+
+	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
+	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
+		const setOfPermission = new Set(permissions);
+		const schoolPermissions = this.school.permissions;
+
+		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
+			return setOfPermission;
+		}
+
+		if (this.school.permissions) {
+			if (roles.some((role) => role.name === RoleName.STUDENT)) {
+				if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+					setOfPermission.add(Permission.LERNSTORE_VIEW);
+				} else {
+					setOfPermission.delete(Permission.LERNSTORE_VIEW);
+				}
+			}
+
+			if (roles.some((role) => role.name === RoleName.TEACHER)) {
+				const canStudentListByDefault = Configuration.get(
+					'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
+				) as boolean;
+
+				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
+					setOfPermission.add(Permission.STUDENT_LIST);
+				} else {
+					setOfPermission.delete(Permission.STUDENT_LIST);
+				}
+			}
+		}
+
+		return setOfPermission;
 	}
 
 	public getRoles(): Role[] {
