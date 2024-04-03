@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	FederalStateEntity,
 	SchoolProperties,
@@ -11,6 +10,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { federalStateFactory, schoolEntityFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -145,9 +145,6 @@ const seedSchools: SeedSchoolProperties[] = [
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
-			teacher: {
-				STUDENT_LIST: true,
-			},
 			student: {
 				LERNSTORE_VIEW: true,
 			},
