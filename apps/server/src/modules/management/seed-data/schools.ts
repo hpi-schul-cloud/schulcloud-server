@@ -177,6 +177,9 @@ const seedSchools: SeedSchoolProperties[] = [
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
+			teacher: {
+				STUDENT_LIST: true,
+			},
 			student: {
 				LERNSTORE_VIEW: true,
 			},
