@@ -266,7 +266,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 			children: elements,
-			title: boardNode.title ?? '',
+			title: boardNode.title,
 		});
 
 		return mediaLine;

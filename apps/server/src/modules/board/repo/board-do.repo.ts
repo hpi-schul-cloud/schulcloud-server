@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
-import { BoardNode, ColumnBoardNode, ExternalToolElementNodeEntity } from '@shared/domain/entity';
+import { BoardNode, ExternalToolElementNodeEntity, RootBoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
@@ -66,11 +66,12 @@ export class BoardDoRepo {
 	}
 
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const boardNodes = await this.em.find(ColumnBoardNode, {
+		const boardNodes: RootBoardNode[] = await this.em.find(RootBoardNode, {
 			_contextId: new ObjectId(reference.id),
 			_contextType: reference.type,
 		});
-		const ids = boardNodes.map((o) => o.id);
+
+		const ids: EntityId[] = boardNodes.map((o) => o.id);
 
 		return ids;
 	}

@@ -3,16 +3,17 @@ import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } fr
 import { MediaExternalToolElement } from './media-external-tool-element.do';
 
 export class MediaLine extends BoardComposite<MediaLineProps> {
-	get title(): string {
+	get title(): string | undefined {
 		return this.props.title;
 	}
 
-	set title(title: string) {
+	set title(title: string | undefined) {
 		this.props.title = title;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed = domainObject instanceof MediaExternalToolElement;
+		const allowed: boolean = domainObject instanceof MediaExternalToolElement;
+
 		return allowed;
 	}
 
@@ -26,7 +27,7 @@ export class MediaLine extends BoardComposite<MediaLineProps> {
 }
 
 export interface MediaLineProps extends BoardCompositeProps {
-	title: string;
+	title?: string;
 }
 
 export type MediaLineInitProps = Omit<MediaLine, keyof BoardCompositeProps>;

@@ -12,7 +12,8 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed = domainObject instanceof MediaLine;
+		const allowed: boolean = domainObject instanceof MediaLine;
+
 		return allowed;
 	}
 
