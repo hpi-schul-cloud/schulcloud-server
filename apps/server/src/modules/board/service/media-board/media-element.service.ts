@@ -26,16 +26,6 @@ export class MediaElementService {
 		return element;
 	}
 
-	public async findParentOfId(elementId: EntityId): Promise<AnyBoardDo> {
-		const parent: AnyBoardDo | undefined = await this.boardDoRepo.findParentOfId(elementId);
-
-		if (!parent) {
-			throw new NotFoundException('There is no node with this id');
-		}
-
-		return parent;
-	}
-
 	public async createExternalToolElement(
 		parent: MediaLine,
 		contextExternalTool: ContextExternalToolWithId
