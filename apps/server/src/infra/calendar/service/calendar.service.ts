@@ -138,7 +138,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 		const resp = await firstValueFrom(request).catch((error) => {
 			throw new InternalServerErrorException(
 				null,
-				ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:findEvent')
+				ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:deleteEventsByScopeId')
 			);
 		});
 
