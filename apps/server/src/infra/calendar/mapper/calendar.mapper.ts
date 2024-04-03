@@ -9,6 +9,11 @@ export class CalendarMapper {
 		return new CalendarEventDto({
 			teamId: attributes['x-sc-teamid'],
 			title: attributes.summary,
+			id: attributes.id,
 		});
+	}
+
+	mapEventsToDto(events: CalendarEvent[]): CalendarEventDto[] {
+		return events.map((it) => this.mapToDto(it));
 	}
 }

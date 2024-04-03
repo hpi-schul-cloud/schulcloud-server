@@ -60,11 +60,13 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
+		const events = await this.getAllEvents(userId);
+		const ids = events.map((it) => it.id);
 
 		await this.deleteEventsByScopeId(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, 0, [userId]),
+			DomainOperationReportBuilder.build(OperationType.DELETE, events.length, ids),
 		]);
 
 		this.logger.info(
@@ -74,7 +76,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 				userId,
 				StatusModel.FINISHED,
 				0,
-				0
+				events.length
 			)
 		);
 
@@ -99,6 +101,27 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 				throw new InternalServerErrorException(
 					null,
 					ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:findEvent')
+				);
+			});
+	}
+
+	async getAllEvents(userId: EntityId): Promise<CalendarEventDto[]> {
+		const params = new URLSearchParams();
+
+		return firstValueFrom(
+			this.getList('/events', params, {
+				headers: {
+					Authorization: userId,
+					Accept: 'Application/json',
+				},
+				timeout: this.timeoutMs,
+			})
+		)
+			.then((resp: AxiosResponse<CalendarEvent[]>) => this.calendarMapper.mapEventsToDto(resp.data))
+			.catch((error) => {
+				throw new InternalServerErrorException(
+					null,
+					ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:getAllEvents')
 				);
 			});
 	}
@@ -129,6 +152,17 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 		queryParams: URLSearchParams,
 		config: AxiosRequestConfig
 	): Observable<AxiosResponse<CalendarEvent>> {
+		const url: URL = new URL(this.baseURL);
+		url.pathname = path;
+		url.search = queryParams.toString();
+		return this.httpService.get(url.toString(), config);
+	}
+
+	private getList(
+		path: string,
+		queryParams: URLSearchParams,
+		config: AxiosRequestConfig
+	): Observable<AxiosResponse<CalendarEvent[]>> {
 		const url: URL = new URL(this.baseURL);
 		url.pathname = path;
 		url.search = queryParams.toString();
