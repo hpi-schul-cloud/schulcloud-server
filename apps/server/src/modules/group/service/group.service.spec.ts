@@ -3,6 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from '@modules/learnroom/domain';
 import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
@@ -244,29 +246,29 @@ describe('GroupService', () => {
 	describe('findGroupsBySchoolIdAndGroupTypes', () => {
 		describe('when the school has groups of type class', () => {
 			const setup = () => {
-				const schoolId: string = new ObjectId().toHexString();
+				const school: School = schoolFactory.build();
 				const groups: Group[] = groupFactory.buildList(3);
 				const page: Page<Group> = new Page<Group>(groups, groups.length);
 
 				groupRepo.findBySchoolIdAndGroupTypes.mockResolvedValue(page);
 
 				return {
-					schoolId,
+					school,
 					groups,
 				};
 			};
 
 			it('should call the repo', async () => {
-				const { schoolId } = setup();
+				const { school } = setup();
 
-				await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [
+				await service.findGroupsBySchoolIdAndGroupTypes(school, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 					GroupTypes.OTHER,
 				]);
 
 				expect(groupRepo.findBySchoolIdAndGroupTypes).toHaveBeenCalledWith(
-					schoolId,
+					school,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
 					undefined,
 					undefined,
@@ -275,9 +277,9 @@ describe('GroupService', () => {
 			});
 
 			it('should return the groups', async () => {
-				const { schoolId, groups } = setup();
+				const { school, groups } = setup();
 
-				const result: Page<Group> = await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [GroupTypes.CLASS]);
+				const result: Page<Group> = await service.findGroupsBySchoolIdAndGroupTypes(school, [GroupTypes.CLASS]);
 
 				expect(result.data).toEqual(groups);
 			});
@@ -287,29 +289,29 @@ describe('GroupService', () => {
 	describe('findAvailableGroupBySchoolId', () => {
 		describe('when available groups exist for school', () => {
 			const setup = () => {
-				const schoolId: string = new ObjectId().toHexString();
+				const school: School = schoolFactory.build();
 				const groups: Group[] = groupFactory.buildList(2);
 
 				groupRepo.findAvailableBySchoolId.mockResolvedValue(new Page<Group>([groups[1]], 1));
 
 				return {
-					schoolId,
+					school,
 					groups,
 				};
 			};
 
 			it('should call repo', async () => {
-				const { schoolId } = setup();
+				const { school } = setup();
 
-				await service.findAvailableGroupsBySchoolId(schoolId);
+				await service.findAvailableGroupsBySchoolId(school);
 
-				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(schoolId, undefined, undefined, undefined);
+				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(school, undefined, undefined, undefined);
 			});
 
 			it('should return groups', async () => {
-				const { schoolId, groups } = setup();
+				const { school, groups } = setup();
 
-				const result: Page<Group> = await service.findAvailableGroupsBySchoolId(schoolId);
+				const result: Page<Group> = await service.findAvailableGroupsBySchoolId(school);
 
 				expect(result.data).toEqual([groups[1]]);
 			});
@@ -317,19 +319,19 @@ describe('GroupService', () => {
 
 		describe('when no groups with the user exists', () => {
 			const setup = () => {
-				const schoolId: string = new ObjectId().toHexString();
+				const school: School = schoolFactory.build();
 
 				groupRepo.findAvailableBySchoolId.mockResolvedValue(new Page<Group>([], 0));
 
 				return {
-					schoolId,
+					school,
 				};
 			};
 
 			it('should return empty array', async () => {
-				const { schoolId } = setup();
+				const { school } = setup();
 
-				const result: Page<Group> = await service.findAvailableGroupsBySchoolId(schoolId);
+				const result: Page<Group> = await service.findAvailableGroupsBySchoolId(school);
 
 				expect(result.data).toEqual([]);
 			});

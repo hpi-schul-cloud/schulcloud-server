@@ -22,7 +22,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { Role, SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import {
 	groupFactory,
 	roleDtoFactory,
@@ -783,12 +782,12 @@ describe('GroupUc', () => {
 				});
 
 				it('should call group service with allowed group types', async () => {
-					const { teacherUser } = setup();
+					const { teacherUser, school } = setup();
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[EntityId, GroupTypes[], number]>(
-						teacherUser.school.id,
+					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[School, GroupTypes[], number]>(
+						school,
 						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
 						0
 					);
