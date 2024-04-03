@@ -370,8 +370,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
-import { EntityWithSchool, LanguageType } from &#x27;../interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
+import { EntityWithSchool, LanguageType, Permission, RoleName } from &#x27;../interface&#x27;;
 import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { ConsentEntity } from &#x27;./consent&#x27;;
@@ -528,9 +529,45 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			permissions &#x3D; [...permissions, ...rolePermissions];
 		});
 
-		const uniquePermissions &#x3D; [...new Set(permissions)];
+		const setOfPermission &#x3D; this.resolveSchoolPermissions(permissions, roles);
+
+		const uniquePermissions &#x3D; [...setOfPermission];
 
 		return uniquePermissions;
+	}
+
+	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
+	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
+		const setOfPermission &#x3D; new Set(permissions);
+		const schoolPermissions &#x3D; this.school.permissions;
+
+		if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.ADMINISTRATOR)) {
+			return setOfPermission;
+		}
+
+		if (this.school.permissions) {
+			if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.STUDENT)) {
+				if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+					setOfPermission.add(Permission.LERNSTORE_VIEW);
+				} else {
+					setOfPermission.delete(Permission.LERNSTORE_VIEW);
+				}
+			}
+
+			if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.TEACHER)) {
+				const canStudentListByDefault &#x3D; Configuration.get(
+					&#x27;TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT&#x27;
+				) as boolean;
+
+				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
+					setOfPermission.add(Permission.STUDENT_LIST);
+				} else {
+					setOfPermission.delete(Permission.STUDENT_LIST);
+				}
+			}
+		}
+
+		return setOfPermission;
 	}
 
 	public getRoles(): Role[] {

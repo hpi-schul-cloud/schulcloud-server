@@ -186,8 +186,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">apps/server/src/modules/me/domain/school-permission.service.ts:8</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="9"
+                                    class="link-to-prism">apps/server/src/modules/me/domain/school-permission.service.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -258,6 +258,7 @@ import { School } from &#x27;@src/modules/school&#x27;;
 
 @Injectable()
 export class SchoolPermissionService {
+	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
 	public resolvePermissions(user: User, school: School): Set&lt;string&gt; {
 		const userPermissions &#x3D; user.resolvePermissions();
 		const schoolPermissions &#x3D; school.getPermissions();
