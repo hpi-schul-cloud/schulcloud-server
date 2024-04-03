@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
@@ -152,6 +153,7 @@ describe('User Entity', () => {
 				});
 				const user = userFactory.build({ roles: [role], school });
 
+				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', false);
 				return { user };
 			};
 

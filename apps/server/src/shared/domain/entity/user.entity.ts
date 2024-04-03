@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
@@ -182,7 +183,11 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			}
 
 			if (roles.some((role) => role.name === RoleName.TEACHER)) {
-				if (schoolPermissions?.teacher?.STUDENT_LIST) {
+				const canStudentListByDefault = Configuration.get(
+					'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
+				) as boolean;
+
+				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
 					setOfPermission.add(Permission.STUDENT_LIST);
 				} else {
 					setOfPermission.delete(Permission.STUDENT_LIST);
