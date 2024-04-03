@@ -2,7 +2,7 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
+import type { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
 import { BoardNode, ExternalToolElementNodeEntity, RootBoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
@@ -112,5 +112,26 @@ export class BoardDoRepo {
 	async delete(domainObject: AnyBoardDo): Promise<void> {
 		await domainObject.acceptAsync(this.deleteVisitor);
 		await this.em.flush();
+	}
+
+	async deleteByExternalReference(reference: BoardExternalReference): Promise<number> {
+		const boardNodes: RootBoardNode[] = await this.em.find(RootBoardNode, {
+			_contextId: new ObjectId(reference.id),
+			_contextType: reference.type,
+		});
+
+		const boardDeletionPromises: Promise<void>[] = boardNodes.map(async (boardNode: RootBoardNode): Promise<void> => {
+			const descendants: BoardNode[] = await this.boardNodeRepo.findDescendants(boardNode);
+
+			const domainObject: AnyBoardDo = new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
+
+			await domainObject.acceptAsync(this.deleteVisitor);
+		});
+
+		await Promise.all(boardDeletionPromises);
+
+		await this.em.flush();
+
+		return boardNodes.length;
 	}
 }

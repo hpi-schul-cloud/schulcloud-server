@@ -39,4 +39,8 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 	public async delete(board: MediaBoard): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(board);
 	}
+
+	public async deleteByExternalReference(reference: BoardExternalReference): Promise<number> {
+		return this.boardDoRepo.deleteByExternalReference(reference);
+	}
 }
