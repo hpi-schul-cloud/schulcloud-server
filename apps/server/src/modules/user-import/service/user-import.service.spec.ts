@@ -271,7 +271,7 @@ describe(UserImportService.name, () => {
 				});
 			});
 
-			describe('when existing users have the same names', () => {
+			describe('when existing users in svs have the same names', () => {
 				const setup = () => {
 					const school: SchoolEntity = schoolEntityFactory.buildWithId();
 					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
@@ -298,6 +298,40 @@ describe(UserImportService.name, () => {
 					const result: ImportUser[] = await service.matchUsers([importUser1]);
 
 					expect(result).toEqual([importUser1]);
+				});
+			});
+
+			describe('when import users have the same name ', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+					const importUser2: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+
+					return {
+						user1,
+						importUser1,
+						importUser2,
+					};
+				};
+
+				it('should return the users without a match', async () => {
+					const { importUser1, importUser2 } = setup();
+
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
+
+					result.forEach((importUser) => expect(importUser.matchedBy).toBeUndefined());
 				});
 			});
 		});

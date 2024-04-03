@@ -95,5 +95,16 @@ describe(ToolParameterTypeValidationUtil.name, () => {
 				expect(result).toEqual(false);
 			});
 		});
+
+		describe('when the type is AUTO_MEDIUMID', () => {
+			it('should return false', () => {
+				const result: boolean = ToolParameterTypeValidationUtil.isValueValidForType(
+					CustomParameterType.AUTO_MEDIUMID,
+					'any value'
+				);
+
+				expect(result).toEqual(false);
+			});
+		});
 	});
 });

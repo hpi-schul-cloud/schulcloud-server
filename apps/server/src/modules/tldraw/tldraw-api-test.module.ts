@@ -5,12 +5,12 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger, LoggerModule } from '@src/core/logger';
+import { TldrawRedisFactory, TldrawRedisService } from './redis';
 import { config } from './config';
-import { TldrawController } from './controller/tldraw.controller';
+import { TldrawController } from './controller';
 import { MetricsService } from './metrics';
-import { TldrawRepo } from './repo/tldraw.repo';
-import { TldrawService } from './service/tldraw.service';
-import { TldrawRedisFactory } from './redis';
+import { TldrawRepo } from './repo';
+import { TldrawService } from './service';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
@@ -18,15 +18,15 @@ const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	HttpModule,
 ];
-const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory];
+const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory, TldrawRedisService];
 @Module({
 	imports,
 	providers,
 })
-export class TldrawTestModule {
+export class TldrawApiTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
-			module: TldrawTestModule,
+			module: TldrawApiTestModule,
 			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
 			controllers: [TldrawController],
 			providers,

@@ -8,7 +8,7 @@ import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { HttpService } from '@nestjs/axios';
-import { TldrawRedisFactory } from '../redis';
+import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -46,6 +46,7 @@ describe('YMongoDb', () => {
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				TldrawRedisService,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -162,6 +163,25 @@ describe('YMongoDb', () => {
 			await mdb.createIndex();
 
 			expect(ensureIndexesSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('getAllDocumentNames', () => {
+		const setup = async () => {
+			const drawing1 = tldrawEntityFactory.build({ docName: 'test-name1', version: 'v1_sv' });
+			const drawing2 = tldrawEntityFactory.build({ docName: 'test-name2', version: 'v1_sv' });
+			const drawing3 = tldrawEntityFactory.build({ docName: 'test-name3', version: 'v1_sv' });
+
+			await em.persistAndFlush([drawing1, drawing2, drawing3]);
+			em.clear();
+		};
+
+		it('should return all document names', async () => {
+			await setup();
+
+			const docNames = await mdb.getAllDocumentNames();
+
+			expect(docNames).toEqual(['test-name1', 'test-name2', 'test-name3']);
 		});
 	});
 
