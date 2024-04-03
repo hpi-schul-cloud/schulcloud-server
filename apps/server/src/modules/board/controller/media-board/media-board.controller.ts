@@ -11,7 +11,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import type { MediaBoard, MediaLine } from '@shared/domain/domainobject';
-import type { MediaBoardUc } from '../../uc';
+import { MediaBoardUc } from '../../uc';
 import type { BoardUrlParams } from '../dto';
 import { MediaBoardResponse, MediaLineResponse } from './dto';
 import { MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
@@ -19,7 +19,7 @@ import { MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 @ApiTags('Media Board')
 @Authenticate('jwt')
 @Controller('media-boards')
-export class MediaLineController {
+export class MediaBoardController {
 	constructor(private readonly mediaBoardUc: MediaBoardUc) {}
 
 	@ApiOperation({ summary: 'Get the media shelf of the user.' })

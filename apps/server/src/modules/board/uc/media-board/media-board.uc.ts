@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
-import type { MediaBoardService, MediaLineService } from '../../service';
+import { MediaBoardService, MediaLineService } from '../../service';
 
 @Injectable()
 export class MediaBoardUc {

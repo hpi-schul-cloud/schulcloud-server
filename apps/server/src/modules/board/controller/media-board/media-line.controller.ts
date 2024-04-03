@@ -20,7 +20,7 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { type MediaLineUc } from '../../uc';
+import { MediaLineUc } from '../../uc';
 import type { MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import type { LineUrlParams } from './dto';
 

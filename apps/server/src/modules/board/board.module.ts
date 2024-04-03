@@ -18,6 +18,9 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
+	MediaBoardService,
+	MediaElementService,
+	MediaLineService,
 	SubmissionItemService,
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
@@ -51,6 +54,10 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
+		// Media Board
+		MediaBoardService,
+		MediaLineService,
+		MediaElementService,
 	],
 	exports: [
 		BoardDoAuthorizableService,
@@ -64,6 +71,10 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		 * @deprecated - exported only deprecated learnraum module
 		 */
 		BoardNodeRepo,
+		// Media Board
+		MediaBoardService,
+		MediaLineService,
+		MediaElementService,
 	],
 })
 export class BoardModule {}

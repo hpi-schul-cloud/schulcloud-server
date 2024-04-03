@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { type AnyBoardDo, ColumnInitProps, MediaBoard, MediaLine } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoRepo } from '../../repo';
-import type { BoardDoService } from '../board-do.service';
+import { BoardDoService } from '../board-do.service';
 
 @Injectable()
 export class MediaLineService {

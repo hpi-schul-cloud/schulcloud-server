@@ -25,7 +25,7 @@ import { ElementUrlParams } from './dto';
 @ApiTags('Media Element')
 @Authenticate('jwt')
 @Controller('media-elements')
-export class MediaLineController {
+export class MediaElementController {
 	constructor(private readonly mediaElementUc: MediaElementUc) {}
 
 	@ApiOperation({ summary: 'Move a single element.' })

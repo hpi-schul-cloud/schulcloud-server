@@ -3,8 +3,8 @@ import type { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReference, MediaBoard } from '@shared/domain/domainobject';
 import type { EntityId } from '@shared/domain/types';
-import type { BoardDoRepo } from '../../repo';
-import type { BoardDoService } from '../board-do.service';
+import { BoardDoRepo } from '../../repo';
+import { BoardDoService } from '../board-do.service';
 
 @Injectable()
 export class MediaBoardService implements AuthorizationLoaderServiceGeneric<MediaBoard> {
