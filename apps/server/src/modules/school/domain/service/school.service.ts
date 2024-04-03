@@ -1,6 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeGuard } from '@shared/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { System, SystemService } from '@src/modules/system';
@@ -96,10 +97,29 @@ export class SchoolService {
 		return updatedSchool;
 	}
 
-	public async saveSchool(school: School): Promise<School> {
-		const savedSchool = await this.schoolRepo.save(school);
+	public async removeSystemFromSchool(school: School, systemId: EntityId): Promise<void> {
+		if (!school.hasSystem(systemId)) {
+			throw new NotFoundLoggableException('System not found in school.', { schoolId: school.id, systemId });
+		}
 
-		return savedSchool;
+		const system = await this.tryFindAndRemoveSystem(systemId);
+
+		school.removeSystem(system.id);
+
+		await this.schoolRepo.save(school);
+	}
+
+	private async tryFindAndRemoveSystem(systemId: string) {
+		const system = await this.systemService.findById(systemId);
+		if (!system) {
+			throw new NotFoundLoggableException('System not found.', { systemId });
+		}
+
+		if (system.isDeletable()) {
+			await this.systemService.delete(system);
+		}
+
+		return system;
 	}
 
 	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {
