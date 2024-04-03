@@ -228,8 +228,7 @@ export class GroupUc {
 	private async findGroupsForSchool(school: School): Promise<ClassInfoDto[]> {
 		const groups: Page<Group> = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
 			school,
-			this.ALLOWED_GROUP_TYPES,
-			0
+			this.ALLOWED_GROUP_TYPES
 		);
 
 		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups.data);
@@ -416,7 +415,7 @@ export class GroupUc {
 		} else {
 			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
 				school,
-				this.ALLOWED_GROUP_TYPES,
+				undefined,
 				skip,
 				limit,
 				nameQuery

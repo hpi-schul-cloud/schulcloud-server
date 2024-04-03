@@ -6,6 +6,7 @@ import {
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
 	GroupListResponse,
+	GroupPaginationParams,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
@@ -82,12 +83,17 @@ export class GroupResponseMapper {
 		return mapped;
 	}
 
-	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>): GroupListResponse {
-		const mapped: GroupResponse[] = groups.data.map(
+	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>, pagination: GroupPaginationParams): GroupListResponse {
+		const groupResponseData: GroupResponse[] = groups.data.map(
 			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
 		);
 
-		const response: GroupListResponse = { data: mapped, total: groups.total };
+		const response: GroupListResponse = new GroupListResponse(
+			groupResponseData,
+			groups.total,
+			pagination.skip,
+			pagination.limit
+		); // { data: mapped, total: groups.total };
 
 		return response;
 	}

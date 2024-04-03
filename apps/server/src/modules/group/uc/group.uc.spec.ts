@@ -786,11 +786,11 @@ describe('GroupUc', () => {
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[School, GroupTypes[], number]>(
-						school,
-						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-						0
-					);
+					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[School, GroupTypes[]]>(school, [
+						GroupTypes.CLASS,
+						GroupTypes.COURSE,
+						GroupTypes.OTHER,
+					]);
 				});
 			});
 

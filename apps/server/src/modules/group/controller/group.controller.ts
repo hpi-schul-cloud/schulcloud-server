@@ -93,7 +93,7 @@ export class GroupController {
 			params.availableGroupsForCourseSync,
 			params.nameQuery
 		);
-		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups);
+		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;
 	}
