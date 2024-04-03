@@ -1455,5 +1455,56 @@
 		"lasttriedFailedLogin": {
 			"$date": "1970-01-01T00:00:00Z"
 		}
+	},
+	{
+		"_id": {
+			"$oid": "1110d213816abba584714caa"
+		},
+		"username": "admin.migration@schul-cloud.org",
+		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "1110d213816abba584714c0a"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "2220d213816abba584714caa"
+		},
+		"username": "lehrer.migration@schul-cloud.org",
+		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "2220d213816abba584714c0a"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "3330d213816abba584714caa"
+		},
+		"username": "schueler.migration@schul-cloud.org",
+		"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "3330d213816abba584714c0a"
+		},
+		"__v": 0
 	}
 ]

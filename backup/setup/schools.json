@@ -427,5 +427,47 @@
 				"STUDENT_LIST": true
 			}
 		}
+	},
+	{
+		"_id": {
+			"$oid": "fedcba987654321012345678"
+		},
+		"name": "Migrations-Test-Schule",
+		"fileStorageType": "awsS3",
+		"federalState": {
+			"$oid": "0000b186816abba584714c58"
+		},
+		"county": {
+			"antaresKey": "NI",
+			"_id": {
+				"$oid": "5fa55eb53f472a2d986c8812"
+			},
+			"countyId": 3256,
+			"name": "Nienburg/Weser"
+		},
+		"systems": [],
+		"updatedAt": {
+			"$date": "2020-07-27T08:21:14.719Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"__v": 0,
+		"currentYear": {
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
+		},
+		"purpose": "demo",
+		"features": [
+			"rocketChat",
+			"videoconference",
+			"oauthProvisioningEnabled"
+		],
+		"enableStudentTeamCreation": false,
+		"permissions": {
+			"teacher": {
+				"STUDENT_LIST": true
+			}
+		},
+		"officialSchoolNumber": "01337"
 	}
 ]

@@ -1,4 +1,4 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName, QueryOrder } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
@@ -67,14 +67,16 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 		let scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id).byTypes(groupEntityTypes);
 
-		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
-			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				scope = new GroupScope().byUserId(user.id).byTypes(groupEntityTypes).byNameQuery(escapedName);
-			}
+		const escapedName = nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			scope = new GroupScope().byUserId(user.id).byTypes(groupEntityTypes).byNameQuery(escapedName);
 		}
 
-		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, { offset: skip, limit });
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, {
+			offset: skip,
+			limit,
+			orderBy: { name: QueryOrder.ASC },
+		});
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
@@ -109,14 +111,16 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 		let scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(school.id).byTypes(groupEntityTypes);
 
-		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
-			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				scope = new GroupScope().byOrganizationId(school.id).byTypes(groupEntityTypes).byNameQuery(escapedName);
-			}
+		const escapedName = nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			scope = new GroupScope().byOrganizationId(school.id).byTypes(groupEntityTypes).byNameQuery(escapedName);
 		}
 
-		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, { offset: skip, limit });
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, {
+			offset: skip,
+			limit,
+			orderBy: { name: QueryOrder.ASC },
+		});
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
@@ -166,11 +170,9 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		let nameRegexFilter = {};
 		const pipeline: unknown[] = pipelineStage;
 
-		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
-			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				nameRegexFilter = { name: { $regex: nameQuery, $options: 'i' } };
-			}
+		const escapedName = nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			nameRegexFilter = { name: { $regex: escapedName, $options: 'i' } };
 		}
 
 		pipeline.push(
@@ -183,7 +185,8 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 					as: 'syncedCourses',
 				},
 			},
-			{ $match: { syncedCourses: { $size: 0 } } }
+			{ $match: { syncedCourses: { $size: 0 } } },
+			{ $sort: { name: 1 } }
 		);
 
 		if (limit) {
@@ -205,7 +208,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const mongoEntities = await this.em.aggregate(GroupEntity, pipeline);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-		const total: number = mongoEntities[0].total[0] ? mongoEntities[0].total[0].count : 0;
+		const total: number = mongoEntities[0]?.total[0]?.count ?? 0;
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
 		const entities: GroupEntity[] = mongoEntities[0].data.map((entity: GroupEntity) => {

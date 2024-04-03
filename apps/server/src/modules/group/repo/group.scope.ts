@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { MongoPatterns, Scope } from '@shared/repo';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 
 export class GroupScope extends Scope<GroupEntity> {
@@ -32,9 +32,10 @@ export class GroupScope extends Scope<GroupEntity> {
 		return this;
 	}
 
-	byNameQuery(nameQuery: string): this {
+	byNameQuery(nameQuery: string | undefined): this {
 		if (nameQuery) {
-			this.addQuery({ name: new RegExp(nameQuery, 'i') });
+			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+			this.addQuery({ name: new RegExp(escapedName, 'i') });
 		}
 		return this;
 	}

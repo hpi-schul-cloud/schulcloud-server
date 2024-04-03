@@ -526,10 +526,10 @@
 			"org"
 		],
 		"firstNameSearchValues": [
-			"V", 
-			"Ve", 
-			"Ver", 
-			"era" 
+			"V",
+			"Ve",
+			"Ver",
+			"era"
 		],
 		"lastNameSearchValues": [
 			"V",
@@ -6339,5 +6339,253 @@
 		"preferences": {
 			"firstLogin": true
 		}
+	},
+	{
+		"_id": {
+			"$oid": "1110d213816abba584714c0a"
+		},
+		"__v": 0,
+		"firstName": "Admin",
+		"lastName": "Migration",
+		"email": "admin.migration@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "fedcba987654321012345678"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		],
+		"emailSearchValues": [
+			"a",
+			"ad",
+			"adm",
+			"dmi",
+			"min",
+			"in.",
+			"n.m",
+			".mi",
+			"mig",
+			"igr",
+			"gra",
+			"rat",
+			"ati",
+			"tio",
+			"ion",
+			"on@",
+			"n@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"ul-",
+			"l-c",
+			"-cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"A",
+			"Ad",
+			"Adm",
+			"dmi",
+			"min"
+		],
+		"lastNameSearchValues": [
+			"M",
+			"Mi",
+			"Mig",
+			"igr",
+			"gra",
+			"rat",
+			"ati",
+			"tio",
+			"ion"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "2220d213816abba584714c0a"
+		},
+		"__v": 0,
+		"firstName": "Lehrer",
+		"lastName": "Migration",
+		"email": "lehrer.migration@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "fedcba987654321012345678"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c98"
+			}
+		],
+		"emailSearchValues": [
+			"l",
+			"le",
+			"leh",
+			"ehr",
+			"hre",
+			"rer",
+			"er.",
+			"r.m",
+			".mi",
+			"mig",
+			"igr",
+			"gra",
+			"rat",
+			"ati",
+			"tio",
+			"ion",
+			"on@",
+			"n@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"ul-",
+			"l-c",
+			"-cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"L",
+			"Le",
+			"Leh",
+			"ehr",
+			"hre",
+			"rer"
+		],
+		"lastNameSearchValues": [
+			"M",
+			"Mi",
+			"Mig",
+			"igr",
+			"gra",
+			"rat",
+			"ati",
+			"tio",
+			"ion"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "3330d213816abba584714c0a"
+		},
+		"__v": 0,
+		"firstName": "Schueler",
+		"lastName": "Migration",
+		"email": "schueler.migration@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "fedcba987654321012345678"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"emailSearchValues": [
+			"s",
+			"sc",
+			"sch",
+			"chu",
+			"hue",
+			"uel",
+			"ele",
+			"ler",
+			"er.",
+			"r.m",
+			".mi",
+			"mig",
+			"igr",
+			"gra",
+			"rat",
+			"ati",
+			"tio",
+			"ion",
+			"on@",
+			"n@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"ul-",
+			"l-c",
+			"-cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"S",
+			"Sc",
+			"Sch",
+			"chu",
+			"hue",
+			"uel",
+			"ele",
+			"ler"
+		],
+		"lastNameSearchValues": [
+			"M",
+			"Mi",
+			"Mig",
+			"igr",
+			"gra",
+			"rat",
+			"ati",
+			"tio",
+			"ion"
+		]
 	}
 ]
