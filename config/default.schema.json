@@ -1629,6 +1629,11 @@
 			"type": "number",
 			"default": 10000,
 			"description": "Size of chunk for synchronization"
+		},
+		"FEATURE_MEDIA_SHELF_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the media shelf feature"
 		}
 	},
 	"required": []
