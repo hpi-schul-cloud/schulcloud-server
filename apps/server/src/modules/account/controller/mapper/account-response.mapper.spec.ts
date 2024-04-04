@@ -1,4 +1,4 @@
-import { accountDtoFactory } from '@shared/testing';
+import { accountDoFactory } from '@shared/testing';
 import { Account } from '../../domain';
 import { AccountResponseMapper } from './account-response.mapper';
 import { ResolvedSearchListAccountDto } from '../../uc/dto/resolved-account.dto';
@@ -7,7 +7,7 @@ describe('AccountResponseMapper', () => {
 	describe('mapToAccountResponse', () => {
 		describe('When mapping Account to AccountResponse', () => {
 			const setup = () => {
-				const testDto: Account = accountDtoFactory.build();
+				const testDto: Account = accountDoFactory.build();
 				return testDto;
 			};
 
@@ -27,7 +27,7 @@ describe('AccountResponseMapper', () => {
 	describe('mapToAccountResponses', () => {
 		describe('When mapping Account[] to AccountResponse[]', () => {
 			const setup = () => {
-				const testDto: Account[] = accountDtoFactory.buildList(3);
+				const testDto: Account[] = accountDoFactory.buildList(3);
 				return testDto;
 			};
 
@@ -48,7 +48,7 @@ describe('AccountResponseMapper', () => {
 	describe('mapToAccountSearchListResponse', () => {
 		describe('When mapping ResolvedSearchListAccountDto to AccountSearchListResponse', () => {
 			const setup = () => {
-				const testDto = accountDtoFactory.build();
+				const testDto = accountDoFactory.build();
 				const searchListDto = new ResolvedSearchListAccountDto([testDto], 1, 0, 1);
 				return searchListDto;
 			};

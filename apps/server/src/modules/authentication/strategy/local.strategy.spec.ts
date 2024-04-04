@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { accountDtoFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountDoFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
@@ -32,7 +32,7 @@ describe('LocalStrategy', () => {
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
-		mockAccount = accountDtoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
+		mockAccount = accountDoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
 	});
 
 	beforeEach(() => {

@@ -1,4 +1,4 @@
-import { AccountModule } from '@modules/account/account.module';
+import { AccountModule } from '@modules/account';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';

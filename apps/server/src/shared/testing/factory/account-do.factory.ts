@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountProps } from '@modules/account';
 import { DomainObjectFactory } from './domainobject';
 
-export const accountDtoFactory = DomainObjectFactory.define<Account, AccountProps>(Account, ({ sequence, params }) => {
+export const accountDoFactory = DomainObjectFactory.define<Account, AccountProps>(Account, ({ sequence, params }) => {
 	return {
 		...params,
 		id: params.id || new ObjectId().toHexString(),

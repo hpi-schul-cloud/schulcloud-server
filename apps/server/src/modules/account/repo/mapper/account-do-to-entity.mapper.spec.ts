@@ -1,4 +1,4 @@
-import { accountDtoFactory } from '@shared/testing';
+import { accountDoFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountDoToEntityMapper } from './account-do-to-entity.mapper';
 
@@ -16,7 +16,7 @@ describe('AccountEntityToDoMapper', () => {
 	describe('mapToEntity', () => {
 		describe('When mapping Account DO to AccountEntity', () => {
 			const setup = () => {
-				const account = accountDtoFactory.build({
+				const account = accountDoFactory.build({
 					password: 'password',
 					credentialHash: 'credentialHash',
 					userId: new ObjectId().toHexString(),

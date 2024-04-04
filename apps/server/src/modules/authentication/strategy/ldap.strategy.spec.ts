@@ -9,7 +9,7 @@ import { RoleName } from '@shared/domain/interface';
 import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 
 import {
-	accountDtoFactory,
+	accountDoFactory,
 	defaultTestPassword,
 	defaultTestPasswordHash,
 	legacySchoolDoFactory,
@@ -96,7 +96,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -143,7 +143,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [] }, user.school.id);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -190,7 +190,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: undefined }, user.school.id);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -237,7 +237,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -284,7 +284,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -336,7 +336,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -396,7 +396,7 @@ describe('LdapStrategy', () => {
 					user.school.id
 				);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
@@ -459,7 +459,7 @@ describe('LdapStrategy', () => {
 					user.school.id
 				);
 
-				const account: Account = accountDtoFactory.build({
+				const account: Account = accountDoFactory.build({
 					systemId: system.id,
 					username,
 					password: defaultTestPasswordHash,
