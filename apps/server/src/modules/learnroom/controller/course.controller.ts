@@ -108,4 +108,17 @@ export class CourseController {
 	): Promise<void> {
 		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
 	}
+
+	@Get(':courseId/userPermissions')
+	@ApiOperation({ summary: 'Get permissions for a user in a course.' })
+	public async getUserPermissions(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise<{ [userId: string]: string[] }> {
+		const permissions = await this.courseUc.getUserPermissionByCourseId(currentUser.userId, params.courseId);
+
+		return {
+			[currentUser.userId]: permissions,
+		};
+	}
 }
