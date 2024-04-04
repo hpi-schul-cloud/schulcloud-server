@@ -10,6 +10,7 @@ describe('CalendarMapper', () => {
 		data: [
 			{
 				attributes: {
+					id: 'id',
 					'x-sc-teamid': 'teamId',
 					summary: 'eventTitle',
 				},
@@ -35,5 +36,16 @@ describe('CalendarMapper', () => {
 		// Assert
 		expect(result.teamId).toEqual('teamId');
 		expect(result.title).toEqual('eventTitle');
+	});
+
+	it('mapEventsToDto', () => {
+		const events = [event, event];
+		// Act
+		const result = mapper.mapEventsToDto(events);
+
+		// Assert
+		expect(result[0].teamId).toEqual('teamId');
+		expect(result[0].title).toEqual('eventTitle');
+		expect(result.length).toEqual(2);
 	});
 });
