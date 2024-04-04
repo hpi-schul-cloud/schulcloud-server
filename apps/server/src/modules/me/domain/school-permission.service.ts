@@ -5,6 +5,7 @@ import { School } from '@src/modules/school';
 
 @Injectable()
 export class SchoolPermissionService {
+	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
 	public resolvePermissions(user: User, school: School): Set<string> {
 		const userPermissions = user.resolvePermissions();
 		const schoolPermissions = school.getPermissions();

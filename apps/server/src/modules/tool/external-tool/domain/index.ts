@@ -6,3 +6,4 @@ export {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 } from './datasheet';
+export { ExternalToolMedium, ExternalToolMediumProps } from './external-tool-medium.do';
