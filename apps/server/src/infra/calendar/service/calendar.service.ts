@@ -75,7 +75,7 @@ export class CalendarService implements DeletionService {
 		params.append('event-id', eventId);
 
 		return firstValueFrom(
-			this.get('/events', params, {
+			this.get<CalendarEvent>('/events', params, {
 				headers: {
 					Authorization: userId,
 					Accept: 'Application/json',
@@ -96,7 +96,7 @@ export class CalendarService implements DeletionService {
 		const params = new URLSearchParams();
 
 		return firstValueFrom(
-			this.getRequest('/events', params, {
+			this.get<CalendarEventId>('/events', params, {
 				headers: {
 					Authorization: userId,
 					Accept: 'Application/json',
@@ -134,22 +134,7 @@ export class CalendarService implements DeletionService {
 		}
 	}
 
-	private get(
-		path: string,
-		queryParams: URLSearchParams,
-		config: AxiosRequestConfig
-	): Observable<AxiosResponse<CalendarEvent>> {
-		const url: URL = new URL(this.baseURL);
-		url.pathname = path;
-		url.search = queryParams.toString();
-		return this.httpService.get(url.toString(), config);
-	}
-
-	private getRequest(
-		path: string,
-		queryParams: URLSearchParams,
-		config: AxiosRequestConfig
-	): Observable<AxiosResponse<CalendarEventId>> {
+	private get<T>(path: string, queryParams: URLSearchParams, config: AxiosRequestConfig): Observable<AxiosResponse<T>> {
 		const url: URL = new URL(this.baseURL);
 		url.pathname = path;
 		url.search = queryParams.toString();
