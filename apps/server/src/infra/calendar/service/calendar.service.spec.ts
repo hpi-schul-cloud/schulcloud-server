@@ -210,7 +210,7 @@ describe('CalendarServiceSpec', () => {
 			it('should throw error if cannot delete a events cause of invalid response Http status', async () => {
 				setupError();
 				await expect(service.deleteEventsByScopeId('scopeId')).rejects.toThrow(
-					new Error('invalid HTTP status code in a response from the server instead of 204')
+					new Error('invalid HTTP status code = 409 in a response from the server instead of 204')
 				);
 			});
 		});
