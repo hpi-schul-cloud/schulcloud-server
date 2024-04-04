@@ -1,4 +1,5 @@
 import { EntityDTO } from '@mikro-orm/core';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Course, Role, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 
@@ -32,6 +33,6 @@ export class RoleNameMapper {
 		if (RoleNameMapper.isSubstitutionTeacher(user, course)) return RoleName.COURSESUBSTITUTIONTEACHER;
 		if (RoleNameMapper.isStudent(user, course)) return RoleName.STUDENT;
 
-		throw new Error('Role not found');
+		throw new UnprocessableEntityException('Unsupported role');
 	}
 }
