@@ -11,6 +11,6 @@ export class GroupParams {
 
 	@IsOptional()
 	@IsString()
-	@ApiPropertyOptional({ description: 'search string for firstnames or lastnames' })
+	@ApiPropertyOptional({ description: 'search string for group names.' })
 	nameQuery?: string;
 }

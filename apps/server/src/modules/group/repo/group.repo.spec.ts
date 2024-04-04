@@ -140,8 +140,7 @@ describe('GroupRepo', () => {
 				const result: Page<Group> = await repo.findByUserAndGroupTypes(
 					user,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-					1,
-					1
+					{ pagination: { skip: 1, limit: 1 } }
 				);
 
 				expect(result.total).toEqual(groups.length);
@@ -155,9 +154,7 @@ describe('GroupRepo', () => {
 				const result: Page<Group> = await repo.findByUserAndGroupTypes(
 					user,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-					undefined,
-					undefined,
-					nameQuery
+					{ nameQuery }
 				);
 
 				expect(result.data.length).toEqual(1);
@@ -255,7 +252,7 @@ describe('GroupRepo', () => {
 			it('should return groups according to pagination', async () => {
 				const { user, groups, availableGroupsCount } = await setup();
 
-				const result: Page<Group> = await repo.findAvailableByUser(user, 1, 1);
+				const result: Page<Group> = await repo.findAvailableByUser(user, { pagination: { skip: 1, limit: 1 } });
 
 				expect(result.total).toEqual(availableGroupsCount);
 				expect(result.data.length).toEqual(1);
@@ -265,7 +262,7 @@ describe('GroupRepo', () => {
 			it('should return groups according to name query', async () => {
 				const { user, groups, nameQuery } = await setup();
 
-				const result: Page<Group> = await repo.findAvailableByUser(user, undefined, undefined, nameQuery);
+				const result: Page<Group> = await repo.findAvailableByUser(user, { nameQuery });
 
 				expect(result.data.length).toEqual(1);
 				expect(result.data[0].id).toEqual(groups[2].id);
@@ -358,8 +355,7 @@ describe('GroupRepo', () => {
 				const result: Page<Group> = await repo.findBySchoolIdAndGroupTypes(
 					schoolDO,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-					1,
-					1
+					{ pagination: { skip: 1, limit: 1 } }
 				);
 
 				expect(result.total).toEqual(groups.length);
@@ -373,9 +369,7 @@ describe('GroupRepo', () => {
 				const result: Page<Group> = await repo.findBySchoolIdAndGroupTypes(
 					schoolDO,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-					undefined,
-					undefined,
-					nameQuery
+					{ nameQuery }
 				);
 
 				expect(result.data.length).toEqual(1);
@@ -468,7 +462,7 @@ describe('GroupRepo', () => {
 			it('should return groups according to pagination', async () => {
 				const { schoolDO, groups, availableGroupsCount } = await setup();
 
-				const result: Page<Group> = await repo.findAvailableBySchoolId(schoolDO, 1, 1);
+				const result: Page<Group> = await repo.findAvailableBySchoolId(schoolDO, { pagination: { skip: 1, limit: 1 } });
 
 				expect(result.total).toEqual(availableGroupsCount);
 				expect(result.data.length).toEqual(1);
@@ -478,7 +472,7 @@ describe('GroupRepo', () => {
 			it('should return groups according to name query', async () => {
 				const { schoolDO, groups, nameQuery } = await setup();
 
-				const result: Page<Group> = await repo.findAvailableBySchoolId(schoolDO, undefined, undefined, nameQuery);
+				const result: Page<Group> = await repo.findAvailableBySchoolId(schoolDO, { nameQuery });
 
 				expect(result.data.length).toEqual(1);
 				expect(result.data[0].id).toEqual(groups[2].id);

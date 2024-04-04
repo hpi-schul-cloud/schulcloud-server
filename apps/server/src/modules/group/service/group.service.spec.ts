@@ -163,8 +163,6 @@ describe('GroupService', () => {
 				expect(groupRepo.findByUserAndGroupTypes).toHaveBeenCalledWith(
 					user,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-					undefined,
-					undefined,
 					undefined
 				);
 			});
@@ -210,7 +208,7 @@ describe('GroupService', () => {
 
 				await service.findAvailableGroupsByUser(user);
 
-				expect(groupRepo.findAvailableByUser).toHaveBeenCalledWith(user, undefined, undefined, undefined);
+				expect(groupRepo.findAvailableByUser).toHaveBeenCalledWith(user, undefined);
 			});
 
 			it('should return groups', async () => {
@@ -270,8 +268,6 @@ describe('GroupService', () => {
 				expect(groupRepo.findBySchoolIdAndGroupTypes).toHaveBeenCalledWith(
 					school,
 					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-					undefined,
-					undefined,
 					undefined
 				);
 			});
@@ -305,7 +301,7 @@ describe('GroupService', () => {
 
 				await service.findAvailableGroupsBySchoolId(school);
 
-				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(school, undefined, undefined, undefined);
+				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(school, undefined);
 			});
 
 			it('should return groups', async () => {

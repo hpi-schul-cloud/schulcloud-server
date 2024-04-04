@@ -21,7 +21,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { Role, SchoolYearEntity, User } from '@shared/domain/entity';
-import { Permission, SortOrder } from '@shared/domain/interface';
+import { IFindQuery, Permission, SortOrder } from '@shared/domain/interface';
 import {
 	groupFactory,
 	roleDtoFactory,
@@ -416,10 +416,10 @@ describe('GroupUc', () => {
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[], number]>(
+					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[], IFindQuery]>(
 						expect.any(UserDO),
 						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-						0
+						{ pagination: { skip: 0 } }
 					);
 				});
 			});
@@ -1328,7 +1328,7 @@ describe('GroupUc', () => {
 				it('should return all available groups for course sync', async () => {
 					const { user, availableGroupInSchool, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
+					const response = await uc.getAllGroups(user.id, school.id, undefined, true);
 
 					expect(response).toMatchObject({
 						data: [
@@ -1502,7 +1502,7 @@ describe('GroupUc', () => {
 				it('should return all available groups for course sync the teacher is part of', async () => {
 					const { user, availableTeachersGroup, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
+					const response = await uc.getAllGroups(user.id, school.id, undefined, true);
 
 					expect(response).toMatchObject({
 						data: [
