@@ -6,3 +6,4 @@ export * from './column.service';
 export * from './content-element.service';
 export * from './submission-item.service';
 export * from './media-board';
+export * from './event';

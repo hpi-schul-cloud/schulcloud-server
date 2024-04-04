@@ -3,7 +3,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { mediaBoardFactory, setupEntities, userFactory as userEntityFactory } from '@shared/testing';
+import { mediaBoardFactory, mediaLineFactory, setupEntities, userFactory as userEntityFactory } from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { MediaBoardService, MediaLineService } from '../../service';
 import { MediaBoardUc } from './media-board.uc';
@@ -147,6 +147,67 @@ describe(MediaBoardUc.name, () => {
 				const { user } = setup();
 
 				await expect(uc.getMediaBoardForUser(user.id)).rejects.toThrow(FeatureDisabledLoggableException);
+			});
+		});
+	});
+
+	describe('createLine', () => {
+		describe('when the user creates a new media line', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+				const mediaLine = mediaLineFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				mediaLineService.create.mockResolvedValueOnce(mediaLine);
+
+				return {
+					user,
+					mediaBoard,
+					mediaLine,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.createLine(user.id, mediaBoard.id);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					user,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should return a new media line', async () => {
+				const { user, mediaBoard, mediaLine } = setup();
+
+				const result = await uc.createLine(user.id, mediaBoard.id);
+
+				expect(result).toEqual(mediaLine);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaBoard,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaBoard } = setup();
+
+				await expect(uc.createLine(user.id, mediaBoard.id)).rejects.toThrow(FeatureDisabledLoggableException);
 			});
 		});
 	});

@@ -17,19 +17,6 @@ export class MediaLineUc {
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
 
-	public async createLine(userId: EntityId, boardId: EntityId): Promise<MediaLine> {
-		this.checkFeatureEnabled();
-
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
-
-		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
-
-		const line: MediaLine = await this.mediaLineService.create(board);
-
-		return line;
-	}
-
 	public async moveLine(
 		userId: EntityId,
 		lineId: EntityId,

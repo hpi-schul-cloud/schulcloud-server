@@ -2,7 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { BoardExternalReferenceType, type MediaBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
@@ -39,6 +39,19 @@ export class MediaBoardUc {
 		}
 
 		return board;
+	}
+
+	public async createLine(userId: EntityId, boardId: EntityId): Promise<MediaLine> {
+		this.checkFeatureEnabled();
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
+
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const line: MediaLine = await this.mediaLineService.create(board);
+
+		return line;
 	}
 
 	private checkFeatureEnabled() {

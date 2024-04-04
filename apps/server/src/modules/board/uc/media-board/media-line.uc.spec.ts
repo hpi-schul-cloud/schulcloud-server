@@ -57,67 +57,6 @@ describe(MediaLineUc.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('createLine', () => {
-		describe('when the user creates a new media line', () => {
-			const setup = () => {
-				const user = userEntityFactory.build();
-				const mediaBoard = mediaBoardFactory.build();
-				const mediaLine = mediaLineFactory.build();
-
-				configService.get.mockReturnValueOnce(true);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-				mediaLineService.create.mockResolvedValueOnce(mediaLine);
-
-				return {
-					user,
-					mediaBoard,
-					mediaLine,
-				};
-			};
-
-			it('should check the authorization', async () => {
-				const { user, mediaBoard } = setup();
-
-				await uc.createLine(user.id, mediaBoard.id);
-
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					user,
-					AuthorizationContextBuilder.write([])
-				);
-			});
-
-			it('should return a new media line', async () => {
-				const { user, mediaBoard, mediaLine } = setup();
-
-				const result = await uc.createLine(user.id, mediaBoard.id);
-
-				expect(result).toEqual(mediaLine);
-			});
-		});
-
-		describe('when the feature is disabled', () => {
-			const setup = () => {
-				const user = userEntityFactory.build();
-				const mediaBoard = mediaBoardFactory.build();
-
-				configService.get.mockReturnValueOnce(false);
-
-				return {
-					user,
-					mediaBoard,
-				};
-			};
-
-			it('should throw an exception', async () => {
-				const { user, mediaBoard } = setup();
-
-				await expect(uc.createLine(user.id, mediaBoard.id)).rejects.toThrow(FeatureDisabledLoggableException);
-			});
-		});
-	});
-
 	describe('moveLine', () => {
 		describe('when the user moves a media line', () => {
 			const setup = () => {
