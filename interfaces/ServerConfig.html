@@ -1945,8 +1945,8 @@ export enum NodeEnvType {
 	MIGRATION &#x3D; &#x27;migration&#x27;,
 }
 
-// Envirement keys should be added over configs from modules, directly adding is only allow for legacy stuff
-// Maye some of them must be outsource to additional microservice config endpoints.
+// Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
+// Maye some of them must be outsourced to additional microservice config endpoints.
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
@@ -2082,9 +2082,10 @@ const config: ServerConfig &#x3D; {
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
+	// parse [&lt;description&gt;:]&lt;token&gt;,[&lt;description&gt;:]&lt;token&gt;... and  discard description
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
-		.map((apiKey) &#x3D;&gt; apiKey.trim()),
+		.map((part) &#x3D;&gt; (part.split(&#x27;:&#x27;).pop() ?? &#x27;&#x27;).trim()),
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get(&#x27;BLOCKLIST_OF_EMAIL_DOMAINS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((domain) &#x3D;&gt; domain.trim()),
