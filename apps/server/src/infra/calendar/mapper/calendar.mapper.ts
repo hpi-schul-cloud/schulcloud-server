@@ -1,6 +1,7 @@
 import { CalendarEvent } from '@infra/calendar/interface/calendar-event.interface';
 import { Injectable } from '@nestjs/common';
 import { CalendarEventDto } from '../dto/calendar-event.dto';
+import { CalendarEventId } from '../interface/calendar-event-id.interface';
 
 @Injectable()
 export class CalendarMapper {
@@ -9,11 +10,10 @@ export class CalendarMapper {
 		return new CalendarEventDto({
 			teamId: attributes['x-sc-teamid'],
 			title: attributes.summary,
-			id: attributes.id,
 		});
 	}
 
-	mapEventsToDto(events: CalendarEvent[]): CalendarEventDto[] {
-		return events.map((it) => this.mapToDto(it));
+	mapEventsToId(events: CalendarEventId): string[] {
+		return events.data.map((it) => it.id);
 	}
 }

@@ -1,6 +1,7 @@
 import { CalendarEvent } from '@infra/calendar/interface/calendar-event.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CalendarMapper } from './calendar.mapper';
+import { CalendarEventId } from '../interface/calendar-event-id.interface';
 
 describe('CalendarMapper', () => {
 	let module: TestingModule;
@@ -10,12 +11,15 @@ describe('CalendarMapper', () => {
 		data: [
 			{
 				attributes: {
-					id: 'id',
 					'x-sc-teamid': 'teamId',
 					summary: 'eventTitle',
 				},
 			},
 		],
+	};
+
+	const events: CalendarEventId = {
+		data: [{ id: '1' }, { id: '2' }],
 	};
 
 	beforeAll(async () => {
@@ -39,13 +43,10 @@ describe('CalendarMapper', () => {
 	});
 
 	it('mapEventsToDto', () => {
-		const events = [event, event];
-		// Act
-		const result = mapper.mapEventsToDto(events);
+		const result = mapper.mapEventsToId(events);
 
-		// Assert
-		expect(result[0].teamId).toEqual('teamId');
-		expect(result[0].title).toEqual('eventTitle');
+		expect(result[0]).toEqual('1');
+		expect(result[1]).toEqual('2');
 		expect(result.length).toEqual(2);
 	});
 });

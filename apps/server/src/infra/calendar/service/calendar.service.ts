@@ -6,9 +6,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
 import { Logger } from '@src/core/logger';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -17,16 +15,15 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
 } from '@modules/deletion';
 import { EntityId } from '@shared/domain/types';
 import { CalendarEventDto } from '../dto/calendar-event.dto';
 import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
+import { CalendarEventId } from '../interface/calendar-event-id.interface';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class CalendarService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class CalendarService implements DeletionService {
 	private readonly baseURL: string;
 
 	private readonly timeoutMs: number;
@@ -34,17 +31,11 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 	constructor(
 		private readonly httpService: HttpService,
 		private readonly calendarMapper: CalendarMapper,
-		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(CalendarService.name);
 		this.baseURL = Configuration.get('CALENDAR_URI') as string;
 		this.timeoutMs = Configuration.get('REQUEST_OPTION__TIMEOUT_MS') as number;
-	}
-
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
@@ -57,16 +48,12 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 			)
 		);
 
-		if (!userId) {
-			throw new InternalServerErrorException('User id is missing');
-		}
-		const events = await this.getAllEvents(userId);
-		const ids = events.map((it) => it.id);
+		const eventIds = await this.getAllEvents(userId);
 
 		await this.deleteEventsByScopeId(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, events.length, ids),
+			DomainOperationReportBuilder.build(OperationType.DELETE, eventIds.length, eventIds),
 		]);
 
 		this.logger.info(
@@ -76,7 +63,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 				userId,
 				StatusModel.FINISHED,
 				0,
-				events.length
+				eventIds.length
 			)
 		);
 
@@ -105,11 +92,11 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 			});
 	}
 
-	async getAllEvents(userId: EntityId): Promise<CalendarEventDto[]> {
+	async getAllEvents(userId: EntityId): Promise<string[]> {
 		const params = new URLSearchParams();
 
 		return firstValueFrom(
-			this.getList('/events', params, {
+			this.getRequest('/events', params, {
 				headers: {
 					Authorization: userId,
 					Accept: 'Application/json',
@@ -117,7 +104,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 				timeout: this.timeoutMs,
 			})
 		)
-			.then((resp: AxiosResponse<CalendarEvent[]>) => this.calendarMapper.mapEventsToDto(resp.data))
+			.then((resp: AxiosResponse<CalendarEventId>) => this.calendarMapper.mapEventsToId(resp.data))
 			.catch((error) => {
 				throw new InternalServerErrorException(
 					null,
@@ -127,7 +114,7 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 	}
 
 	async deleteEventsByScopeId(scopeId: EntityId): Promise<void> {
-		const request = this.httpService.delete(`/scopes/${scopeId}`, {
+		const request = this.delete(`/scopes/${scopeId}`, {
 			headers: {
 				Authorization: scopeId,
 				Accept: 'Application/json',
@@ -158,14 +145,20 @@ export class CalendarService implements DeletionService, IEventHandler<UserDelet
 		return this.httpService.get(url.toString(), config);
 	}
 
-	private getList(
+	private getRequest(
 		path: string,
 		queryParams: URLSearchParams,
 		config: AxiosRequestConfig
-	): Observable<AxiosResponse<CalendarEvent[]>> {
+	): Observable<AxiosResponse<CalendarEventId>> {
 		const url: URL = new URL(this.baseURL);
 		url.pathname = path;
 		url.search = queryParams.toString();
 		return this.httpService.get(url.toString(), config);
+	}
+
+	private delete(path: string, config: AxiosRequestConfig): Observable<AxiosResponse<void>> {
+		const url: URL = new URL(this.baseURL);
+		url.pathname = path;
+		return this.httpService.delete(url.toString(), config);
 	}
 }

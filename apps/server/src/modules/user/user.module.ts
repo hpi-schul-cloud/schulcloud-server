@@ -7,6 +7,7 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RegistrationPinModule } from '@modules/registration-pin';
+import { CalendarModule } from '@src/infra/calendar';
 import { UserService } from './service/user.service';
 
 @Module({
@@ -17,6 +18,7 @@ import { UserService } from './service/user.service';
 		LoggerModule,
 		CqrsModule,
 		RegistrationPinModule,
+		CalendarModule,
 	],
 	providers: [UserRepo, UserDORepo, UserService],
 	exports: [UserService, UserRepo],

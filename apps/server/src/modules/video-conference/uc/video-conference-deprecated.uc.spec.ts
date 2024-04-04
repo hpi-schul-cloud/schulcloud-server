@@ -69,7 +69,6 @@ describe('VideoConferenceUc', () => {
 	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
 	const eventId = 'eventId';
 	const event: CalendarEventDto = new CalendarEventDto({
-		id: 'id',
 		title: 'eventTitle',
 		teamId: 'teamId',
 	});
