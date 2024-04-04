@@ -1,0 +1,4 @@
+export enum SchoolErrorEnum {
+	SCHOOL_HAS_NO_SYSTEM = 'SCHOOL_HAS_NO_SYSTEM',
+	SYSTEM_NOT_FOUND = 'SYSTEM_NOT_FOUND',
+}

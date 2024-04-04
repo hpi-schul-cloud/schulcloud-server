@@ -2,12 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { systemFactory } from '@shared/testing';
 import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
+import { SchoolHasNoSystemLoggableException, SystemNotFoundLoggableException } from '../error';
 import { SchoolFactory } from '../factory';
 import { SchoolRepo } from '../interface';
 import { SchoolQuery } from '../query';
@@ -704,10 +704,7 @@ describe('SchoolService', () => {
 				const systemId = '1';
 
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
-				const expectedError = new NotFoundLoggableException('System not found in school.', {
-					schoolId: school.id,
-					systemId,
-				});
+				const expectedError = new SchoolHasNoSystemLoggableException(school.id, systemId);
 
 				return { school, systemId, expectedError };
 			};
@@ -722,11 +719,9 @@ describe('SchoolService', () => {
 		describe('when school has systemId but system not exists', () => {
 			const setup = () => {
 				const systemId = '1';
-				const school = schoolFactory.build({ systemIds: [] });
+				const school = schoolFactory.build({ systemIds: [systemId] });
 
-				const expectedError = new NotFoundLoggableException('System not found.', {
-					systemId,
-				});
+				const expectedError = new SystemNotFoundLoggableException(systemId);
 
 				systemService.findById.mockResolvedValueOnce(null);
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
