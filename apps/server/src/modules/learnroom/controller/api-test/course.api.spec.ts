@@ -217,7 +217,7 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	describe('[GET] /courses/:courseId/userPermissions', () => {
+	describe('[GET] /courses/:courseId/user-permissions', () => {
 		const setup = () => {
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
@@ -234,7 +234,7 @@ describe('Course Controller (API)', () => {
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/userPermissions`);
+			const response = await loggedInClient.get(`${course.id}/user-permissions`);
 			const data = response.body as { [key: string]: string[] };
 
 			expect(response.statusCode).toBe(200);

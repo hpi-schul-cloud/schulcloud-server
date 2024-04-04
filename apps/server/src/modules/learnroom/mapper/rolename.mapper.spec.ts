@@ -19,8 +19,8 @@ describe('rolename mapper', () => {
 	});
 
 	const setup = () => {
-		const { teacherUser } = UserAndAccountTestFactory.buildTeacher({}, []);
-		const { studentUser } = UserAndAccountTestFactory.buildStudent({}, []);
+		const teacherUser = userFactory.asTeacher().buildWithId();
+		const studentUser = userFactory.asStudent().buildWithId();
 		const course = courseFactory.build({
 			teachers: [teacherUser],
 			students: [studentUser],

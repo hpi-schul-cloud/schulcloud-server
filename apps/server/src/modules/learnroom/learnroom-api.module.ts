@@ -2,8 +2,9 @@ import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
+import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
-import { CourseRepo, DashboardModelMapper, DashboardRepo, LegacyBoardRepo, RoleRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, DashboardModelMapper, DashboardRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -21,10 +22,16 @@ import {
 	RoomsAuthorisationService,
 	RoomsUc,
 } from './uc';
-import { RoleService } from '../role';
 
 @Module({
-	imports: [AuthorizationModule, LessonModule, CopyHelperModule, LearnroomModule, AuthorizationReferenceModule],
+	imports: [
+		AuthorizationModule,
+		LessonModule,
+		CopyHelperModule,
+		LearnroomModule,
+		AuthorizationReferenceModule,
+		RoleModule,
+	],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -45,8 +52,6 @@ import { RoleService } from '../role';
 		},
 		DashboardModelMapper,
 		CourseRepo,
-		RoleRepo,
-		RoleService,
 		UserRepo,
 		LegacyBoardRepo,
 	],
