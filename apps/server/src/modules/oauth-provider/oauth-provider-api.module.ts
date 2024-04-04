@@ -1,7 +1,7 @@
 import { OauthProviderServiceModule } from '@infra/oauth-provider';
 import { AuthorizationModule } from '@modules/authorization';
 import { PseudonymModule } from '@modules/pseudonym';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { OauthProviderController } from './controller/oauth-provider.controller';

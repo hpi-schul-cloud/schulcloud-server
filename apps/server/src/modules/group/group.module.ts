@@ -1,10 +1,10 @@
-import { LearnroomModule } from '@modules/learnroom/learnroom.module';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { GroupRepo } from './repo';
 import { GroupService } from './service';
 
 @Module({
-	imports: [LearnroomModule],
+	imports: [CqrsModule],
 	providers: [GroupRepo, GroupService],
 	exports: [GroupService],
 })

@@ -1,18 +1,17 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import { Course } from '@modules/learnroom/domain';
-import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, type UserDO } from '@shared/domain/domainobject';
 import { IFindQuery } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupTypes } from '../domain';
+import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
-	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseDoService) {}
+	constructor(private readonly groupRepo: GroupRepo, private readonly eventBus: EventBus) {}
 
 	public async findById(id: EntityId): Promise<Group> {
 		const group: Group | null = await this.groupRepo.findGroupById(id);
@@ -91,17 +90,6 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	public async delete(group: Group): Promise<void> {
 		await this.groupRepo.delete(group);
 
-		await this.removeCourseSyncReference(group);
-	}
-
-	private async removeCourseSyncReference(group: Group) {
-		const courses: Course[] = await this.courseService.findBySyncedGroup(group);
-
-		courses.forEach((course: Course): void => {
-			course.students = [];
-			course.syncedWithGroup = undefined;
-		});
-
-		await this.courseService.saveAll(courses);
+		await this.eventBus.publish(new GroupDeletedEvent(group));
 	}
 }
