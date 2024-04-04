@@ -2,7 +2,7 @@ import { CalendarModule } from '@infra/calendar';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConverterUtil } from '@shared/common';

@@ -5,7 +5,7 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { GroupController } from './controller';
