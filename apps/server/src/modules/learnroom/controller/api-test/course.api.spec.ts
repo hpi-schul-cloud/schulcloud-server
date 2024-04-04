@@ -53,7 +53,6 @@ describe('Course Controller (API)', () => {
 			const student = createStudent();
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
-				name: 'course #1',
 				teachers: [teacher.user],
 				students: [student.user],
 			});
@@ -100,7 +99,6 @@ describe('Course Controller (API)', () => {
 			const substitutionTeacher = createTeacher();
 			const teacherUnknownToCourse = createTeacher();
 			const course = courseFactory.build({
-				name: 'course #1',
 				teachers: [teacher.user],
 				students: [student1.user, student2.user],
 			});
@@ -160,7 +158,6 @@ describe('Course Controller (API)', () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
 				const course = courseFactory.build({
-					name: 'course #1',
 					teachers: [teacher.user],
 					syncedWithGroup: group,
 				});
@@ -192,7 +189,6 @@ describe('Course Controller (API)', () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
 				const course = courseFactory.build({
-					name: 'course #1',
 					teachers: [teacher.user],
 					syncedWithGroup: group,
 				});
@@ -225,7 +221,6 @@ describe('Course Controller (API)', () => {
 		const setup = () => {
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
-				name: 'course #1',
 				teachers: [teacher.user],
 				students: [],
 			});
