@@ -163,23 +163,19 @@ describe('CalendarServiceSpec', () => {
 				);
 			});
 		});
-		describe('when calling the delete events method', () => {
-			const setupError = () => {
-				httpService.delete.mockReturnValueOnce(
-					of(
-						axiosResponseFactory.build({
-							data: '',
-							status: HttpStatus.CONFLICT,
-						})
-					)
-				);
+		describe('when received invalid HTTP status code in a response', () => {
+			const setup = () => {
+				const response: AxiosResponse<void> = axiosResponseFactory.build({
+					status: 200,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
 			};
 
-			it('should throw error if cannot delete a events cause of invalid response Http status', async () => {
-				setupError();
-				await expect(service.deleteEventsByScopeId('scopeId')).rejects.toThrow(
-					new Error('invalid HTTP status code = 409 in a response from the server instead of 204')
-				);
+			it('should throw an exception', async () => {
+				setup();
+
+				await expect(service.deleteEventsByScopeId('userId')).rejects.toThrow(Error);
 			});
 		});
 

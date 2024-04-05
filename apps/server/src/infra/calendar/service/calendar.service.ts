@@ -73,7 +73,6 @@ export class CalendarService implements DeletionService {
 	async findEvent(userId: EntityId, eventId: EntityId): Promise<CalendarEventDto> {
 		const params = new URLSearchParams();
 		params.append('event-id', eventId);
-
 		return firstValueFrom(
 			this.get<CalendarEvent>('/events', params, {
 				headers: {
@@ -94,43 +93,45 @@ export class CalendarService implements DeletionService {
 
 	async getAllEvents(userId: EntityId): Promise<string[]> {
 		const params = new URLSearchParams();
-
-		return firstValueFrom(
-			this.get<CalendarEventId>('/events', params, {
-				headers: {
-					Authorization: userId,
-					Accept: 'Application/json',
-				},
-				timeout: this.timeoutMs,
-			})
-		)
-			.then((resp: AxiosResponse<CalendarEventId>) => this.calendarMapper.mapEventsToId(resp.data))
-			.catch((error) => {
-				throw new InternalServerErrorException(
-					null,
-					ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:getAllEvents')
-				);
-			});
+		try {
+			const resp = await firstValueFrom(
+				this.get<CalendarEventId>('/events', params, {
+					headers: {
+						Authorization: userId,
+						Accept: 'Application/json',
+					},
+					timeout: this.timeoutMs,
+				})
+			);
+			return this.calendarMapper.mapEventsToId(resp.data);
+		} catch (error) {
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:getAllEvents')
+			);
+		}
 	}
 
 	async deleteEventsByScopeId(scopeId: EntityId): Promise<void> {
-		const request = this.delete(`/scopes/${scopeId}`, {
-			headers: {
-				Authorization: scopeId,
-				Accept: 'Application/json',
-			},
-			timeout: this.timeoutMs,
-		});
+		try {
+			const request = this.delete(`/scopes/${scopeId}`, {
+				headers: {
+					Authorization: scopeId,
+					Accept: 'Application/json',
+				},
+				timeout: this.timeoutMs,
+			});
 
-		const resp = await firstValueFrom(request).catch((error) => {
+			const resp = await firstValueFrom(request);
+
+			if (resp.status !== 204) {
+				throw new Error(`invalid HTTP status code = ${resp.status} in a response from the server instead of 204`);
+			}
+		} catch (error) {
 			throw new InternalServerErrorException(
 				null,
 				ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:deleteEventsByScopeId')
 			);
-		});
-
-		if (resp.status !== 204) {
-			throw new Error(`invalid HTTP status code = ${resp.status} in a response from the server instead of 204`);
 		}
 	}
 
