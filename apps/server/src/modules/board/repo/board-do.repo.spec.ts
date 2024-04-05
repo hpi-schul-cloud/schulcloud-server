@@ -8,8 +8,21 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
-import { CardNode, ColumnBoardNode, ExternalToolElementNodeEntity, RichTextElementNode } from '@shared/domain/entity';
+import {
+	AnyBoardDo,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	ColumnBoard,
+} from '@shared/domain/domainobject';
+import {
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ExternalToolElementNodeEntity,
+	RichTextElementNode,
+} from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,
@@ -23,6 +36,9 @@ import {
 	courseFactory,
 	externalToolElementNodeFactory,
 	fileElementFactory,
+	mediaBoardNodeFactory,
+	mediaExternalToolElementNodeFactory,
+	mediaLineNodeFactory,
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
@@ -568,6 +584,73 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(card);
 
 				expect(card.acceptAsync).toHaveBeenCalledWith(recursiveDeleteVisitor);
+			});
+		});
+	});
+
+	describe('deleteByExternalReference', () => {
+		describe('when deleting a board by its external reference', () => {
+			const setup = async () => {
+				const courseContext: BoardExternalReference = {
+					id: new ObjectId().toHexString(),
+					type: BoardExternalReferenceType.Course,
+				};
+				const courseBoard = columnBoardNodeFactory.buildWithId({ context: courseContext });
+				const courseColumn = columnNodeFactory.buildWithId({ parent: courseBoard });
+				const courseCard = cardNodeFactory.buildWithId({ parent: courseColumn });
+				const courseElement = richTextElementNodeFactory.buildWithId({ parent: courseCard });
+
+				const userContext: BoardExternalReference = {
+					id: new ObjectId().toHexString(),
+					type: BoardExternalReferenceType.User,
+				};
+				const userMediaBoard = mediaBoardNodeFactory.buildWithId({ context: userContext });
+				const userMediaLine = mediaLineNodeFactory.buildWithId({ parent: userMediaBoard });
+				const userMediaElement = mediaExternalToolElementNodeFactory.buildWithId({ parent: userMediaLine });
+
+				await em.persistAndFlush([
+					courseBoard,
+					courseColumn,
+					courseCard,
+					courseElement,
+					userMediaBoard,
+					userMediaLine,
+					userMediaElement,
+				]);
+				em.clear();
+
+				return {
+					courseContext,
+					courseBoard,
+					courseColumn,
+					courseCard,
+					courseElement,
+					userMediaBoard,
+					userMediaLine,
+					userMediaElement,
+				};
+			};
+
+			it('should delete a board with the given reference', async () => {
+				const { courseContext, courseBoard, courseColumn, courseCard, courseElement } = await setup();
+
+				await repo.deleteByExternalReference(courseContext);
+				em.clear();
+
+				await expect(
+					em.find(BoardNode, { id: { $in: [courseBoard.id, courseColumn.id, courseCard.id, courseElement.id] } })
+				).resolves.toHaveLength(0);
+			});
+
+			it('should not delete a board without the given reference', async () => {
+				const { courseContext, userMediaBoard, userMediaLine, userMediaElement } = await setup();
+
+				await repo.deleteByExternalReference(courseContext);
+				em.clear();
+
+				await expect(
+					em.find(BoardNode, { id: { $in: [userMediaBoard.id, userMediaLine.id, userMediaElement.id] } })
+				).resolves.toHaveLength(3);
 			});
 		});
 	});

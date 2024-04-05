@@ -21,8 +21,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { MediaLineUc } from '../../uc';
-import type { MoveColumnBodyParams, RenameBodyParams } from '../dto';
-import type { LineUrlParams } from './dto';
+import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
+import { LineUrlParams } from './dto';
 
 @ApiTags('Media Line')
 @Authenticate('jwt')
@@ -67,7 +67,7 @@ export class MediaLineController {
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete(':lineId')
-	async deleteCard(@Param() urlParams: LineUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	async deleteLine(@Param() urlParams: LineUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.mediaLineUc.deleteLine(currentUser.userId, urlParams.lineId);
 	}
 }

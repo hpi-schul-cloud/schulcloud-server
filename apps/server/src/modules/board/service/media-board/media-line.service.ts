@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { type AnyBoardDo, ColumnInitProps, MediaBoard, MediaLine } from '@shared/domain/domainobject';
+import { type AnyBoardDo, MediaBoard, MediaLine, MediaLineInitProps } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
@@ -15,10 +15,10 @@ export class MediaLineService {
 		return line;
 	}
 
-	public async create(parent: MediaBoard, props?: ColumnInitProps): Promise<MediaLine> {
+	public async create(parent: MediaBoard, props?: MediaLineInitProps): Promise<MediaLine> {
 		const line: MediaLine = new MediaLine({
 			id: new ObjectId().toHexString(),
-			title: props?.title,
+			title: props?.title ?? '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

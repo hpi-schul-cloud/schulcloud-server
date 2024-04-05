@@ -3,11 +3,11 @@ import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } fr
 import { MediaExternalToolElement } from './media-external-tool-element.do';
 
 export class MediaLine extends BoardComposite<MediaLineProps> {
-	get title(): string | undefined {
+	get title(): string {
 		return this.props.title;
 	}
 
-	set title(title: string | undefined) {
+	set title(title: string) {
 		this.props.title = title;
 	}
 
@@ -27,10 +27,10 @@ export class MediaLine extends BoardComposite<MediaLineProps> {
 }
 
 export interface MediaLineProps extends BoardCompositeProps {
-	title?: string;
+	title: string;
 }
 
-export type MediaLineInitProps = Omit<MediaLine, keyof BoardCompositeProps>;
+export type MediaLineInitProps = Omit<MediaLineProps, keyof BoardCompositeProps>;
 
 export function isMediaLine(reference: unknown): reference is MediaLine {
 	return reference instanceof MediaLine;

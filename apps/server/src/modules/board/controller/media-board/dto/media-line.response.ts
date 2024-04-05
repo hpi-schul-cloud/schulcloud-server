@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { TimestampsResponse } from '../../dto';
 import { MediaExternalToolElementResponse } from './media-external-tool-element.response';
@@ -7,9 +7,9 @@ export class MediaLineResponse {
 	@ApiProperty()
 	id: string;
 
-	@ApiPropertyOptional()
+	@ApiProperty()
 	@DecodeHtmlEntities()
-	title?: string;
+	title: string;
 
 	@ApiProperty({
 		type: [MediaExternalToolElementResponse],

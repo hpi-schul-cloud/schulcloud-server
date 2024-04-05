@@ -12,7 +12,7 @@ import {
 import { ApiValidationError } from '@shared/common';
 import type { MediaBoard, MediaLine } from '@shared/domain/domainobject';
 import { MediaBoardUc } from '../../uc';
-import type { BoardUrlParams } from '../dto';
+import { BoardUrlParams } from '../dto';
 import { MediaBoardResponse, MediaLineResponse } from './dto';
 import { MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 

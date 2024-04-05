@@ -51,7 +51,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public put(subPath?: string, data = {}): supertest.Test {
+	public put<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.put(path)
@@ -61,7 +61,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public patch(subPath?: string, data = {}): supertest.Test {
+	public patch<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.patch(path)
@@ -71,7 +71,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public post(subPath?: string, data = {}): supertest.Test {
+	public post<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)

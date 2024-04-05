@@ -19,8 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { MediaElementUc } from '../../uc';
-import { MoveColumnBodyParams } from '../dto';
-import { ElementUrlParams } from './dto';
+import { ElementUrlParams, MoveElementBodyParams } from './dto';
 
 @ApiTags('Media Element')
 @Authenticate('jwt')
@@ -37,13 +36,13 @@ export class MediaElementController {
 	@Put(':elementId/position')
 	public async moveElement(
 		@Param() urlParams: ElementUrlParams,
-		@Body() bodyParams: MoveColumnBodyParams,
+		@Body() bodyParams: MoveElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.mediaElementUc.moveElement(
 			currentUser.userId,
 			urlParams.elementId,
-			bodyParams.toBoardId,
+			bodyParams.toLineId,
 			bodyParams.toPosition
 		);
 	}
