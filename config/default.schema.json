@@ -1181,7 +1181,7 @@
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
-    },
+		},
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1344,7 +1344,7 @@
 				},
 				"ALLOWED_API_KEYS": {
 					"type": "string",
-					"description": "Allowed Admin API keys (for accessing the Admin API)."
+					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
 				}
 			},
 			"default": {
@@ -1408,11 +1408,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables groups of type class in courses"
-		},
-		"FEATURE_NEST_SYSTEMS_API_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Uses the v3 api over the v1 api for systems"
 		},
 		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
 			"type": "boolean",
