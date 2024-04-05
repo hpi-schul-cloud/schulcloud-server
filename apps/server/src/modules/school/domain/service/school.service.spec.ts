@@ -7,7 +7,11 @@ import { systemFactory } from '@shared/testing';
 import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
-import { SchoolHasNoSystemLoggableException, SystemNotFoundLoggableException } from '../error';
+import {
+	SchoolHasNoSystemLoggableException,
+	SystemCanNotBeDeletedLoggableException,
+	SystemNotFoundLoggableException,
+} from '../error';
 import { SchoolFactory } from '../factory';
 import { SchoolRepo } from '../interface';
 import { SchoolQuery } from '../query';
@@ -683,18 +687,18 @@ describe('SchoolService', () => {
 				const system = systemFactory.build({ ldapConfig: { provider: 'test' } });
 				const school = schoolFactory.build({ systemIds: [system.id] });
 
+				const expectedError = new SystemCanNotBeDeletedLoggableException(system.id);
+
 				systemService.findById.mockResolvedValueOnce(system);
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 
-				return { school, systemId: system.id, system };
+				return { school, systemId: system.id, system, expectedError };
 			};
 
-			it('should call systemService.delete', async () => {
-				const { school, systemId } = setup();
+			it('should throw an error', async () => {
+				const { school, systemId, expectedError } = setup();
 
-				await service.removeSystemFromSchool(school, systemId);
-
-				expect(systemService.delete).not.toBeCalled();
+				await expect(service.removeSystemFromSchool(school, systemId)).rejects.toThrowError(expectedError);
 			});
 		});
 

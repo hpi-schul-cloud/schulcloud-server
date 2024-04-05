@@ -13,6 +13,7 @@ import {
 	systemEntityFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { SchoolErrorEnum } from '../../domain/error';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -457,7 +458,7 @@ describe('School Controller (API)', () => {
 		describe('when user is logged in', () => {
 			describe('when user is an admin with needed permissions and the system is not deletable', () => {
 				const setup = async () => {
-					const system = systemEntityFactory.build({ ldapConfig: {} });
+					const system = systemEntityFactory.build({ ldapConfig: { provider: 'ldap' } });
 					const school = schoolEntityFactory.build({ systems: [system] });
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
@@ -472,13 +473,23 @@ describe('School Controller (API)', () => {
 				it('should remove the given systemId from the systemIds of the school but not the system itself', async () => {
 					const { loggedInClient, school, system } = await setup();
 
-					const response = await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
-
-					expect(response.status).toEqual(HttpStatus.OK);
+					await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
 					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
-					expect(updatedSchool?.systems.getIdentifiers()).not.toContain(system.id);
+					expect(updatedSchool?.systems.getIdentifiers()).toContain(system.id);
 					const systemAfterUpdate = await em.findOne(SystemEntity, { id: system.id });
 					expect(systemAfterUpdate).not.toBeNull();
+				});
+
+				it('should throw SYSTEM_CAN_NOT_BE_DELETED error', async () => {
+					const { loggedInClient, school, system } = await setup();
+
+					const response = await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
+					expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+					expect(response.body).toEqual(
+						expect.objectContaining({
+							type: SchoolErrorEnum.SYSTEM_CAN_NOT_BE_DELETED,
+						})
+					);
 				});
 			});
 

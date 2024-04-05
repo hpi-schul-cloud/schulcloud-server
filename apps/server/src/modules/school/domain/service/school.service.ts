@@ -7,7 +7,7 @@ import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
-import { SchoolHasNoSystemLoggableException } from '../error';
+import { SchoolHasNoSystemLoggableException, SystemCanNotBeDeletedLoggableException } from '../error';
 import { SystemNotFoundLoggableException } from '../error/system-not-found.loggable-exception';
 import { SchoolFactory } from '../factory';
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
@@ -118,6 +118,8 @@ export class SchoolService {
 
 		if (system.isDeletable()) {
 			await this.systemService.delete(system);
+		} else {
+			throw new SystemCanNotBeDeletedLoggableException(systemId);
 		}
 
 		return system;
