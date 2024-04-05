@@ -182,6 +182,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#hasSystem" >hasSystem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#isEligibleForExternalInvite" >isEligibleForExternalInvite</a>
                             </li>
                             <li>
@@ -195,6 +199,10 @@
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#removeInstanceFeature" >removeInstanceFeature</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#removeSystem" >removeSystem</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -418,6 +426,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="hasSystem"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>hasSystem</b></span>
+                        <a href="#hasSystem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasSystem(systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isEligibleForExternalInvite"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -608,6 +685,75 @@
                                                 <td>feature</td>
                                             <td>
                                                             <code><a href="../miscellaneous/enumerations.html#InstanceFeature" target="_self" >InstanceFeature</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeSystem"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>removeSystem</b></span>
+                        <a href="#removeSystem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeSystem(systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/do/school.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -920,6 +1066,20 @@ export class School extends DomainObject&lt;SchoolProps&gt; {
 		const result &#x3D; hasEligiblePurpose &amp;&amp; isNotOwnSchool;
 
 		return result;
+	}
+
+	public hasSystem(systemId: EntityId): boolean {
+		const { systemIds } &#x3D; this.props;
+
+		const result &#x3D; systemIds?.includes(systemId) ?? false;
+
+		return result;
+	}
+
+	public removeSystem(systemId: EntityId) {
+		if (this.props.systemIds) {
+			this.props.systemIds &#x3D; this.props.systemIds.filter((id) &#x3D;&gt; id !&#x3D;&#x3D; systemId);
+		}
 	}
 }
 

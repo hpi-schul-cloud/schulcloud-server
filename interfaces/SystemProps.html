@@ -559,6 +559,12 @@ export class System extends DomainObject&lt;SystemProps&gt; {
 	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
 		return this.props.provisioningStrategy;
 	}
+
+	public isDeletable(): boolean {
+		const isDeletable &#x3D; this.ldapConfig?.provider &#x3D;&#x3D;&#x3D; &#x27;general&#x27;;
+
+		return isDeletable;
+	}
 }
 </code></pre>
     </div>

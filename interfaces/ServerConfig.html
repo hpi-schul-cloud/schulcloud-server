@@ -158,7 +158,6 @@
                             <code><a href="../interfaces/IUserImportFeatures.html" target="_self" >IUserImportFeatures</a></code>
                             <code><a href="../interfaces/SchulconnexClientConfig.html" target="_self" >SchulconnexClientConfig</a></code>
                             <code><a href="../interfaces/SynchronizationConfig.html" target="_self" >SynchronizationConfig</a></code>
-                            <code><a href="../interfaces/SystemConfig.html" target="_self" >SystemConfig</a></code>
                             <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ProvisioningConfig</a></code>
             </p>
 
@@ -1923,7 +1922,6 @@ import type { LearnroomConfig } from &#x27;@modules/learnroom&#x27;;
 import type { LessonConfig } from &#x27;@modules/lesson&#x27;;
 import type { SchoolConfig } from &#x27;@modules/school&#x27;;
 import type { SharingConfig } from &#x27;@modules/sharing&#x27;;
-import type { SystemConfig } from &#x27;@modules/system&#x27;;
 import { getTldrawClientConfig, type TldrawClientConfig } from &#x27;@modules/tldraw-client&#x27;;
 import { ToolConfiguration, type IToolFeatures } from &#x27;@modules/tool&#x27;;
 import type { UserConfig } from &#x27;@modules/user&#x27;;
@@ -1968,7 +1966,6 @@ export interface ServerConfig
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
-		SystemConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -2053,7 +2050,6 @@ const config: ServerConfig &#x3D; {
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get(&#x27;FEATURE_SCHOOL_POLICY_ENABLED_NEW&#x27;) as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get(&#x27;FEATURE_SCHOOL_TERMS_OF_USE_ENABLED&#x27;) as boolean,
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get(&#x27;FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED&#x27;) as boolean,
-	FEATURE_NEST_SYSTEMS_API_ENABLED: Configuration.get(&#x27;FEATURE_NEST_SYSTEMS_API_ENABLED&#x27;) as boolean,
 	GHOST_BASE_URL: Configuration.get(&#x27;GHOST_BASE_URL&#x27;) as string,
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get(&#x27;ROCKETCHAT_SERVICE_ENABLED&#x27;) as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get(&#x27;JWT_SHOW_TIMEOUT_WARNING_SECONDS&#x27;) as number,

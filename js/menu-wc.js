@@ -2372,13 +2372,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolApiModule.html" data-type="entity-link" >SchoolApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' : 'data-bs-target="#xs-controllers-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' }>
+                                            'data-bs-target="#controllers-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' : 'data-bs-target="#xs-controllers-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' :
-                                            'id="xs-controllers-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' :
+                                            'id="xs-controllers-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' }>
                                             <li class="link">
                                                 <a href="controllers/SchoolController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolController</a>
                                             </li>
@@ -2386,13 +2386,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' : 'data-bs-target="#xs-injectables-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' }>
+                                        'data-bs-target="#injectables-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' : 'data-bs-target="#xs-injectables-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' :
-                                        'id="xs-injectables-links-module-SchoolApiModule-6f1f09548b234d3ed980129d86b1428a89100d884adfae00a7b6a7044cf89bf45c989792c8e7aeac373808b692db85df7eeefccd6a0bfb41cdead8d8c74ae7ec"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' :
+                                        'id="xs-injectables-links-module-SchoolApiModule-9decf8b525aec179a50083dd32052b9a423c65fef1487cfb68f78f651c907cf33f9bcce0107b9c3393170165b7931fb7c2744d88d0e067458e6d376bc8e5d340"' }>
                                         <li class="link">
                                             <a href="injectables/SchoolUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolUc</a>
                                         </li>
@@ -5702,6 +5702,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolForLdapLoginResponse.html" data-type="entity-link" >SchoolForLdapLoginResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolHasNoSystemLoggableException.html" data-type="entity-link" >SchoolHasNoSystemLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolIdDoesNotMatchWithUserSchoolId.html" data-type="entity-link" >SchoolIdDoesNotMatchWithUserSchoolId</a>
                             </li>
                             <li class="link">
@@ -5751,6 +5754,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolQueryParams.html" data-type="entity-link" >SchoolQueryParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolRemoveSystemUrlParams.html" data-type="entity-link" >SchoolRemoveSystemUrlParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolResponse.html" data-type="entity-link" >SchoolResponse</a>
@@ -5999,6 +6005,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/System.html" data-type="entity-link" >System</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SystemCanNotBeDeletedLoggableException.html" data-type="entity-link" >SystemCanNotBeDeletedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SystemDto.html" data-type="entity-link" >SystemDto</a>
                             </li>
                             <li class="link">
@@ -6024,6 +6033,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SystemMapper.html" data-type="entity-link" >SystemMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SystemNotFoundLoggableException.html" data-type="entity-link" >SystemNotFoundLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SystemOidcMapper.html" data-type="entity-link" >SystemOidcMapper</a>
@@ -8210,9 +8222,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SynchronizationProps.html" data-type="entity-link" >SynchronizationProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/SystemConfig.html" data-type="entity-link" >SystemConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SystemEntityProps.html" data-type="entity-link" >SystemEntityProps</a>

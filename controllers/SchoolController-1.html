@@ -188,6 +188,13 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeSystemFromSchool" >removeSystemFromSchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -622,6 +629,97 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="removeSystemFromSchool"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>removeSystemFromSchool</b></span>
+                        <a href="#removeSystemFromSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeSystemFromSchool(urlParams: <a href="../classes/SchoolRemoveSystemUrlParams.html" target="_self">SchoolRemoveSystemUrlParams</a>, user: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Patch(&#x27;/:schoolId/system/:systemId/remove&#x27;)<br />@Authenticate(&#x27;jwt&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolRemoveSystemUrlParams.html" target="_self" >SchoolRemoveSystemUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateSchool"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -734,7 +832,7 @@
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from &#x27;./dto/param&#x27;;
+import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from &#x27;./dto/param&#x27;;
 import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from &#x27;./dto/response&#x27;;
 import { SchoolExistsResponse } from &#x27;./dto/response/school-exists.response&#x27;;
 import { SchoolForLdapLoginResponse } from &#x27;./dto/response/school-for-ldap-login.response&#x27;;
@@ -813,6 +911,15 @@ export class SchoolController {
 		const res &#x3D; await this.schoolUc.updateSchool(user.userId, urlParams.schoolId, body);
 
 		return res;
+	}
+
+	@Patch(&#x27;/:schoolId/system/:systemId/remove&#x27;)
+	@Authenticate(&#x27;jwt&#x27;)
+	public async removeSystemFromSchool(
+		@Param() urlParams: SchoolRemoveSystemUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.schoolUc.removeSystemFromSchool(urlParams.schoolId, urlParams.systemId, user.userId);
 	}
 }
 </code></pre>

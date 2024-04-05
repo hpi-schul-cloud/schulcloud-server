@@ -170,6 +170,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#isDeletable" >isDeletable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#getProps" >getProps</a>
                             </li>
                         </ul>
@@ -251,6 +255,45 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isDeletable"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isDeletable</b></span>
+                        <a href="#isDeletable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isDeletable()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -412,6 +455,12 @@ export class System extends DomainObject&lt;SystemProps&gt; {
 
 	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
 		return this.props.provisioningStrategy;
+	}
+
+	public isDeletable(): boolean {
+		const isDeletable &#x3D; this.ldapConfig?.provider &#x3D;&#x3D;&#x3D; &#x27;general&#x27;;
+
+		return isDeletable;
 	}
 }
 </code></pre>
