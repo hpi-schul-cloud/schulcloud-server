@@ -86,7 +86,11 @@ describe(UserDeletedEventHandlerService.name, () => {
 
 				const result = await service.deleteUserData(userId);
 
-				expect(result).toEqual(DomainOperationReportBuilder.build(OperationType.DELETE, 1, [board.id]));
+				expect(result).toEqual(
+					DomainDeletionReportBuilder.build(DomainName.CLASS, [
+						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [board.id]),
+					])
+				);
 			});
 		});
 	});
