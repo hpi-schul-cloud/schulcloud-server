@@ -1344,7 +1344,7 @@
 				},
 				"ALLOWED_API_KEYS": {
 					"type": "string",
-					"description": "Allowed Admin API keys (for accessing the Admin API)."
+					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
 				}
 			},
 			"default": {
