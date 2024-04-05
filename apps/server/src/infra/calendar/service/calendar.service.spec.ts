@@ -169,7 +169,7 @@ describe('CalendarServiceSpec', () => {
 					status: 200,
 				});
 
-				httpService.post.mockReturnValueOnce(of(response));
+				httpService.delete.mockReturnValueOnce(of(response));
 			};
 
 			it('should throw an exception', async () => {

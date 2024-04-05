@@ -127,10 +127,10 @@ export class CalendarService implements DeletionService {
 			if (resp.status !== 204) {
 				throw new Error(`invalid HTTP status code = ${resp.status} in a response from the server instead of 204`);
 			}
-		} catch (error) {
+		} catch (err) {
 			throw new InternalServerErrorException(
-				null,
-				ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:deleteEventsByScopeId')
+				'CalendarService:deleteEventsByScopeId',
+				ErrorUtils.createHttpExceptionOptions(err)
 			);
 		}
 	}
