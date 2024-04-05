@@ -19,6 +19,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { DeletionConfig } from '@modules/deletion';
 import { ProvisioningConfig } from '../provisioning';
 import { SynchronizationConfig } from '../synchronization/synchronization.config';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
@@ -54,6 +55,7 @@ export interface ServerConfig
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
+		DeletionConfig,
 		SystemConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
@@ -169,6 +171,7 @@ const config: ServerConfig = {
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
+	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),

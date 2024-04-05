@@ -1345,12 +1345,18 @@
 				"ALLOWED_API_KEYS": {
 					"type": "string",
 					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
+				},
+				"MODIFICATION_THRESHOLD": {
+					"type": "number",
+					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
+
 			},
 			"default": {
 				"ENABLED": true,
 				"PORT": 4030,
-				"ALLOWED_API_KEYS": ""
+				"ALLOWED_API_KEYS": "",
+				"MODIFICATION_THRESHOLD": 60000
 			}
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
