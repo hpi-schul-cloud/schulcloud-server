@@ -2,12 +2,10 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const { program } = require('commander');
-const { v4: uuidv4 } = require('uuid');
 
-program.requiredOption('-u, --url <value>', '(Required) URL of the MongoDB instance').requiredOption(
-	'-s, --schoolId <value>',
-	'Official school numbers of the schools that should be migrated (space seperated values). If not given, all schools having an official school number will be migrated.'
-)
+program
+	.requiredOption('-u, --url <value>', '(Required) URL of the MongoDB instance')
+	.requiredOption('-s, --schoolId <value>', 'The schoolId of the migrated school, that should be roll-backed.');
 program.parse();
 
 const options = program.opts();
@@ -33,7 +31,7 @@ const User = mongoose.model(
 			_id: { type: Schema.Types.ObjectId, required: true },
 			ldapId: { type: Schema.Types.ObjectId, required: false },
 			previousExternalId: { type: Schema.Types.ObjectId, required: false },
-			lastLoginChange: { type: Schema.Types.Date, required: false },
+			lastLoginSystemChange: { type: Schema.Types.Date, required: false },
 		},
 		{
 			timestamps: true,
@@ -73,33 +71,41 @@ const UserLoginMigration = mongoose.model(
 	'user-login-migrations'
 );
 
-const up = async (schoolId) => {
+const up = async () => {
 	await connect();
+
+	const { schoolId } = options;
 
 	const migrationStart = await UserLoginMigration.findOne({ school: { _id: schoolId } })
 		.select('startedAt')
 		.lean()
 		.exec();
-	// const migrationStart = migration.startedAt;
 
 	const migratedUsersFromSchool = await User.find({ lastLoginSystemChange: { $gte: migrationStart } })
 		.lean()
 		.exec();
+	console.info(`found ${migratedUsersFromSchool.length} migrated users. Starting rollback.`);
 
-	migratedUsersFromSchool.forEach((user) => {
+	for await (const user of migratedUsersFromSchool) {
+		user.ldapId = undefined;
+		user.lastLoginSystemChange = undefined;
+
 		if (user.previousExternalId) {
 			user.ldapId = user.previousExternalId;
 			user.previousExternalId = undefined;
 		}
-		user.lastLoginChange = undefined;
 
-		await Account.findOneAndUpdate({userId: user.id})
-	});
+		await Account.findOneAndUpdate({ userId: user._id }, { $unset: { systemId: '' } });
+	}
+	console.info('Finished without errors');
+
+	await close();
+	return Promise.resolve();
 };
 
 (async () => {
 	try {
-		await up(schoolId);
+		await up();
 	} catch (e) {
 		console.error(e);
 		process.exit(1);
