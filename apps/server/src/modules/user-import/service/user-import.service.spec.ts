@@ -335,5 +335,25 @@ describe(UserImportService.name, () => {
 				});
 			});
 		});
+
+		describe('deleteImportUsersBySchool', () => {
+			describe('when deleting all import users of school', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+
+					return {
+						school,
+					};
+				};
+
+				it('should call deleteImportUsersBySchool', async () => {
+					const { school } = setup();
+
+					await service.deleteImportUsersBySchool(school);
+
+					expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(school);
+				});
+			});
+		});
 	});
 });
