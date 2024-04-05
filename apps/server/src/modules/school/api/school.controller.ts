@@ -2,8 +2,7 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
-import { SchoolRemoveSystemUrlParams } from './dto/param/school-remove-system-url.params';
+import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
