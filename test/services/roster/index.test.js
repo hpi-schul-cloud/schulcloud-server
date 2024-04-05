@@ -244,7 +244,7 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should call nest feathers roster service', () => {
+			it('should call nest feathers roster service', (done) => {
 				const { nestGroupStub } = setup();
 
 				groupsService
@@ -256,6 +256,11 @@ describe('roster service', function oauth() {
 					})
 					.then(() => {
 						assert.ok(nestGroupStub.calledOnce);
+						done();
+					})
+					.catch((err) => {
+						console.log('ERROR ROSTER');
+						console.log(err);
 					});
 			});
 		});
