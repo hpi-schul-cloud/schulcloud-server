@@ -9,7 +9,6 @@ import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
-import type { SystemConfig } from '@modules/system';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
 import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
@@ -54,7 +53,6 @@ export interface ServerConfig
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
-		SystemConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -139,7 +137,6 @@ const config: ServerConfig = {
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED') as boolean,
-	FEATURE_NEST_SYSTEMS_API_ENABLED: Configuration.get('FEATURE_NEST_SYSTEMS_API_ENABLED') as boolean,
 	GHOST_BASE_URL: Configuration.get('GHOST_BASE_URL') as string,
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,

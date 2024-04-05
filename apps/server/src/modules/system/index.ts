@@ -1,4 +1,3 @@
+export { LdapConfig, OauthConfig, System, SystemProps } from './domain';
+export { LegacySystemService, OauthConfigDto, OidcConfigDto, SystemDto, SystemService } from './service';
 export { SystemModule } from './system.module';
-export { SystemService, LegacySystemService, SystemDto, OauthConfigDto, OidcConfigDto } from './service';
-export { System, SystemProps, OauthConfig, LdapConfig } from './domain';
-export { SystemConfig } from './system.config';
