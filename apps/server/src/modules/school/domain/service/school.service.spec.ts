@@ -610,7 +610,7 @@ describe('SchoolService', () => {
 	describe('removeSystemFromSchool', () => {
 		describe('when school has system', () => {
 			const setup = () => {
-				const system = systemFactory.build();
+				const system = systemFactory.build({ ldapConfig: { provider: 'general' } });
 				const school = schoolFactory.build({ systemIds: [system.id] });
 
 				systemService.findById.mockResolvedValueOnce(system);
