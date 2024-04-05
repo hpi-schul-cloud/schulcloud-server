@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@modules/authorization/authorization.module';
-import { SchoolModule } from './school.module';
+import { Module } from '@nestjs/common';
 import { SchoolController, SchoolUc } from './api';
+import { SchoolModule } from './school.module';
 
 @Module({
 	imports: [SchoolModule, AuthorizationModule],

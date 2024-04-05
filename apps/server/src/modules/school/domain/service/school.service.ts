@@ -7,6 +7,8 @@ import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
+import { SchoolHasNoSystemLoggableException, SystemCanNotBeDeletedLoggableException } from '../error';
+import { SystemNotFoundLoggableException } from '../error/system-not-found.loggable-exception';
 import { SchoolFactory } from '../factory';
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import { SchoolQuery } from '../query';
@@ -94,6 +96,33 @@ export class SchoolService {
 		updatedSchool = this.addInstanceFeatures(updatedSchool);
 
 		return updatedSchool;
+	}
+
+	public async removeSystemFromSchool(school: School, systemId: EntityId): Promise<void> {
+		if (!school.hasSystem(systemId)) {
+			throw new SchoolHasNoSystemLoggableException(school.id, systemId);
+		}
+
+		const system = await this.tryFindAndRemoveSystem(systemId);
+
+		school.removeSystem(system.id);
+
+		await this.schoolRepo.save(school);
+	}
+
+	private async tryFindAndRemoveSystem(systemId: string) {
+		const system = await this.systemService.findById(systemId);
+		if (!system) {
+			throw new SystemNotFoundLoggableException(systemId);
+		}
+
+		if (system.isDeletable()) {
+			await this.systemService.delete(system);
+		} else {
+			throw new SystemCanNotBeDeletedLoggableException(systemId);
+		}
+
+		return system;
 	}
 
 	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {

@@ -32,6 +32,8 @@ export class UserImportFetchUc {
 
 		const matchedImportUsers: ImportUser[] = await this.userImportService.matchUsers(filteredFetchedData);
 
+		await this.userImportService.deleteImportUsersBySchool(user.school);
+
 		await this.userImportService.saveImportUsers(matchedImportUsers);
 	}
 
