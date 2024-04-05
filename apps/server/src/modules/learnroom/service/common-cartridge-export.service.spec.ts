@@ -7,9 +7,17 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import { columnBoardFactory, courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import {
+	columnBoardFactory,
+	createColumnBoardWithColumn,
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	taskFactory,
+} from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
+import { Column } from '@shared/domain/domainobject';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
@@ -64,6 +72,7 @@ describe('CommonCartridgeExportService', () => {
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
 		const columnBoard = columnBoardFactory.build();
+		const columnBoardWithChildren = createColumnBoardWithColumn.build();
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -72,6 +81,7 @@ describe('CommonCartridgeExportService', () => {
 		configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 		columnBoardServiceMock.findIdsByExternalReference.mockResolvedValue([faker.string.uuid()]);
 		columnBoardServiceMock.findById.mockResolvedValue(columnBoard);
+		columnBoardServiceMock.findById.mockResolvedValue(columnBoardWithChildren);
 
 		const buffer = await sut.exportCourse(
 			course.id,
@@ -82,7 +92,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, columnBoardWithChildren };
 	};
 
 	beforeAll(async () => {
@@ -172,6 +182,13 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', columnBoard.title));
+			});
+
+			it('should add column', async () => {
+				const { archive, columnBoardWithChildren } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', (columnBoardWithChildren.children[0] as Column).title));
 			});
 		});
 

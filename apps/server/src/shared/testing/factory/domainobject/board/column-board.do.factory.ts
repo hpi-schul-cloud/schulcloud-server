@@ -3,6 +3,7 @@ import { ColumnBoard, ColumnBoardProps } from '@shared/domain/domainobject';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../../base.factory';
+import { columnFactory } from './column.do.factory';
 
 export type IColumnBoardProperties = Readonly<ColumnBoardProps>;
 
@@ -17,6 +18,21 @@ export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequ
 		id: new ObjectId().toHexString(),
 		title: `column board #${sequence}`,
 		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		context: {
+			type: BoardExternalReferenceType.Course,
+			id: new ObjectId().toHexString(),
+		},
+		isVisible: true,
+	};
+});
+
+export const createColumnBoardWithColumn = ColumnBoardFactory.define(ColumnBoard, ({ sequence }) => {
+	return {
+		id: new ObjectId().toHexString(),
+		title: `column board #${sequence}`,
+		children: [columnFactory.build()],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		context: {
