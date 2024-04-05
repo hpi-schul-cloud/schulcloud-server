@@ -32,8 +32,6 @@ const RedisClientMock = class {
 	}
 };
 
-const redisLibraryMock = {
-	createClient: () => new RedisClientMock(),
-};
+const redisLibraryMock = new RedisClientMock();
 
 module.exports = redisLibraryMock;
