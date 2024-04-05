@@ -1,4 +1,4 @@
-import { BoardModule } from '@modules/board/board.module';
+import { BoardModule } from '@modules/board';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
@@ -30,6 +30,7 @@ import {
 	CourseGroupService,
 	CourseService,
 	DashboardService,
+	GroupDeletedHandlerService,
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
@@ -73,6 +74,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LegacyBoardRepo,
 		RoomsService,
 		UserRepo,
+		GroupDeletedHandlerService,
 	],
 	exports: [
 		CourseCopyService,
