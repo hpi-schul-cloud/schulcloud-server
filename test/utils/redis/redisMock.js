@@ -32,6 +32,4 @@ const RedisClientMock = class {
 	}
 };
 
-const redisLibraryMock = new RedisClientMock();
-
-module.exports = redisLibraryMock;
+module.exports = RedisClientMock;
