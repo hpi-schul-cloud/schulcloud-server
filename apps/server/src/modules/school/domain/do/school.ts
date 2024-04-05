@@ -96,6 +96,20 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
+
+	public hasSystem(systemId: EntityId): boolean {
+		const { systemIds } = this.props;
+
+		const result = systemIds?.includes(systemId) ?? false;
+
+		return result;
+	}
+
+	public removeSystem(systemId: EntityId) {
+		if (this.props.systemIds) {
+			this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
+		}
+	}
 }
 
 export interface SchoolProps extends AuthorizableObject {

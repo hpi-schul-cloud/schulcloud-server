@@ -1450,11 +1450,6 @@
 			"default": false,
 			"description": "Enables groups of type class in courses"
 		},
-		"FEATURE_NEST_SYSTEMS_API_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Uses the v3 api over the v1 api for systems"
-		},
 		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
 			"type": "boolean",
 			"default": false,
