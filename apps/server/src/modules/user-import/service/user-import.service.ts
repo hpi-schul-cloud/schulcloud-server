@@ -71,7 +71,7 @@ export class UserImportService {
 		return matchedImportUsers;
 	}
 
-	public async deleteImportUsersBySchool(school: SchoolEntity) {
+	public async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
 		await this.userImportRepo.deleteImportUsersBySchool(school);
 	}
 }
