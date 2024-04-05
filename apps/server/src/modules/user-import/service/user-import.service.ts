@@ -1,6 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
 import { UserService } from '@modules/user';
@@ -69,5 +69,9 @@ export class UserImportService {
 		);
 
 		return matchedImportUsers;
+	}
+
+	public async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
+		await this.userImportRepo.deleteImportUsersBySchool(school);
 	}
 }
