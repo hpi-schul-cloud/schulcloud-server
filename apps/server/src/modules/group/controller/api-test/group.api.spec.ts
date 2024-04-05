@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
@@ -37,6 +38,7 @@ describe('Group (API)', () => {
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
+		Configuration.set('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED', true);
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
