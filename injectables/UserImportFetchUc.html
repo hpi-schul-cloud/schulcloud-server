@@ -275,8 +275,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import-fetch.uc.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -431,6 +431,8 @@ export class UserImportFetchUc {
 		);
 
 		const matchedImportUsers: ImportUser[] &#x3D; await this.userImportService.matchUsers(filteredFetchedData);
+
+		await this.userImportService.deleteImportUsersBySchool(user.school);
 
 		await this.userImportService.saveImportUsers(matchedImportUsers);
 	}
