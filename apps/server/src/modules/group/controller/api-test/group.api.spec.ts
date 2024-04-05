@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { ServerTestModule } from '@modules/server';
+import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -37,6 +37,8 @@ describe('Group (API)', () => {
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
+		const config: ServerConfig = serverConfig();
+		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
