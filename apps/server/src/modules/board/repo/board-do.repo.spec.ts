@@ -42,8 +42,8 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { ContextExternalToolEntity } from '../../tool';
 import { ContextExternalTool } from '../../tool/context-external-tool/domain';
+import { ContextExternalToolEntity } from '../../tool/context-external-tool/entity';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
