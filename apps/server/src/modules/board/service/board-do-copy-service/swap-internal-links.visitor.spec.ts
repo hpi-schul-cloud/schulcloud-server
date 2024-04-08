@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { LinkElement } from '@shared/domain/domainobject';
+import { LinkElement, MediaBoard, MediaExternalToolElement, MediaLine } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,
@@ -9,6 +9,9 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
@@ -125,6 +128,39 @@ describe('swap internal links visitor', () => {
 
 			expect(linkElements[0].url).toEqual(pairs[0].expectedUrl);
 			expect(linkElements[1].url).toEqual(pairs[1].expectedUrl);
+		});
+	});
+
+	describe('when it is a media board', () => {
+		const setup = () => {
+			const element = mediaExternalToolElementFactory.build();
+			const elementCopy = new MediaExternalToolElement(element.getProps());
+			const line = mediaLineFactory.build({ children: [element] });
+			const lineCopy = new MediaLine(line.getProps());
+			const board = mediaBoardFactory.build({ children: [line] });
+			const boardCopy = new MediaBoard(board.getProps());
+
+			const visitor = new SwapInternalLinksVisitor(new Map());
+
+			return {
+				element,
+				elementCopy,
+				line,
+				lineCopy,
+				board,
+				boardCopy,
+				visitor,
+			};
+		};
+
+		it('should do nothing', () => {
+			const { visitor, element, elementCopy, line, lineCopy, board, boardCopy } = setup();
+
+			visitor.visitMediaBoard(board);
+
+			expect(element).toEqual(elementCopy);
+			expect(line).toEqual(lineCopy);
+			expect(board).toEqual(boardCopy);
 		});
 	});
 });

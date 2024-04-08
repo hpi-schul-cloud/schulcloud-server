@@ -256,9 +256,21 @@ describe(RecursiveSaveVisitor.name, () => {
 	});
 
 	describe('when visiting a media board composite', () => {
-		it('should create or update the node', () => {
-			const board = mediaBoardFactory.build();
+		const setup = () => {
+			const line = mediaLineFactory.build();
+			const board = mediaBoardFactory.build({ children: [line] });
+
+			jest.spyOn(line, 'accept');
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			return {
+				board,
+				line,
+			};
+		};
+
+		it('should create or update the node', () => {
+			const { board } = setup();
 
 			visitor.visitMediaBoard(board);
 
@@ -270,9 +282,7 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 
 		it('should visit the children', () => {
-			const line = mediaLineFactory.build();
-			jest.spyOn(line, 'accept');
-			const board = mediaBoardFactory.build({ children: [line] });
+			const { board, line } = setup();
 
 			board.accept(visitor);
 
@@ -281,9 +291,21 @@ describe(RecursiveSaveVisitor.name, () => {
 	});
 
 	describe('when visiting a media line composite', () => {
-		it('should create or update the node', () => {
-			const line = mediaLineFactory.build();
+		const setup = () => {
+			const element = mediaExternalToolElementFactory.build();
+			const line = mediaLineFactory.build({ children: [element] });
+
+			jest.spyOn(element, 'accept');
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			return {
+				line,
+				element,
+			};
+		};
+
+		it('should create or update the node', () => {
+			const { line } = setup();
 
 			visitor.visitMediaLine(line);
 
@@ -296,9 +318,7 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 
 		it('should visit the children', () => {
-			const element = mediaExternalToolElementFactory.build();
-			jest.spyOn(element, 'accept');
-			const line = mediaLineFactory.build({ children: [element] });
+			const { line, element } = setup();
 
 			line.accept(visitor);
 
@@ -307,12 +327,22 @@ describe(RecursiveSaveVisitor.name, () => {
 	});
 
 	describe('when visiting a media external tool element', () => {
-		it('should create or update the node', () => {
+		const setup = () => {
 			const contextExternalTool = contextExternalToolEntityFactory.buildWithId();
 			const mediaExternalToolElement = mediaExternalToolElementFactory.build({
 				contextExternalToolId: contextExternalTool.id,
 			});
+
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			return {
+				contextExternalTool,
+				mediaExternalToolElement,
+			};
+		};
+
+		it('should create or update the node', () => {
+			const { contextExternalTool, mediaExternalToolElement } = setup();
 
 			visitor.visitMediaExternalToolElement(mediaExternalToolElement);
 

@@ -7,10 +7,6 @@ export class MediaExternalToolElement extends BoardComposite<MediaExternalToolEl
 		return this.props.contextExternalToolId;
 	}
 
-	set contextExternalToolId(id: EntityId) {
-		this.props.contextExternalToolId = id;
-	}
-
 	isAllowedAsChild(): boolean {
 		return false;
 	}

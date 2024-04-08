@@ -7,10 +7,6 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 		return this.props.context;
 	}
 
-	set context(context: BoardExternalReference) {
-		this.props.context = context;
-	}
-
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed: boolean = domainObject instanceof MediaLine;
 
@@ -28,8 +24,4 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 
 export interface MediaBoardProps extends BoardCompositeProps {
 	context: BoardExternalReference;
-}
-
-export function isMediaBoard(reference: unknown): reference is MediaBoard {
-	return reference instanceof MediaBoard;
 }

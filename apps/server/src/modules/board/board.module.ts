@@ -57,7 +57,6 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
-		// Media Board
 		MediaBoardService,
 		MediaLineService,
 		MediaElementService,
@@ -75,7 +74,6 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		 * @deprecated - exported only deprecated learnraum module
 		 */
 		BoardNodeRepo,
-		// Media Board
 		MediaBoardService,
 		MediaLineService,
 		MediaElementService,

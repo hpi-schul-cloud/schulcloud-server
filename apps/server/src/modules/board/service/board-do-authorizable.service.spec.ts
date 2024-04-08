@@ -1,8 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardRoles } from '@shared/domain/domainobject';
+import { BoardDoAuthorizableProps, BoardExternalReferenceType, BoardRoles } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
-import { cardFactory, courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	cardFactory,
+	courseFactory,
+	mediaBoardFactory,
+	roleFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoAuthorizableService } from './board-do-authorizable.service';
@@ -226,6 +233,40 @@ describe(BoardDoAuthorizableService.name, () => {
 
 				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
 				expect(boardDoAuthorizable.users).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('when having a media board bound to a user', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = mediaBoardFactory.build({ context: { type: BoardExternalReferenceType.User, id: user.id } });
+
+			boardDoRepo.findById.mockResolvedValue(board);
+			boardDoRepo.getAncestorIds.mockResolvedValue([board.id]);
+
+			return {
+				user,
+				board,
+			};
+		};
+
+		it('should return the boardDoAuthorizable', async () => {
+			const { board, user } = setup();
+
+			const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+
+			expect(boardDoAuthorizable.getProps()).toEqual<BoardDoAuthorizableProps>({
+				id: board.id,
+				boardDo: board,
+				users: [
+					{
+						userId: user.id,
+						roles: [BoardRoles.EDITOR],
+					},
+				],
+				parentDo: board,
+				rootDo: board,
 			});
 		});
 	});

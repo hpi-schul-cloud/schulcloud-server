@@ -52,7 +52,7 @@ export class MediaLineController {
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Patch(':lineId/title')
-	public async updateColumnTitle(
+	public async updateLineTitle(
 		@Param() urlParams: LineUrlParams,
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser

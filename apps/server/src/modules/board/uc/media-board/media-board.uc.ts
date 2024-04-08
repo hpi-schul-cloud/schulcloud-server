@@ -2,11 +2,16 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { BoardExternalReferenceType, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
+import {
+	BoardDoAuthorizable,
+	BoardExternalReferenceType,
+	type MediaBoard,
+	type MediaLine,
+} from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaLineService } from '../../service';
+import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 
 @Injectable()
 export class MediaBoardUc {
@@ -14,6 +19,7 @@ export class MediaBoardUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaLineService: MediaLineService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
 
@@ -44,10 +50,11 @@ export class MediaBoardUc {
 	public async createLine(userId: EntityId, boardId: EntityId): Promise<MediaLine> {
 		this.checkFeatureEnabled();
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
-
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
 		const line: MediaLine = await this.mediaLineService.create(board);
 

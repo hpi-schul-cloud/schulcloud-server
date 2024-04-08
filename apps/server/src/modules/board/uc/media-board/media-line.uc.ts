@@ -2,11 +2,11 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaLineService } from '../../service';
+import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 
 @Injectable()
 export class MediaLineUc {
@@ -14,6 +14,7 @@ export class MediaLineUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaLineService: MediaLineService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
 
@@ -25,10 +26,13 @@ export class MediaLineUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
-
 		const targetBoard: MediaBoard = await this.mediaBoardService.findById(targetBoardId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
+			targetBoard
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
 
@@ -38,10 +42,11 @@ export class MediaLineUc {
 	public async updateLineTitle(userId: EntityId, lineId: EntityId, title: string): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
-
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
 		await this.mediaLineService.updateTitle(line, title);
 	}
@@ -49,10 +54,11 @@ export class MediaLineUc {
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.write([]));
-
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
 		await this.mediaLineService.delete(line);
 	}

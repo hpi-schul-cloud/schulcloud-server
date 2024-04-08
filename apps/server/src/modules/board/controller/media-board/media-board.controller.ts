@@ -41,7 +41,7 @@ export class MediaBoardController {
 	@ApiForbiddenResponse({ type: ForbiddenException })
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@Post(':boardId/media-lines')
-	public async createColumn(
+	public async createLine(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<MediaLineResponse> {

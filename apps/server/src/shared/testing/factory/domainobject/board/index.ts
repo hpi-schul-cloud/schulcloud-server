@@ -11,3 +11,4 @@ export * from './submission-item.do.factory';
 export { mediaBoardFactory } from './media-board.do.factory';
 export { mediaLineFactory } from './media-line.do.factory';
 export { mediaExternalToolElementFactory } from './media-external-tool-element.do.factory';
+export { boardDoAuthorizableFactory } from './board-do-authorizable.factory';

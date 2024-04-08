@@ -3,9 +3,15 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { mediaBoardFactory, mediaLineFactory, setupEntities, userFactory as userEntityFactory } from '@shared/testing';
+import {
+	boardDoAuthorizableFactory,
+	mediaBoardFactory,
+	mediaLineFactory,
+	setupEntities,
+	userFactory as userEntityFactory,
+} from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaLineService } from '../../service';
+import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 import { MediaLineUc } from './media-line.uc';
 
 describe(MediaLineUc.name, () => {
@@ -15,6 +21,7 @@ describe(MediaLineUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let mediaLineService: DeepMocked<MediaLineService>;
+	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
 	beforeAll(async () => {
@@ -36,6 +43,10 @@ describe(MediaLineUc.name, () => {
 					useValue: createMock<MediaLineService>(),
 				},
 				{
+					provide: BoardDoAuthorizableService,
+					useValue: createMock<BoardDoAuthorizableService>(),
+				},
+				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
@@ -46,6 +57,7 @@ describe(MediaLineUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		mediaBoardService = module.get(MediaBoardService);
 		mediaLineService = module.get(MediaLineService);
+		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		configService = module.get(ConfigService);
 	});
 
@@ -63,8 +75,10 @@ describe(MediaLineUc.name, () => {
 				const user = userEntityFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
@@ -73,17 +87,18 @@ describe(MediaLineUc.name, () => {
 					user,
 					mediaBoard,
 					mediaLine,
+					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, mediaBoard } = setup();
+				const { user, mediaLine, mediaBoard, boardDoAuthorizable } = setup();
 
 				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
-					user,
+					boardDoAuthorizable,
 					AuthorizationContextBuilder.write([])
 				);
 			});
@@ -127,25 +142,28 @@ describe(MediaLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
 					mediaLine,
+					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine } = setup();
+				const { user, mediaLine, boardDoAuthorizable } = setup();
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
-					user,
+					boardDoAuthorizable,
 					AuthorizationContextBuilder.write([])
 				);
 			});
@@ -187,25 +205,28 @@ describe(MediaLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
 					mediaLine,
+					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine } = setup();
+				const { user, mediaLine, boardDoAuthorizable } = setup();
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
-					user,
+					boardDoAuthorizable,
 					AuthorizationContextBuilder.write([])
 				);
 			});

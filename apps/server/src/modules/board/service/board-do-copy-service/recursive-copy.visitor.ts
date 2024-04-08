@@ -284,23 +284,36 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {
-		return this.rejectNotHandled(mediaBoard);
+	async visitMediaBoardAsync(original: MediaBoard): Promise<void> {
+		await this.visitChildrenOf(original);
+
+		this.resultMap.set(original.id, {
+			type: CopyElementType.MEDIA_BOARD,
+			status: CopyStatusEnum.NOT_DOING,
+			elements: this.getCopyStatusesForChildrenOf(original),
+		});
 	}
 
-	visitMediaLineAsync(mediaLine: MediaLine): Promise<void> {
-		return this.rejectNotHandled(mediaLine);
+	async visitMediaLineAsync(original: MediaLine): Promise<void> {
+		await this.visitChildrenOf(original);
+
+		this.resultMap.set(original.id, {
+			type: CopyElementType.MEDIA_LINE,
+			status: CopyStatusEnum.NOT_DOING,
+			elements: this.getCopyStatusesForChildrenOf(original),
+		});
 	}
 
-	visitMediaExternalToolElementAsync(mediaElement: MediaExternalToolElement): Promise<void> {
-		return this.rejectNotHandled(mediaElement);
+	visitMediaExternalToolElementAsync(original: MediaExternalToolElement): Promise<void> {
+		this.resultMap.set(original.id, {
+			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
+			status: CopyStatusEnum.NOT_DOING,
+		});
+
+		return Promise.resolve();
 	}
 
-	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
-		return Promise.reject(new Error(`Cannot copy element of type: '${component.constructor.name}'`));
-	}
-
-	async visitChildrenOf(boardDo: AnyBoardDo) {
+	async visitChildrenOf(boardDo: AnyBoardDo): Promise<PromiseSettledResult<void>[]> {
 		return Promise.allSettled(boardDo.children.map((child) => child.acceptAsync(this)));
 	}
 
