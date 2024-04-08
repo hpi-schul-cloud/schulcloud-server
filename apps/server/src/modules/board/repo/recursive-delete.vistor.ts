@@ -1,24 +1,27 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
+import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
-import {
+import type {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { BoardNode } from '@shared/domain/entity';
-import { DrawingElementAdapterService } from '@modules/tldraw-client';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
@@ -95,6 +98,30 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);
+	}
+
+	async visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {
+		this.deleteNode(mediaBoard);
+		await this.visitChildrenAsync(mediaBoard);
+	}
+
+	async visitMediaLineAsync(mediaLine: MediaLine): Promise<void> {
+		this.deleteNode(mediaLine);
+		await this.visitChildrenAsync(mediaLine);
+	}
+
+	async visitMediaExternalToolElementAsync(mediaElement: MediaExternalToolElement): Promise<void> {
+		this.deleteNode(mediaElement);
+
+		const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
+			mediaElement.contextExternalToolId
+		);
+
+		if (linkedTool) {
+			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+		}
+
+		await this.visitChildrenAsync(mediaElement);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {
