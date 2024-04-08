@@ -270,6 +270,11 @@ export interface IFindOptions&lt;T&gt; {
 	order?: SortOrderMap&lt;T&gt;;
 }
 
+export interface IFindQuery {
+	pagination?: Pagination;
+	nameQuery?: string;
+}
+
 export type SortOrderNumberType &#x3D; Partial&lt;Record&lt;string, number&gt;&gt;;
 </code></pre>
     </div>

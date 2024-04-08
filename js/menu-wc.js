@@ -4829,7 +4829,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/GroupIdParams.html" data-type="entity-link" >GroupIdParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/GroupListResponse.html" data-type="entity-link" >GroupListResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/GroupPaginationParams.html" data-type="entity-link" >GroupPaginationParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/GroupParams.html" data-type="entity-link" >GroupParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/GroupResponse.html" data-type="entity-link" >GroupResponse</a>
@@ -7913,6 +7919,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IFindOptions.html" data-type="entity-link" >IFindOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IFindQuery.html" data-type="entity-link" >IFindQuery</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IGridElement.html" data-type="entity-link" >IGridElement</a>

@@ -843,7 +843,7 @@ import { RoleDto, RoleService } from &#x27;@modules/role&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { ExternalSource, LegacySchoolDo, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { ExternalSource, LegacySchoolDo, Page, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from &#x27;../../../dto&#x27;;
@@ -1009,9 +1009,9 @@ export class SchulconnexGroupProvisioningService {
 			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
 
-		const existingGroupsOfUser: Group[] &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user);
+		const existingGroupsOfUser: Page&lt;Group&gt; &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user);
 
-		const groupsFromSystem: Group[] &#x3D; existingGroupsOfUser.filter(
+		const groupsFromSystem: Group[] &#x3D; existingGroupsOfUser.data.filter(
 			(existingGroup: Group) &#x3D;&gt; existingGroup.externalSource?.systemId &#x3D;&#x3D;&#x3D; systemId
 		);
 

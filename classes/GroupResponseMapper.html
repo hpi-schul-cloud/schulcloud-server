@@ -158,6 +158,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#mapToGroupListResponse" >mapToGroupListResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapToGroupResponse" >mapToGroupResponse</a>
                             </li>
                         </ul>
@@ -201,8 +205,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -295,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -346,6 +350,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mapToGroupListResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToGroupListResponse</b></span>
+                        <a href="#mapToGroupListResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToGroupListResponse(groups: <a href="../interfaces/Group.html" target="_self">Page&lt;ResolvedGroupDto&gt;</a>, pagination: <a href="../classes/GroupPaginationParams.html" target="_self">GroupPaginationParams</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>groups</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >Page&lt;ResolvedGroupDto&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>pagination</td>
+                                            <td>
+                                                            <code><a href="../classes/GroupPaginationParams.html" target="_self" >GroupPaginationParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/GroupListResponse.html" target="_self" >GroupListResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapToGroupResponse"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
@@ -364,8 +449,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/mapper/group-response.mapper.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -428,6 +513,8 @@ import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
+	GroupListResponse,
+	GroupPaginationParams,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
@@ -502,6 +589,21 @@ export class GroupResponseMapper {
 		});
 
 		return mapped;
+	}
+
+	static mapToGroupListResponse(groups: Page&lt;ResolvedGroupDto&gt;, pagination: GroupPaginationParams): GroupListResponse {
+		const groupResponseData: GroupResponse[] &#x3D; groups.data.map(
+			(group: ResolvedGroupDto): GroupResponse &#x3D;&gt; this.mapToGroupResponse(group)
+		);
+
+		const response: GroupListResponse &#x3D; new GroupListResponse(
+			groupResponseData,
+			groups.total,
+			pagination.skip,
+			pagination.limit
+		);
+
+		return response;
 	}
 }
 </code></pre>

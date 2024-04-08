@@ -217,6 +217,11 @@
                                 <a href="#findUsersForGroup" >findUsersForGroup</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllGroups" >getAllGroups</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getClassInfoFromGroup" >getClassInfoFromGroup</a>
@@ -235,6 +240,16 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getGroup" >getGroup</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getGroupsForSchool" >getGroupsForSchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getGroupsForUser" >getGroupsForUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -522,8 +537,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="333"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:333</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="335"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:335</a></div>
                         </td>
                     </tr>
 
@@ -616,8 +631,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="356"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:356</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:358</a></div>
                         </td>
                     </tr>
 
@@ -1028,7 +1043,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findCombinedClassListForSchool(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
+                    <code>findCombinedClassListForSchool(school: <a href="../classes/School.html" target="_self">School</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
                 </td>
             </tr>
 
@@ -1057,9 +1072,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolId</td>
+                                                <td>school</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
                                             </td>
 
                                             <td>
@@ -1192,7 +1207,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findGroupsForSchool(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findGroupsForSchool(school: <a href="../classes/School.html" target="_self">School</a>)</code>
                 </td>
             </tr>
 
@@ -1221,9 +1236,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolId</td>
+                                                <td>school</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
                                             </td>
 
                                             <td>
@@ -1339,8 +1354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="282"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:282</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="284"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:284</a></div>
                         </td>
                     </tr>
 
@@ -1409,8 +1424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="302"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:302</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:304</a></div>
                         </td>
                     </tr>
 
@@ -1460,6 +1475,112 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getAllGroups"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllGroups</b></span>
+                        <a href="#getAllGroups"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllGroups(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="367"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:367</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>availableGroupsForCourseSync</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;ResolvedGroupDto&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getClassInfoFromGroup"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1479,8 +1600,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="259"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:259</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="261"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:261</a></div>
                         </td>
                     </tr>
 
@@ -1643,8 +1764,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="249"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:249</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="251"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:251</a></div>
                         </td>
                     </tr>
 
@@ -1713,8 +1834,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="345"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:345</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="347"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:347</a></div>
                         </td>
                     </tr>
 
@@ -1763,6 +1884,194 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;ResolvedGroupDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getGroupsForSchool"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getGroupsForSchool</b></span>
+                        <a href="#getGroupsForSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getGroupsForSchool(school: <a href="../classes/School.html" target="_self">School</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="401"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:401</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>availableGroupsForCourseSync</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getGroupsForUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getGroupsForUser</b></span>
+                        <a href="#getGroupsForUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getGroupsForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="416"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:416</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>availableGroupsForCourseSync</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1994,7 +2303,7 @@ import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { SortHelper } from &#x27;@shared/common&#x27;;
 import { Page, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { SchoolYearEntity, User } from &#x27;@shared/domain/entity&#x27;;
-import { Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
+import { IFindQuery, Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { LegacySystemService, SystemDto } from &#x27;@src/modules/system&#x27;;
@@ -2052,7 +2361,7 @@ export class GroupUc {
 
 		let combinedClassInfo: ClassInfoDto[];
 		if (canSeeFullList || calledFromCourse) {
-			combinedClassInfo &#x3D; await this.findCombinedClassListForSchool(schoolId, schoolYearQueryType);
+			combinedClassInfo &#x3D; await this.findCombinedClassListForSchool(school, schoolYearQueryType);
 		} else {
 			combinedClassInfo &#x3D; await this.findCombinedClassListForUser(userId, schoolYearQueryType);
 		}
@@ -2069,15 +2378,15 @@ export class GroupUc {
 	}
 
 	private async findCombinedClassListForSchool(
-		schoolId: EntityId,
+		school: School,
 		schoolYearQueryType?: SchoolYearQueryType
 	): Promise&lt;ClassInfoDto[]&gt; {
 		let classInfosFromGroups: ClassInfoDto[] &#x3D; [];
 
-		const classInfosFromClasses &#x3D; await this.findClassesForSchool(schoolId, schoolYearQueryType);
+		const classInfosFromClasses &#x3D; await this.findClassesForSchool(school.id, schoolYearQueryType);
 
 		if (!schoolYearQueryType || schoolYearQueryType &#x3D;&#x3D;&#x3D; SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups &#x3D; await this.findGroupsForSchool(schoolId);
+			classInfosFromGroups &#x3D; await this.findGroupsForSchool(school);
 		}
 
 		const combinedClassInfo: ClassInfoDto[] &#x3D; [...classInfosFromClasses, ...classInfosFromGroups];
@@ -2205,13 +2514,13 @@ export class GroupUc {
 		return classInfosFromClasses;
 	}
 
-	private async findGroupsForSchool(schoolId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
-		const groups: Group[] &#x3D; await this.groupService.findGroupsBySchoolIdAndGroupTypes(
-			schoolId,
+	private async findGroupsForSchool(school: School): Promise&lt;ClassInfoDto[]&gt; {
+		const groups: Page&lt;Group&gt; &#x3D; await this.groupService.findGroupsBySchoolIdAndGroupTypes(
+			school,
 			this.ALLOWED_GROUP_TYPES
 		);
 
-		const classInfosFromGroups: ClassInfoDto[] &#x3D; await this.getClassInfosFromGroups(groups);
+		const classInfosFromGroups: ClassInfoDto[] &#x3D; await this.getClassInfosFromGroups(groups.data);
 
 		return classInfosFromGroups;
 	}
@@ -2219,9 +2528,11 @@ export class GroupUc {
 	private async findGroupsForUser(userId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
 		const user: UserDO &#x3D; await this.userService.findById(userId);
 
-		const groups: Group[] &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
+		const groups: Page&lt;Group&gt; &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES, {
+			pagination: { skip: 0 },
+		});
 
-		const classInfosFromGroups: ClassInfoDto[] &#x3D; await this.getClassInfosFromGroups(groups);
+		const classInfosFromGroups: ClassInfoDto[] &#x3D; await this.getClassInfosFromGroups(groups.data);
 
 		return classInfosFromGroups;
 	}
@@ -2340,6 +2651,71 @@ export class GroupUc {
 			group,
 			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
 		);
+	}
+
+	public async getAllGroups(
+		userId: EntityId,
+		schoolId: EntityId,
+		query?: IFindQuery,
+		availableGroupsForCourseSync?: boolean
+	): Promise&lt;Page&lt;ResolvedGroupDto&gt;&gt; {
+		const school: School &#x3D; await this.schoolService.getSchoolById(schoolId);
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.GROUP_VIEW]));
+
+		const canSeeFullList: boolean &#x3D; this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
+
+		let groups: Page&lt;Group&gt;;
+		if (canSeeFullList) {
+			groups &#x3D; await this.getGroupsForSchool(school, query, availableGroupsForCourseSync);
+		} else {
+			groups &#x3D; await this.getGroupsForUser(userId, query, availableGroupsForCourseSync);
+		}
+
+		const resolvedGroups: ResolvedGroupDto[] &#x3D; await Promise.all(
+			groups.data.map(async (group: Group) &#x3D;&gt; {
+				const resolvedUsers: ResolvedGroupUser[] &#x3D; await this.findUsersForGroup(group);
+				const resolvedGroup: ResolvedGroupDto &#x3D; GroupUcMapper.mapToResolvedGroupDto(group, resolvedUsers);
+
+				return resolvedGroup;
+			})
+		);
+
+		const page: Page&lt;ResolvedGroupDto&gt; &#x3D; new Page&lt;ResolvedGroupDto&gt;(resolvedGroups, groups.total);
+
+		return page;
+	}
+
+	private async getGroupsForSchool(
+		school: School,
+		query?: IFindQuery,
+		availableGroupsForCourseSync?: boolean
+	): Promise&lt;Page&lt;Group&gt;&gt; {
+		let foundGroups: Page&lt;Group&gt;;
+		if (availableGroupsForCourseSync &amp;&amp; this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;)) {
+			foundGroups &#x3D; await this.groupService.findAvailableGroupsBySchoolId(school, query);
+		} else {
+			foundGroups &#x3D; await this.groupService.findGroupsBySchoolIdAndGroupTypes(school, undefined, query);
+		}
+
+		return foundGroups;
+	}
+
+	private async getGroupsForUser(
+		userId: EntityId,
+		query?: IFindQuery,
+		availableGroupsForCourseSync?: boolean
+	): Promise&lt;Page&lt;Group&gt;&gt; {
+		let foundGroups: Page&lt;Group&gt;;
+		const user: UserDO &#x3D; await this.userService.findById(userId);
+		if (availableGroupsForCourseSync &amp;&amp; this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;)) {
+			foundGroups &#x3D; await this.groupService.findAvailableGroupsByUser(user, query);
+		} else {
+			foundGroups &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user, undefined, query);
+		}
+
+		return foundGroups;
 	}
 }
 </code></pre>

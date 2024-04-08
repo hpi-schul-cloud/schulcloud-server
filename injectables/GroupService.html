@@ -150,6 +150,16 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findAvailableGroupsBySchoolId" >findAvailableGroupsBySchoolId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAvailableGroupsByUser" >findAvailableGroupsByUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByExternalSource" >findByExternalSource</a>
                             </li>
                             <li>
@@ -205,7 +215,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -283,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -334,6 +344,170 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findAvailableGroupsBySchoolId"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findAvailableGroupsBySchoolId</b></span>
+                        <a href="#findAvailableGroupsBySchoolId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAvailableGroupsBySchoolId(school: <a href="../classes/School.html" target="_self">School</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:64</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAvailableGroupsByUser"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findAvailableGroupsByUser</b></span>
+                        <a href="#findAvailableGroupsByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAvailableGroupsByUser(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findByExternalSource"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -353,8 +527,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -435,8 +609,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -498,15 +672,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findGroupsBySchoolIdAndGroupTypes(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, groupTypes: <a href="../interfaces/Group.html" target="_self">GroupTypes[]</a>)</code>
+                    <code>findGroupsBySchoolIdAndGroupTypes(school: <a href="../classes/School.html" target="_self">School</a>, groupTypes?: <a href="../interfaces/Group.html" target="_self">GroupTypes[]</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -527,9 +701,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolId</td>
+                                                <td>school</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
                                             </td>
 
                                             <td>
@@ -545,7 +719,19 @@
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
                                             </td>
 
 
@@ -554,7 +740,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Group[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -587,8 +773,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -674,15 +860,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findGroupsByUserAndGroupTypes(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, groupTypes?: <a href="../interfaces/Group.html" target="_self">GroupTypes[]</a>)</code>
+                    <code>findGroupsByUserAndGroupTypes(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, groupTypes?: <a href="../interfaces/Group.html" target="_self">GroupTypes[]</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -726,11 +912,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Group[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -763,8 +961,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -833,8 +1031,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -887,10 +1085,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationLoaderServiceGeneric } from &#x27;@modules/authorization&#x27;;
+import { School } from &#x27;@modules/school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EventBus } from &#x27;@nestjs/cqrs&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { type UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { Page, type UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { IFindQuery } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Group, GroupDeletedEvent, GroupTypes } from &#x27;../domain&#x27;;
 import { GroupRepo } from &#x27;../repo&#x27;;
@@ -921,16 +1121,36 @@ export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&
 		return group;
 	}
 
-	public async findGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise&lt;Group[]&gt; {
-		const groups: Group[] &#x3D; await this.groupRepo.findByUserAndGroupTypes(user, groupTypes);
+	public async findGroupsByUserAndGroupTypes(
+		user: UserDO,
+		groupTypes?: GroupTypes[],
+		query?: IFindQuery
+	): Promise&lt;Page&lt;Group&gt;&gt; {
+		const groups: Page&lt;Group&gt; &#x3D; await this.groupRepo.findByUserAndGroupTypes(user, groupTypes, query);
 
 		return groups;
 	}
 
-	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise&lt;Group[]&gt; {
-		const group: Group[] &#x3D; await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
+	public async findAvailableGroupsByUser(user: UserDO, query?: IFindQuery): Promise&lt;Page&lt;Group&gt;&gt; {
+		const groups: Page&lt;Group&gt; &#x3D; await this.groupRepo.findAvailableByUser(user, query);
+
+		return groups;
+	}
+
+	public async findGroupsBySchoolIdAndGroupTypes(
+		school: School,
+		groupTypes?: GroupTypes[],
+		query?: IFindQuery
+	): Promise&lt;Page&lt;Group&gt;&gt; {
+		const group: Page&lt;Group&gt; &#x3D; await this.groupRepo.findBySchoolIdAndGroupTypes(school, groupTypes, query);
 
 		return group;
+	}
+
+	public async findAvailableGroupsBySchoolId(school: School, query?: IFindQuery): Promise&lt;Page&lt;Group&gt;&gt; {
+		const groups: Page&lt;Group&gt; &#x3D; await this.groupRepo.findAvailableBySchoolId(school, query);
+
+		return groups;
 	}
 
 	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
