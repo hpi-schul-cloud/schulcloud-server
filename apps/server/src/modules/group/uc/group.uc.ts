@@ -423,7 +423,7 @@ export class GroupUc {
 		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
 			foundGroups = await this.groupService.findAvailableGroupsByUser(user, query);
 		} else {
-			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES, query);
+			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, undefined, query);
 		}
 
 		return foundGroups;

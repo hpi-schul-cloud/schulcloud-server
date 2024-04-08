@@ -93,7 +93,7 @@ export class GroupResponseMapper {
 			groups.total,
 			pagination.skip,
 			pagination.limit
-		); // { data: mapped, total: groups.total };
+		);
 
 		return response;
 	}
