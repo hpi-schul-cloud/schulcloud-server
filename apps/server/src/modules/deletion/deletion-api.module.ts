@@ -8,6 +8,7 @@ import { NewsModule } from '@modules/news';
 import { TeamsModule } from '@modules/teams';
 import { PseudonymModule } from '@modules/pseudonym';
 import { FilesModule } from '@modules/files';
+import { CalendarModule } from '@src/infra/calendar';
 import { DeletionModule } from '.';
 import { DeletionRequestUc } from './api/uc';
 import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
@@ -15,6 +16,7 @@ import { DeletionRequestsController } from './api/controller/deletion-requests.c
 
 @Module({
 	imports: [
+		CalendarModule,
 		CqrsModule,
 		DeletionModule,
 		LoggerModule,
