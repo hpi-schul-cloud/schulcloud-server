@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
-const RedisMock = require('./utils/redis/redisMock');
+const redisMock = require('./utils/redis/redisMock');
 const whitelist = require('../src/services/authentication/logic/whitelist');
 const appPromise = require('../src/app');
 const testObjects = require('./services/helpers/testObjects')(appPromise());
@@ -32,7 +32,7 @@ describe('handleAutoLogout hook', () => {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('ioredis', new RedisMock());
+		mockery.registerMock('ioredis', redisMock);
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../src/utils/redis')];
