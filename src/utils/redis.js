@@ -10,13 +10,7 @@ let redisClient = false;
 async function initializeRedisClient() {
 	if (Configuration.has('REDIS_URI')) {
 		try {
-			redisClient = new Redis(Configuration.get('REDIS_URI'), {
-				maxRetriesPerRequest: 50,
-				retryStrategy: (times) => Math.min(times * 50, 500),
-				commandTimeout: 5000,
-				noDelay: true,
-				keepAlive: 5000,
-			});
+			redisClient = new Redis(Configuration.get('REDIS_URI'));
 
 			// The error event must be handled, otherwise the app crashes on redis connection errors.
 			// This is due to basic NodeJS behavior: https://nodejs.org/api/events.html#error-events
