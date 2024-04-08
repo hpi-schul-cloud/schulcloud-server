@@ -32,7 +32,7 @@ describe('handleAutoLogout hook', () => {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('redis', new RedisMock());
+		mockery.registerMock('ioredis', new RedisMock());
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../src/utils/redis')];
