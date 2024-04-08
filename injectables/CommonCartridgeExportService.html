@@ -384,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -799,7 +799,7 @@
 import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { TaskService } from &#x27;@modules/task&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardExternalReferenceType, Column } from &#x27;@shared/domain/domainobject&#x27;;
 import { ComponentProperties } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ColumnBoardService } from &#x27;@src/modules/board&#x27;;
@@ -897,10 +897,20 @@ export class CommonCartridgeExportService {
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard &#x3D; await this.columnBoardService.findById(columnBoardId);
 
-			builder.addOrganization({
+			const organization &#x3D; builder.addOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
+
+			columnBoard.children
+				.filter((child) &#x3D;&gt; child instanceof Column)
+				.forEach((column) &#x3D;&gt; {
+					const { id } &#x3D; column;
+					organization.addSubOrganization({
+						title: (column as Column).title,
+						identifier: createIdentifier(id),
+					});
+				});
 		}
 	}
 

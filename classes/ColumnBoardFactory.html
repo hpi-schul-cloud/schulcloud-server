@@ -1337,11 +1337,11 @@ class ColumnBoardFactory extends BaseFactory&lt;ColumnBoard, ColumnBoardProps&gt
 		return this.params(params);
 	}
 }
-export const columnBoardFactory &#x3D; ColumnBoardFactory.define(ColumnBoard, ({ sequence }) &#x3D;&gt; {
+export const columnBoardFactory &#x3D; ColumnBoardFactory.define(ColumnBoard, ({ sequence, params }) &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
 		title: &#x60;column board #${sequence}&#x60;,
-		children: [],
+		children: params?.children ?? [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		context: {
