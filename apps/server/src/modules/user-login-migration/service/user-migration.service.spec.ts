@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountService, Account } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
@@ -83,7 +82,7 @@ describe(UserMigrationService.name, () => {
 
 				const accountId = new ObjectId().toHexString();
 				const sourceSystemId = new ObjectId().toHexString();
-				const accountDto: AccountDto = new AccountDto({
+				const accountDto: Account = new Account({
 					id: accountId,
 					updatedAt: new Date(),
 					createdAt: new Date(),
@@ -93,7 +92,7 @@ describe(UserMigrationService.name, () => {
 				});
 
 				userService.findById.mockResolvedValueOnce({ ...user });
-				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
 
 				return {
 					user,
@@ -140,10 +139,12 @@ describe(UserMigrationService.name, () => {
 
 				await service.migrateUser(userId, targetExternalId, targetSystemId);
 
-				expect(accountService.save).toHaveBeenCalledWith({
-					...accountDto,
-					systemId: targetSystemId,
-				});
+				expect(accountService.save).toHaveBeenCalledWith(
+					new Account({
+						...accountDto.getProps(),
+						systemId: targetSystemId,
+					})
+				);
 			});
 		});
 
@@ -169,7 +170,7 @@ describe(UserMigrationService.name, () => {
 
 				const accountId = new ObjectId().toHexString();
 				const sourceSystemId = new ObjectId().toHexString();
-				const accountDto: AccountDto = new AccountDto({
+				const accountDto: Account = new Account({
 					id: accountId,
 					updatedAt: new Date(),
 					createdAt: new Date(),
@@ -181,7 +182,7 @@ describe(UserMigrationService.name, () => {
 				const error = new Error('Cannot save');
 
 				userService.findById.mockResolvedValueOnce({ ...user });
-				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
 
 				userService.save.mockRejectedValueOnce(error);
 				accountService.save.mockRejectedValueOnce(error);
