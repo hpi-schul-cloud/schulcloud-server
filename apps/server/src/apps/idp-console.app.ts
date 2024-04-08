@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { IdpConsoleModule } from '@src/modules/idp-console';
+import { IdpConsoleModule } from '@modules/idp-console';
 import { BootstrapConsole } from 'nestjs-console';
 
 async function run() {
