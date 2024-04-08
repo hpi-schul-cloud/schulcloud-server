@@ -728,42 +728,5 @@
 		"times": [],
 		"__v": 0,
 		"description": ""
-	},
-	{
-		"_id": {
-			"$oid": "65fd58e8ec37479f118c720c"
-		},
-		"name": "Group_X",
-		"schoolId": {
-			"$oid": "fedcba987654321012345678"
-		},
-		"userIds": [],
-		"classIds": [],
-		"groupIds": [],
-		"teacherIds": [
-			{
-				"$oid": "2220d213816abba584714c0a"
-			}
-		],
-		"substitutionIds": [],
-		"ltiToolIds": [],
-		"color": "#455B6A",
-		"isCopyFrom": null,
-		"features": [],
-		"createdAt": {
-			"$date": {
-				"$numberLong": "1710340341147"
-			}
-		},
-		"updatedAt": {
-			"$date": {
-				"$numberLong": "1710340538140"
-			}
-		},
-		"times": [],
-		"__v": 0,
-		"syncedWithGroup": {
-			"$oid": "65f05d71a8f2d4f69be427e3"
-		}
 	}
 ]

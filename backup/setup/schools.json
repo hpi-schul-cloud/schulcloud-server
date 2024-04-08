@@ -430,7 +430,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "fedcba987654321012345678"
+			"$oid": "6613a91e0f48785dcfe9e0b3"
 		},
 		"name": "Migrations-Test-Schule",
 		"fileStorageType": "awsS3",
