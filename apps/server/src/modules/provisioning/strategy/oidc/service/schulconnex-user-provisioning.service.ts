@@ -38,7 +38,7 @@ export class SchulconnexUserProvisioningService {
 			user.roles = roleRefs ?? existingUser.roles;
 			user.schoolId = schoolId ?? existingUser.schoolId;
 			user.birthday = externalUser.birthday ?? existingUser.birthday;
-			user.sessionToken = existingUser.sessionToken ?? existingUser.sessionToken;
+			user.sessionToken = externalUser.sessionToken ?? existingUser.sessionToken;
 		} else {
 			createNewAccount = true;
 
