@@ -12,7 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
-import { TldrawRedisFactory } from '../../redis';
+import { TldrawRedisFactory, TldrawRedisService } from '../../redis';
 import { TldrawDrawing } from '../../entities';
 import { TldrawWsService } from '../../service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
@@ -49,6 +49,7 @@ describe('WebSocketController (WsAdapter)', () => {
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				TldrawRedisService,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),

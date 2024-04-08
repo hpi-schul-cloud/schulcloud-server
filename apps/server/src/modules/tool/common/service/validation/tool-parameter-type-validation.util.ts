@@ -10,6 +10,7 @@ export class ToolParameterTypeValidationUtil {
 		[CustomParameterType.AUTO_CONTEXTNAME]: () => false,
 		[CustomParameterType.AUTO_SCHOOLID]: () => false,
 		[CustomParameterType.AUTO_SCHOOLNUMBER]: () => false,
+		[CustomParameterType.AUTO_MEDIUMID]: () => false,
 	};
 
 	public static isValueValidForType(type: CustomParameterType, val: string): boolean {

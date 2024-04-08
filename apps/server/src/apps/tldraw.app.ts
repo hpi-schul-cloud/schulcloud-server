@@ -2,7 +2,8 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
-import { TldrawModule, TldrawWsModule } from '@modules/tldraw';
+import { TldrawApiModule } from '@modules/tldraw/tldraw-api.module';
+import { TldrawWsModule } from '@modules/tldraw/tldraw-ws.module';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import * as WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
@@ -20,7 +21,7 @@ async function bootstrap() {
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(TldrawModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(TldrawApiModule, nestExpressAdapter);
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 	nestApp.enableCors();
 

@@ -121,6 +121,14 @@ describe(UserImportFetchUc.name, () => {
 				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser]);
 			});
 
+			it('should delete all existing imported users of the school', async () => {
+				const { user } = setup();
+
+				await uc.populateImportUsers(user.id);
+
+				expect(userImportService.deleteImportUsersBySchool).toHaveBeenCalledWith(user.school);
+			});
+
 			it('should save the import users', async () => {
 				const { user, importUser } = setup();
 
