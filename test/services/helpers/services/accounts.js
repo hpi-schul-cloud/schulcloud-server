@@ -23,7 +23,9 @@ const createTestAccount = (appPromise) => async (accountParameters, system, user
 	};
 	const createdAccount = await accountService.save(accountDto);
 	createdaccountsIds.push(createdAccount.id.toString());
-	return createdAccount;
+	return {
+		...createdAccount.getProps(),
+	};
 };
 
 const cleanup = (appPromise) => async () => {

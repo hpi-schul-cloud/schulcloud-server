@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -517,13 +517,15 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy = authorizationService.checkAllPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
 				accountServiceFindByUserIdSpy = accountService.findByUserId
-					.mockResolvedValue({
-						id: 'dummyId',
-						userId: currentUser.id,
-						username: currentUser.email,
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					})
+					.mockResolvedValue(
+						new Account({
+							id: 'dummyId',
+							userId: currentUser.id,
+							username: currentUser.email,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+						})
+					)
 					.mockResolvedValueOnce(null);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();
