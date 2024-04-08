@@ -21,6 +21,7 @@ import { IdentityManagementModule } from '@infra/identity-management';
 import { RegistrationPinModule } from '@modules/registration-pin';
 import {
 	SynchronizationEntity,
+	SynchronizationModule,
 	SynchronizationRepo,
 	SynchronizationService,
 	SynchronizationUc,
@@ -49,10 +50,9 @@ import { IdpSyncConsole } from './idp-sync-console';
 		AccountModule,
 		RegistrationPinModule,
 		RoleModule,
+		SynchronizationModule,
 	],
 	providers: [
-		SynchronizationRepo,
-		SynchronizationService,
 		SynchronizationUc,
 		OauthAdapterService,
 		IdpSyncConsole,
