@@ -226,7 +226,6 @@
 		"prom-client": "^13.1.0",
 		"qs": "^6.9.7",
 		"read-chunk": "^3.0.0",
-		"redis": "^4.6.13",
 		"reflect-metadata": "^0.1.13",
 		"request-promise-core": "^1.1.4",
 		"request-promise-native": "^1.0.3",

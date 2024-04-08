@@ -9,7 +9,6 @@ import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
-import type { SystemConfig } from '@modules/system';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
 import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
@@ -19,6 +18,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { DeletionConfig } from '@modules/deletion';
 import { ProvisioningConfig } from '../provisioning';
 import { SynchronizationConfig } from '../synchronization/synchronization.config';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
@@ -31,8 +31,8 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-// Envirement keys should be added over configs from modules, directly adding is only allow for legacy stuff
-// Maye some of them must be outsource to additional microservice config endpoints.
+// Environment keys should be added over configs from modules, directly adding is only allow for legacy stuff
+// Maye some of them must be outsourced to additional microservice config endpoints.
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
@@ -54,7 +54,7 @@ export interface ServerConfig
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
-		SystemConfig,
+		DeletionConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -139,7 +139,6 @@ const config: ServerConfig = {
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED') as boolean,
-	FEATURE_NEST_SYSTEMS_API_ENABLED: Configuration.get('FEATURE_NEST_SYSTEMS_API_ENABLED') as boolean,
 	GHOST_BASE_URL: Configuration.get('GHOST_BASE_URL') as string,
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
@@ -168,9 +167,11 @@ const config: ServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
+	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
+	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
-		.map((apiKey) => apiKey.trim()),
+		.map((part) => (part.split(':').pop() ?? '').trim()),
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),

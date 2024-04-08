@@ -19,6 +19,7 @@ export interface DeletionLogEntityProps {
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
+	@Index()
 	domain: DomainName;
 
 	@Property()
@@ -28,6 +29,7 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	subdomainOperations?: DomainDeletionReport[];
 
 	@Property()
+	@Index()
 	deletionRequestId: ObjectId;
 
 	@Property({ nullable: true })

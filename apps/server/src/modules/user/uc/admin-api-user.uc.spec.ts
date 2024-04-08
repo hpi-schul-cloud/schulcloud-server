@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { accountDtoFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { AccountService } from '@src/modules/account';
+import { accountDoFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { AccountService } from '@modules/account';
 import { RoleService } from '@src/modules/role';
 import { UserService } from '../service/user.service';
 import { AdminApiUserUc } from './admin-api-user.uc';
@@ -57,7 +57,7 @@ describe('admin api user uc', () => {
 			const user = userDoFactory.buildWithId();
 			userService.save.mockResolvedValue(user);
 
-			const accountDto = accountDtoFactory.build();
+			const accountDto = accountDoFactory.build();
 			accountService.save.mockResolvedValue(accountDto);
 			return { schoolId, firstName, lastName, email, roleNames, role, user, accountDto };
 		};
