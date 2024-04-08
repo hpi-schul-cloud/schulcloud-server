@@ -1,5 +1,5 @@
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -54,7 +54,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	private async checkCredentials(
 		enteredPassword: string,
 		savedPassword: string,
-		account: AccountDto
+		account: Account
 	): Promise<void | never> {
 		this.authenticationService.checkBrutForce(account);
 		if (!(await bcrypt.compare(enteredPassword, savedPassword))) {
