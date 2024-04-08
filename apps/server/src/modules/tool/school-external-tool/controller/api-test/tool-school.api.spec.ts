@@ -3,24 +3,24 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
+import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
 	columnBoardNodeFactory,
 	externalToolElementNodeFactory,
 	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../entity';
-import { schoolExternalToolEntityFactory } from '../../testing';
 import {
 	CustomParameterEntryParam,
 	SchoolExternalToolMetadataResponse,
@@ -29,6 +29,7 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from '../dto';
+import { schoolExternalToolEntityFactory } from '../../testing/school-external-tool-entity.factory';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -67,7 +68,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -170,7 +171,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -235,7 +236,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -328,7 +329,7 @@ describe('ToolSchoolController (API)', () => {
 			]);
 
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 
@@ -410,7 +411,7 @@ describe('ToolSchoolController (API)', () => {
 				Permission.SCHOOL_TOOL_ADMIN,
 			]);
 			const userWithMissingPermission: User = userFactory.buildWithId({ school });
-			const accountWithMissingPermission: Account = accountFactory.buildWithId({
+			const accountWithMissingPermission: AccountEntity = accountFactory.buildWithId({
 				userId: userWithMissingPermission.id,
 			});
 

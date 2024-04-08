@@ -6,7 +6,7 @@ import {
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column } from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -104,10 +104,20 @@ export class CommonCartridgeExportService {
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard = await this.columnBoardService.findById(columnBoardId);
 
-			builder.addOrganization({
+			const organization = builder.addOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
+
+			columnBoard.children
+				.filter((child) => child instanceof Column)
+				.forEach((column) => {
+					const { id } = column;
+					organization.addSubOrganization({
+						title: (column as Column).title,
+						identifier: createIdentifier(id),
+					});
+				});
 		}
 	}
 
