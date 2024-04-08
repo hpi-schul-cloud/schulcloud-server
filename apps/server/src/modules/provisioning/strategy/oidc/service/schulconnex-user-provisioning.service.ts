@@ -1,6 +1,5 @@
-import { AccountSaveDto, AccountService } from '@modules/account';
-import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { AccountService, AccountSave } from '@modules/account';
+import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
@@ -61,14 +60,12 @@ export class SchulconnexUserProvisioningService {
 		const savedUser: UserDO = await this.userService.save(user);
 
 		if (createNewAccount) {
-			await this.accountService.saveWithValidation(
-				new AccountSaveDto({
-					userId: savedUser.id,
-					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
-					systemId,
-					activated: true,
-				})
-			);
+			await this.accountService.saveWithValidation({
+				userId: savedUser.id,
+				username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
+				systemId,
+				activated: true,
+			} as AccountSave);
 		}
 
 		return savedUser;

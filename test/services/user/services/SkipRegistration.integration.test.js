@@ -157,7 +157,7 @@ describe('SkipRegistration integration', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
+					password: 'Password1!',
 				},
 				scenarioParams
 			);
@@ -181,7 +181,7 @@ describe('SkipRegistration integration', () => {
 					parent_termsOfUseConsent: true,
 					privacyConsent: true,
 					termsOfUseConsent: true,
-					password: 'password1',
+					password: 'Password1!',
 				},
 				scenarioParams
 			);
@@ -206,7 +206,7 @@ describe('SkipRegistration integration', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
+					password: 'Password1!',
 				},
 				scenarioParams
 			);
@@ -302,7 +302,7 @@ describe('SkipRegistration integration', () => {
 						privacyConsent: true,
 						termsOfUseConsent: true,
 						birthday: '2014-12-19T00:00:00Z',
-						password: 'password1',
+						password: 'Password1!',
 					},
 					{
 						userId: targetUserTwo._id,
@@ -311,7 +311,7 @@ describe('SkipRegistration integration', () => {
 						privacyConsent: true,
 						termsOfUseConsent: true,
 						birthday: '2014-12-19T00:00:00Z',
-						password: 'password1',
+						password: 'Password1!',
 					},
 				],
 			},
