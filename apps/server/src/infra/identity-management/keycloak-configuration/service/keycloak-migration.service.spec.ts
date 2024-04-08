@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AccountService, Account } from '@modules/account';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
@@ -31,7 +30,7 @@ describe('KeycloakMigrationService', () => {
 				{
 					provide: AccountService,
 					useValue: {
-						findMany: jest.fn().mockImplementation((skip: number, amount: number): Promise<Partial<AccountDto>[]> => {
+						findMany: jest.fn().mockImplementation((skip: number, amount: number): Promise<Partial<Account>[]> => {
 							if (skip >= maxAccounts) {
 								return Promise.resolve([]);
 							}

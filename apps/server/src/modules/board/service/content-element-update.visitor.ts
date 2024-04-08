@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
-import {
+import type {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
@@ -8,6 +8,9 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -117,5 +120,17 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 
 	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
 		return Promise.reject(new Error(`Cannot update element of type: '${component.constructor.name}'`));
+	}
+
+	visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {
+		return this.rejectNotHandled(mediaBoard);
+	}
+
+	visitMediaLineAsync(mediaLine: MediaLine): Promise<void> {
+		return this.rejectNotHandled(mediaLine);
+	}
+
+	visitMediaExternalToolElementAsync(mediaElement: MediaExternalToolElement): Promise<void> {
+		return this.rejectNotHandled(mediaElement);
 	}
 }

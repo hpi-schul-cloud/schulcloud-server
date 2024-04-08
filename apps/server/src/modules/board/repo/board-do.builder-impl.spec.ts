@@ -1,4 +1,10 @@
-import { ExternalToolElement, LinkElement } from '@shared/domain/domainobject';
+import {
+	ExternalToolElement,
+	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
+} from '@shared/domain/domainobject';
 import { BoardNodeType } from '@shared/domain/entity';
 import {
 	cardNodeFactory,
@@ -7,6 +13,9 @@ import {
 	externalToolElementNodeFactory,
 	fileElementNodeFactory,
 	linkElementNodeFactory,
+	mediaBoardNodeFactory,
+	mediaExternalToolElementNodeFactory,
+	mediaLineNodeFactory,
 	richTextElementNodeFactory,
 	setupEntities,
 	submissionContainerElementNodeFactory,
@@ -242,6 +251,114 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildLinkElement(linkElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a media board', () => {
+		it('should work without descendants', () => {
+			const mediaBoardNode = mediaBoardNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildMediaBoard(mediaBoardNode);
+
+			expect(domainObject.constructor.name).toBe(MediaBoard.name);
+		});
+
+		it('should throw error with wrong type of children', () => {
+			const mediaBoardNode1 = mediaBoardNodeFactory.buildWithId();
+			const mediaBoardNode2 = mediaBoardNodeFactory.buildWithId({ parent: mediaBoardNode1 });
+
+			expect(() => {
+				new BoardDoBuilderImpl([mediaBoardNode2]).buildMediaBoard(mediaBoardNode1);
+			}).toThrowError();
+		});
+
+		it('should assign the children', () => {
+			const mediaBoardNode = mediaBoardNodeFactory.buildWithId();
+			const lineNode1 = mediaLineNodeFactory.buildWithId({ parent: mediaBoardNode });
+			const lineNode2 = mediaLineNodeFactory.buildWithId({ parent: mediaBoardNode });
+
+			const domainObject = new BoardDoBuilderImpl([lineNode1, lineNode2]).buildMediaBoard(mediaBoardNode);
+
+			expect(domainObject.children.map((el) => el.id).sort()).toEqual([lineNode1.id, lineNode2.id]);
+		});
+
+		it('should sort the children by their node position', () => {
+			const mediaBoardNode = mediaBoardNodeFactory.buildWithId();
+			const lineNode1 = mediaLineNodeFactory.buildWithId({ parent: mediaBoardNode, position: 3 });
+			const lineNode2 = mediaLineNodeFactory.buildWithId({ parent: mediaBoardNode, position: 2 });
+			const lineNode3 = mediaLineNodeFactory.buildWithId({ parent: mediaBoardNode, position: 1 });
+
+			const domainObject = new BoardDoBuilderImpl([lineNode1, lineNode2, lineNode3]).buildMediaBoard(mediaBoardNode);
+
+			const elementIds = domainObject.children.map((el) => el.id);
+			expect(elementIds).toEqual([lineNode3.id, lineNode2.id, lineNode1.id]);
+		});
+
+		it('should be able to use the builder', () => {
+			const mediaBoardNode = mediaBoardNodeFactory.buildWithId();
+			const builder = new BoardDoBuilderImpl();
+			const domainObject = mediaBoardNode.useDoBuilder(builder);
+			expect(domainObject.id).toEqual(mediaBoardNode.id);
+		});
+	});
+
+	describe('when building a media line', () => {
+		it('should work without descendants', () => {
+			const columnNode = mediaLineNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildMediaLine(columnNode);
+
+			expect(domainObject.constructor.name).toBe(MediaLine.name);
+		});
+
+		it('should throw error with wrong type of children', () => {
+			const lineNode1 = mediaLineNodeFactory.buildWithId();
+			const lineNode2 = mediaLineNodeFactory.buildWithId({ parent: lineNode1 });
+
+			expect(() => {
+				new BoardDoBuilderImpl([lineNode2]).buildMediaLine(lineNode1);
+			}).toThrowError();
+		});
+
+		it('should assign the children', () => {
+			const lineNode = mediaLineNodeFactory.buildWithId();
+			const elementNode1 = mediaExternalToolElementNodeFactory.buildWithId({ parent: lineNode });
+			const elementNode2 = mediaExternalToolElementNodeFactory.buildWithId({ parent: lineNode });
+
+			const domainObject = new BoardDoBuilderImpl([elementNode1, elementNode2]).buildMediaLine(lineNode);
+
+			expect(domainObject.children.map((el) => el.id).sort()).toEqual([elementNode1.id, elementNode2.id]);
+		});
+
+		it('should sort the children by their node position', () => {
+			const lineNode = mediaLineNodeFactory.buildWithId();
+			const elementNode1 = mediaExternalToolElementNodeFactory.buildWithId({ parent: lineNode, position: 3 });
+			const elementNode2 = mediaExternalToolElementNodeFactory.buildWithId({ parent: lineNode, position: 2 });
+			const elementNode3 = mediaExternalToolElementNodeFactory.buildWithId({ parent: lineNode, position: 1 });
+
+			const domainObject = new BoardDoBuilderImpl([elementNode1, elementNode2, elementNode3]).buildMediaLine(lineNode);
+
+			const cardIds = domainObject.children.map((el) => el.id);
+			expect(cardIds).toEqual([elementNode3.id, elementNode2.id, elementNode1.id]);
+		});
+	});
+
+	describe('when building a media external tool element', () => {
+		it('should work without descendants', () => {
+			const mediaExternalToolElementNode = mediaExternalToolElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildMediaExternalToolElement(mediaExternalToolElementNode);
+
+			expect(domainObject.constructor.name).toBe(MediaExternalToolElement.name);
+		});
+
+		it('should throw error if externalToolElement is not a leaf', () => {
+			const mediaExternalToolElementNode = mediaExternalToolElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: mediaExternalToolElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildMediaExternalToolElement(mediaExternalToolElementNode);
 			}).toThrowError();
 		});
 	});

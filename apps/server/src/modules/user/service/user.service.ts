@@ -1,6 +1,5 @@
-import { AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 // invalid import
-import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto, RoleService } from '@modules/role';
@@ -84,7 +83,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
 		const user: UserDO = await this.findById(userId);
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+		const account: Account = await this.accountService.findByUserIdOrFail(userId);
 
 		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
 

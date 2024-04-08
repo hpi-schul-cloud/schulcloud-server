@@ -1345,11 +1345,17 @@
 				"ALLOWED_API_KEYS": {
 					"type": "string",
 					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
+				},
+				"MODIFICATION_THRESHOLD": {
+					"type": "number",
+					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
+
 			},
 			"default": {
 				"ENABLED": true,
 				"PORT": 4030,
+				"MODIFICATION_THRESHOLD": 60000,
 				"ALLOWED_API_KEYS": ""
 			}
 		},
@@ -1617,13 +1623,18 @@
 		},
 		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables the synchronization of courses with linked groups during provisioning."
 		},
 		"SYNCHRONIZATION_CHUNK": {
 			"type": "number",
 			"default": 10000,
 			"description": "Size of chunk for synchronization"
+		},
+		"FEATURE_MEDIA_SHELF_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the media shelf feature"
 		}
 	},
 	"required": []

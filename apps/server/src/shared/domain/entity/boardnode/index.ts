@@ -10,3 +10,5 @@ export * from './rich-text-element-node.entity';
 export * from './submission-container-element-node.entity';
 export * from './submission-item-node.entity';
 export * from './types';
+export * from './media-board';
+export * from './root-board-node.entity';
