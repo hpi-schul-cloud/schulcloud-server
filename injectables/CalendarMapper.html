@@ -143,6 +143,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#mapEventsToId" >mapEventsToId</a>
+                            </li>
+                            <li>
                                 <a href="#mapToDto" >mapToDto</a>
                             </li>
                         </ul>
@@ -167,6 +170,73 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mapEventsToId"></a>
+                    <span class="name">
+                        <span ><b>mapEventsToId</b></span>
+                        <a href="#mapEventsToId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>mapEventsToId(events: <a href="../interfaces/CalendarEventId.html" target="_self">CalendarEventId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/infra/calendar/mapper/calendar.mapper.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>events</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CalendarEventId.html" target="_self" >CalendarEventId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapToDto"></a>
                     <span class="name">
                         <span ><b>mapToDto</b></span>
@@ -183,8 +253,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/infra/calendar/mapper/calendar.mapper.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/infra/calendar/mapper/calendar.mapper.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -239,6 +309,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CalendarEvent } from &#x27;@infra/calendar/interface/calendar-event.interface&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { CalendarEventDto } from &#x27;../dto/calendar-event.dto&#x27;;
+import { CalendarEventId } from &#x27;../interface/calendar-event-id.interface&#x27;;
 
 @Injectable()
 export class CalendarMapper {
@@ -248,6 +319,10 @@ export class CalendarMapper {
 			teamId: attributes[&#x27;x-sc-teamid&#x27;],
 			title: attributes.summary,
 		});
+	}
+
+	mapEventsToId(events: CalendarEventId): string[] {
+		return events.data.map((it) &#x3D;&gt; it.id);
 	}
 }
 </code></pre>

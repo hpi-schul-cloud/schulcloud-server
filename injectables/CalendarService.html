@@ -164,12 +164,29 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteEventsByScopeId" >deleteEventsByScopeId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserData" >deleteUserData</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findEvent" >findEvent</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#get" >get</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllEvents" >getAllEvents</a>
                             </li>
                         </ul>
                     </td>
@@ -189,12 +206,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(httpService: HttpService, calendarMapper: <a href="../injectables/CalendarMapper.html" target="_self">CalendarMapper</a>)</code>
+<code>constructor(httpService: HttpService, calendarMapper: <a href="../injectables/CalendarMapper.html" target="_self">CalendarMapper</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:29</a></div>
                             </td>
                         </tr>
 
@@ -235,6 +252,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -249,6 +278,226 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="delete"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>delete(path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, config: AxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:145</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>path</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>config</td>
+                                            <td>
+                                                        <code>AxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Observable&lt;AxiosResponse&lt;void&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteEventsByScopeId"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteEventsByScopeId</b></span>
+                        <a href="#deleteEventsByScopeId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteEventsByScopeId(scopeId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:115</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>scopeId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -271,8 +520,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -352,11 +601,19 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:138</a></div>
                         </td>
                     </tr>
 
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
 
             <tr>
                 <td class="col-md-4">
@@ -413,7 +670,76 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/CalendarEvent.html" target="_self" >Observable&lt;AxiosResponse&lt;CalendarEvent&gt;&gt;</a></code>
+                            <b>Returns : </b>    <code>Observable&lt;AxiosResponse&lt;T&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllEvents"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllEvents</b></span>
+                        <a href="#getAllEvents"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllEvents(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -450,7 +776,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -478,7 +804,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/infra/calendar/service/calendar.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -494,32 +820,80 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { URL, URLSearchParams } from &#x27;url&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import {
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CalendarEventDto } from &#x27;../dto/calendar-event.dto&#x27;;
 import { CalendarEvent } from &#x27;../interface/calendar-event.interface&#x27;;
 import { CalendarMapper } from &#x27;../mapper/calendar.mapper&#x27;;
+import { CalendarEventId } from &#x27;../interface/calendar-event-id.interface&#x27;;
 
 @Injectable()
-export class CalendarService {
+export class CalendarService implements DeletionService {
 	private readonly baseURL: string;
 
 	private readonly timeoutMs: number;
 
-	constructor(private readonly httpService: HttpService, private readonly calendarMapper: CalendarMapper) {
+	constructor(
+		private readonly httpService: HttpService,
+		private readonly calendarMapper: CalendarMapper,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(CalendarService.name);
 		this.baseURL &#x3D; Configuration.get(&#x27;CALENDAR_URI&#x27;) as string;
 		this.timeoutMs &#x3D; Configuration.get(&#x27;REQUEST_OPTION__TIMEOUT_MS&#x27;) as number;
+	}
+
+	public async deleteUserData(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				&#x27;Deleting data from Calendar Service&#x27;,
+				DomainName.CALENDAR,
+				userId,
+				StatusModel.PENDING
+			)
+		);
+
+		const eventIds &#x3D; await this.getAllEvents(userId);
+
+		await this.deleteEventsByScopeId(userId);
+
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, eventIds.length, eventIds),
+		]);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				&#x27;Successfully removed user data from Calendar Service&#x27;,
+				DomainName.CALENDAR,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				eventIds.length
+			)
+		);
+
+		return result;
 	}
 
 	async findEvent(userId: EntityId, eventId: EntityId): Promise&lt;CalendarEventDto&gt; {
 		const params &#x3D; new URLSearchParams();
 		params.append(&#x27;event-id&#x27;, eventId);
-
 		return firstValueFrom(
-			this.get(&#x27;/events&#x27;, params, {
+			this.get&lt;CalendarEvent&gt;(&#x27;/events&#x27;, params, {
 				headers: {
 					Authorization: userId,
 					Accept: &#x27;Application/json&#x27;,
@@ -536,15 +910,61 @@ export class CalendarService {
 			});
 	}
 
-	private get(
-		path: string,
-		queryParams: URLSearchParams,
-		config: AxiosRequestConfig
-	): Observable&lt;AxiosResponse&lt;CalendarEvent&gt;&gt; {
+	async getAllEvents(userId: EntityId): Promise&lt;string[]&gt; {
+		const params &#x3D; new URLSearchParams();
+		try {
+			const resp &#x3D; await firstValueFrom(
+				this.get&lt;CalendarEventId&gt;(&#x27;/events&#x27;, params, {
+					headers: {
+						Authorization: userId,
+						Accept: &#x27;Application/json&#x27;,
+					},
+					timeout: this.timeoutMs,
+				})
+			);
+			return this.calendarMapper.mapEventsToId(resp.data);
+		} catch (error) {
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(error, &#x27;CalendarService:getAllEvents&#x27;)
+			);
+		}
+	}
+
+	async deleteEventsByScopeId(scopeId: EntityId): Promise&lt;void&gt; {
+		try {
+			const request &#x3D; this.delete(&#x60;/scopes/${scopeId}&#x60;, {
+				headers: {
+					Authorization: scopeId,
+					Accept: &#x27;Application/json&#x27;,
+				},
+				timeout: this.timeoutMs,
+			});
+
+			const resp &#x3D; await firstValueFrom(request);
+
+			if (resp.status !&#x3D;&#x3D; 204) {
+				throw new Error(&#x60;invalid HTTP status code &#x3D; ${resp.status} in a response from the server instead of 204&#x60;);
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(
+				&#x27;CalendarService:deleteEventsByScopeId&#x27;,
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
+		}
+	}
+
+	private get&lt;T&gt;(path: string, queryParams: URLSearchParams, config: AxiosRequestConfig): Observable&lt;AxiosResponse&lt;T&gt;&gt; {
 		const url: URL &#x3D; new URL(this.baseURL);
 		url.pathname &#x3D; path;
 		url.search &#x3D; queryParams.toString();
 		return this.httpService.get(url.toString(), config);
+	}
+
+	private delete(path: string, config: AxiosRequestConfig): Observable&lt;AxiosResponse&lt;void&gt;&gt; {
+		const url: URL &#x3D; new URL(this.baseURL);
+		url.pathname &#x3D; path;
+		return this.httpService.delete(url.toString(), config);
 	}
 }
 </code></pre>
