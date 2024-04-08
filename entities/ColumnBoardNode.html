@@ -197,7 +197,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -233,7 +233,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -268,7 +268,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -281,17 +281,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import {
 	AnyBoardDo,
 	BoardExternalReference,
 	BoardExternalReferenceType,
 } from &#x27;@shared/domain/domainobject/board/types&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
-import { BoardDoBuilder } from &#x27;./types&#x27;;
-import { BoardNodeType } from &#x27;./types/board-node-type&#x27;;
 import { LearnroomElement } from &#x27;../../interface&#x27;;
+import { BoardNode } from &#x27;./boardnode.entity&#x27;;
+import { type RootBoardNodeProps } from &#x27;./root-board-node.entity&#x27;;
+import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
+// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })
 export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	constructor(props: ColumnBoardNodeProps) {
@@ -340,8 +341,7 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	}
 }
 
-export interface ColumnBoardNodeProps extends BoardNodeProps {
-	context: BoardExternalReference;
+export interface ColumnBoardNodeProps extends RootBoardNodeProps {
 	isVisible: boolean;
 }
 </code></pre>

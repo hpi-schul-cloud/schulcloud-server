@@ -348,12 +348,11 @@ import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { AnyBoardDo } from &#x27;../../domainobject&#x27;;
 import { EntityId } from &#x27;../../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;../base.entity&#x27;;
-import { BoardDoBuilder } from &#x27;./types&#x27;;
-import { BoardNodeType } from &#x27;./types/board-node-type&#x27;;
+import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
 const PATH_SEPARATOR &#x3D; &#x27;,&#x27;;
 
-@Entity({ tableName: &#x27;boardnodes&#x27;, discriminatorColumn: &#x27;type&#x27; })
+@Entity({ tableName: &#x27;boardnodes&#x27;, discriminatorColumn: &#x27;type&#x27;, abstract: true })
 export abstract class BoardNode extends BaseEntityWithTimestamps {
 	constructor(props: BoardNodeProps) {
 		super();

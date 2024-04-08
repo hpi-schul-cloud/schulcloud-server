@@ -187,7 +187,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -264,8 +264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -403,8 +403,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -473,8 +473,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -510,7 +510,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard | MediaBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -542,8 +542,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -603,6 +603,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
+	MediaBoard,
 	UserWithBoardRoles,
 } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course } from &#x27;@shared/domain/entity&#x27;;
@@ -633,6 +634,13 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		if (rootDo.context?.type &#x3D;&#x3D;&#x3D; BoardExternalReferenceType.Course) {
 			const course &#x3D; await this.courseRepo.findById(rootDo.context.id);
 			users &#x3D; this.mapCourseUsersToUserBoardRoles(course);
+		} else if (rootDo.context?.type &#x3D;&#x3D;&#x3D; BoardExternalReferenceType.User) {
+			users &#x3D; [
+				{
+					userId: rootDo.context.id,
+					roles: [BoardRoles.EDITOR],
+				},
+			];
 		}
 
 		const boardDoAuthorizable &#x3D; new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, rootDo, parentDo });
@@ -677,14 +685,15 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	}
 
 	// TODO there is a similar method in board-do.service.ts
-	private async getRootBoardDo(boardDo: AnyBoardDo): Promise&lt;ColumnBoard&gt; {
+	private async getRootBoardDo(boardDo: AnyBoardDo): Promise&lt;ColumnBoard | MediaBoard&gt; {
 		const ancestorIds &#x3D; await this.boardDoRepo.getAncestorIds(boardDo);
 		const ids &#x3D; [...ancestorIds, boardDo.id];
 		const rootId &#x3D; ids[0];
 		const rootBoardDo &#x3D; await this.boardDoRepo.findById(rootId, 1);
 
-		if (!(rootBoardDo instanceof ColumnBoard)) {
-			throw new Error(&#x27;root boardnode was expected to be a ColumnBoard&#x27;);
+		// TODO Use an abstract base class for root nodes. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+		if (!(rootBoardDo instanceof ColumnBoard || rootBoardDo instanceof MediaBoard)) {
+			throw new Error(&#x27;root boardnode was expected to be a ColumnBoard or MediaBoard&#x27;);
 		}
 
 		return rootBoardDo;

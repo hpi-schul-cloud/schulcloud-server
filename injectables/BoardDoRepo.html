@@ -152,6 +152,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteByExternalReference" >deleteByExternalReference</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByClassAndId" >findByClassAndId</a>
                             </li>
                             <li>
@@ -294,8 +298,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -363,8 +367,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -401,6 +405,75 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteByExternalReference"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteByExternalReference</b></span>
+                        <a href="#deleteByExternalReference"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteByExternalReference(reference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:118</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>reference</td>
+                                            <td>
+                                                            <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -753,8 +826,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -822,8 +895,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -960,8 +1033,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="105"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:105</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -1025,12 +1098,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Utils } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { type FilterQuery, Utils } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import type { ContextExternalTool } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
 import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, BoardExternalReference } from &#x27;@shared/domain/domainobject&#x27;;
-import { BoardNode, ColumnBoardNode, ExternalToolElementNodeEntity } from &#x27;@shared/domain/entity&#x27;;
+import type { AnyBoardDo, BoardExternalReference } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardNode, ExternalToolElementNodeEntity } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BoardDoBuilderImpl } from &#x27;./board-do.builder-impl&#x27;;
 import { BoardNodeRepo } from &#x27;./board-node.repo&#x27;;
@@ -1093,11 +1166,13 @@ export class BoardDoRepo {
 	}
 
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise&lt;EntityId[]&gt; {
-		const boardNodes &#x3D; await this.em.find(ColumnBoardNode, {
+		// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+		const boardNodes: BoardNode[] &#x3D; await this.em.find(BoardNode, {
 			_contextId: new ObjectId(reference.id),
 			_contextType: reference.type,
-		});
-		const ids &#x3D; boardNodes.map((o) &#x3D;&gt; o.id);
+		} as FilterQuery&lt;BoardNode&gt;);
+
+		const ids: EntityId[] &#x3D; boardNodes.map((node) &#x3D;&gt; node.id);
 
 		return ids;
 	}
@@ -1138,6 +1213,28 @@ export class BoardDoRepo {
 	async delete(domainObject: AnyBoardDo): Promise&lt;void&gt; {
 		await domainObject.acceptAsync(this.deleteVisitor);
 		await this.em.flush();
+	}
+
+	async deleteByExternalReference(reference: BoardExternalReference): Promise&lt;number&gt; {
+		// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+		const boardNodes: BoardNode[] &#x3D; await this.em.find(BoardNode, {
+			_contextId: new ObjectId(reference.id),
+			_contextType: reference.type,
+		} as FilterQuery&lt;BoardNode&gt;);
+
+		const boardDeletionPromises: Promise&lt;void&gt;[] &#x3D; boardNodes.map(async (boardNode: BoardNode): Promise&lt;void&gt; &#x3D;&gt; {
+			const descendants: BoardNode[] &#x3D; await this.boardNodeRepo.findDescendants(boardNode);
+
+			const domainObject: AnyBoardDo &#x3D; new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
+
+			await domainObject.acceptAsync(this.deleteVisitor);
+		});
+
+		await Promise.all(boardDeletionPromises);
+
+		await this.em.flush();
+
+		return boardNodes.length;
 	}
 }
 </code></pre>

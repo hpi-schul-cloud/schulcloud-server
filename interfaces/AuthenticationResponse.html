@@ -255,7 +255,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public put(subPath?: string, data &#x3D; {}): supertest.Test {
+	public put&lt;T extends object | string&gt;(subPath?: string, data?: T): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.put(path)
@@ -265,7 +265,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public patch(subPath?: string, data &#x3D; {}): supertest.Test {
+	public patch&lt;T extends object | string&gt;(subPath?: string, data?: T): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.patch(path)
@@ -275,7 +275,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public post(subPath?: string, data &#x3D; {}): supertest.Test {
+	public post&lt;T extends object | string&gt;(subPath?: string, data?: T): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.post(path)

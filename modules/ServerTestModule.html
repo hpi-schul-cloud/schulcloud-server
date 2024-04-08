@@ -358,8 +358,8 @@ Customizations:</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -420,12 +420,14 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestj
 import { AccountApiModule } from &#x27;@modules/account/account-api.module&#x27;;
 import { AuthenticationApiModule } from &#x27;@modules/authentication/authentication-api.module&#x27;;
 import { BoardApiModule } from &#x27;@modules/board/board-api.module&#x27;;
+import { MediaBoardApiModule } from &#x27;@modules/board/media-board-api.module&#x27;;
 import { CollaborativeStorageModule } from &#x27;@modules/collaborative-storage&#x27;;
 import { FilesStorageClientModule } from &#x27;@modules/files-storage-client&#x27;;
 import { GroupApiModule } from &#x27;@modules/group/group-api.module&#x27;;
 import { LearnroomApiModule } from &#x27;@modules/learnroom/learnroom-api.module&#x27;;
 import { LegacySchoolApiModule } from &#x27;@modules/legacy-school/legacy-school.api-module&#x27;;
 import { LessonApiModule } from &#x27;@modules/lesson/lesson-api.module&#x27;;
+import { MeApiModule } from &#x27;@modules/me/me-api.module&#x27;;
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from &#x27;@modules/meta-tag-extractor&#x27;;
 import { NewsModule } from &#x27;@modules/news&#x27;;
 import { OauthProviderApiModule } from &#x27;@modules/oauth-provider&#x27;;
@@ -440,8 +442,8 @@ import { TeamsApiModule } from &#x27;@modules/teams/teams-api.module&#x27;;
 import { ToolApiModule } from &#x27;@modules/tool/tool-api.module&#x27;;
 import { ImportUserModule, UserImportConfigModule } from &#x27;@modules/user-import&#x27;;
 import { UserLoginMigrationApiModule } from &#x27;@modules/user-login-migration/user-login-migration-api.module&#x27;;
+import { UsersAdminApiModule } from &#x27;@modules/user/legacy/users-admin-api.module&#x27;;
 import { UserApiModule } from &#x27;@modules/user/user-api.module&#x27;;
-import { MeApiModule } from &#x27;@modules/me/me-api.module&#x27;;
 import { VideoConferenceApiModule } from &#x27;@modules/video-conference/video-conference-api.module&#x27;;
 import { DynamicModule, Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
@@ -449,7 +451,6 @@ import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { UsersAdminApiModule } from &#x27;@modules/user/legacy/users-admin-api.module&#x27;;
 import { ServerConfigController, ServerController, ServerUc } from &#x27;./api&#x27;;
 import { SERVER_CONFIG_TOKEN, serverConfig } from &#x27;./server.config&#x27;;
 
@@ -502,6 +503,7 @@ const serverModules &#x3D; [
 	SchoolApiModule,
 	LegacySchoolApiModule,
 	MeApiModule,
+	MediaBoardApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {

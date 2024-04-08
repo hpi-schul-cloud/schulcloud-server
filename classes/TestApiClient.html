@@ -1067,7 +1067,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>patch(subPath?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank">object</a>)</code>
+                    <code>patch(subPath?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data?: T)</code>
                 </td>
             </tr>
 
@@ -1079,6 +1079,14 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
 
             <tr>
                 <td class="col-md-4">
@@ -1092,7 +1100,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1106,23 +1113,18 @@
                                                     Yes
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                         </tr>
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                                                        <code>T</code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
-                                            <td>
-                                                    <code>{}</code>
-                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -1154,7 +1156,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>post(subPath?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank">object</a>)</code>
+                    <code>post(subPath?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data?: T)</code>
                 </td>
             </tr>
 
@@ -1166,6 +1168,14 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
 
             <tr>
                 <td class="col-md-4">
@@ -1179,7 +1189,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1193,23 +1202,18 @@
                                                     Yes
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                         </tr>
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                                                        <code>T</code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
-                                            <td>
-                                                    <code>{}</code>
-                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -1346,7 +1350,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>put(subPath?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank">object</a>)</code>
+                    <code>put(subPath?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data?: T)</code>
                 </td>
             </tr>
 
@@ -1358,6 +1362,14 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
 
             <tr>
                 <td class="col-md-4">
@@ -1371,7 +1383,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1385,23 +1396,18 @@
                                                     Yes
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                         </tr>
                                         <tr>
                                                 <td>data</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                                                        <code>T</code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
-                                            <td>
-                                                    <code>{}</code>
-                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -1481,7 +1487,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public put(subPath?: string, data &#x3D; {}): supertest.Test {
+	public put&lt;T extends object | string&gt;(subPath?: string, data?: T): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.put(path)
@@ -1491,7 +1497,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public patch(subPath?: string, data &#x3D; {}): supertest.Test {
+	public patch&lt;T extends object | string&gt;(subPath?: string, data?: T): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.patch(path)
@@ -1501,7 +1507,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public post(subPath?: string, data &#x3D; {}): supertest.Test {
+	public post&lt;T extends object | string&gt;(subPath?: string, data?: T): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.post(path)

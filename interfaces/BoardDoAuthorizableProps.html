@@ -313,7 +313,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>rootDo:         <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                        <code>rootDo:     <code>ColumnBoard | MediaBoard</code>
 </code>
                                     </td>
                                 </tr>
@@ -321,7 +321,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                            <i>Type : </i>    <code>ColumnBoard | MediaBoard</code>
 
                                         </td>
                                     </tr>
@@ -372,8 +372,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { AnyBoardDo } from &#x27;./any-board-do&#x27;;
 import { ColumnBoard } from &#x27;../column-board.do&#x27;;
+import { MediaBoard } from &#x27;../media-board&#x27;;
+import { AnyBoardDo } from &#x27;./any-board-do&#x27;;
 
 export enum BoardRoles {
 	EDITOR &#x3D; &#x27;editor&#x27;,
@@ -391,7 +392,7 @@ export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserWithBoardRoles[];
 	boardDo: AnyBoardDo;
-	rootDo: ColumnBoard;
+	rootDo: ColumnBoard | MediaBoard;
 	parentDo?: AnyBoardDo;
 }
 
@@ -416,7 +417,7 @@ export class BoardDoAuthorizable extends DomainObject&lt;BoardDoAuthorizableProp
 		this.props.parentDo &#x3D; value;
 	}
 
-	get rootDo(): ColumnBoard {
+	get rootDo(): ColumnBoard | MediaBoard {
 		return this.props.rootDo;
 	}
 }

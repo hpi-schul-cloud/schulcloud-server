@@ -325,7 +325,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:27</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:28</a></div>
                                 </td>
                             </tr>
 
@@ -347,7 +347,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:31</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:32</a></div>
                                 </td>
                             </tr>
 
@@ -358,7 +358,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:35</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:36</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -416,7 +416,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:39</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:40</a></div>
                                 </td>
                             </tr>
 
@@ -427,7 +427,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:43</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:44</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -485,7 +485,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:47</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:48</a></div>
                                 </td>
                             </tr>
 
@@ -498,8 +498,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { AnyBoardDo } from &#x27;./any-board-do&#x27;;
 import { ColumnBoard } from &#x27;../column-board.do&#x27;;
+import { MediaBoard } from &#x27;../media-board&#x27;;
+import { AnyBoardDo } from &#x27;./any-board-do&#x27;;
 
 export enum BoardRoles {
 	EDITOR &#x3D; &#x27;editor&#x27;,
@@ -517,7 +518,7 @@ export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserWithBoardRoles[];
 	boardDo: AnyBoardDo;
-	rootDo: ColumnBoard;
+	rootDo: ColumnBoard | MediaBoard;
 	parentDo?: AnyBoardDo;
 }
 
@@ -542,7 +543,7 @@ export class BoardDoAuthorizable extends DomainObject&lt;BoardDoAuthorizableProp
 		this.props.parentDo &#x3D; value;
 	}
 
-	get rootDo(): ColumnBoard {
+	get rootDo(): ColumnBoard | MediaBoard {
 		return this.props.rootDo;
 	}
 }

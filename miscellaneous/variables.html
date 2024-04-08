@@ -635,6 +635,9 @@
                             <a href="#isAnyContentElement" title="apps/server/src/shared/domain/domainobject/board/types/any-content-element-do.ts" ><b>isAnyContentElement</b>&nbsp;&nbsp;&nbsp;(apps/.../any-content-element-do.ts)</a>
                         </li>
                         <li>
+                            <a href="#isAnyMediaContentElement" title="apps/server/src/shared/domain/domainobject/board/types/any-media-content-element-do.ts" ><b>isAnyMediaContentElement</b>&nbsp;&nbsp;&nbsp;(apps/.../any-media-content-element-do.ts)</a>
+                        </li>
+                        <li>
                             <a href="#isAtLeastPartialSuccessfull" title="apps/server/src/modules/copy-helper/service/copy-helper.service.ts" ><b>isAtLeastPartialSuccessfull</b>&nbsp;&nbsp;&nbsp;(apps/.../copy-helper.service.ts)</a>
                         </li>
                         <li>
@@ -705,6 +708,24 @@
                         </li>
                         <li>
                             <a href="#materialFactory" title="apps/server/src/shared/testing/factory/material.factory.ts" ><b>materialFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../material.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaBoardFactory" title="apps/server/src/shared/testing/factory/domainobject/board/media-board.do.factory.ts" ><b>mediaBoardFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-board.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaBoardNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/media-board-node.factory.ts" ><b>mediaBoardNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-board-node.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaExternalToolElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/media-external-tool-element.do.factory.ts" ><b>mediaExternalToolElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-external-tool-element.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaExternalToolElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/media-external-tool-element-node.factory.ts" ><b>mediaExternalToolElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-external-tool-element-node.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaLineFactory" title="apps/server/src/shared/testing/factory/domainobject/board/media-line.do.factory.ts" ><b>mediaLineFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-line.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaLineNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/media-line-node.factory.ts" ><b>mediaLineNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-line-node.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#metaTagExtractorConfig" title="apps/server/src/modules/meta-tag-extractor/meta-tag-extractor.config.ts" ><b>metaTagExtractorConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../meta-tag-extractor.config.ts)</a>
@@ -1810,6 +1831,9 @@
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
+	MediaBoardNode,
+	MediaLineNode,
+	MediaExternalToolElementNode,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,
@@ -3772,6 +3796,7 @@ This allows adding console commands to execute provider methods.</p>
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,
 	...UserImportConfiguration.userImportFeatures,
+	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get(&#x27;FEATURE_MEDIA_SHELF_ENABLED&#x27;) as boolean,
 }</code>
                     </td>
                 </tr>
@@ -5111,6 +5136,7 @@ must use</p>
 	SchoolApiModule,
 	LegacySchoolApiModule,
 	MeApiModule,
+	MediaBoardApiModule,
 ]</code>
                     </td>
                 </tr>
@@ -9334,6 +9360,33 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/domain/domainobject/board/types/any-media-content-element-do.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isAnyMediaContentElement"></a>
+                    <span class="name">
+                        <span ><b>isAnyMediaContentElement</b></span>
+                        <a href="#isAnyMediaContentElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(element: AnyBoardDo): element is AnyMediaContentElementDo &#x3D;&gt; {
+	const result: boolean &#x3D; element instanceof MediaExternalToolElement;
+
+	return result;
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/copy-helper/service/copy-helper.service.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -10133,6 +10186,195 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		url: &#x27;test material url&#x27;,
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/media-board.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaBoardFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaBoardFactory</b></span>
+                        <a href="#mediaBoardFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaBoard, MediaBoardProps&gt;(MediaBoard, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		context: {
+			type: BoardExternalReferenceType.User,
+			id: new ObjectId().toHexString(),
+		},
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/media-board-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaBoardNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaBoardNodeFactory</b></span>
+                        <a href="#mediaBoardNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaBoardNode, RootBoardNodeProps&gt;(MediaBoardNode, () &#x3D;&gt; {
+	return {
+		context: {
+			type: BoardExternalReferenceType.User,
+			id: new ObjectId().toHexString(),
+		},
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/media-external-tool-element.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaExternalToolElementFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaExternalToolElementFactory</b></span>
+                        <a href="#mediaExternalToolElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	MediaExternalToolElement,
+	MediaExternalToolElementProps
+&gt;(MediaExternalToolElement, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		contextExternalToolId: new ObjectId().toHexString(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/media-external-tool-element-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaExternalToolElementNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaExternalToolElementNodeFactory</b></span>
+                        <a href="#mediaExternalToolElementNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	MediaExternalToolElementNode,
+	MediaExternalToolElementNodeProps
+&gt;(MediaExternalToolElementNode, () &#x3D;&gt; {
+	return {
+		contextExternalTool: contextExternalToolEntityFactory.build(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/media-line.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaLineFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaLineFactory</b></span>
+                        <a href="#mediaLineFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaLine, MediaLineProps&gt;(MediaLine, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		title: &#x60;Line ${sequence}&#x60;,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/media-line-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaLineNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaLineNodeFactory</b></span>
+                        <a href="#mediaLineNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaLineNode, MediaLineNodeProps&gt;(
+	MediaLineNode,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			title: &#x60;Line ${sequence}&#x60;,
+		};
+	}
+)</code>
                     </td>
                 </tr>
 
