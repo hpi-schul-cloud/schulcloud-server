@@ -7606,6 +7606,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/DeletionClientConfig.html" data-type="entity-link" >DeletionClientConfig</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/DeletionConfig.html" data-type="entity-link" >DeletionConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/DeletionExecutionTriggerResult.html" data-type="entity-link" >DeletionExecutionTriggerResult</a>
                             </li>
                             <li class="link">

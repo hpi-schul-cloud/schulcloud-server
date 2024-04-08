@@ -145,13 +145,16 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#status" >status</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#targetRefDomain" >targetRefDomain</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#targetRefId" >targetRefId</a>
                             </li>
@@ -217,6 +220,7 @@
                     <a name="status"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>status</b></span>
                         <a href="#status"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -233,13 +237,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property()<br />@Index()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -252,6 +256,7 @@
                 <td class="col-md-4">
                     <a name="targetRefDomain"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>targetRefDomain</b></span>
                         <a href="#targetRefDomain"><span class="icon ion-ios-link"></span></a>
@@ -269,13 +274,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property()<br />@Index()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -288,6 +293,7 @@
                 <td class="col-md-4">
                     <a name="targetRefId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>targetRefId</b></span>
                         <a href="#targetRefId"><span class="icon ion-ios-link"></span></a>
@@ -305,13 +311,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property()<br />@Index()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -347,12 +353,15 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	deleteAfter: Date;
 
 	@Property()
+	@Index()
 	targetRefId!: EntityId;
 
 	@Property()
+	@Index()
 	targetRefDomain: DomainName;
 
 	@Property()
+	@Index()
 	status: StatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {

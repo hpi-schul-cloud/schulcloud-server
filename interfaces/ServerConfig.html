@@ -158,6 +158,7 @@
                             <code><a href="../interfaces/IUserImportFeatures.html" target="_self" >IUserImportFeatures</a></code>
                             <code><a href="../interfaces/SchulconnexClientConfig.html" target="_self" >SchulconnexClientConfig</a></code>
                             <code><a href="../interfaces/SynchronizationConfig.html" target="_self" >SynchronizationConfig</a></code>
+                            <code><a href="../interfaces/DeletionConfig.html" target="_self" >DeletionConfig</a></code>
                             <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ProvisioningConfig</a></code>
             </p>
 
@@ -1931,6 +1932,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from &#x2
 import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import type { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
+import { DeletionConfig } from &#x27;@modules/deletion&#x27;;
 import { ProvisioningConfig } from &#x27;../provisioning&#x27;;
 import { SynchronizationConfig } from &#x27;../synchronization/synchronization.config&#x27;;
 import { SchulcloudTheme } from &#x27;./types/schulcloud-theme.enum&#x27;;
@@ -1966,6 +1968,7 @@ export interface ServerConfig
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
+		DeletionConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -2079,6 +2082,7 @@ const config: ServerConfig &#x3D; {
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
 	// parse [&lt;description&gt;:]&lt;token&gt;,[&lt;description&gt;:]&lt;token&gt;... and  discard description
+	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD&#x27;) as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((part) &#x3D;&gt; (part.split(&#x27;:&#x27;).pop() ?? &#x27;&#x27;).trim()),

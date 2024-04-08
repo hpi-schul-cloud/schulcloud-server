@@ -433,6 +433,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._parentId.toHexString();
 	}
 
+	@Index()
 	@Property({ fieldName: &#x27;creator&#x27;, nullable: true })
 	_creatorId?: ObjectId;
 

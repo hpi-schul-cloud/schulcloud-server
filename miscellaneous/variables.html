@@ -239,6 +239,9 @@
                             <a href="#config" title="apps/server/src/modules/h5p-library-management/service/h5p-library-management.config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-library-management.config.ts)</a>
                         </li>
                         <li>
+                            <a href="#config" title="apps/server/src/modules/deletion/domain/testing/test-config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#config" title="apps/server/src/modules/synchronization/uc/testing/test-config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
                         </li>
                         <li>
@@ -407,6 +410,9 @@
                             <a href="#defaultVideoConferenceOptions" title="apps/server/src/modules/video-conference/interface/video-conference-options.interface.ts" ><b>defaultVideoConferenceOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-options.interface.ts)</a>
                         </li>
                         <li>
+                            <a href="#deletionConfig" title="apps/server/src/modules/deletion/domain/testing/test-config.ts" ><b>deletionConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#deletionLogEntityFactory" title="apps/server/src/modules/deletion/repo/entity/testing/factory/deletion-log.entity.factory.ts" ><b>deletionLogEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-log.entity.factory.ts)</a>
                         </li>
                         <li>
@@ -417,6 +423,9 @@
                         </li>
                         <li>
                             <a href="#deletionRequestFactory" title="apps/server/src/modules/deletion/domain/testing/factory/deletion-request.factory.ts" ><b>deletionRequestFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#deletionTestConfig" title="apps/server/src/modules/deletion/domain/testing/test-config.ts" ><b>deletionTestConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../test-config.ts)</a>
                         </li>
                         <li>
                             <a href="#drawingElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/drawing-element.do.factory.ts" ><b>drawingElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../drawing-element.do.factory.ts)</a>
@@ -3719,6 +3728,7 @@ This allows adding console commands to execute provider methods.</p>
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
 	// parse [&lt;description&gt;:]&lt;token&gt;,[&lt;description&gt;:]&lt;token&gt;... and  discard description
+	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD&#x27;) as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((part) &#x3D;&gt; (part.split(&#x27;:&#x27;).pop() ?? &#x27;&#x27;).trim()),
@@ -4039,6 +4049,81 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>() &#x3D;&gt; config</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion/domain/testing/test-config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="config"></a>
+                    <span class="name">
+                        <span ><b>config</b></span>
+                        <a href="#config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; deletionConfig</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletionConfig"></a>
+                    <span class="name">
+                        <span ><b>deletionConfig</b></span>
+                        <a href="#deletionConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD&#x27;) as number,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletionTestConfig"></a>
+                    <span class="name">
+                        <span ><b>deletionTestConfig</b></span>
+                        <a href="#deletionTestConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {
+	const conf &#x3D; config();
+	conf.ADMIN_API__MODIFICATION_THRESHOLD &#x3D; 1000;
+	return conf;
+}</code>
                     </td>
                 </tr>
 

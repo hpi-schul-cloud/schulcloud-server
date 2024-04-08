@@ -407,7 +407,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllItemsToExecution(limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>findAllItemsToExecution(threshold: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -435,6 +435,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>threshold</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>limit</td>
                                             <td>
@@ -872,10 +884,10 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(limit?: number): Promise&lt;DeletionRequest[]&gt; {
+	async findAllItemsToExecution(threshold: number, limit?: number): Promise&lt;DeletionRequest[]&gt; {
 		const currentDate &#x3D; new Date();
-		const fifteenMinutesAgo &#x3D; new Date(Date.now() - 1 * 60 * 1000);
-		const scope &#x3D; new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(fifteenMinutesAgo);
+		const modificationThreshold &#x3D; new Date(Date.now() - threshold);
+		const scope &#x3D; new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(modificationThreshold);
 		const order &#x3D; { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] &#x3D; await this.em.findAndCount(DeletionRequestEntity, scope.query, {
