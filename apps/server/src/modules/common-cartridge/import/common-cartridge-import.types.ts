@@ -32,12 +32,12 @@ export type OrganizationProps = {
 	resourceType: string;
 };
 
-type TitleResourceProps = { type: ResourceType.TITLE; title: string };
+export type TitleResourceProps = { type: ResourceType.TITLE; title: string };
 
-type WebContentResourceProps = { type: ResourceType.WEB_CONTENT; title: string; html: string };
+export type WebContentResourceProps = { type: ResourceType.WEB_CONTENT; title: string; html: string };
 
-type WebLinkResourceProps = { type: ResourceType.WEB_LINK; title: string; url: string };
+export type WebLinkResourceProps = { type: ResourceType.WEB_LINK; title: string; url: string };
 
-type UnknownResourceProps = { type: ResourceType.UNKNOWN };
+export type UnknownResourceProps = { type: ResourceType.UNKNOWN };
 
 export type ResourceProps = TitleResourceProps | WebContentResourceProps | WebLinkResourceProps | UnknownResourceProps;

@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column, ColumnBoard, LinkElement } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
-import { CardService, ColumnBoardService, ColumnService } from '@src/modules/board';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import {
 	CommonCartridgeFileParser,
 	DEFAULT_FILE_PARSER_OPTIONS,
 	OrganizationProps,
 } from '@src/modules/common-cartridge';
+import { WebLinkResourceProps } from '@src/modules/common-cartridge/import/common-cartridge-import.types';
+import { ObjectId } from 'bson';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
 
@@ -17,6 +19,7 @@ export class CommonCartridgeImportService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly cardService: CardService,
+		private readonly contentElementService: ContentElementService,
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
@@ -48,20 +51,56 @@ export class CommonCartridgeImportService {
 		const columns = organizations.filter((organization) => organization.pathDepth === 0);
 
 		for await (const column of columns) {
-			await this.createColumn(columnBoard, column, organizations);
+			await this.createColumn(parser, columnBoard, column, organizations);
 		}
 	}
 
 	private async createColumn(
+		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
 		columnProps: OrganizationProps,
 		organizations: OrganizationProps[]
 	): Promise<void> {
 		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
-		const cardProps = organizations
-			.filter((organization) => organization.pathDepth === 1 && organization.path.startsWith(columnProps.identifier))
-			.map((organization) => this.mapper.mapOrganizationToCard(organization));
+		const cards = organizations.filter(
+			(organization) =>
+				organization.pathDepth === 1 && organization.path.startsWith(columnProps.identifier) && organization.isResource
+		);
 
-		await this.cardService.createMany(column, cardProps);
+		for await (const card of cards) {
+			await this.createCard(parser, column, card);
+		}
+	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: Column,
+		cardProps: OrganizationProps
+	): Promise<void> {
+		const resource = parser.getResource(cardProps);
+		await this.cardService.create(
+			column,
+			undefined,
+			this.mapper.mapOrganizationToCard(cardProps, [
+				new LinkElement({
+					id: new ObjectId().toHexString(),
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					title: (resource as WebLinkResourceProps).title,
+					url: (resource as WebLinkResourceProps).url,
+				}),
+			])
+		);
+		// const resource = parser.getResource(cardProps);
+
+		// if (resource?.type === ResourceType.WEB_LINK) {
+		// 	const link = (await this.contentElementService.create(card, ContentElementType.LINK)) as LinkElement;
+		// 	const updatedLink = new LinkContentBody();
+
+		// 	updatedLink.title = resource.title;
+		// 	updatedLink.url = resource.url;
+
+		// 	await this.contentElementService.update(link, link);
+		// }
 	}
 }

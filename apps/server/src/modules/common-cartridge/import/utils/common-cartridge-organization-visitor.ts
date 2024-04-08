@@ -94,12 +94,6 @@ export class CommonCartridgeOrganizationVisitor {
 		};
 	}
 
-	private getElementTitle(element: Element): string {
-		const title = element.getAttribute('title') || '';
-
-		return title;
-	}
-
 	private getElementIdentifier(element: Element): string {
 		const identifier = element.getAttribute('identifier') || '';
 
@@ -110,6 +104,12 @@ export class CommonCartridgeOrganizationVisitor {
 		const identifierRef = element.getAttribute('identifierref') || '';
 
 		return identifierRef;
+	}
+
+	private getElementTitle(element: Element): string {
+		const title = element.querySelector('title')?.textContent ?? '';
+
+		return title;
 	}
 
 	private getResourcePath(identifierRef: string): string {
