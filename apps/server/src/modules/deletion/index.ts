@@ -6,3 +6,4 @@ export { DeletionService, DomainDeletionReport, DomainOperationReport } from './
 export { DataDeletionDomainOperationLoggable } from './domain/loggable';
 export { DeletionErrorLoggableException } from './domain/loggable-exception';
 export { OperationReportHelper } from './domain/helper';
+export { DeletionConfig } from './domain/interface';

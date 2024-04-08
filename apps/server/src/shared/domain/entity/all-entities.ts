@@ -8,10 +8,10 @@ import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { Account } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
@@ -57,7 +57,7 @@ import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
-	Account,
+	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
 	BoardNode,
