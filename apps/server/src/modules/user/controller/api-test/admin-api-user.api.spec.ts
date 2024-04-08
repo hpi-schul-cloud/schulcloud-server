@@ -1,9 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { schoolEntityFactory, TestApiClient, TestXApiKeyClient } from '@shared/testing';
+import { TestApiClient, TestXApiKeyClient, schoolEntityFactory } from '@shared/testing';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { nanoid } from 'nanoid';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
@@ -89,7 +90,7 @@ describe('Admin API - Users (API)', () => {
 				const response = await testXApiKeyClient.post('', body);
 				const { accountId } = response.body as AdminApiUserCreateResponse;
 
-				const loaded = await em.findOneOrFail(Account, accountId);
+				const loaded = await em.findOneOrFail(AccountEntity, accountId);
 				expect(loaded).toEqual(
 					expect.objectContaining({
 						id: accountId,

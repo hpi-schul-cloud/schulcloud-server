@@ -85,7 +85,7 @@ describe('skipRegistration service', () => {
 				parent_termsOfUseConsent: true,
 				privacyConsent: true,
 				termsOfUseConsent: true,
-				password: 'password1',
+				password: 'Password1!',
 			},
 			{ route: { userId: user._id } }
 		);
@@ -149,7 +149,7 @@ describe('skipRegistration service', () => {
 				privacyConsent: true,
 				termsOfUseConsent: true,
 				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
+				password: 'Password1!',
 			},
 			{ route: { userId: user._id } }
 		);
@@ -171,7 +171,7 @@ describe('skipRegistration service', () => {
 				privacyConsent: true,
 				termsOfUseConsent: true,
 				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
+				password: 'Password1!',
 			},
 			{ route: { userId: user._id } }
 		);
@@ -201,7 +201,7 @@ describe('skipRegistration service', () => {
 				privacyConsent: true,
 				termsOfUseConsent: true,
 				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
+				password: 'Password1!',
 			},
 			{ route: { userId: user._id } }
 		);
@@ -224,7 +224,7 @@ describe('skipRegistration service', () => {
 				privacyConsent: true,
 				termsOfUseConsent: true,
 				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
+				password: 'Password1!',
 			},
 			{ route: { userId: user._id } }
 		);
@@ -252,7 +252,7 @@ describe('skipRegistration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
+					password: 'Password1!',
 				},
 				{
 					userId: secondStudent._id,
@@ -261,7 +261,7 @@ describe('skipRegistration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 					birthday: '2013-12-19T00:00:00Z',
-					password: 'password2',
+					password: 'Password2!',
 				},
 			],
 		});
@@ -284,7 +284,7 @@ describe('skipRegistration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
+					password: 'Password1!',
 				},
 				{
 					userId: secondStudent._id,
@@ -293,7 +293,7 @@ describe('skipRegistration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 					birthday: '2013-12-19T00:00:00Z',
-					password: 'password2',
+					password: 'Password2!',
 				},
 			],
 		});
