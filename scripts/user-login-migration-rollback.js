@@ -2,11 +2,15 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const { program } = require('commander');
-const { ObjectId } = require('@mikro-orm/mongodb');
 
 program
 	.requiredOption('-u, --url <value>', '(Required) URL of the MongoDB instance')
-	.requiredOption('-s, --schoolId <value>', 'The schoolId of the migrated school, that should be roll-backed.');
+	.requiredOption('-s, --schoolId <value>', 'The schoolId of the migrated school, that should be roll-backed.')
+	.addHelpText(
+		'after',
+		'This script rolls back all user-login-migrations of one school. It needs the values of the MongoDB url and the Object Id of the school. The call should look like:\n' +
+			"node .\\scripts\\user-login-migration-rollback.js -s '5f2987e020834114b8efd6f8' -u 'mongodb://localhost:27018/scapp?directConnection=true'"
+	);
 program.parse();
 
 const options = program.opts();
@@ -71,7 +75,7 @@ const UserLoginMigration = mongoose.model(
 );
 
 const up = async () => {
-	console.info('rollback started');
+	console.info('Rollback started');
 	await connect();
 	const userLoginMigration = await UserLoginMigration.findOne({ school: schoolId }).lean().exec();
 
@@ -81,7 +85,7 @@ const up = async () => {
 	})
 		.lean()
 		.exec();
-	console.info(`found ${migratedUsersFromSchool.length} migrated users. Starting rollback.`);
+	console.info(`Found ${migratedUsersFromSchool.length} migrated users. Starting rollback.`);
 
 	for await (const user of migratedUsersFromSchool) {
 		user.ldapId = user.previousExternalId;
@@ -100,7 +104,11 @@ const up = async () => {
 			);
 		}
 
-		await Account.findOneAndUpdate({ userId: user._id }, { $unset: { systemId: '' } });
+		if (userLoginMigration.sourceSystem) {
+			await Account.findOneAndUpdate({ userId: user._id }, { $set: { systemId: userLoginMigration.sourceSystem } });
+		} else {
+			await Account.findOneAndUpdate({ userId: user._id }, { $unset: { systemId: '' } });
+		}
 	}
 	console.info('Finished without errors');
 
