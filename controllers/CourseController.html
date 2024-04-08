@@ -164,6 +164,17 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getUserPermissions" >getUserPermissions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
@@ -402,6 +413,101 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../interfaces/Meta.html" target="_self" >Promise&lt;CourseMetadataListResponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserPermissions"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getUserPermissions</b></span>
+                        <a href="#getUserPermissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserPermissions(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/CourseUrlParams.html" target="_self">CourseUrlParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:courseId/user-permissions&#x27;)<br />@ApiOperation({summary: &#x27;Get permissions for a user in a course.&#x27;})<br />@ApiBadRequestResponse({description: &#x27;Request data has invalid format.&#x27;})<br />@ApiInternalServerErrorResponse({description: &#x27;Internal server error.&#x27;})<br />@ApiUnprocessableEntityResponse({description: &#x27;Unsupported role.&#x27;})<br />@ApiCreatedResponse({status: 200, schema: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/CourseUrlParams.html" target="_self" >CourseUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -715,6 +821,26 @@ export class CourseController {
 		@Param() params: CourseUrlParams
 	): Promise&lt;void&gt; {
 		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
+	}
+
+	@Get(&#x27;:courseId/user-permissions&#x27;)
+	@ApiOperation({ summary: &#x27;Get permissions for a user in a course.&#x27; })
+	@ApiBadRequestResponse({ description: &#x27;Request data has invalid format.&#x27; })
+	@ApiInternalServerErrorResponse({ description: &#x27;Internal server error.&#x27; })
+	@ApiUnprocessableEntityResponse({ description: &#x27;Unsupported role.&#x27; })
+	@ApiCreatedResponse({
+		status: 200,
+		schema: { type: &#x27;object&#x27;, example: { userId: [&#x27;permission1&#x27;, &#x27;permission2&#x27;] } },
+	})
+	public async getUserPermissions(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise&lt;{ [userId: string]: string[] }&gt; {
+		const permissions &#x3D; await this.courseUc.getUserPermissionByCourseId(currentUser.userId, params.courseId);
+
+		return {
+			[currentUser.userId]: permissions,
+		};
 	}
 }
 </code></pre>
