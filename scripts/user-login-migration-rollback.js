@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const { program } = require('commander');
+const { ObjectId } = require('@mikro-orm/mongodb');
 
 program
 	.requiredOption('-u, --url <value>', '(Required) URL of the MongoDB instance')
@@ -10,15 +11,13 @@ program.parse();
 
 const options = program.opts();
 const mongodbUrl = options.url;
-const schoolId = options;
+const { schoolId } = options;
 
 const close = async () => mongoose.connection.close();
 
 const connect = async () => {
 	const mongooseOptions = {
 		useNewUrlParser: true,
-		useFindAndModify: false,
-		useCreateIndex: true,
 		useUnifiedTopology: true,
 	};
 
@@ -30,8 +29,9 @@ const User = mongoose.model(
 	new Schema(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
-			ldapId: { type: Schema.Types.ObjectId, required: false },
-			previousExternalId: { type: Schema.Types.ObjectId, required: false },
+			schoolId: { type: Schema.Types.ObjectId, required: true },
+			ldapId: { type: Schema.Types.String, required: false },
+			previousExternalId: { type: Schema.Types.String, required: false },
 			lastLoginSystemChange: { type: Schema.Types.Date, required: false },
 		},
 		{
@@ -59,9 +59,7 @@ const UserLoginMigration = mongoose.model(
 	'user_login_migration_0406202411483',
 	new Schema(
 		{
-			school: {
-				_id: { type: Schema.Types.ObjectId, required: true },
-			},
+			school: { type: Schema.Types.ObjectId, required: true },
 			sourceSystem: { type: Schema.Types.ObjectId, required: false },
 			startedAt: { type: Schema.Types.Date, required: true },
 		},
@@ -75,24 +73,31 @@ const UserLoginMigration = mongoose.model(
 const up = async () => {
 	console.info('rollback started');
 	await connect();
+	const userLoginMigration = await UserLoginMigration.findOne({ school: schoolId }).lean().exec();
 
-	const migrationStart = await UserLoginMigration.findOne({ school: { _id: schoolId } })
-		.select('startedAt')
-		.lean()
-		.exec();
-
-	const migratedUsersFromSchool = await User.find({ lastLoginSystemChange: { $gte: migrationStart } })
+	const migratedUsersFromSchool = await User.find({
+		lastLoginSystemChange: { $gte: userLoginMigration.startedAt },
+		schoolId,
+	})
 		.lean()
 		.exec();
 	console.info(`found ${migratedUsersFromSchool.length} migrated users. Starting rollback.`);
 
 	for await (const user of migratedUsersFromSchool) {
-		user.ldapId = undefined;
-		user.lastLoginSystemChange = undefined;
+		user.ldapId = user.previousExternalId;
+
+		await User.findOneAndUpdate(
+			{ _id: user._id },
+			{ $unset: { lastLoginSystemChange: '', previousExternalId: '', ldapId: '' } }
+		);
 
 		if (user.previousExternalId) {
-			user.ldapId = user.previousExternalId;
-			user.previousExternalId = undefined;
+			await User.findOneAndUpdate(
+				{ _id: user._id },
+				{
+					$set: { ldapId: user.ldapId },
+				}
+			);
 		}
 
 		await Account.findOneAndUpdate({ userId: user._id }, { $unset: { systemId: '' } });
