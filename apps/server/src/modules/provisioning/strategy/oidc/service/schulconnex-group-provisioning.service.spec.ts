@@ -10,7 +10,7 @@ import { RoleService, RoleDto } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -652,7 +652,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				const externalGroups: ExternalGroupDto[] = [firstExternalGroup, secondExternalGroup];
 
 				userService.findByExternalId.mockResolvedValue(user);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(new Page<Group>(existingGroups, 2));
 
 				return {
 					externalGroups,
@@ -709,7 +709,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
 					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
+					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(new Page<Group>(existingGroups, 2));
 
 					return {
 						externalGroups,
@@ -788,7 +788,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
 					userService.findByExternalId.mockResolvedValueOnce(user);
-					groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(existingGroups);
+					groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(new Page<Group>(existingGroups, 2));
 					groupService.save.mockResolvedValueOnce(secondExistingGroup);
 
 					return {
