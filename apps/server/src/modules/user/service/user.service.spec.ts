@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountDto, AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
@@ -257,7 +257,7 @@ describe('UserService', () => {
 					permissions: [Permission.DASHBOARD_VIEW],
 				});
 				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
-				const account: AccountDto = new AccountDto({
+				const account: Account = new Account({
 					id: 'accountId',
 					systemId,
 					username: 'username',
