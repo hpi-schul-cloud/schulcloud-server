@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { CommonCartridgeFileParserOptions, OrganizationProps } from '../common-cartridge-import.types';
 
 type SearchElement = { depth: number; path: string; element: Element };
@@ -23,7 +22,9 @@ export class CommonCartridgeOrganizationVisitor {
 	constructor(private readonly document: Document, private readonly options: CommonCartridgeFileParserOptions) {}
 
 	public findAllOrganizations(): OrganizationProps[] {
-		return this.search().map((element) => this.createOrganizationProps(element.element, element.path, element.depth));
+		const organizations = this.search().map((element) => this.createOrganizationProps(element));
+
+		return organizations;
 	}
 
 	private search(): SearchElement[] {
@@ -73,35 +74,60 @@ export class CommonCartridgeOrganizationVisitor {
 		});
 	}
 
-	private getElementIdentifier(element: Element): string {
-		const identifier = element.getAttribute('identifier') ?? `i${randomUUID()}`;
+	private createOrganizationProps(element: SearchElement): OrganizationProps {
+		const title = this.getElementTitle(element.element);
+		const identifier = this.getElementIdentifier(element.element);
+		const identifierRef = this.getElementIdentifierRef(element.element);
+		const isResource = identifierRef !== '';
+		const resourcePath = isResource ? this.getResourcePath(identifierRef) : '';
+		const resourceType = isResource ? this.getResourceType(identifierRef) : '';
 
-		return identifier;
-	}
-
-	private getElementIdentifierRef(element: Element): string | undefined {
-		const identifierRef = element.getAttribute('identifierref') ?? undefined;
-
-		return identifierRef;
+		return {
+			path: element.path,
+			pathDepth: element.depth,
+			identifier,
+			identifierRef,
+			title,
+			isResource,
+			resourcePath,
+			resourceType,
+		};
 	}
 
 	private getElementTitle(element: Element): string {
-		const title = element.querySelector('title')?.textContent ?? '';
+		const title = element.getAttribute('title') || '';
 
 		return title;
 	}
 
-	private createOrganizationProps(element: Element, path: string, pathDepth: number): OrganizationProps {
-		const title = this.getElementTitle(element);
-		const identifier = this.getElementIdentifier(element);
-		const identifierRef = this.getElementIdentifierRef(element);
+	private getElementIdentifier(element: Element): string {
+		const identifier = element.getAttribute('identifier') || '';
 
-		return {
-			path,
-			pathDepth,
-			identifier,
-			identifierRef,
-			title,
-		};
+		return identifier;
+	}
+
+	private getElementIdentifierRef(element: Element): string {
+		const identifierRef = element.getAttribute('identifierref') || '';
+
+		return identifierRef;
+	}
+
+	private getResourcePath(identifierRef: string): string {
+		const path =
+			this.document
+				.querySelector(`manifest > resources > resource[identifier="${identifierRef}"]`)
+				?.querySelector('file') // TODO: move to first querySelector
+				?.getAttribute('href') || '';
+
+		return path;
+	}
+
+	private getResourceType(identifierRef: string): string {
+		const type =
+			this.document
+				.querySelector(`manifest > resources > resource[identifier="${identifierRef}"]`)
+				?.getAttribute('type') || '';
+
+		return type;
 	}
 }
