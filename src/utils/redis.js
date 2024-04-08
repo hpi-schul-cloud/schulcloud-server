@@ -11,8 +11,11 @@ async function initializeRedisClient() {
 	if (Configuration.has('REDIS_URI')) {
 		try {
 			redisClient = new Redis(Configuration.get('REDIS_URI'), {
-				// Legacy mode is needed for compatibility with v4, see https://github.com/redis/node-redis/blob/HEAD/docs/v3-to-v4.md#legacy-mode
-				legacyMode: true,
+				maxRetriesPerRequest: 50,
+				retryStrategy: (times) => Math.min(times * 50, 500),
+				commandTimeout: 5000,
+				noDelay: true,
+				keepAlive: 5000,
 			});
 
 			// The error event must be handled, otherwise the app crashes on redis connection errors.
