@@ -160,14 +160,11 @@ module.exports = function roster() {
 	 */
 	const groupsHandler = {
 		async get(id, params) {
-			console.log('groupsHandler before');
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
-				console.log('groupsHandler in');
 				const group = await app.service('nest-feathers-roster-service').getGroup(id, params.tokenInfo.client_id);
 				return group;
 			}
 
-			console.log('groupsHandler after');
 			const courseService = app.service('courses');
 			const courseId = id;
 			if (!isValidObjectId(courseId)) {

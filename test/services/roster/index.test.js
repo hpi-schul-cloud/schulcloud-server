@@ -256,11 +256,6 @@ describe('roster service', function oauth() {
 					})
 					.then(() => {
 						assert.ok(nestGroupStub.calledOnce);
-						done();
-					})
-					.catch((err) => {
-						console.log('ERROR ROSTER');
-						console.log(err);
 					});
 			});
 		});
