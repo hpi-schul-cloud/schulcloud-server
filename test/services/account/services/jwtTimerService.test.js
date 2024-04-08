@@ -40,7 +40,7 @@ describe('jwtTimer service', () => {
 				delete require.cache[require.resolve('../../../../src/utils/redis')];
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
 
-				mockery.registerMock('redis', redisMock);
+				mockery.registerMock('ioredis', redisMock);
 				mockery.registerMock('@hpi-schul-cloud/commons', commons);
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
@@ -100,7 +100,7 @@ describe('jwtTimer service', () => {
 					warnOnUnregistered: false,
 					useCleanCache: true,
 				});
-				mockery.registerMock('redis', redisMock);
+				mockery.registerMock('ioredis', redisMock);
 
 				delete require.cache[require.resolve('../../../../src/utils/redis')];
 				/* eslint-disable global-require */
