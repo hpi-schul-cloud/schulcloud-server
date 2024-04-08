@@ -34,4 +34,10 @@ export class System extends DomainObject<SystemProps> {
 	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
 		return this.props.provisioningStrategy;
 	}
+
+	public isDeletable(): boolean {
+		const isDeletable = this.ldapConfig?.provider === 'general';
+
+		return isDeletable;
+	}
 }

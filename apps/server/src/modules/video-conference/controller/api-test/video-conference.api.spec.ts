@@ -18,7 +18,7 @@ import {
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { Response } from 'supertest';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 

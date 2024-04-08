@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
-import { accountDtoFactory, accountFactory, cleanupCollections, userFactory } from '@shared/testing';
+import { accountDoFactory, accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
@@ -38,7 +38,7 @@ describe('account repo', () => {
 	describe('save', () => {
 		describe('When an account is given', () => {
 			it('should save an account', async () => {
-				const account = accountDtoFactory.build();
+				const account = accountDoFactory.build();
 
 				await repo.save(account);
 
@@ -58,7 +58,7 @@ describe('account repo', () => {
 			it('should update the account', async () => {
 				const account = await setup();
 
-				const updatedAccount = accountDtoFactory.build({ id: account.id });
+				const updatedAccount = accountDoFactory.build({ id: account.id });
 				await repo.save(updatedAccount);
 
 				const foundAccount = await repo.findById(account.id);
@@ -141,10 +141,10 @@ describe('account repo', () => {
 	describe('findMultipleByUserId', () => {
 		describe('When multiple user ids are given', () => {
 			const setup = async () => {
-				const anAccountToFind = accountDtoFactory.build({
+				const anAccountToFind = accountDoFactory.build({
 					userId: new ObjectId().toHexString(),
 				});
-				const anotherAccountToFind = accountDtoFactory.build({
+				const anotherAccountToFind = accountDoFactory.build({
 					userId: new ObjectId().toHexString(),
 				});
 
@@ -223,7 +223,7 @@ describe('account repo', () => {
 	describe('saveWithoutFlush', () => {
 		describe('When calling saveWithoutFlush', () => {
 			const setup = () => {
-				const account = accountDtoFactory.build();
+				const account = accountDoFactory.build();
 				return account;
 			};
 
@@ -245,7 +245,7 @@ describe('account repo', () => {
 			it('should add it to the change set', async () => {
 				const account = await setup();
 
-				const updatedAccount = accountDtoFactory.build({ id: account.id });
+				const updatedAccount = accountDoFactory.build({ id: account.id });
 				await repo.saveWithoutFlush(updatedAccount);
 
 				em.getUnitOfWork().computeChangeSets();
@@ -466,6 +466,64 @@ describe('account repo', () => {
 
 				const foundAccounts = await repo.findMany(offset);
 				expect(foundAccounts).toHaveLength(mockAccounts.length - offset);
+			});
+		});
+	});
+
+	describe('findByUserIdsAndSystemId', () => {
+		describe('when accounts exist', () => {
+			const setup = async () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+				const userCId = new ObjectId().toHexString();
+
+				const accountA = accountFactory.withSystemId(systemId).build({ userId: userAId });
+				const accountB = accountFactory.withSystemId(systemId).build({ userId: userBId });
+				const accountC = accountFactory.withSystemId(new ObjectId().toHexString()).build({ userId: userCId });
+
+				await em.persistAndFlush([accountA, accountB, accountC]);
+				em.clear();
+
+				const userIds = [userAId, userBId, userCId];
+				const expectedUserIds = [userAId, userBId];
+
+				return {
+					expectedUserIds,
+					systemId,
+					userIds,
+				};
+			};
+
+			it('should return array of verified userIds', async () => {
+				const { expectedUserIds, systemId, userIds } = await setup();
+
+				const verifiedUserIds = await repo.findByUserIdsAndSystemId(userIds, systemId);
+
+				expect(verifiedUserIds).toEqual(expectedUserIds);
+			});
+		});
+
+		describe('when accounts do not exist', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+
+				const userIds = [userAId, userBId];
+
+				return {
+					systemId,
+					userIds,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { systemId, userIds } = setup();
+
+				const result = await repo.findByUserIdsAndSystemId(userIds, systemId);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

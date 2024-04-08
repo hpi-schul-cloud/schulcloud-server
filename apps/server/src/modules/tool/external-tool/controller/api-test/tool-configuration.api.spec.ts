@@ -16,7 +16,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Response } from 'supertest';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import supertest, { Response } from 'supertest';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { defaultTestPassword } from './factory/account.factory';
 
 interface AuthenticationResponse {

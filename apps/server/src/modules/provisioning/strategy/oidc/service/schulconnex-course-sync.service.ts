@@ -1,5 +1,5 @@
 import { Group, GroupUser } from '@modules/group';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { RoleDto, RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
@@ -8,7 +8,7 @@ import { Course } from '@src/modules/learnroom/domain';
 
 @Injectable()
 export class SchulconnexCourseSyncService {
-	constructor(private readonly courseService: CourseService, private readonly roleService: RoleService) {}
+	constructor(private readonly courseService: CourseDoService, private readonly roleService: RoleService) {}
 
 	async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
 		const courses: Course[] = await this.courseService.findBySyncedGroup(newGroup);
@@ -33,11 +33,11 @@ export class SchulconnexCourseSyncService {
 				);
 
 				if (teachers.length >= 1) {
-					course.studentIds = students.map((user: GroupUser): EntityId => user.userId);
-					course.teacherIds = teachers.map((user: GroupUser): EntityId => user.userId);
+					course.students = students.map((user: GroupUser): EntityId => user.userId);
+					course.teachers = teachers.map((user: GroupUser): EntityId => user.userId);
 				} else {
 					// Remove all remaining students and break the link, when the last teacher of the group should be removed
-					course.studentIds = [];
+					course.students = [];
 					course.syncedWithGroup = undefined;
 				}
 			});

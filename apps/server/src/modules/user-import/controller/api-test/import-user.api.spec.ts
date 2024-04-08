@@ -35,7 +35,7 @@ import {
 	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';

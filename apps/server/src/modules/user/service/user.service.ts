@@ -1,5 +1,4 @@
-import { AccountService } from '@modules/account';
-import { Account } from '@src/modules/account/domain';
+import { AccountService, Account } from '@modules/account';
 // invalid import
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
@@ -222,6 +221,22 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
 
 		return users;
+	}
+
+	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
+		const foundUsers = await this.findMultipleByExternalIds(externalIds);
+
+		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
+
+		return verifiedUsers;
+	}
+
+	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {
+		return this.userRepo.findByExternalIds(externalIds);
+	}
+
+	public async updateLastSyncedAt(userIds: string[]): Promise<void> {
+		await this.userRepo.updateAllUserByLastSyncedAt(userIds);
 	}
 
 	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {

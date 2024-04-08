@@ -64,6 +64,7 @@ describe('user repo', () => {
 					'firstNameSearchValues',
 					'lastName',
 					'lastNameSearchValues',
+					'lastSyncedAt',
 					'email',
 					'emailSearchValues',
 					'school',
@@ -194,6 +195,7 @@ describe('user repo', () => {
 					'firstNameSearchValues',
 					'lastName',
 					'lastNameSearchValues',
+					'lastSyncedAt',
 					'email',
 					'emailSearchValues',
 					'customAvatarBackgroundColor',
@@ -237,6 +239,7 @@ describe('user repo', () => {
 		const persistUserAndSchool = async () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
+
 			await em.persistAndFlush([user, school]);
 			em.clear();
 			return { user, school };
@@ -244,6 +247,7 @@ describe('user repo', () => {
 
 		it('should find users not referenced in importusers', async () => {
 			const { user } = await persistUserAndSchool();
+
 			const [result, count] = await repo.findWithoutImportUser(user.school);
 			expect(result.map((u) => u.id)).toContain(user.id);
 			expect(count).toEqual(1);
@@ -602,6 +606,76 @@ describe('user repo', () => {
 				const result = await repo.findUserBySchoolAndName(user.school.id, 'Unknown', 'User');
 
 				expect(result).toEqual([]);
+			});
+		});
+	});
+
+	describe('findByExternalIds', () => {
+		describe('when users exist', () => {
+			const setup = async () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+				const userC = userFactory.buildWithId({ externalId: '333' });
+
+				await em.persistAndFlush([userA, userB, userC]);
+				em.clear();
+
+				const externalIds: string[] = ['111', '222'];
+
+				const expectedResult = [userA.id, userB.id];
+
+				return {
+					expectedResult,
+					externalIds,
+				};
+			};
+
+			it('should return array with ', async () => {
+				const { expectedResult, externalIds } = await setup();
+
+				const result = await repo.findByExternalIds(externalIds);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when users do not exist', () => {
+			it('should return empty array', async () => {
+				const result = await repo.findByExternalIds(['externalId1', 'externalId2']);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('updateAllUserByLastSyncedAt', () => {
+		describe('when updating many users by field lastSyncedAt', () => {
+			const setup = async () => {
+				const userA = userFactory.buildWithId();
+				const userB = userFactory.buildWithId();
+				const userC = userFactory.buildWithId();
+
+				await em.persistAndFlush([userA, userB, userC]);
+				em.clear();
+
+				const userIds = [userA.id, userC.id];
+
+				return {
+					userIds,
+					userA,
+					userC,
+				};
+			};
+
+			it('should update lastSyncedAt field', async () => {
+				const { userIds, userA, userC } = await setup();
+
+				await repo.updateAllUserByLastSyncedAt(userIds);
+
+				const resultForUserA = await repo.findById(userA.id);
+				expect(resultForUserA.lastSyncedAt instanceof Date).toBe(true);
+
+				const resultForUserC = await repo.findById(userC.id);
+				expect(resultForUserC.lastSyncedAt instanceof Date).toBe(true);
 			});
 		});
 	});

@@ -15,8 +15,8 @@ import {
 	OperationType,
 	DataDeletedEvent,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
-import { LegacyLogger } from '../../../core/logger';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { Logger } from '@src/core/logger';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -25,6 +25,8 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
+import { IdmCallbackLoggableException } from '../loggable';
+import { AccountRepo } from '../repo/account.repo';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -33,8 +35,9 @@ describe('AccountService', () => {
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
-	let logger: DeepMocked<LegacyLogger>;
+	let logger: DeepMocked<Logger>;
 	let userRepo: DeepMocked<UserRepo>;
+	let accountRepo: DeepMocked<AccountRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
 	const newAccountService = () =>
@@ -45,6 +48,7 @@ describe('AccountService', () => {
 			accountValidationService,
 			logger,
 			userRepo,
+			accountRepo,
 			eventBus
 		);
 
@@ -69,12 +73,16 @@ describe('AccountService', () => {
 					useValue: createMock<AccountServiceIdm>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<AccountConfig, true>>(),
+				},
+				{
+					provide: AccountRepo,
+					useValue: createMock<AccountRepo>(),
 				},
 				{
 					provide: AccountValidationService,
@@ -99,8 +107,9 @@ describe('AccountService', () => {
 		accountService = module.get(AccountService);
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
-		logger = module.get(LegacyLogger);
+		logger = module.get(Logger);
 		userRepo = module.get(UserRepo);
+		accountRepo = module.get(AccountRepo);
 		eventBus = module.get(EventBus);
 
 		await setupEntities();
@@ -142,6 +151,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -163,6 +173,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -184,6 +195,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findMultipleByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -205,6 +217,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUserIdOrFail).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -226,6 +239,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When calling save in accountService if feature is enabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -238,6 +252,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call save in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -245,6 +260,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('When calling save in accountService if feature is disabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
@@ -257,6 +273,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should not call save in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -264,6 +281,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.save).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -275,6 +293,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call idm implementation', async () => {
 				const service = setup();
 				await expect(service.save({ username: 'username' } as AccountSave)).resolves.not.toThrow();
@@ -284,6 +303,15 @@ describe('AccountService', () => {
 	});
 
 	describe('saveWithValidation', () => {
+		describe('When calling with an empty username', () => {
+			it('should throw an ValidationError', async () => {
+				const params: AccountSave = {
+					username: '',
+				} as AccountSave;
+				await expect(accountService.saveWithValidation(params)).rejects.toThrow(ValidationError);
+			});
+		});
+
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountService, 'save');
@@ -297,12 +325,13 @@ describe('AccountService', () => {
 
 				return spy;
 			};
+
 			it('should not sanitize username for external user', async () => {
 				const spy = setup();
 
 				const params: AccountSave = {
 					username: ' John.Doe@domain.tld ',
-					systemId: 'ABC123',
+					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
 				await accountService.saveWithValidation(params);
 				expect(spy).toHaveBeenCalledWith(
@@ -318,7 +347,7 @@ describe('AccountService', () => {
 			it('should throw username is not an email error', async () => {
 				const params: AccountSave = {
 					username: 'John Doe',
-					password: 'JohnsPassword',
+					password: 'JohnsPassword_123',
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username is not an email');
 			});
@@ -338,7 +367,7 @@ describe('AccountService', () => {
 				setup();
 				const params: AccountSave = {
 					username: 'John Doe',
-					systemId: 'ABC123',
+					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
@@ -358,7 +387,7 @@ describe('AccountService', () => {
 				setup();
 				const params: AccountSave = {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
-					systemId: 'ABC123',
+					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
@@ -377,8 +406,8 @@ describe('AccountService', () => {
 			it('should throw account already exists', async () => {
 				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
-					password: 'JohnsPassword',
-					userId: 'userId123',
+					password: 'JohnsPassword_123',
+					userId: new ObjectId().toHexString(),
 				} as AccountSave;
 				accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
@@ -389,11 +418,12 @@ describe('AccountService', () => {
 			const setup = () => {
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
 			};
+
 			it('should throw username already exists', async () => {
 				setup();
 				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
-					password: 'JohnsPassword',
+					password: 'JohnsPassword_123',
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
 			});
@@ -414,7 +444,7 @@ describe('AccountService', () => {
 			it('should call idm implementation', async () => {
 				const service = setup();
 				await expect(
-					service.saveWithValidation({ username: 'username@mail.tld', password: 'password' } as AccountSave)
+					service.saveWithValidation({ username: 'username@mail.tld', password: 'Password_123' } as AccountSave)
 				).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
@@ -441,6 +471,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call updateUsername in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -461,6 +492,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should not call updateUsername in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -468,6 +500,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.updateUsername).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -496,6 +529,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -537,6 +571,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should call updatePassword in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -557,6 +592,7 @@ describe('AccountService', () => {
 
 				return newAccountService();
 			};
+
 			it('should not call updatePassword in accountServiceIdm', async () => {
 				const service = setup();
 
@@ -586,12 +622,10 @@ describe('AccountService', () => {
 	});
 
 	describe('validatePassword', () => {
-		describe('When calling validatePassword in accountService', () => {
-			it('should call validatePassword in accountServiceDb', async () => {
-				await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
-				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
-				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
-			});
+		it('should call validatePassword in accountServiceDb', async () => {
+			await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
+			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
+			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
 		});
 
 		describe('When calling validatePassword in accountService if feature is enabled', () => {
@@ -599,6 +633,7 @@ describe('AccountService', () => {
 				configService.get.mockReturnValue(true);
 				return newAccountService();
 			};
+
 			it('should call validatePassword in accountServiceIdm', async () => {
 				const service = setup();
 				await expect(service.validatePassword({} as Account, 'password')).resolves.not.toThrow();
@@ -620,6 +655,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(true);
 			};
+
 			it('should call delete in accountServiceIdm', async () => {
 				setup();
 
@@ -632,6 +668,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
 			};
+
 			it('should not call delete in accountServiceIdm', async () => {
 				setup();
 
@@ -639,6 +676,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.delete).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -667,6 +705,7 @@ describe('AccountService', () => {
 				accountServiceDb.deleteByUserId.mockResolvedValueOnce(['accountId']);
 				accountServiceIdm.deleteByUserId.mockResolvedValueOnce(['accountId']);
 			};
+
 			it('should call deleteByUserId in accountServiceIdm', async () => {
 				setup();
 
@@ -679,6 +718,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
 			};
+
 			it('should not call deleteByUserId in accountServiceIdm', async () => {
 				setup();
 
@@ -686,6 +726,7 @@ describe('AccountService', () => {
 				expect(accountServiceIdm.deleteByUserId).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -760,50 +801,20 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('executeIdmMethod', () => {
-		it('should throw an error object', async () => {
-			const spy = jest.spyOn(configService, 'get');
-			spy.mockReturnValueOnce(true);
-			const spyLogger = jest.spyOn(logger, 'error');
-			const testError = new Error('error');
-
-			const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
-			deleteByUserIdMock.mockImplementationOnce(() => {
-				throw testError;
-			});
-
-			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-			expect(spyLogger).toHaveBeenCalledWith(testError, expect.anything());
-		});
-
-		it('should throw an non error object', async () => {
-			const spy = jest.spyOn(configService, 'get');
-			spy.mockReturnValueOnce(true);
-			const spyLogger = jest.spyOn(logger, 'error');
-
-			const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
-			deleteByUserIdMock.mockImplementationOnce(() => {
-				// eslint-disable-next-line @typescript-eslint/no-throw-literal
-				throw 'a non error object';
-			});
-
-			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-			expect(spyLogger).toHaveBeenCalledWith('a non error object');
-		});
-	});
-
 	describe('when identity management is primary', () => {
 		describe('findById', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
 				return newAccountService();
 			};
+
 			it('should call idm implementation', async () => {
 				const service = setup();
 				await expect(service.findById('accountId')).resolves.not.toThrow();
 				expect(accountServiceIdm.findById).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('searchByUsernamePartialMatch', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -825,6 +836,7 @@ describe('AccountService', () => {
 				expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
 			});
 		});
+
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
@@ -848,22 +860,23 @@ describe('AccountService', () => {
 					throw testError;
 				});
 
-				const spyLogger = jest.spyOn(logger, 'error');
+				const spyLogger = jest.spyOn(logger, 'debug');
 
 				return { testError, spyLogger };
 			};
+
 			it('should call executeIdmMethod and throw an error object', async () => {
 				const { testError, spyLogger } = setup();
 
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(spyLogger).toHaveBeenCalledWith(testError, expect.anything());
+				expect(spyLogger).toHaveBeenCalledWith(new IdmCallbackLoggableException(testError));
 			});
 		});
 
 		describe('When idm feature is enabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(true);
-				const spyLogger = jest.spyOn(logger, 'error');
+				const spyLogger = jest.spyOn(logger, 'debug');
 				const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
 				deleteByUserIdMock.mockImplementationOnce(() => {
 					// eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -871,11 +884,12 @@ describe('AccountService', () => {
 				});
 				return { spyLogger };
 			};
-			it('should call executeIdmMethod and throw an error object', async () => {
+
+			it('should call executeIdmMethod and throw a non error object', async () => {
 				const { spyLogger } = setup();
 
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(spyLogger).toHaveBeenCalledWith('a non error object');
+				expect(spyLogger).toHaveBeenCalledWith(new IdmCallbackLoggableException('a non error object'));
 			});
 		});
 	});
@@ -901,6 +915,7 @@ describe('AccountService', () => {
 
 				return { mockExternalUser, mockExternalAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockExternalUser, mockExternalAccount } = setup();
 
@@ -930,6 +945,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccount };
 			};
+
 			it('should throw AuthorizationError', async () => {
 				const { mockStudentUser, mockStudentAccount } = setup();
 				await expect(
@@ -958,6 +974,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should allow to update with strong password', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -992,6 +1009,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave };
 			};
+
 			it('should not update password', async () => {
 				const { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave } = setup();
 				await accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
@@ -1027,6 +1045,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should allow to update email', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -1060,6 +1079,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy };
 			};
+
 			it('should use email as account user name in lower case', async () => {
 				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy } = setup();
 
@@ -1096,6 +1116,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, userUpdateSpy };
 			};
+
 			it('should use email as user email in lower case', async () => {
 				const { mockStudentUser, mockStudentAccountDo, userUpdateSpy } = setup();
 				const testMail = 'AN@AVAILABLE.MAIL';
@@ -1108,6 +1129,7 @@ describe('AccountService', () => {
 				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 			});
 		});
+
 		describe('When email is given', () => {
 			const setup = () => {
 				const mockSchool = schoolEntityFactory.buildWithId();
@@ -1130,6 +1152,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy };
 			};
+
 			it('should always update account user name AND user email together.', async () => {
 				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy } = setup();
 				const testMail = 'an@available.mail';
@@ -1162,6 +1185,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -1191,6 +1215,7 @@ describe('AccountService', () => {
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
+
 			it('should allow to update first and last name', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
 				await expect(
@@ -1227,6 +1252,7 @@ describe('AccountService', () => {
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
 				await expect(
@@ -1259,6 +1285,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await expect(
@@ -1292,6 +1319,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount, mockStudentAccountDo, mockStudentUser };
 			};
+
 			it('should update target account password', async () => {
 				const { mockStudentAccount, mockStudentAccountDo, mockStudentUser } = setup();
 				const previousPasswordHash = mockStudentAccount.password;
@@ -1326,6 +1354,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should update target account username', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const newUsername = 'newUsername';
@@ -1358,6 +1387,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should update target account activation state', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { activated: false } as UpdateAccount;
@@ -1386,6 +1416,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { username: 'fail@to.update' } as UpdateAccount;
@@ -1414,6 +1445,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { username: 'user-fail@to.update' } as UpdateAccount;
@@ -1421,6 +1453,30 @@ describe('AccountService', () => {
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
 				);
+			});
+		});
+
+		describe('When Account is not updated', () => {
+			const setup = () => {
+				const mockSchool = schoolEntityFactory.buildWithId();
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+
+			it('should return target account', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				const body = {} as UpdateAccount;
+				const result = await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
+
+				expect(result).toBe(mockStudentAccountDo);
 			});
 		});
 
@@ -1450,6 +1506,7 @@ describe('AccountService', () => {
 
 				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
 			};
+
 			it('should throw ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount } = setup();
 				const body = { username: mockOtherTeacherAccount.username } as UpdateAccount;
@@ -1484,6 +1541,7 @@ describe('AccountService', () => {
 
 				return { mockUserWithoutAccount };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockUserWithoutAccount } = setup();
 				await expect(
@@ -1496,6 +1554,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				userRepo.findById.mockRejectedValueOnce(undefined);
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				setup();
 				await expect(
@@ -1525,6 +1584,7 @@ describe('AccountService', () => {
 
 				return { mockExternalUserAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockExternalUserAccount } = setup();
 				await expect(
@@ -1557,6 +1617,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1590,6 +1651,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1623,6 +1685,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw Error', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1634,6 +1697,7 @@ describe('AccountService', () => {
 				).rejects.toThrow(Error);
 			});
 		});
+
 		describe('When the admin manipulate the users password', () => {
 			const setup = () => {
 				const mockSchool = schoolEntityFactory.buildWithId();
@@ -1655,6 +1719,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
 
@@ -1689,6 +1754,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
 
@@ -1724,6 +1790,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1764,6 +1831,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1800,6 +1868,7 @@ describe('AccountService', () => {
 
 				return { mockStudentAccount };
 			};
+
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
 				await expect(
@@ -1810,6 +1879,38 @@ describe('AccountService', () => {
 					)
 				).rejects.toThrow(EntityNotFoundError);
 			});
+		});
+	});
+
+	describe('findByUserIdsAndSystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userAId = new ObjectId().toHexString();
+			const userBId = new ObjectId().toHexString();
+			const userCId = new ObjectId().toHexString();
+
+			const userIds = [userAId, userBId, userCId];
+			const expectedResult = [userAId, userBId];
+
+			accountRepo.findByUserIdsAndSystemId.mockResolvedValue(expectedResult);
+
+			return { expectedResult, systemId, userIds };
+		};
+
+		it('should call accountRepo.findByUserIdsAndSystemId with userIds and systemId', async () => {
+			const { systemId, userIds } = setup();
+
+			await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(accountRepo.findByUserIdsAndSystemId).toHaveBeenCalledWith(userIds, systemId);
+		});
+
+		it('should call deleteByUserId in accountService', async () => {
+			const { expectedResult, systemId, userIds } = setup();
+
+			const result = await accountService.findByUserIdsAndSystemId(userIds, systemId);
+
+			expect(result).toEqual(expectedResult);
 		});
 	});
 

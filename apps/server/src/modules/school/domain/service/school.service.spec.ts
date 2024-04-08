@@ -7,6 +7,11 @@ import { systemFactory } from '@shared/testing';
 import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
+import {
+	SchoolHasNoSystemLoggableException,
+	SystemCanNotBeDeletedLoggableException,
+	SystemNotFoundLoggableException,
+} from '../error';
 import { SchoolFactory } from '../factory';
 import { SchoolRepo } from '../interface';
 import { SchoolQuery } from '../query';
@@ -457,58 +462,33 @@ describe('SchoolService', () => {
 	describe('updateSchool', () => {
 		describe('when school exists and save is successfull', () => {
 			const setup = () => {
-				const school = schoolFactory.build();
-				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
-				configService.get.mockReturnValue('enabled');
+				const school = schoolFactory.build({ name: 'old name' });
 
-				return { school, id: school.id };
+				return { school };
 			};
 
-			it('should call getSchoolById', async () => {
-				const { id } = setup();
-
-				await service.updateSchool(id, {});
-
-				expect(schoolRepo.getSchoolById).toBeCalledWith(id);
-			});
-
 			it('should call save', async () => {
-				const { id, school } = setup();
+				const { school } = setup();
 				const partialBody = { name: 'new name' };
 
 				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
 				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
 
-				await service.updateSchool(id, partialBody);
+				await service.updateSchool(school, partialBody);
 
 				expect(schoolRepo.save).toHaveBeenCalledWith(updatedSchool);
 			});
 
 			it('should return the updated school', async () => {
-				const { id, school } = setup();
+				const { school } = setup();
 				const partialBody = { name: 'new name' };
 
 				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
 				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
 
-				const result = await service.updateSchool(id, partialBody);
+				const result = await service.updateSchool(school, partialBody);
 
 				expect(result).toEqual(updatedSchool);
-			});
-		});
-
-		describe('when school does not exist', () => {
-			const setup = () => {
-				const id = '1';
-				schoolRepo.getSchoolById.mockRejectedValueOnce(new NotFoundException());
-
-				return { id };
-			};
-
-			it('should throw NotFoundException', async () => {
-				const { id } = setup();
-
-				await expect(service.updateSchool(id, {})).rejects.toThrowError(NotFoundException);
 			});
 		});
 
@@ -519,13 +499,244 @@ describe('SchoolService', () => {
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
 				schoolRepo.save.mockRejectedValueOnce(error);
 
-				return { id: school.id, error };
+				return { school, error };
 			};
 
 			it('should throw this error', async () => {
-				const { id, error } = setup();
+				const { school, error } = setup();
 
-				await expect(service.updateSchool(id, {})).rejects.toThrowError(error);
+				await expect(service.updateSchool(school, {})).rejects.toThrowError(error);
+			});
+		});
+	});
+
+	describe('getSchoolSystems', () => {
+		describe('when school has systems', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: ['1', '2'] });
+				const systems = systemFactory.buildList(2);
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+				systemService.getSystems.mockResolvedValueOnce(systems);
+
+				return { school, systems };
+			};
+
+			it('should call systemService.getSystems with expected props', async () => {
+				const { school } = setup();
+
+				await service.getSchoolSystems(school);
+
+				expect(systemService.getSystems).toBeCalledWith(['1', '2']);
+			});
+
+			it('should return these systems', async () => {
+				const { school, systems } = setup();
+
+				const result = await service.getSchoolSystems(school);
+
+				expect(result).toEqual(systems);
+			});
+		});
+
+		describe('when school has no systems', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: [] });
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school };
+			};
+
+			it('should dont call systemService.getSystems', async () => {
+				const { school } = setup();
+
+				await service.getSchoolSystems(school);
+
+				expect(systemService.getSystems).not.toBeCalled();
+			});
+
+			it('should return empty array', async () => {
+				const { school } = setup();
+
+				const result = await service.getSchoolSystems(school);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when school has undefined systems', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: undefined });
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school };
+			};
+
+			it('should dont call systemService.getSystems', async () => {
+				const { school } = setup();
+
+				await service.getSchoolSystems(school);
+
+				expect(systemService.getSystems).not.toBeCalled();
+			});
+
+			it('should return empty array', async () => {
+				const { school } = setup();
+
+				const result = await service.getSchoolSystems(school);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when systemService.getSystems throws error', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: ['1'] });
+				systemService.getSystems.mockRejectedValueOnce(new NotFoundException());
+
+				return { school };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { school } = setup();
+
+				await expect(service.getSchoolSystems(school)).rejects.toThrowError(NotFoundException);
+			});
+		});
+	});
+
+	describe('removeSystemFromSchool', () => {
+		describe('when school has system', () => {
+			const setup = () => {
+				const system = systemFactory.build({ ldapConfig: { provider: 'general' } });
+				const school = schoolFactory.build({ systemIds: [system.id] });
+
+				systemService.findById.mockResolvedValueOnce(system);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school, systemId: system.id };
+			};
+
+			it('should call hasSystem', async () => {
+				const { school, systemId } = setup();
+				const spyHasSystem = jest.spyOn(school, 'hasSystem');
+
+				await service.removeSystemFromSchool(school, systemId);
+
+				expect(spyHasSystem).toHaveBeenCalledWith(systemId);
+			});
+
+			it('should call removeSystem', async () => {
+				const { school, systemId } = setup();
+				const spyRemoveSystem = jest.spyOn(school, 'removeSystem');
+
+				await service.removeSystemFromSchool(school, systemId);
+
+				expect(spyRemoveSystem).toHaveBeenCalledWith(systemId);
+			});
+
+			it('should call remove system form school', async () => {
+				const { school, systemId } = setup();
+
+				await service.removeSystemFromSchool(school, systemId);
+
+				expect(school.hasSystem(systemId)).toEqual(false);
+			});
+
+			it('should save school', async () => {
+				const { school, systemId } = setup();
+
+				await service.removeSystemFromSchool(school, systemId);
+
+				expect(schoolRepo.save).toBeCalledWith(school);
+			});
+		});
+
+		describe('when school has deletable system', () => {
+			const setup = () => {
+				const system = systemFactory.build({ ldapConfig: { provider: 'general' } });
+				const school = schoolFactory.build({ systemIds: [system.id] });
+
+				systemService.findById.mockResolvedValueOnce(system);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school, systemId: system.id, system };
+			};
+
+			it('should call systemService.findById', async () => {
+				const { school, systemId } = setup();
+
+				await service.removeSystemFromSchool(school, systemId);
+
+				expect(systemService.findById).toBeCalledWith(systemId);
+			});
+
+			it('should call systemService.delete', async () => {
+				const { school, systemId, system } = setup();
+
+				await service.removeSystemFromSchool(school, systemId);
+
+				expect(systemService.delete).toBeCalledWith(system);
+			});
+		});
+
+		describe('when school has a not deletable system', () => {
+			const setup = () => {
+				const system = systemFactory.build({ ldapConfig: { provider: 'test' } });
+				const school = schoolFactory.build({ systemIds: [system.id] });
+
+				const expectedError = new SystemCanNotBeDeletedLoggableException(system.id);
+
+				systemService.findById.mockResolvedValueOnce(system);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school, systemId: system.id, system, expectedError };
+			};
+
+			it('should throw an error', async () => {
+				const { school, systemId, expectedError } = setup();
+
+				await expect(service.removeSystemFromSchool(school, systemId)).rejects.toThrowError(expectedError);
+			});
+		});
+
+		describe('when school has no system', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: [] });
+				const systemId = '1';
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+				const expectedError = new SchoolHasNoSystemLoggableException(school.id, systemId);
+
+				return { school, systemId, expectedError };
+			};
+
+			it('should throws an error', async () => {
+				const { school, systemId, expectedError } = setup();
+
+				await expect(service.removeSystemFromSchool(school, systemId)).rejects.toThrow(expectedError);
+			});
+		});
+
+		describe('when school has systemId but system not exists', () => {
+			const setup = () => {
+				const systemId = '1';
+				const school = schoolFactory.build({ systemIds: [systemId] });
+
+				const expectedError = new SystemNotFoundLoggableException(systemId);
+
+				systemService.findById.mockResolvedValueOnce(null);
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school, systemId, expectedError };
+			};
+
+			it('should throws an error', async () => {
+				const { school, systemId, expectedError } = setup();
+
+				await expect(service.removeSystemFromSchool(school, systemId)).rejects.toThrow(expectedError);
 			});
 		});
 	});

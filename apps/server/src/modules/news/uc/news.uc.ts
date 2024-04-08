@@ -122,6 +122,7 @@ export class NewsUc {
 				news[key] = value;
 			}
 		}
+		Object.assign(news, { updater: userId });
 
 		await this.newsRepo.save(news);
 

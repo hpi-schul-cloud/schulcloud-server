@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, ContentElementType } from '@shared/domain/domainobject';
+import { Card, CardInitProps, Column, ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
@@ -46,6 +46,27 @@ export class CardService {
 		}
 
 		return card;
+	}
+
+	async createMany(parent: Column, props: CardInitProps[]): Promise<Card[]> {
+		const cards = props.map((prop) => {
+			const card = new Card({
+				id: new ObjectId().toHexString(),
+				title: prop.title,
+				height: prop.height,
+				children: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			parent.addChild(card);
+
+			return card;
+		});
+
+		await this.boardDoRepo.save(parent.children, parent);
+
+		return cards;
 	}
 
 	async delete(card: Card): Promise<void> {

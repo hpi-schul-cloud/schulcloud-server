@@ -4,9 +4,14 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import { SchoolUpdateBodyParams } from './dto/param';
-import { SchoolExistsResponse, SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
+import {
+	SchoolExistsResponse,
+	SchoolForExternalInviteResponse,
+	SchoolResponse,
+	SchoolSystemResponse,
+} from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
-import { SchoolResponseMapper } from './mapper';
+import { SchoolResponseMapper, SystemResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
 
 @Injectable()
@@ -28,6 +33,22 @@ export class SchoolUc {
 		this.authorizationService.checkPermission(user, school, authContext);
 
 		const responseDto = this.mapToSchoolResponseDto(school, schoolYears);
+
+		return responseDto;
+	}
+
+	public async getSchoolSystems(schoolId: EntityId, userId: EntityId): Promise<SchoolSystemResponse[]> {
+		const [school, user] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_VIEW]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		const systems = await this.schoolService.getSchoolSystems(school);
+
+		const responseDto = SystemResponseMapper.mapToSchoolSystemResponse(systems);
 
 		return responseDto;
 	}
@@ -75,11 +96,26 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const updatedSchool = await this.schoolService.updateSchool(schoolId, body);
+		const updatedSchool = await this.schoolService.updateSchool(school, body);
 
 		const responseDto = this.mapToSchoolResponseDto(updatedSchool, schoolYears);
 
 		return responseDto;
+	}
+
+	public async removeSystemFromSchool(schoolId: EntityId, systemId: EntityId, userId: EntityId): Promise<void> {
+		const [user, school] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId),
+		]);
+
+		this.authorizationService.checkPermission(
+			user,
+			school,
+			AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT, Permission.SCHOOL_SYSTEM_EDIT])
+		);
+
+		await this.schoolService.removeSystemFromSchool(school, systemId);
 	}
 
 	private mapToSchoolResponseDto(school: School, schoolYears: SchoolYear[]): SchoolResponse {

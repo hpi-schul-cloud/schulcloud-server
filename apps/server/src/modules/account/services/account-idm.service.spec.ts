@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave } from '../domain';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
@@ -55,8 +55,8 @@ describe('AccountIdmService', () => {
 					useValue: createMock<IdentityManagementOauthService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -366,7 +366,7 @@ describe('AccountIdmService', () => {
 					if (element) {
 						return Promise.resolve(element);
 					}
-					throw new Error();
+					return Promise.reject(new Error());
 				});
 			};
 

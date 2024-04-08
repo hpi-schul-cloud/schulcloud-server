@@ -1,14 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountEntityToDoMapper } from '@src/modules/account/repo/mapper';
-import { Account } from '@src/modules/account/domain';
+import { Account } from '@modules/account';
 import { ServerConfig } from '@modules/server';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountDoFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
@@ -33,9 +32,7 @@ describe('LocalStrategy', () => {
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
-		mockAccount = AccountEntityToDoMapper.mapToDo(
-			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
-		);
+		mockAccount = accountDoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
 	});
 
 	beforeEach(() => {

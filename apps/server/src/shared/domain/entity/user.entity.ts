@@ -1,33 +1,12 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityWithSchool, LanguageType } from '../interface';
+import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-
-export interface Consent {
-	userConsent?: UserConsent;
-	parentConsents?: ParentConsent[];
-}
-
-export interface UserConsent {
-	form: string;
-	privacyConsent: boolean;
-	termsOfUseConsent: boolean;
-	dateOfPrivacyConsent: Date;
-	dateOfTermsOfUseConsent: Date;
-}
-
-export interface ParentConsent {
-	_id: ObjectId;
-	form: string;
-	privacyConsent: boolean;
-	termsOfUseConsent: boolean;
-	dateOfPrivacyConsent: Date;
-	dateOfTermsOfUseConsent: Date;
-}
 
 export interface UserProperties {
 	email: string;
@@ -47,14 +26,15 @@ export interface UserProperties {
 	birthday?: Date;
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
-	consent?: Consent;
+	lastSyncedAt?: Date;
+	consent?: ConsentEntity;
 }
 
 interface UserInfo {
 	id: EntityId;
 	firstName: string;
 	lastName: string;
-	language?: string;
+	language?: LanguageType;
 	customAvatarBackgroundColor?: string;
 }
 
@@ -132,11 +112,14 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
 
-	@Property({ nullable: true })
-	consent?: Consent;
+	@Embedded(() => ConsentEntity, { nullable: true, object: true })
+	consent?: ConsentEntity;
 
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
+
+	@Property({ nullable: true })
+	lastSyncedAt?: Date;
 
 	constructor(props: UserProperties) {
 		super();
@@ -157,6 +140,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.birthday = props.birthday;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.parents = props.parents;
+		this.lastSyncedAt = props.lastSyncedAt;
 		this.consent = props.consent;
 	}
 
@@ -173,9 +157,45 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			permissions = [...permissions, ...rolePermissions];
 		});
 
-		const uniquePermissions = [...new Set(permissions)];
+		const setOfPermission = this.resolveSchoolPermissions(permissions, roles);
+
+		const uniquePermissions = [...setOfPermission];
 
 		return uniquePermissions;
+	}
+
+	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
+	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
+		const setOfPermission = new Set(permissions);
+		const schoolPermissions = this.school.permissions;
+
+		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
+			return setOfPermission;
+		}
+
+		if (this.school.permissions) {
+			if (roles.some((role) => role.name === RoleName.STUDENT)) {
+				if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+					setOfPermission.add(Permission.LERNSTORE_VIEW);
+				} else {
+					setOfPermission.delete(Permission.LERNSTORE_VIEW);
+				}
+			}
+
+			if (roles.some((role) => role.name === RoleName.TEACHER)) {
+				const canStudentListByDefault = Configuration.get(
+					'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
+				) as boolean;
+
+				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
+					setOfPermission.add(Permission.STUDENT_LIST);
+				} else {
+					setOfPermission.delete(Permission.STUDENT_LIST);
+				}
+			}
+		}
+
+		return setOfPermission;
 	}
 
 	public getRoles(): Role[] {

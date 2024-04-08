@@ -1,13 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course } from '@modules/learnroom/domain';
-import { CourseService } from '@modules/learnroom/service/course.service';
-import { courseFactory } from '@modules/learnroom/testing';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
 import { groupFactory, userDoFactory } from '@shared/testing';
-import { Group, GroupTypes } from '../domain';
+import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
 
@@ -16,7 +14,7 @@ describe('GroupService', () => {
 	let service: GroupService;
 
 	let groupRepo: DeepMocked<GroupRepo>;
-	let courseService: DeepMocked<CourseService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,15 +25,15 @@ describe('GroupService', () => {
 					useValue: createMock<GroupRepo>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: EventBus,
+					useValue: createMock<EventBus>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(GroupService);
 		groupRepo = module.get(GroupRepo);
-		courseService = module.get(CourseService);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -302,17 +300,9 @@ describe('GroupService', () => {
 		describe('when deleting a group', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
-				const course: Course = courseFactory.build({
-					syncedWithGroup: group.id,
-					teacherIds: [new ObjectId().toHexString()],
-					studentIds: [new ObjectId().toHexString()],
-				});
-
-				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
 
 				return {
 					group,
-					course,
 				};
 			};
 
@@ -324,18 +314,12 @@ describe('GroupService', () => {
 				expect(groupRepo.delete).toHaveBeenCalledWith(group);
 			});
 
-			it('should remove all sync references from courses', async () => {
-				const { group, course } = setup();
+			it('should send an event', async () => {
+				const { group } = setup();
 
 				await service.delete(group);
 
-				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
-					new Course({
-						...course.getProps(),
-						syncedWithGroup: undefined,
-						studentIds: [],
-					}),
-				]);
+				expect(eventBus.publish).toHaveBeenCalledWith(new GroupDeletedEvent(group));
 			});
 		});
 	});

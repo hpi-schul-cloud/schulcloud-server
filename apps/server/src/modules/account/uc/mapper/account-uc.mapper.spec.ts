@@ -1,5 +1,5 @@
 import { Counted } from '@shared/domain/types';
-import { accountDtoFactory } from '@shared/testing';
+import { accountDoFactory } from '@shared/testing';
 import { Account } from '../../domain/account';
 import { AccountUcMapper } from './account-uc.mapper';
 
@@ -7,7 +7,7 @@ describe('AccountUcMapper', () => {
 	describe('mapToResolvedAccountDto', () => {
 		describe('When mapping Account to ResolvedAccountDto', () => {
 			const setup = () => {
-				const testDos: Account = accountDtoFactory.build();
+				const testDos: Account = accountDoFactory.build();
 				return testDos;
 			};
 
@@ -27,7 +27,7 @@ describe('AccountUcMapper', () => {
 	describe('mapSearchResult', () => {
 		describe('When mapping Counted<Account[]> to Counted<ResolvedAccountDto[]>', () => {
 			const setup = () => {
-				const testDos: Counted<Account[]> = [accountDtoFactory.buildList(3), 3];
+				const testDos: Counted<Account[]> = [accountDoFactory.buildList(3), 3];
 				return testDos;
 			};
 
@@ -48,7 +48,7 @@ describe('AccountUcMapper', () => {
 	describe('mapAccountsToDo', () => {
 		describe('When mapping Account[] to ResolvedAccountDto[]', () => {
 			const setup = () => {
-				const testDos: Account[] = accountDtoFactory.buildList(3);
+				const testDos: Account[] = accountDoFactory.buildList(3);
 				return testDos;
 			};
 

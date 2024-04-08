@@ -1,10 +1,18 @@
+import { faker } from '@faker-js/faker/locale/af_ZA';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CourseMetadataListResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
-import { INestApplication, StreamableFile } from '@nestjs/common';
+import { HttpStatus, INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course as CourseEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	courseFactory,
+	groupEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
+} from '@shared/testing';
 import { readFile } from 'node:fs/promises';
 
 const createStudent = () => {
@@ -84,8 +92,8 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	describe('[GET] /courses/:id/export', () => {
-		const setup = () => {
+	describe('[POST] /courses/:id/export', () => {
+		const setup = async () => {
 			const student1 = createStudent();
 			const student2 = createStudent();
 			const teacher = createTeacher();
@@ -97,19 +105,21 @@ describe('Course Controller (API)', () => {
 				students: [student1.user, student2.user],
 			});
 
-			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1 };
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1, loggedInClient };
 		};
 
 		it('should find course export', async () => {
-			const { teacher, course } = setup();
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
-			em.clear();
-			const version = { version: '1.1.0' };
+			const { course, loggedInClient } = await setup();
 
-			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/export`).query(version);
+			const body = { topics: [faker.string.uuid()], tasks: [faker.string.uuid()] };
+			const response = await loggedInClient.post(`${course.id}/export?version=1.1.0`, body);
 
-			expect(response.statusCode).toEqual(200);
+			expect(response.statusCode).toEqual(201);
 			const file = response.body as StreamableFile;
 			expect(file).toBeDefined();
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -141,6 +151,73 @@ describe('Course Controller (API)', () => {
 			const response = await loggedInClient.postWithAttachment('import', 'file', course, courseFileName);
 
 			expect(response.statusCode).toEqual(201);
+		});
+	});
+
+	describe('[POST] /courses/:courseId/stop-sync', () => {
+		describe('when a course is synchronized', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					name: 'course #1',
+					teachers: [teacher.user],
+					syncedWithGroup: group,
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacher.account);
+
+				return {
+					loggedInClient,
+					course,
+				};
+			};
+
+			it('should stop the synchronization', async () => {
+				const { loggedInClient, course } = await setup();
+
+				const response = await loggedInClient.post(`${course.id}/stop-sync`);
+
+				const result: CourseEntity = await em.findOneOrFail(CourseEntity, course.id);
+				expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
+				expect(result.syncedWithGroup).toBeUndefined();
+			});
+		});
+
+		describe('when the user is unauthorized', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const group = groupEntityFactory.buildWithId();
+				const course = courseFactory.build({
+					name: 'course #1',
+					teachers: [teacher.user],
+					syncedWithGroup: group,
+				});
+
+				await em.persistAndFlush([teacher.account, teacher.user, course, group]);
+				em.clear();
+
+				return {
+					course,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { course } = await setup();
+
+				const response = await testApiClient.post(`${course.id}/stop-sync`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
 		});
 	});
 });

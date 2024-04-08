@@ -3,13 +3,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
+import { IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { AccountConfig } from '../account-config';
 import { Account, AccountSave } from '../domain';
 import { AccountIdmToDoMapper } from '../repo/mapper';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountConfig } from '../account-config';
+import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from '../loggable';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
@@ -17,7 +18,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDoMapper: AccountIdmToDoMapper,
 		private readonly idmOauthService: IdentityManagementOauthService,
-		private readonly logger: LegacyLogger,
+		private readonly logger: Logger,
 		private readonly configService: ConfigService<AccountConfig, true>
 	) {
 		super();
@@ -29,20 +30,22 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return account;
 	}
 
-	// TODO: this needs a better solution. probably needs followup meeting to come up with something
 	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
-		const results = new Array<IdmAccount>();
-		for (const userId of userIds) {
-			try {
-				// eslint-disable-next-line no-await-in-loop
-				results.push(await this.identityManager.findAccountByDbcUserId(userId));
-			} catch {
-				this.logger.error(`Error while searching for account with userId ${userId}`);
-				// ignore entry
+		const resultAccounts = new Array<Account>();
+
+		const promises = userIds.map((userId) => this.identityManager.findAccountByDbcUserId(userId).catch(() => null));
+		const idmAccounts = await Promise.allSettled(promises);
+
+		idmAccounts.forEach((idmAccount, index) => {
+			if (idmAccount.status === 'fulfilled' && idmAccount.value) {
+				const accountDo = this.accountIdmToDoMapper.mapToDo(idmAccount.value);
+				resultAccounts.push(accountDo);
+			} else {
+				this.logger.warning(new FindAccountByDbcUserIdLoggable(userIds[index]));
 			}
-		}
-		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
-		return accounts;
+		});
+
+		return resultAccounts;
 	}
 
 	async findByUserId(userId: EntityId): Promise<Account | null> {
@@ -50,7 +53,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDoMapper.mapToDo(result);
 		} catch {
-			this.logger.error(`Error while searching for account with userId ${userId}`);
+			this.logger.warning(new FindAccountByDbcUserIdLoggable(userId));
 			return null;
 		}
 	}
@@ -167,26 +170,18 @@ export class AccountServiceIdm extends AbstractAccountService {
 		try {
 			return await this.getIdmAccountId(accountId);
 		} catch {
-			this.logger.log(`Account ID ${accountId} could not be resolved. Creating new account and ID ...`);
+			this.logger.debug(new GetOptionalIdmAccountLoggable(accountId));
 			return undefined;
 		}
 	}
 
 	private async getIdmAccountId(accountId: string): Promise<string> {
-		const externalId = await this.getExternalId(accountId);
-		if (!externalId) {
-			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
-		}
+		const externalId = await this.convertInternalToExternalId(accountId);
+
 		return externalId;
 	}
 
-	/**
-	 * Converts an internal id to the external id, if the id is already an external id, it will be returned as is.
-	 * IMPORTANT: This method will not guarantee that the id is valid, it will only try to convert it.
-	 * @param id the id the should be converted to the external id.
-	 * @returns the converted id or null if conversion failed.
-	 */
-	private async getExternalId(id: EntityId | ObjectId): Promise<string | null> {
+	private async convertInternalToExternalId(id: EntityId | ObjectId): Promise<string> {
 		if (!(id instanceof ObjectId) && !ObjectId.isValid(id)) {
 			return id;
 		}
@@ -194,6 +189,6 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const account = await this.identityManager.findAccountByDbcAccountId(id.toString());
 			return account.id;
 		}
-		return null;
+		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}
 }

@@ -1,4 +1,4 @@
-import { AccountService } from '@modules/account/services/account.service';
+import { AccountService, Account, AccountSave } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';

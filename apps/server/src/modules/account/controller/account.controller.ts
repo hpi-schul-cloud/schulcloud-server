@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { AccountUc } from '../uc/account.uc';
 import { AccountSearchDto } from '../uc/dto/account-search.dto';
 import { UpdateAccountDto } from '../uc/dto/update-account.dto';

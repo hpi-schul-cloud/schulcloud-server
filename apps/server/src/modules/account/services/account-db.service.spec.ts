@@ -5,11 +5,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { accountDtoFactory, setupEntities, userFactory } from '@shared/testing';
-import { IdentityManagementService } from '@src/infra/identity-management';
+import { accountDoFactory, setupEntities, userFactory } from '@shared/testing';
+import { IdentityManagementService } from '@infra/identity-management';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { LegacyLogger } from '../../../core/logger';
+import { Logger } from '@src/core/logger';
 import { AccountConfig } from '../account-config';
 import { Account } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -45,8 +45,8 @@ describe('AccountDbService', () => {
 					useValue: createMock<AccountRepo>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ConfigService,
@@ -80,7 +80,7 @@ describe('AccountDbService', () => {
 	describe('findById', () => {
 		describe('when searching by Id', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 				mockTeacherAccount.username = 'changedUsername@example.org';
 				mockTeacherAccount.activated = false;
 
@@ -103,7 +103,7 @@ describe('AccountDbService', () => {
 
 		describe('when id is external calls idm service', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 				mockTeacherAccount.username = 'changedUsername@example.org';
 				mockTeacherAccount.activated = false;
 
@@ -114,16 +114,12 @@ describe('AccountDbService', () => {
 				return { mockTeacherAccount };
 			};
 
-			it(
-				'should return accountDto',
-				async () => {
-					const { mockTeacherAccount } = setup();
+			it('should return accountDto', async () => {
+				const { mockTeacherAccount } = setup();
 
-					const resultAccount = await accountService.findById(externalId);
-					expect(resultAccount).toEqual(mockTeacherAccount);
-				},
-				10 * 60 * 1000
-			);
+				const resultAccount = await accountService.findById(externalId);
+				expect(resultAccount).toEqual(mockTeacherAccount);
+			});
 		});
 	});
 
@@ -132,7 +128,7 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
 
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				accountRepo.findByUserId.mockImplementation((userId: EntityId | ObjectId): Promise<Account | null> => {
 					if (userId === mockTeacherUser.id) {
@@ -167,7 +163,7 @@ describe('AccountDbService', () => {
 	describe('findByUsernameAndSystemId', () => {
 		describe('when user name and system id exists', () => {
 			const setup = () => {
-				const mockAccountWithSystemId = accountDtoFactory.build({
+				const mockAccountWithSystemId = accountDoFactory.build({
 					systemId: new ObjectId().toHexString(),
 				});
 				accountRepo.findByUsernameAndSystemId.mockResolvedValue(mockAccountWithSystemId);
@@ -186,7 +182,7 @@ describe('AccountDbService', () => {
 
 		describe('when only system id exists', () => {
 			const setup = () => {
-				const mockAccountWithSystemId = accountDtoFactory.build({
+				const mockAccountWithSystemId = accountDoFactory.build({
 					systemId: new ObjectId().toHexString(),
 				});
 				accountRepo.findByUsernameAndSystemId.mockImplementation(
@@ -212,7 +208,7 @@ describe('AccountDbService', () => {
 
 		describe('when only user name exists', () => {
 			const setup = () => {
-				const mockAccountWithSystemId = accountDtoFactory.build({
+				const mockAccountWithSystemId = accountDoFactory.build({
 					systemId: new ObjectId().toHexString(),
 				});
 
@@ -243,11 +239,11 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
 				const mockStudentUser = userFactory.buildWithId();
-				const mockTeacherAccount = accountDtoFactory.build({
+				const mockTeacherAccount = accountDoFactory.build({
 					userId: mockTeacherUser.id,
 					password: defaultPassword,
 				});
-				const mockStudentAccount = accountDtoFactory.build({
+				const mockStudentAccount = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPassword,
 				});
@@ -272,8 +268,8 @@ describe('AccountDbService', () => {
 
 		describe('when only user name exists', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
-				const mockStudentAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
+				const mockStudentAccount = accountDoFactory.build();
 
 				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
 					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
@@ -296,7 +292,7 @@ describe('AccountDbService', () => {
 		describe('when user exists', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
-				const mockTeacherAccount = accountDtoFactory.build({
+				const mockTeacherAccount = accountDoFactory.build({
 					userId: mockTeacherUser.id,
 					password: defaultPassword,
 				});
@@ -316,7 +312,7 @@ describe('AccountDbService', () => {
 		describe('when user does not exist', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
-				const mockTeacherAccount = accountDtoFactory.build({
+				const mockTeacherAccount = accountDoFactory.build({
 					userId: mockTeacherUser.id,
 					password: defaultPassword,
 				});
@@ -340,7 +336,7 @@ describe('AccountDbService', () => {
 	describe('save', () => {
 		describe('when update an existing account', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				mockTeacherAccount.username = 'changedUsername@example.org';
 				mockTeacherAccount.activated = false;
@@ -368,7 +364,7 @@ describe('AccountDbService', () => {
 
 		describe("when update an existing account's system", () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				mockTeacherAccount.username = 'changedUsername@example.org';
 				mockTeacherAccount.systemId = '123456789012';
@@ -395,8 +391,8 @@ describe('AccountDbService', () => {
 
 		describe("when update an existing account's user", () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
-				const mockStudentUser = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
+				const mockStudentUser = accountDoFactory.build();
 
 				mockTeacherAccount.username = 'changedUsername@example.org';
 				mockTeacherAccount.userId = mockStudentUser.id;
@@ -423,7 +419,7 @@ describe('AccountDbService', () => {
 
 		describe("when existing account's system is undefined", () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				mockTeacherAccount.username = 'changedUsername@example.org';
 				mockTeacherAccount.systemId = undefined;
@@ -586,10 +582,21 @@ describe('AccountDbService', () => {
 					systemId: '012345678912',
 					password: defaultPassword,
 				} as Account;
+				const accountInRepo = {
+					id: new ObjectId().toHexString(),
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					systemId: '012345678912',
+					password: defaultPassword,
+				} as Account;
+				accountInRepo.update = jest.fn();
+
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
-				accountRepo.findById.mockResolvedValue(accountToSave);
+				accountRepo.findById.mockResolvedValue(accountInRepo);
 				accountRepo.save.mockResolvedValue(
 					new Account({
 						id: new ObjectId().toHexString(),
@@ -600,18 +607,15 @@ describe('AccountDbService', () => {
 					})
 				);
 
-				return { accountToSave };
+				return { accountToSave, accountInRepo };
 			};
 
 			it('should encrypt password', async () => {
-				const { accountToSave } = setup();
+				const { accountToSave, accountInRepo } = setup();
 
 				const ret = await accountService.save(accountToSave);
 				expect(ret).toBeDefined();
-				expect(accountRepo.save).toBeCalledWith(
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) })
-				);
+				expect(accountInRepo.update).toHaveBeenCalledWith(accountToSave);
 			});
 		});
 
@@ -643,7 +647,7 @@ describe('AccountDbService', () => {
 
 		describe('when password is empty while editing an existing account', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				const spy = jest.spyOn(accountRepo, 'save');
 				const account = {
@@ -673,7 +677,7 @@ describe('AccountDbService', () => {
 	describe('updateUsername', () => {
 		describe('when updating username', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 				const newUsername = 'newUsername';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
@@ -696,7 +700,7 @@ describe('AccountDbService', () => {
 	describe('updateLastTriedFailedLogin', () => {
 		describe('when update last failed Login', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 				const theNewDate = new Date();
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
@@ -770,7 +774,7 @@ describe('AccountDbService', () => {
 	describe('updatePassword', () => {
 		describe('when update Password', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 				const newPassword = 'newPassword';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
@@ -796,7 +800,7 @@ describe('AccountDbService', () => {
 	describe('delete', () => {
 		describe('when delete an existing account', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
 
@@ -829,7 +833,7 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
 
-				const mockTeacherAccount = accountDtoFactory.build({
+				const mockTeacherAccount = accountDoFactory.build({
 					userId: mockTeacherUser.id,
 					password: defaultPassword,
 				});
@@ -854,9 +858,9 @@ describe('AccountDbService', () => {
 				const partialUserName = 'admin';
 				const skip = 2;
 				const limit = 10;
-				const mockTeacherAccount = accountDtoFactory.build();
-				const mockStudentAccount = accountDtoFactory.build();
-				const mockAccountWithSystemId = accountDtoFactory.build({
+				const mockTeacherAccount = accountDoFactory.build();
+				const mockStudentAccount = accountDoFactory.build();
+				const mockAccountWithSystemId = accountDoFactory.build({
 					systemId: new ObjectId().toHexString(),
 				});
 				const mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
@@ -885,7 +889,7 @@ describe('AccountDbService', () => {
 		describe('when searching by username', () => {
 			const setup = () => {
 				const partialUserName = 'admin';
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				accountRepo.searchByUsernameExactMatch.mockResolvedValue([[mockTeacherAccount], 1]);
 
@@ -904,7 +908,7 @@ describe('AccountDbService', () => {
 	describe('findMany', () => {
 		describe('when find many one time', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				accountRepo.findMany.mockResolvedValue([mockTeacherAccount]);
 
@@ -920,7 +924,7 @@ describe('AccountDbService', () => {
 		});
 		describe('when call find many more than one time', () => {
 			const setup = () => {
-				const mockTeacherAccount = accountDtoFactory.build();
+				const mockTeacherAccount = accountDoFactory.build();
 
 				accountRepo.findMany.mockResolvedValue([mockTeacherAccount]);
 

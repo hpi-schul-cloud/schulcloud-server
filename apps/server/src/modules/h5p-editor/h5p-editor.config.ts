@@ -1,13 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { S3Config } from '@infra/s3-client';
+import { LanguageType } from '@shared/domain/interface';
 
 const h5pEditorConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
+	INCOMING_REQUEST_TIMEOUT: Configuration.get('H5P_EDITOR__INCOMING_REQUEST_TIMEOUT') as number,
 };
 
 export const translatorConfig = {
-	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
+	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 };
 
 export const H5P_CONTENT_S3_CONNECTION = 'H5P_CONTENT_S3_CONNECTION';
