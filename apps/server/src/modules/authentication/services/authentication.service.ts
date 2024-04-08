@@ -1,4 +1,3 @@
-// invalid import
 import { AccountService, Account } from '@modules/account';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
