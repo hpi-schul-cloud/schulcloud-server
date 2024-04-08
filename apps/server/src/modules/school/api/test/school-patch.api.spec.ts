@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -13,6 +13,7 @@ import {
 	systemEntityFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { SchoolErrorEnum } from '../../domain/error';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
@@ -435,6 +436,87 @@ describe('School Controller (API)', () => {
 					});
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				});
+			});
+		});
+	});
+
+	describe('PATCH /:schoolId/system/:systemId/remove', () => {
+		describe('when user is not logged in', () => {
+			it('should return 401', async () => {
+				const someSchoolId = new ObjectId().toHexString();
+				const someSystemId = new ObjectId().toHexString();
+
+				const response = await testApiClient.patch(`/${someSchoolId}/system/${someSystemId}/remove`).send({
+					name: 'new name',
+				});
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user is logged in', () => {
+			describe('when user is an admin with needed permissions and the system is not deletable', () => {
+				const setup = async () => {
+					const system = systemEntityFactory.build({ ldapConfig: { provider: 'ldap' } });
+					const school = schoolEntityFactory.build({ systems: [system] });
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+					await em.persistAndFlush([adminAccount, adminUser, school, system]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					return { loggedInClient, school, system };
+				};
+
+				it('should remove the given systemId from the systemIds of the school but not the system itself', async () => {
+					const { loggedInClient, school, system } = await setup();
+
+					await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
+					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
+					expect(updatedSchool?.systems.getIdentifiers()).toContain(system.id);
+					const systemAfterUpdate = await em.findOne(SystemEntity, { id: system.id });
+					expect(systemAfterUpdate).not.toBeNull();
+				});
+
+				it('should throw SYSTEM_CAN_NOT_BE_DELETED error', async () => {
+					const { loggedInClient, school, system } = await setup();
+
+					const response = await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
+					expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+					expect(response.body).toEqual(
+						expect.objectContaining({
+							type: SchoolErrorEnum.SYSTEM_CAN_NOT_BE_DELETED,
+						})
+					);
+				});
+			});
+
+			describe('when user is an admin with needed permissions and the system is deletable', () => {
+				const setup = async () => {
+					const system = systemEntityFactory.build({ ldapConfig: { provider: 'general' } });
+					const school = schoolEntityFactory.build({ systems: [system] });
+					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+					await em.persistAndFlush([adminAccount, adminUser, school, system]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					return { loggedInClient, school, system };
+				};
+
+				it('should remove the given systemId from the systemIds of the school and delete the system itself', async () => {
+					const { loggedInClient, school, system } = await setup();
+
+					const response = await loggedInClient.patch(`/${school.id}/system/${system.id}/remove`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
+					expect(updatedSchool?.systems.getIdentifiers()).not.toContain(system.id);
+					const systemAfterUpdate = await em.findOne(SystemEntity, { id: system.id });
+					expect(systemAfterUpdate).toBeNull();
 				});
 			});
 		});
