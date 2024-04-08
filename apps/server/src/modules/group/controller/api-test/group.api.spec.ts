@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { ServerTestModule } from '@modules/server';
+import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -37,6 +37,8 @@ describe('Group (API)', () => {
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
+		const config: ServerConfig = serverConfig();
+		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
@@ -190,6 +192,7 @@ describe('Group (API)', () => {
 					expect(response.body).toEqual({
 						id: group.id,
 						name: group.name,
+						organizationId: group.organization?.id,
 						type: group.type,
 						users: [
 							{
@@ -255,6 +258,385 @@ describe('Group (API)', () => {
 				const { groupId } = await setup();
 
 				const response = await testApiClient.get(`${groupId}`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+	});
+
+	describe('[GET] /groups', () => {
+		describe('when admin requests groups', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				const groupInSchool: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [
+						{
+							user: adminUser,
+							role: adminUser.roles[0],
+						},
+					],
+				});
+				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [
+						{
+							user: adminUser,
+							role: adminUser.roles[0],
+						},
+					],
+				});
+				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({
+					organization: otherSchool,
+					users: [
+						{
+							user: adminUser,
+							role: adminUser.roles[0],
+						},
+					],
+				});
+
+				const syncedCourse: CourseEntity = courseEntityFactory.build({
+					school,
+					syncedWithGroup: groupInSchool,
+				});
+
+				const expectGroup = {
+					id: availableGroupInSchool.id,
+					name: availableGroupInSchool.name,
+					organizationId: availableGroupInSchool.organization?.id,
+					type: availableGroupInSchool.type,
+					users: [
+						{
+							id: adminUser.id,
+							firstName: adminUser.firstName,
+							lastName: adminUser.lastName,
+							role: adminUser.roles[0].name,
+						},
+					],
+					externalSource: {
+						externalId: availableGroupInSchool.externalSource?.externalId,
+						systemId: availableGroupInSchool.externalSource?.system.id,
+					},
+				};
+
+				const nameQuery: string = availableGroupInSchool.name.slice(-2);
+
+				await em.persistAndFlush([
+					adminAccount,
+					adminUser,
+					groupInSchool,
+					availableGroupInSchool,
+					groupInOtherSchool,
+					school,
+					otherSchool,
+					syncedCourse,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					groupInSchool,
+					adminUser,
+					expectGroup,
+					nameQuery,
+				};
+			};
+
+			describe('when requesting all groups', () => {
+				it('should return all groups of the school', async () => {
+					const { loggedInClient, groupInSchool, expectGroup, adminUser } = await setup();
+
+					const response = await loggedInClient.get();
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [
+							{
+								id: groupInSchool.id,
+								name: groupInSchool.name,
+								organizationId: groupInSchool.organization?.id,
+								type: groupInSchool.type,
+								users: [
+									{
+										id: adminUser.id,
+										firstName: adminUser.firstName,
+										lastName: adminUser.lastName,
+										role: adminUser.roles[0].name,
+									},
+								],
+								externalSource: {
+									externalId: groupInSchool.externalSource?.externalId,
+									systemId: groupInSchool.externalSource?.system.id,
+								},
+							},
+							expectGroup,
+						],
+						limit: 10,
+						skip: 0,
+						total: 2,
+					});
+				});
+
+				it('should return groups according to pagination', async () => {
+					const { loggedInClient, expectGroup } = await setup();
+
+					const response = await loggedInClient.get().query({ skip: 1, limit: 1 });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 1,
+						skip: 1,
+						total: 2,
+					});
+				});
+
+				it('should return groups according to name query', async () => {
+					const { loggedInClient, expectGroup, nameQuery } = await setup();
+
+					const response = await loggedInClient.get().query({ nameQuery });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 10,
+						skip: 0,
+						total: 1,
+					});
+				});
+			});
+
+			describe('when requesting all available groups', () => {
+				it('should return all available groups for course sync', async () => {
+					const { loggedInClient, expectGroup } = await setup();
+
+					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 10,
+						skip: 0,
+						total: 1,
+					});
+				});
+
+				it('should return available groups according to pagination', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true, skip: 1, limit: 1 });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({ data: [], limit: 1, skip: 1, total: 1 });
+				});
+
+				it('should return available groups according to name query', async () => {
+					const { loggedInClient, expectGroup, nameQuery } = await setup();
+
+					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true, nameQuery });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 10,
+						skip: 0,
+						total: 1,
+					});
+				});
+			});
+		});
+
+		describe('when teacher requests groups', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+
+				const teachersGroup: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+				});
+				const availableTeachersGroup: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+				});
+				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
+
+				const syncedCourse: CourseEntity = courseEntityFactory.build({
+					school,
+					syncedWithGroup: teachersGroup,
+				});
+
+				const expectGroup = {
+					id: availableTeachersGroup.id,
+					name: availableTeachersGroup.name,
+					organizationId: availableTeachersGroup.organization?.id,
+					type: availableTeachersGroup.type,
+					users: [
+						{
+							id: teacherUser.id,
+							firstName: teacherUser.firstName,
+							lastName: teacherUser.lastName,
+							role: teacherUser.roles[0].name,
+						},
+					],
+					externalSource: {
+						externalId: availableTeachersGroup.externalSource?.externalId,
+						systemId: availableTeachersGroup.externalSource?.system.id,
+					},
+				};
+
+				const nameQuery: string = availableTeachersGroup.name.slice(-2);
+
+				await em.persistAndFlush([
+					teacherAccount,
+					teacherUser,
+					teachersGroup,
+					availableTeachersGroup,
+					groupWithoutTeacher,
+					school,
+					syncedCourse,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					teachersGroup,
+					expectGroup,
+					teacherUser,
+					nameQuery,
+				};
+			};
+
+			describe('when requesting all groups', () => {
+				it('should return all groups the teacher is part of', async () => {
+					const { loggedInClient, teachersGroup, expectGroup, teacherUser } = await setup();
+
+					const response = await loggedInClient.get();
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [
+							{
+								id: teachersGroup.id,
+								name: teachersGroup.name,
+								organizationId: teachersGroup.organization?.id,
+								type: teachersGroup.type,
+								users: [
+									{
+										id: teacherUser.id,
+										firstName: teacherUser.firstName,
+										lastName: teacherUser.lastName,
+										role: teacherUser.roles[0].name,
+									},
+								],
+								externalSource: {
+									externalId: teachersGroup.externalSource?.externalId,
+									systemId: teachersGroup.externalSource?.system.id,
+								},
+							},
+							expectGroup,
+						],
+						limit: 10,
+						skip: 0,
+						total: 2,
+					});
+				});
+
+				it('should return all groups according to pagination', async () => {
+					const { loggedInClient, expectGroup } = await setup();
+
+					const response = await loggedInClient.get().query({ skip: 1, limit: 1 });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 1,
+						skip: 1,
+						total: 2,
+					});
+				});
+
+				it('should return all groups according to name query', async () => {
+					const { loggedInClient, expectGroup, nameQuery } = await setup();
+
+					const response = await loggedInClient.get().query({ nameQuery });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 10,
+						skip: 0,
+						total: 1,
+					});
+				});
+			});
+
+			describe('when requesting all available groups', () => {
+				it('should return all available groups for course sync the teacher is part of', async () => {
+					const { loggedInClient, expectGroup } = await setup();
+
+					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 10,
+						skip: 0,
+						total: 1,
+					});
+				});
+
+				it('should return all available groups according to pagination', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true, skip: 1, limit: 1 });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({ data: [], limit: 1, skip: 1, total: 1 });
+				});
+
+				it('should return all available groups according to name query', async () => {
+					const { loggedInClient, expectGroup, nameQuery } = await setup();
+
+					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true, nameQuery });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({
+						data: [expectGroup],
+						limit: 10,
+						skip: 0,
+						total: 1,
+					});
+				});
+			});
+		});
+
+		describe('when unauthorized user requests groups', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+			};
+
+			it('should return unauthorized', async () => {
+				await setup();
+
+				const response = await testApiClient.get();
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({

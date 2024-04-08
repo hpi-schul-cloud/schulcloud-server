@@ -11,7 +11,7 @@ export class GroupUserResponse {
 	@ApiProperty()
 	lastName: string;
 
-	@ApiProperty({ enum: RoleName })
+	@ApiProperty({ enum: RoleName, enumName: 'RoleName' })
 	role: RoleName;
 
 	constructor(user: GroupUserResponse) {

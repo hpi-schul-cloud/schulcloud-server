@@ -1664,7 +1664,7 @@
 		},
 		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables the synchronization of courses with linked groups during provisioning."
 		},
 		"SYNCHRONIZATION_CHUNK": {
