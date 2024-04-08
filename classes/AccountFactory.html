@@ -170,6 +170,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#withAllProperties" >withAllProperties</a>
+                            </li>
+                            <li>
+                                <a href="#withoutSystemAndUserId" >withoutSystemAndUserId</a>
+                            </li>
+                            <li>
                                 <a href="#withSystemId" >withSystemId</a>
                             </li>
                             <li>
@@ -278,6 +284,62 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="withAllProperties"></a>
+                    <span class="name">
+                        <span ><b>withAllProperties</b></span>
+                        <a href="#withAllProperties"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withAllProperties()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withoutSystemAndUserId"></a>
+                    <span class="name">
+                        <span ><b>withoutSystemAndUserId</b></span>
+                        <a href="#withoutSystemAndUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withoutSystemAndUserId()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="withSystemId"></a>
                     <span class="name">
                         <span ><b>withSystemId</b></span>
@@ -294,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -1419,14 +1481,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, IdmAccountProperties, User } from &#x27;@shared/domain/entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { User } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
+import { AccountEntity, IdmAccountProperties } from &#x27;@modules/account/entity/account.entity&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-class AccountFactory extends BaseFactory&lt;Account, IdmAccountProperties&gt; {
+export const defaultTestPassword &#x3D; &#x27;DummyPasswd!1&#x27;;
+export const defaultTestPasswordHash &#x3D; &#x27;$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu&#x27;;
+class AccountFactory extends BaseFactory&lt;AccountEntity, IdmAccountProperties&gt; {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial&lt;IdmAccountProperties&gt; &#x3D; { systemId: id };
 
@@ -1442,12 +1507,38 @@ class AccountFactory extends BaseFactory&lt;Account, IdmAccountProperties&gt; {
 
 		return this.params(params);
 	}
+
+	withAllProperties(): this {
+		return this.params({
+			userId: new ObjectId(),
+			username: &#x27;username&#x27;,
+			activated: true,
+			credentialHash: &#x27;credentialHash&#x27;,
+			expiresAt: new Date(),
+			lasttriedFailedLogin: new Date(),
+			password: defaultTestPassword,
+			systemId: new ObjectId(),
+			token: &#x27;token&#x27;,
+		}).afterBuild((acc) &#x3D;&gt; {
+			return {
+				...acc,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			};
+		});
+	}
+
+	withoutSystemAndUserId(): this {
+		return this.params({
+			username: &#x27;username&#x27;,
+			systemId: undefined,
+			userId: undefined,
+		});
+	}
 }
 
-export const defaultTestPassword &#x3D; &#x27;DummyPasswd!1&#x27;;
-export const defaultTestPasswordHash &#x3D; &#x27;$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu&#x27;;
 // !!! important username should not be contain a space !!!
-export const accountFactory &#x3D; AccountFactory.define(Account, ({ sequence }) &#x3D;&gt; {
+export const accountFactory &#x3D; AccountFactory.define(AccountEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		username: &#x60;account${sequence}&#x60;,
 		password: defaultTestPasswordHash,

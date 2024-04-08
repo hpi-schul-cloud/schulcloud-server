@@ -174,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -257,15 +257,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createOrUpdateIdmAccount(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>)</code>
+                    <code>createOrUpdateIdmAccount(account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -288,7 +288,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
                                             </td>
 
                                             <td>
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -407,8 +407,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import UserRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/userRepresentation&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+import { AccountService, Account } from &#x27;@modules/account&#x27;;
 import { KeycloakAdministrationService } from &#x27;../../keycloak-administration/service/keycloak-administration.service&#x27;;
 
 @Injectable()
@@ -426,7 +425,7 @@ export class KeycloakMigrationService {
 		let skip &#x3D; start;
 		let foundAccounts &#x3D; 1;
 		let migratedAccounts &#x3D; 0;
-		let accounts: AccountDto[] &#x3D; [];
+		let accounts: Account[] &#x3D; [];
 		while (foundAccounts &gt; 0) {
 			// eslint-disable-next-line no-await-in-loop
 			accounts &#x3D; await this.accountService.findMany(skip, amount);
@@ -451,7 +450,7 @@ export class KeycloakMigrationService {
 		return migratedAccounts;
 	}
 
-	private async createOrUpdateIdmAccount(account: AccountDto): Promise&lt;string&gt; {
+	private async createOrUpdateIdmAccount(account: Account): Promise&lt;string&gt; {
 		const idmUserRepresentation: UserRepresentation &#x3D; {
 			username: account.username,
 			enabled: true,

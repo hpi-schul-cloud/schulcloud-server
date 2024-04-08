@@ -552,11 +552,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account } from &#x27;@shared/domain/entity&#x27;;
-import { Scope } from &#x27;@shared/repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Scope } from &#x27;@shared/repo&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
+import { AccountEntity } from &#x27;../entity/account.entity&#x27;;
 
-export class AccountScope extends Scope&lt;Account&gt; {
+export class AccountScope extends Scope&lt;AccountEntity&gt; {
 	byUserIdsAndSystemId(userIds: string[], systemId: string): AccountScope {
 		const userIdsAsObjectId &#x3D; userIds.length &gt; 0 ? userIds.map((id) &#x3D;&gt; new ObjectId(id)) : [];
 		this.addQuery({

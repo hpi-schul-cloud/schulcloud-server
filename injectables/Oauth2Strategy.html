@@ -175,7 +175,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -252,8 +252,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -305,8 +305,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, Account } from &#x27;@modules/account&#x27;;
 import { OAuthService, OAuthTokenDto } from &#x27;@modules/oauth&#x27;;
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
@@ -334,7 +333,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, &#x27;oauth2&#x27
 			throw new SchoolInMigrationLoggableException();
 		}
 
-		const account: AccountDto | null &#x3D; await this.accountService.findByUserId(user.id);
+		const account: Account | null &#x3D; await this.accountService.findByUserId(user.id);
 		if (!account) {
 			throw new UnauthorizedException(&#x27;no account found&#x27;);
 		}

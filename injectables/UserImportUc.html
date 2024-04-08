@@ -1110,7 +1110,7 @@ The current user must have permission to read schools users and view importusers
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1910,7 +1910,7 @@ The current user must have permission to read schools users and view importusers
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountDto, AccountSaveDto, AccountService } from &#x27;@modules/account&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, Account, AccountSave } from &#x27;@modules/account&#x27;;
 import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { UserLoginMigrationService, UserMigrationService } from &#x27;@modules/user-login-migration&#x27;;
@@ -2245,7 +2245,7 @@ export class UserImportUc {
 		user.ldapDn &#x3D; importUser.ldapDn;
 		user.externalId &#x3D; importUser.externalId;
 
-		const account: AccountDto &#x3D; await this.getAccount(user);
+		const account: Account &#x3D; await this.getAccount(user);
 
 		account.systemId &#x3D; importUser.system.id;
 		account.password &#x3D; undefined;
@@ -2264,14 +2264,14 @@ export class UserImportUc {
 		await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
 	}
 
-	private async getAccount(user: User): Promise&lt;AccountDto&gt; {
-		let account: AccountDto | null &#x3D; await this.accountService.findByUserId(user.id);
+	private async getAccount(user: User): Promise&lt;Account&gt; {
+		let account: Account | null &#x3D; await this.accountService.findByUserId(user.id);
 
 		if (!account) {
-			const newAccount: AccountSaveDto &#x3D; new AccountSaveDto({
+			const newAccount &#x3D; {
 				userId: user.id,
 				username: user.email,
-			});
+			} as AccountSave;
 
 			await this.accountService.save(newAccount);
 

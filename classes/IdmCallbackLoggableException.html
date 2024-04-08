@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >AccountIdmToDtoMapperIdm</li>
+  <li class="breadcrumb-item" >IdmCallbackLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,18 +126,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/mapper/account-idm-to-dto.mapper.idm.ts</code>
+            <code>apps/server/src/modules/account/loggable/idm-callback-loggable-exception.ts</code>
         </p>
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../injectables/AccountIdmToDtoMapper.html" target="_self" >AccountIdmToDtoMapper</a></code>
-            </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -154,7 +154,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#mapToDto" >mapToDto</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -168,6 +168,54 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(callbackError: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="3" class="link-to-prism">apps/server/src/modules/account/loggable/idm-callback-loggable-exception.ts:3</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>callbackError</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
             <section data-compodoc="block-methods">
@@ -179,30 +227,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToDto"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                        <span ><b>mapToDto</b></span>
-                        <a href="#mapToDto"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToDto(account: <a href="../undefineds/IdmAccount.html" target="_self">IdmAccount</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/AccountIdmToDtoMapper.html" target="_self" >AccountIdmToDtoMapper</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AccountIdmToDtoMapper.html#source" target="_self" >AccountIdmToDtoMapper:6</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/account/loggable/idm-callback-loggable-exception.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -210,40 +252,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>account</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#IdmAccount" target="_self" >IdmAccount</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -258,22 +270,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdmAccount } from &#x27;@shared/domain/interface&#x27;;
-import { AccountDto } from &#x27;../services/dto/account.dto&#x27;;
-import { AccountIdmToDtoMapper } from &#x27;./account-idm-to-dto.mapper.abstract&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class AccountIdmToDtoMapperIdm extends AccountIdmToDtoMapper {
-	mapToDto(account: IdmAccount): AccountDto {
-		const createdDate &#x3D; account.createdDate ? account.createdDate : new Date();
-		return new AccountDto({
-			id: account.id,
-			idmReferenceId: undefined,
-			userId: account.attDbcUserId,
-			systemId: account.attDbcSystemId,
-			username: account.username ?? &#x27;&#x27;,
-			createdAt: createdDate,
-			updatedAt: createdDate,
-		});
+export class IdmCallbackLoggableException implements Loggable {
+	constructor(private readonly callbackError: any) {}
+
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		if (this.callbackError instanceof Error) {
+			return {
+				type: this.callbackError.name,
+				message: this.callbackError.message,
+				stack: this.callbackError.stack,
+			};
+		}
+		return {
+			type: &#x27;CALLBACK_ERROR&#x27;,
+			message: &#x27;error accessing IDM callback&#x27;,
+			data: { callbackError: JSON.stringify(this.callbackError) },
+		};
 	}
 }
 </code></pre>
@@ -314,7 +328,7 @@ export class AccountIdmToDtoMapperIdm extends AccountIdmToDtoMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'AccountIdmToDtoMapperIdm.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'IdmCallbackLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

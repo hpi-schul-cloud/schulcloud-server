@@ -179,7 +179,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -262,15 +262,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>doMigration(userDO: <a href="../classes/UserDO.html" target="_self">UserDO</a>, externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>doMigration(userDO: <a href="../classes/UserDO.html" target="_self">UserDO</a>, externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, account: <a href="../classes/Account.html" target="_self">Account</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -317,7 +317,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
                                             </td>
 
                                             <td>
@@ -374,8 +374,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -461,15 +461,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>tryRollbackMigration(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userDOCopy: <a href="../classes/UserDO.html" target="_self">UserDO</a>, accountCopy: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>)</code>
+                    <code>tryRollbackMigration(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userDOCopy: <a href="../classes/UserDO.html" target="_self">UserDO</a>, accountCopy: <a href="../classes/Account.html" target="_self">Account</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -516,7 +516,7 @@
                                         <tr>
                                                 <td>accountCopy</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
                                             </td>
 
                                             <td>
@@ -545,8 +545,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, Account } from &#x27;@modules/account&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
@@ -564,10 +563,10 @@ export class UserMigrationService {
 
 	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise&lt;void&gt; {
 		const userDO: UserDO &#x3D; await this.userService.findById(currentUserId);
-		const account: AccountDto &#x3D; await this.accountService.findByUserIdOrFail(currentUserId);
+		const account: Account &#x3D; await this.accountService.findByUserIdOrFail(currentUserId);
 
 		const userDOCopy: UserDO &#x3D; new UserDO({ ...userDO });
-		const accountCopy: AccountDto &#x3D; new AccountDto({ ...account });
+		const accountCopy: Account &#x3D; new Account(account.getProps());
 
 		try {
 			await this.doMigration(userDO, externalUserId, account, targetSystemId);
@@ -581,7 +580,7 @@ export class UserMigrationService {
 	private async doMigration(
 		userDO: UserDO,
 		externalUserId: string,
-		account: AccountDto,
+		account: Account,
 		targetSystemId: string
 	): Promise&lt;void&gt; {
 		userDO.previousExternalId &#x3D; userDO.externalId;
@@ -593,11 +592,7 @@ export class UserMigrationService {
 		await this.accountService.save(account);
 	}
 
-	private async tryRollbackMigration(
-		currentUserId: EntityId,
-		userDOCopy: UserDO,
-		accountCopy: AccountDto
-	): Promise&lt;void&gt; {
+	private async tryRollbackMigration(currentUserId: EntityId, userDOCopy: UserDO, accountCopy: Account): Promise&lt;void&gt; {
 		try {
 			await this.userService.save(userDOCopy);
 			await this.accountService.save(accountCopy);

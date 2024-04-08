@@ -165,6 +165,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkUniqueEmail" >checkUniqueEmail</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkUpdateMyAccountPrerequisites" >checkUpdateMyAccountPrerequisites</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
@@ -217,6 +227,11 @@
                                 <a href="#handle" >handle</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#replaceMyTemporaryPassword" >replaceMyTemporaryPassword</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
                             </li>
@@ -233,8 +248,18 @@
                                 <a href="#searchByUsernamePartialMatch" >searchByUsernamePartialMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateAccount" >updateAccount</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#updateLastTriedFailedLogin" >updateLastTriedFailedLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateMyAccount" >updateMyAccount</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -243,6 +268,10 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#updateUsername" >updateUsername</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#validateAccountBeforeSaveOrReject" >validateAccountBeforeSaveOrReject</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -266,12 +295,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/ServerConfig.html" target="_self">ConfigService&lt;ServerConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, eventBus: EventBus)</code>
+<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/AccountConfig.html" target="_self">ConfigService&lt;AccountConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:54</a></div>
                             </td>
                         </tr>
 
@@ -316,7 +345,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/ServerConfig.html" target="_self" >ConfigService&lt;ServerConfig | &gt;</a></code>
+                                                                        <code><a href="../interfaces/AccountConfig.html" target="_self" >ConfigService&lt;AccountConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -337,10 +366,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>accountRepo</td>
+                                                        <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AccountRepo.html" target="_self" >AccountRepo</a></code>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -349,10 +378,22 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>userRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                                        <code><a href="../injectables/UserRepo.html" target="_self" >UserRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>accountRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AccountRepo.html" target="_self" >AccountRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -390,6 +431,182 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkUniqueEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkUniqueEmail</b></span>
+                        <a href="#checkUniqueEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkUniqueEmail(account: <a href="../classes/Account.html" target="_self">Account</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="402"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:402</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>account</td>
+                                            <td>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkUpdateMyAccountPrerequisites"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkUpdateMyAccountPrerequisites</b></span>
+                        <a href="#checkUpdateMyAccountPrerequisites"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkUpdateMyAccountPrerequisites(updateData: <a href="../classes/UpdateMyAccount.html" target="_self">UpdateMyAccount</a>, account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>updateData</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateMyAccount.html" target="_self" >UpdateMyAccount</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>account</td>
+                                            <td>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="delete"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -414,7 +631,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:171</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:350</a></code>
 </div>
                         </td>
                     </tr>
@@ -490,7 +707,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:180</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:359</a></code>
 </div>
                         </td>
                     </tr>
@@ -560,8 +777,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="371"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:371</a></div>
                         </td>
                     </tr>
 
@@ -630,8 +847,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:212</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="391"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:391</a></div>
                         </td>
                     </tr>
 
@@ -713,7 +930,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:55</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:221</a></code>
 </div>
                         </td>
                     </tr>
@@ -750,7 +967,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -788,7 +1005,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:63</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:229</a></code>
 </div>
                         </td>
                     </tr>
@@ -825,7 +1042,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto | null&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -863,7 +1080,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:67</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:233</a></code>
 </div>
                         </td>
                     </tr>
@@ -900,7 +1117,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -932,8 +1149,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="227"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:227</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="408"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:408</a></div>
                         </td>
                     </tr>
 
@@ -1019,7 +1236,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:71</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:237</a></code>
 </div>
                         </td>
                     </tr>
@@ -1068,7 +1285,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto | null&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1111,7 +1328,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:208</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:387</a></code>
 </div>
                         </td>
                     </tr>
@@ -1167,7 +1384,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1205,7 +1422,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:59</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:225</a></code>
 </div>
                         </td>
                     </tr>
@@ -1242,7 +1459,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1275,8 +1492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="216"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:216</a></div>
                         </td>
                     </tr>
 
@@ -1325,6 +1542,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="replaceMyTemporaryPassword"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>replaceMyTemporaryPassword</b></span>
+                        <a href="#replaceMyTemporaryPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>replaceMyTemporaryPassword(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, confirmPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:173</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>password</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>confirmPassword</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -1336,7 +1647,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(accountDto: <a href="../classes/AccountSaveDto.html" target="_self">AccountSaveDto</a>)</code>
+                    <code>save(accountSave: <a href="../undefineds/AccountSave.html" target="_self">AccountSave</a>)</code>
                 </td>
             </tr>
 
@@ -1349,7 +1660,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:83</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:249</a></code>
 </div>
                         </td>
                     </tr>
@@ -1371,9 +1682,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>accountDto</td>
+                                                <td>accountSave</td>
                                             <td>
-                                                            <code><a href="../classes/AccountSaveDto.html" target="_self" >AccountSaveDto</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AccountSave" target="_self" >AccountSave</a></code>
                                             </td>
 
                                             <td>
@@ -1386,7 +1697,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1411,15 +1722,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>saveWithValidation(dto: <a href="../classes/AccountSaveDto.html" target="_self">AccountSaveDto</a>)</code>
+                    <code>saveWithValidation(accountSave: <a href="../undefineds/AccountSave.html" target="_self">AccountSave</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="308"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:308</a></div>
                         </td>
                     </tr>
 
@@ -1440,9 +1751,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>dto</td>
+                                                <td>accountSave</td>
                                             <td>
-                                                            <code><a href="../classes/AccountSaveDto.html" target="_self" >AccountSaveDto</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AccountSave" target="_self" >AccountSave</a></code>
                                             </td>
 
                                             <td>
@@ -1493,7 +1804,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:79</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:245</a></code>
 </div>
                         </td>
                     </tr>
@@ -1530,7 +1841,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;Counted&lt;AccountDto[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Counted&lt;Account[]&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1568,7 +1879,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:75</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:241</a></code>
 </div>
                         </td>
                     </tr>
@@ -1629,7 +1940,101 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;Counted&lt;AccountDto[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Counted&lt;Account[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateAccount"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateAccount</b></span>
+                        <a href="#updateAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateAccount(targetUser: <a href="../interfaces/User.html" target="_self">User</a>, targetAccount: <a href="../classes/Account.html" target="_self">Account</a>, updateData: <a href="../classes/UpdateAccount.html" target="_self">UpdateAccount</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>targetUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>targetAccount</td>
+                                            <td>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateData</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateAccount.html" target="_self" >UpdateAccount</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1667,7 +2072,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:145</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:324</a></code>
 </div>
                         </td>
                     </tr>
@@ -1716,7 +2121,101 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateMyAccount"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateMyAccount</b></span>
+                        <a href="#updateMyAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateMyAccount(user: <a href="../interfaces/User.html" target="_self">User</a>, account: <a href="../classes/Account.html" target="_self">Account</a>, updateData: <a href="../classes/UpdateMyAccount.html" target="_self">UpdateMyAccount</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>account</td>
+                                            <td>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateData</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateMyAccount.html" target="_self" >UpdateMyAccount</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1754,7 +2253,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:156</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:335</a></code>
 </div>
                         </td>
                     </tr>
@@ -1803,7 +2302,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1841,7 +2340,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:134</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:313</a></code>
 </div>
                         </td>
                     </tr>
@@ -1890,7 +2389,76 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateAccountBeforeSaveOrReject"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>validateAccountBeforeSaveOrReject</b></span>
+                        <a href="#validateAccountBeforeSaveOrReject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateAccountBeforeSaveOrReject(accountSave: <a href="../undefineds/AccountSave.html" target="_self">AccountSave</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="266"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:266</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>accountSave</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AccountSave" target="_self" >AccountSave</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1915,7 +2483,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validatePassword(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, comparePassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>validatePassword(account: <a href="../classes/Account.html" target="_self">Account</a>, comparePassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1928,7 +2496,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:167</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:346</a></code>
 </div>
                         </td>
                     </tr>
@@ -1952,7 +2520,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
                                             </td>
 
                                             <td>
@@ -2014,7 +2582,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -2028,30 +2596,54 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { ValidationError } from &#x27;@shared/common&#x27;;
-import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
-import { isEmail, validateOrReject } from &#x27;class-validator&#x27;;
-import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
+	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletedEvent,
 } from &#x27;@modules/deletion&#x27;;
-import { LegacyLogger } from &#x27;../../../core/logger&#x27;;
-import { ServerConfig } from &#x27;../../server/server.config&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from &#x27;@shared/common&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
+import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
+import { UserRepo } from &#x27;@shared/repo/user/user.repo&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { isEmail, isNotEmpty } from &#x27;class-validator&#x27;;
+import { AccountConfig } from &#x27;../account-config&#x27;;
+import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from &#x27;../domain&#x27;;
+import { AccountEntity } from &#x27;../entity/account.entity&#x27;;
 import { AccountServiceDb } from &#x27;./account-db.service&#x27;;
 import { AccountServiceIdm } from &#x27;./account-idm.service&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
 import { AccountValidationService } from &#x27;./account.validation.service&#x27;;
-import { AccountDto, AccountSaveDto } from &#x27;./dto&#x27;;
+import {
+	IdmCallbackLoggableException,
+	DeletedAccountLoggable,
+	DeletedAccountWithUserIdLoggable,
+	DeletedUserDataLoggable,
+	DeletingAccountLoggable,
+	DeletingAccountWithUserIdLoggable,
+	DeletingUserDataLoggable,
+	SavedAccountLoggable,
+	SavingAccountLoggable,
+	UpdatedAccountPasswordLoggable,
+	UpdatedAccountUsernameLoggable,
+	UpdatedLastFailedLoginLoggable,
+	UpdatingAccountPasswordLoggable,
+	UpdatingAccountUsernameLoggable,
+	UpdatingLastFailedLoginLoggable,
+} from &#x27;../loggable&#x27;;
 import { AccountRepo } from &#x27;../repo/account.repo&#x27;;
+
+type UserPreferences &#x3D; {
+	firstLogin: boolean;
+};
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -2061,10 +2653,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService&lt;ServerConfig, true&gt;,
+		private readonly configService: ConfigService&lt;AccountConfig, true&gt;,
 		private readonly accountValidationService: AccountValidationService,
+		private readonly logger: Logger,
+		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
-		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus
 	) {
 		super();
@@ -2076,79 +2669,230 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
+	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount) {
+		await this.checkUpdateMyAccountPrerequisites(updateData, account);
+
+		let updateUser &#x3D; false;
+		let updateAccount &#x3D; false;
+		if (updateData.passwordNew) {
+			account.password &#x3D; updateData.passwordNew;
+			updateAccount &#x3D; true;
+		} else {
+			account.password &#x3D; undefined;
+		}
+
+		if (updateData.email &amp;&amp; user.email !&#x3D;&#x3D; updateData.email) {
+			const newMail &#x3D; updateData.email.toLowerCase();
+			await this.checkUniqueEmail(account, user, newMail);
+			user.email &#x3D; newMail;
+			account.username &#x3D; newMail;
+			updateUser &#x3D; true;
+			updateAccount &#x3D; true;
+		}
+
+		if (updateData.firstName &amp;&amp; user.firstName !&#x3D;&#x3D; updateData.firstName) {
+			user.firstName &#x3D; updateData.firstName;
+			updateUser &#x3D; true;
+		}
+
+		if (updateData.lastName &amp;&amp; user.lastName !&#x3D;&#x3D; updateData.lastName) {
+			user.lastName &#x3D; updateData.lastName;
+			updateUser &#x3D; true;
+		}
+
+		if (updateUser) {
+			try {
+				await this.userRepo.save(user);
+			} catch (err) {
+				throw new EntityNotFoundError(User.name);
+			}
+		}
+		if (updateAccount) {
+			try {
+				await this.save(account);
+			} catch (err) {
+				throw new EntityNotFoundError(AccountEntity.name);
+			}
+		}
+	}
+
+	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account) {
+		if (account.systemId) {
+			throw new ForbiddenOperationError(&#x27;External account details can not be changed.&#x27;);
+		}
+
+		if (!updateData.passwordOld || !(await this.validatePassword(account, updateData.passwordOld))) {
+			throw new AuthorizationError(&#x27;Your old password is not correct.&#x27;);
+		}
+	}
+
+	public async updateAccount(targetUser: User, targetAccount: Account, updateData: UpdateAccount): Promise&lt;Account&gt; {
+		let updateUser &#x3D; false;
+		let updateAccount &#x3D; false;
+
+		if (updateData.password !&#x3D;&#x3D; undefined) {
+			targetAccount.password &#x3D; updateData.password;
+			targetUser.forcePasswordChange &#x3D; true;
+			updateUser &#x3D; true;
+			updateAccount &#x3D; true;
+		}
+		if (updateData.username !&#x3D;&#x3D; undefined) {
+			const newMail &#x3D; updateData.username.toLowerCase();
+			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			targetUser.email &#x3D; newMail;
+			targetAccount.username &#x3D; newMail;
+			updateUser &#x3D; true;
+			updateAccount &#x3D; true;
+		}
+		if (updateData.activated !&#x3D;&#x3D; undefined) {
+			targetAccount.activated &#x3D; updateData.activated;
+			updateAccount &#x3D; true;
+		}
+
+		if (updateUser) {
+			try {
+				await this.userRepo.save(targetUser);
+			} catch (err) {
+				throw new EntityNotFoundError(User.name);
+			}
+		}
+		if (updateAccount) {
+			try {
+				return await this.save(targetAccount);
+			} catch (err) {
+				throw new EntityNotFoundError(AccountEntity.name);
+			}
+		}
+
+		return targetAccount;
+	}
+
+	public async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise&lt;void&gt; {
+		if (password !&#x3D;&#x3D; confirmPassword) {
+			throw new ForbiddenOperationError(&#x27;Password and confirm password do not match.&#x27;);
+		}
+
+		let user: User;
+		try {
+			user &#x3D; await this.userRepo.findById(userId);
+		} catch (err) {
+			throw new EntityNotFoundError(User.name);
+		}
+
+		const userPreferences &#x3D; &lt;UserPreferences&gt;user.preferences;
+		const firstLoginPassed &#x3D; userPreferences ? userPreferences.firstLogin : false;
+
+		if (!user.forcePasswordChange &amp;&amp; firstLoginPassed) {
+			throw new ForbiddenOperationError(&#x27;The password is not temporary, hence can not be changed.&#x27;);
+		} // Password change was forces or this is a first logon for the user
+
+		const account: Account &#x3D; await this.findByUserIdOrFail(userId);
+
+		if (account.systemId) {
+			throw new ForbiddenOperationError(&#x27;External account details can not be changed.&#x27;);
+		}
+
+		if (await this.validatePassword(account, password)) {
+			throw new ForbiddenOperationError(&#x27;New password can not be same as old password.&#x27;);
+		}
+
+		try {
+			account.password &#x3D; password;
+			await this.save(account);
+		} catch (err) {
+			throw new EntityNotFoundError(AccountEntity.name);
+		}
+		try {
+			user.forcePasswordChange &#x3D; false;
+			await this.userRepo.save(user);
+		} catch (err) {
+			throw new EntityNotFoundError(User.name);
+		}
+	}
+
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	async findById(id: string): Promise&lt;AccountDto&gt; {
+	async findById(id: string): Promise&lt;Account&gt; {
 		return this.accountImpl.findById(id);
 	}
 
-	async findMultipleByUserId(userIds: string[]): Promise&lt;AccountDto[]&gt; {
+	async findMultipleByUserId(userIds: string[]): Promise&lt;Account[]&gt; {
 		return this.accountImpl.findMultipleByUserId(userIds);
 	}
 
-	async findByUserId(userId: string): Promise&lt;AccountDto | null&gt; {
+	async findByUserId(userId: string): Promise&lt;Account | null&gt; {
 		return this.accountImpl.findByUserId(userId);
 	}
 
-	async findByUserIdOrFail(userId: string): Promise&lt;AccountDto&gt; {
+	async findByUserIdOrFail(userId: string): Promise&lt;Account&gt; {
 		return this.accountImpl.findByUserIdOrFail(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise&lt;AccountDto | null&gt; {
+	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise&lt;Account | null&gt; {
 		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise&lt;Counted&lt;AccountDto[]&gt;&gt; {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise&lt;Counted&lt;Account[]&gt;&gt; {
 		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise&lt;Counted&lt;AccountDto[]&gt;&gt; {
+	async searchByUsernameExactMatch(userName: string): Promise&lt;Counted&lt;Account[]&gt;&gt; {
 		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise&lt;AccountDto&gt; {
-		const ret &#x3D; await this.accountDb.save(accountDto);
-		const newAccount: AccountSaveDto &#x3D; {
-			...accountDto,
-			id: accountDto.id,
+	async save(accountSave: AccountSave): Promise&lt;Account&gt; {
+		const ret &#x3D; await this.accountDb.save(accountSave);
+		const newAccount: AccountSave &#x3D; {
+			...accountSave,
+			id: accountSave.id,
 			idmReferenceId: ret.id,
-			password: accountDto.password,
+			password: accountSave.password,
 		};
 		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
-			this.logger.debug(&#x60;Saving account with accountID ${ret.id} ...&#x60;);
+			this.logger.debug(new SavingAccountLoggable(ret.id));
 			const account &#x3D; await this.accountIdm.save(newAccount);
-			this.logger.debug(&#x60;Saved account with accountID ${ret.id}&#x60;);
+			this.logger.debug(new SavedAccountLoggable(ret.id));
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async saveWithValidation(dto: AccountSaveDto): Promise&lt;void&gt; {
-		await validateOrReject(dto);
-		// sanatizeUsername ✔
-		if (!dto.systemId) {
-			dto.username &#x3D; dto.username.trim().toLowerCase();
+	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
+		if (!isNotEmpty(accountSave.username)) {
+			throw new ValidationError(&#x27;username can not be empty&#x27;);
 		}
-		if (!dto.systemId &amp;&amp; !dto.password) {
+
+		// sanatizeUsername ✔
+		if (!accountSave.systemId) {
+			accountSave.username &#x3D; accountSave.username.trim().toLowerCase();
+		}
+		if (!accountSave.systemId &amp;&amp; !accountSave.password) {
 			throw new ValidationError(&#x27;No password provided&#x27;);
 		}
 		// validateUserName ✔
 		// usernames must be an email address, if they are not from an external system
-		if (!dto.systemId &amp;&amp; !isEmail(dto.username)) {
+		if (!accountSave.systemId &amp;&amp; !isEmail(accountSave.username)) {
 			throw new ValidationError(&#x27;Username is not an email&#x27;);
 		}
 		// checkExistence ✔
-		if (dto.userId &amp;&amp; (await this.findByUserId(dto.userId))) {
+		if (accountSave.userId &amp;&amp; (await this.findByUserId(accountSave.userId))) {
 			throw new ValidationError(&#x27;Account already exists&#x27;);
 		}
 		// validateCredentials hook will not be ported ✔
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword(&#x27;password&#x27;), will be done by account service ✔
 		// checkUnique ✔
-		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
+		if (
+			!(await this.accountValidationService.isUniqueEmail(
+				accountSave.username,
+				accountSave.userId,
+				accountSave.id,
+				accountSave.systemId
+			))
+		) {
 			throw new ValidationError(&#x27;Username already exists&#x27;);
 		}
 		// removePassword hook is not implemented
@@ -2156,77 +2900,80 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		// if (dto.passwordStrategy &amp;&amp; noPasswordStrategies.includes(dto.passwordStrategy)) {
 		// 	dto.password &#x3D; undefined;
 		// }
-
-		await this.save(dto);
 	}
 
-	async updateUsername(accountId: string, username: string): Promise&lt;AccountDto&gt; {
+	async saveWithValidation(accountSave: AccountSave): Promise&lt;void&gt; {
+		await this.validateAccountBeforeSaveOrReject(accountSave);
+		await this.save(accountSave);
+	}
+
+	async updateUsername(accountId: string, username: string): Promise&lt;Account&gt; {
 		const ret &#x3D; await this.accountDb.updateUsername(accountId, username);
 		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
-			this.logger.debug(&#x60;Updating username for account with accountID ${accountId} ...&#x60;);
+			this.logger.debug(new UpdatingAccountUsernameLoggable(accountId));
 			const account &#x3D; await this.accountIdm.updateUsername(accountId, username);
-			this.logger.debug(&#x60;Updated username for account with accountID ${accountId}&#x60;);
+			this.logger.debug(new UpdatedAccountUsernameLoggable(accountId));
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise&lt;AccountDto&gt; {
+	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise&lt;Account&gt; {
 		const ret &#x3D; await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
-			this.logger.debug(&#x60;Updating last tried failed login for account with accountID ${accountId} ...&#x60;);
+			this.logger.debug(new UpdatingLastFailedLoginLoggable(accountId));
 			const account &#x3D; await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-			this.logger.debug(&#x60;Updated last tried failed login for account with accountID ${accountId}&#x60;);
+			this.logger.debug(new UpdatedLastFailedLoginLoggable(accountId));
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async updatePassword(accountId: string, password: string): Promise&lt;AccountDto&gt; {
+	async updatePassword(accountId: string, password: string): Promise&lt;Account&gt; {
 		const ret &#x3D; await this.accountDb.updatePassword(accountId, password);
 		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
-			this.logger.debug(&#x60;Updating password for account with accountID ${accountId} ...&#x60;);
+			this.logger.debug(new UpdatingAccountPasswordLoggable(accountId));
 			const account &#x3D; await this.accountIdm.updatePassword(accountId, password);
-			this.logger.debug(&#x60;Updated password for account with accountID ${accountId}&#x60;);
+			this.logger.debug(new UpdatedAccountPasswordLoggable(accountId));
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async validatePassword(account: AccountDto, comparePassword: string): Promise&lt;boolean&gt; {
+	async validatePassword(account: Account, comparePassword: string): Promise&lt;boolean&gt; {
 		return this.accountImpl.validatePassword(account, comparePassword);
 	}
 
 	async delete(accountId: string): Promise&lt;void&gt; {
 		await this.accountDb.delete(accountId);
 		await this.executeIdmMethod(async () &#x3D;&gt; {
-			this.logger.debug(&#x60;Deleting account with accountId ${accountId} ...&#x60;);
+			this.logger.debug(new DeletingAccountLoggable(accountId));
 			await this.accountIdm.delete(accountId);
-			this.logger.debug(&#x60;Deleted account with accountId ${accountId}&#x60;);
+			this.logger.debug(new DeletedAccountLoggable(accountId));
 		});
 	}
 
 	public async deleteByUserId(userId: string): Promise&lt;EntityId[]&gt; {
 		const deletedAccounts &#x3D; await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () &#x3D;&gt; {
-			this.logger.debug(&#x60;Deleting account with userId ${userId} ...&#x60;);
+			this.logger.debug(new DeletingAccountWithUserIdLoggable(userId));
 			const deletedAccountIdm &#x3D; await this.accountIdm.deleteByUserId(userId);
 			deletedAccounts.push(...deletedAccountIdm);
-			this.logger.debug(&#x60;Deleted account with userId ${userId}&#x60;);
+			this.logger.debug(new DeletedAccountWithUserIdLoggable(userId));
 		});
 
 		return deletedAccounts;
 	}
 
 	public async deleteUserData(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
-		this.logger.debug(&#x60;Start deleting data for userId - ${userId} in account collection&#x60;);
+		this.logger.debug(new DeletingUserDataLoggable(userId));
 		const deletedAccounts &#x3D; await this.deleteByUserId(userId);
 
 		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
 			DomainOperationReportBuilder.build(OperationType.DELETE, deletedAccounts.length, deletedAccounts),
 		]);
 
-		this.logger.debug(&#x60;Deleted data for userId - ${userId} from account collection&#x60;);
+		this.logger.debug(new DeletedUserDataLoggable(userId));
 
 		return result;
 	}
@@ -2234,7 +2981,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset &#x3D; 0, limit &#x3D; 100): Promise&lt;AccountDto[]&gt; {
+	async findMany(offset &#x3D; 0, limit &#x3D; 100): Promise&lt;Account[]&gt; {
 		return this.accountDb.findMany(offset, limit);
 	}
 
@@ -2243,14 +2990,16 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				return await idmCallback();
 			} catch (error) {
-				if (error instanceof Error) {
-					this.logger.error(error, error.stack);
-				} else {
-					this.logger.error(error);
-				}
+				this.logger.debug(new IdmCallbackLoggableException(error));
 			}
 		}
 		return null;
+	}
+
+	private async checkUniqueEmail(account: Account, user: User, email: string): Promise&lt;void&gt; {
+		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
+			throw new ValidationError(&#x60;The email address is already in use!&#x60;);
+		}
 	}
 
 	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise&lt;string[]&gt; {

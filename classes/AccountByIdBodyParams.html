@@ -167,6 +167,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#username" >username</a>
                             </li>
@@ -221,7 +222,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-by-id.body.params.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-by-id.body.params.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -262,7 +263,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-by-id.body.params.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-by-id.body.params.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -275,6 +276,7 @@
                 <td class="col-md-4">
                     <a name="username"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -296,13 +298,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsString()<br />@IsEmail()<br />@ApiProperty({description: &#x27;The new user name for the user.&#x27;, required: false, nullable: true})<br />
+                            @IsOptional()<br />@IsString()<br />@SanitizeHtml()<br />@IsEmail()<br />@ApiProperty({description: &#x27;The new user name for the user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-by-id.body.params.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-by-id.body.params.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -322,13 +324,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { PrivacyProtect } from &#x27;@shared/controller&#x27;;
+import { PrivacyProtect, SanitizeHtml } from &#x27;@shared/controller&#x27;;
 import { IsBoolean, IsString, IsOptional, Matches, IsEmail } from &#x27;class-validator&#x27;;
 import { passwordPattern } from &#x27;./password-pattern&#x27;;
 
 export class AccountByIdBodyParams {
 	@IsOptional()
 	@IsString()
+	@SanitizeHtml()
 	@IsEmail()
 	@ApiProperty({
 		description: &#x27;The new user name for the user.&#x27;,

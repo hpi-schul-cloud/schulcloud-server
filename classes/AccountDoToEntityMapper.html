@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >AccountEntityToDtoMapper</li>
+  <li class="breadcrumb-item" >AccountDoToEntityMapper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts</code>
+            <code>apps/server/src/modules/account/repo/mapper/account-do-to-entity.mapper.ts</code>
         </p>
 
 
@@ -149,15 +149,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapAccountsToDto" >mapAccountsToDto</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapSearchResult" >mapSearchResult</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapToDto" >mapToDto</a>
+                                <a href="#mapToEntity" >mapToEntity</a>
                             </li>
                         </ul>
                     </td>
@@ -182,156 +174,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapAccountsToDto"></a>
+                    <a name="mapToEntity"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>mapAccountsToDto</b></span>
-                        <a href="#mapAccountsToDto"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToEntity</b></span>
+                        <a href="#mapToEntity"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapAccountsToDto(accounts: <a href="../classes/Account.html" target="_self">Account[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:29</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>accounts</td>
-                                            <td>
-                                                            <code><a href="../classes/Account.html" target="_self" >Account[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >AccountDto[]</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapSearchResult"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapSearchResult</b></span>
-                        <a href="#mapSearchResult"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapSearchResult(accountEntities: <a href="../classes/Account.html" target="_self">[Account[], number]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:23</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>accountEntities</td>
-                                            <td>
-                                                            <code><a href="../classes/Account.html" target="_self" >[Account[], number]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Counted&lt;AccountDto[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToDto"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapToDto</b></span>
-                        <a href="#mapToDto"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToDto(account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
+                    <code>mapToEntity(account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
                 </td>
             </tr>
 
@@ -339,7 +193,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:6</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/repo/mapper/account-do-to-entity.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -375,7 +229,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/AccountEntity.html" target="_self" >AccountEntity</a></code>
 
                         </div>
                             <div class="io-description">
@@ -395,36 +249,35 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account } from &#x27;@shared/domain/entity&#x27;;
-import { Counted } from &#x27;@shared/domain/types&#x27;;
-import { AccountDto } from &#x27;../services/dto/account.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Account } from &#x27;../../domain&#x27;;
+import { AccountEntity } from &#x27;../../entity/account.entity&#x27;;
 
-export class AccountEntityToDtoMapper {
-	static mapToDto(account: Account): AccountDto {
-		return new AccountDto({
-			id: account.id,
-			createdAt: account.createdAt,
-			updatedAt: account.updatedAt,
-			userId: account.userId?.toString(),
+export class AccountDoToEntityMapper {
+	public static mapToEntity(account: Account): AccountEntity {
+		const accountEntity &#x3D; new AccountEntity({
+			userId: account.userId ? new ObjectId(account.userId) : undefined,
 			username: account.username,
 			activated: account.activated,
 			credentialHash: account.credentialHash,
 			expiresAt: account.expiresAt,
 			lasttriedFailedLogin: account.lasttriedFailedLogin,
 			password: account.password,
-			systemId: account.systemId?.toString(),
+			systemId: account.systemId ? new ObjectId(account.systemId) : undefined,
 			token: account.token,
 		});
-	}
 
-	static mapSearchResult(accountEntities: [Account[], number]): Counted&lt;AccountDto[]&gt; {
-		const foundAccounts &#x3D; accountEntities[0];
-		const accountDtos: AccountDto[] &#x3D; AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
-		return [accountDtos, accountEntities[1]];
-	}
-
-	static mapAccountsToDto(accounts: Account[]): AccountDto[] {
-		return accounts.map((accountEntity) &#x3D;&gt; AccountEntityToDtoMapper.mapToDto(accountEntity));
+		if (account.id) {
+			accountEntity._id &#x3D; new ObjectId(account.id);
+			accountEntity.id &#x3D; accountEntity._id.toHexString();
+		}
+		if (account.createdAt) {
+			accountEntity.createdAt &#x3D; account.createdAt;
+		}
+		if (account.updatedAt) {
+			accountEntity.updatedAt &#x3D; account.updatedAt;
+		}
+		return accountEntity;
 	}
 }
 </code></pre>
@@ -465,7 +318,7 @@ export class AccountEntityToDtoMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'AccountEntityToDtoMapper.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AccountDoToEntityMapper.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

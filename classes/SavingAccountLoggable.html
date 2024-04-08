@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -96,9 +96,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >AccountIdmToDtoMapper</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >SavingAccountLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,11 +126,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/mapper/account-idm-to-dto.mapper.abstract.ts</code>
+            <code>apps/server/src/modules/account/loggable/saving-account.loggable.ts</code>
         </p>
 
 
 
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -143,8 +154,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#mapToDto" >mapToDto</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -158,6 +168,55 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="3" class="link-to-prism">apps/server/src/modules/account/loggable/saving-account.loggable.ts:3</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>accountId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
 
             <section data-compodoc="block-methods">
     
@@ -168,26 +227,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToDto"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Abstract</span>
-                        <span ><b>mapToDto</b></span>
-                        <a href="#mapToDto"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToDto(account: <a href="../undefineds/IdmAccount.html" target="_self">IdmAccount</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/account/mapper/account-idm-to-dto.mapper.abstract.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/account/loggable/saving-account.loggable.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -195,66 +252,41 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>account</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#IdmAccount" target="_self" >IdmAccount</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LogMessage" target="_self" >LogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { IdmAccount } from &#x27;@shared/domain/interface&#x27;;
-import { AccountDto } from &#x27;../services/dto/account.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Loggable, LogMessage } from &#x27;@src/core/logger&#x27;;
 
-@Injectable()
-export abstract class AccountIdmToDtoMapper {
-	abstract mapToDto(account: IdmAccount): AccountDto;
+export class SavingAccountLoggable implements Loggable {
+	constructor(private readonly accountId: string) {}
+
+	getLogMessage(): LogMessage {
+		const message &#x3D; {
+			message: &#x60;Saving account ...&#x60;,
+			data: { accountId: this.accountId },
+		};
+
+		return message;
+	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -289,8 +321,8 @@ export abstract class AccountIdmToDtoMapper {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'AccountIdmToDtoMapper.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SavingAccountLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

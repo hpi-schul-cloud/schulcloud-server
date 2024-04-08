@@ -177,7 +177,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -254,8 +254,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -359,8 +359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -440,8 +440,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -508,7 +508,6 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { AccountEntityToDtoMapper } from &#x27;../mapper/account-entity-to-dto.mapper&#x27;;
 import { AccountRepo } from &#x27;../repo/account.repo&#x27;;
 
 @Injectable()
@@ -516,21 +515,20 @@ export class AccountValidationService {
 	constructor(private accountRepo: AccountRepo, private userRepo: UserRepo) {}
 
 	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise&lt;boolean&gt; {
-		const [foundUsers, [accounts]] &#x3D; await Promise.all([
-			// Test coverage: Missing branch null check; unreachable
-			this.userRepo.findByEmail(email),
-			AccountEntityToDtoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
-		]);
-
+		const foundUsers &#x3D; await this.userRepo.findByEmail(email);
+		const [accounts] &#x3D; await this.accountRepo.searchByUsernameExactMatch(email);
 		const filteredAccounts &#x3D; accounts.filter((foundAccount) &#x3D;&gt; foundAccount.systemId &#x3D;&#x3D;&#x3D; systemId);
 
-		return !(
-			foundUsers.length &gt; 1 ||
-			filteredAccounts.length &gt; 1 ||
-			// paranoid &#x27;toString&#x27;: legacy code may call userId or accountId as ObjectID
-			(foundUsers.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; foundUsers[0].id.toString() !&#x3D;&#x3D; userId?.toString()) ||
-			(filteredAccounts.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; filteredAccounts[0].id.toString() !&#x3D;&#x3D; accountId?.toString())
-		);
+		const multipleUsers &#x3D; foundUsers.length &gt; 1;
+		const multipleAccounts &#x3D; filteredAccounts.length &gt; 1;
+		// paranoid &#x27;toString&#x27;: legacy code may call userId or accountId as ObjectID
+		const oneUserWithoutGivenId &#x3D; foundUsers.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; foundUsers[0].id.toString() !&#x3D;&#x3D; userId?.toString();
+		const oneAccountWithoutGivenId &#x3D;
+			filteredAccounts.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; filteredAccounts[0].id.toString() !&#x3D;&#x3D; accountId?.toString();
+
+		const isUnique &#x3D; !(multipleUsers || multipleAccounts || oneUserWithoutGivenId || oneAccountWithoutGivenId);
+
+		return isUnique;
 	}
 
 	async isUniqueEmailForUser(email: string, userId: EntityId): Promise&lt;boolean&gt; {
@@ -540,7 +538,7 @@ export class AccountValidationService {
 
 	async isUniqueEmailForAccount(email: string, accountId: EntityId): Promise&lt;boolean&gt; {
 		const account &#x3D; await this.accountRepo.findById(accountId);
-		return this.isUniqueEmail(email, account.userId?.toString(), account.id, account?.systemId?.toString());
+		return this.isUniqueEmail(email, account.userId?.toString(), account.id, account.systemId?.toString());
 	}
 }
 </code></pre>

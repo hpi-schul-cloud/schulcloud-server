@@ -119,7 +119,7 @@
                 <td class="col-md-4">
                     <ul class="index-list">
                         <li>
-                            <a href="#accountDtoFactory" title="apps/server/src/shared/testing/factory/account-dto.factory.ts" ><b>accountDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account-dto.factory.ts)</a>
+                            <a href="#accountDoFactory" title="apps/server/src/shared/testing/factory/account-do.factory.ts" ><b>accountDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account-do.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#accountFactory" title="apps/server/src/shared/testing/factory/account.factory.ts" ><b>accountFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
@@ -1196,31 +1196,28 @@
     </table>
 </section>
 
-    <h3>apps/server/src/shared/testing/factory/account-dto.factory.ts</h3>
+    <h3>apps/server/src/shared/testing/factory/account-do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="accountDtoFactory"></a>
+                    <a name="accountDoFactory"></a>
                     <span class="name">
-                        <span ><b>accountDtoFactory</b></span>
-                        <a href="#accountDtoFactory"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>accountDoFactory</b></span>
+                        <a href="#accountDoFactory"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;AccountDto, AccountDto&gt;(AccountDto, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>DomainObjectFactory.define&lt;Account, AccountProps&gt;(Account, ({ sequence, params }) &#x3D;&gt; {
 	return {
-		id: new ObjectId().toHexString(),
+		...params,
+		id: params.id || new ObjectId().toHexString(),
+		username: params.username || &#x60;Username-${sequence}&#x60;,
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		systemId: new ObjectId().toHexString(),
-		username: &#x60;Username-${sequence}&#x60;,
-		password: defaultTestPasswordHash,
-		activated: true,
-		userId: new ObjectId().toHexString(),
 	};
 })</code>
                     </td>
@@ -1245,7 +1242,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>AccountFactory.define(Account, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>AccountFactory.define(AccountEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		username: &#x60;account${sequence}&#x60;,
 		password: defaultTestPasswordHash,
@@ -1795,7 +1792,7 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
-	Account,
+	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
 	BoardNode,
@@ -4587,7 +4584,9 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
-	MongoMemoryDatabaseModule.forRoot({ entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYearEntity] }),
+	MongoMemoryDatabaseModule.forRoot({
+		entities: [User, AccountEntity, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
+	}),
 	AuthorizationModule,
 	AuthenticationModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
@@ -10082,7 +10081,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                     <td class="col-md-4">
                         <i>Default value : </i><code>(
 	user: User,
-	account?: Account,
+	account?: AccountEntity,
 	systemId?: EntityId,
 	impersonated?: boolean
 ): ICurrentUser &#x3D;&gt; {
@@ -11167,6 +11166,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			Permission.SYSTEM_CREATE,
 			Permission.SYSTEM_VIEW,
 			Permission.SCHOOL_TOOL_ADMIN,
+			Permission.USER_CHANGE_OWN_NAME,
 		],
 	},
 	superhero: {
@@ -11176,6 +11176,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: RoleName.SUPERHERO,
 		roles: [RoleName.USER],
 		permissions: [
+			Permission.ACCOUNT_DELETE,
+			Permission.ACCOUNT_VIEW,
 			Permission.ADMIN_EDIT,
 			Permission.CLASS_LIST,
 			Permission.CREATE_SUPPORT_JWT,
@@ -11211,6 +11213,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			Permission.TEAM_EDIT,
 			Permission.TOOL_CREATE,
 			Permission.TOOL_EDIT,
+			Permission.USER_CHANGE_OWN_NAME,
 			Permission.YEARS_EDIT,
 		],
 	},
@@ -11249,6 +11252,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			Permission.TOPIC_EDIT,
 			Permission.USERGROUP_CREATE,
 			Permission.USERGROUP_EDIT,
+			Permission.USER_CHANGE_OWN_NAME,
 			Permission.USER_CREATE,
 			Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
 			Permission.TEAM_CREATE,

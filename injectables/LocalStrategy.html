@@ -279,7 +279,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkCredentials(enteredPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, savedPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>)</code>
+                    <code>checkCredentials(enteredPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, savedPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
                 </td>
             </tr>
 
@@ -334,7 +334,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
                                             </td>
 
                                             <td>
@@ -526,7 +526,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdentityManagementConfig, IdentityManagementOauthService } from &#x27;@infra/identity-management&#x27;;
-import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+import { Account } from &#x27;@modules/account&#x27;;
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
@@ -581,7 +581,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	private async checkCredentials(
 		enteredPassword: string,
 		savedPassword: string,
-		account: AccountDto
+		account: Account
 	): Promise&lt;void | never&gt; {
 		this.authenticationService.checkBrutForce(account);
 		if (!(await bcrypt.compare(enteredPassword, savedPassword))) {

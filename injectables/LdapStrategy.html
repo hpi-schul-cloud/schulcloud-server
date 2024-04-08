@@ -312,7 +312,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkCredentials(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, system: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity</a>, ldapDn: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>checkCredentials(account: <a href="../classes/Account.html" target="_self">Account</a>, system: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity</a>, ldapDn: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -343,7 +343,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
                                             </td>
 
                                             <td>
@@ -632,7 +632,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Account&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -717,7 +717,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountDto } from &#x27;@modules/account/services/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account } from &#x27;@modules/account&#x27;;
 import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
@@ -756,7 +756,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 			throw new UnauthorizedException(&#x60;School ${schoolId} does not have the selected system ${systemId}&#x60;);
 		}
 
-		const account: AccountDto &#x3D; await this.loadAccount(username, system.id, school);
+		const account: Account &#x3D; await this.loadAccount(username, system.id, school);
 
 		const userId: string &#x3D; this.checkValue(account.userId);
 
@@ -793,7 +793,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 	}
 
 	private async checkCredentials(
-		account: AccountDto,
+		account: Account,
 		system: SystemEntity,
 		ldapDn: string,
 		password: string
@@ -808,10 +808,10 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise&lt;AccountDto&gt; {
+	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise&lt;Account&gt; {
 		const externalSchoolId &#x3D; this.checkValue(school.externalId);
 
-		let account: AccountDto;
+		let account: Account;
 
 		// TODO having to check for two values in order to find an account is not optimal and should be changed.
 		// The way the name field of Accounts is used for LDAP should be reconsidered, since

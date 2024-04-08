@@ -170,7 +170,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -260,8 +260,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-user-provisioning.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -337,9 +337,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountSaveDto, AccountService } from &#x27;@modules/account&#x27;;
-import { RoleService } from &#x27;@modules/role&#x27;;
-import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, AccountSave } from &#x27;@modules/account&#x27;;
+import { RoleDto, RoleService } from &#x27;@modules/role&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -400,14 +399,12 @@ export class SchulconnexUserProvisioningService {
 		const savedUser: UserDO &#x3D; await this.userService.save(user);
 
 		if (createNewAccount) {
-			await this.accountService.saveWithValidation(
-				new AccountSaveDto({
-					userId: savedUser.id,
-					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
-					systemId,
-					activated: true,
-				})
-			);
+			await this.accountService.saveWithValidation({
+				userId: savedUser.id,
+				username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
+				systemId,
+				activated: true,
+			} as AccountSave);
 		}
 
 		return savedUser;

@@ -998,7 +998,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>login(account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
+                    <code>login(account: <a href="../classes/AccountEntity.html" target="_self">AccountEntity</a>)</code>
                 </td>
             </tr>
 
@@ -1029,7 +1029,7 @@
                                         <tr>
                                                 <td>account</td>
                                             <td>
-                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
+                                                            <code><a href="../classes/AccountEntity.html" target="_self" >AccountEntity</a></code>
                                             </td>
 
                                             <td>
@@ -1429,8 +1429,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { INestApplication } from &#x27;@nestjs/common&#x27;;
-import { Account } from &#x27;@shared/domain/entity&#x27;;
 import supertest, { Response } from &#x27;supertest&#x27;;
+import { AccountEntity } from &#x27;@modules/account/entity/account.entity&#x27;;
 import { defaultTestPassword } from &#x27;./factory/account.factory&#x27;;
 
 interface AuthenticationResponse {
@@ -1526,7 +1526,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public async login(account: Account): Promise&lt;this&gt; {
+	public async login(account: AccountEntity): Promise&lt;this&gt; {
 		const path &#x3D; testReqestConst.loginPath;
 		const params: { username: string; password: string } &#x3D; {
 			username: account.username,

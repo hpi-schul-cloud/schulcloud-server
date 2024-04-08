@@ -160,6 +160,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#value" >value</a>
                             </li>
                             <li>
@@ -241,6 +242,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>value</b></span>
                         <a href="#value"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -257,13 +259,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@ApiProperty({description: &#x27;The search value.&#x27;, required: true, nullable: false})<br />
+                            @IsString()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The search value.&#x27;, required: true, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-search.query.params.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-search.query.params.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -387,7 +389,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { IsEnum, IsString } from &#x27;class-validator&#x27;;
-import { PaginationParams } from &#x27;@shared/controller&#x27;;
+import { PaginationParams, SanitizeHtml } from &#x27;@shared/controller&#x27;;
 import { AccountSearchType } from &#x27;./account-search-type&#x27;;
 
 export class AccountSearchQueryParams extends PaginationParams {
@@ -401,6 +403,7 @@ export class AccountSearchQueryParams extends PaginationParams {
 	type!: AccountSearchType;
 
 	@IsString()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: &#x27;The search value.&#x27;,
 		required: true,

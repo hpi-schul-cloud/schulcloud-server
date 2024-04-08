@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/mapper/account-response.mapper.ts</code>
+            <code>apps/server/src/modules/account/controller/mapper/account-response.mapper.ts</code>
         </p>
 
 
@@ -149,11 +149,15 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapToResponse" >mapToResponse</a>
+                                <a href="#mapToAccountResponse" >mapToAccountResponse</a>
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapToResponseFromEntity" >mapToResponseFromEntity</a>
+                                <a href="#mapToAccountResponses" >mapToAccountResponses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToAccountSearchListResponse" >mapToAccountSearchListResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -178,26 +182,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToResponse"></a>
+                    <a name="mapToAccountResponse"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>mapToResponse</b></span>
-                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToAccountResponse</b></span>
+                        <a href="#mapToAccountResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>)</code>
+                    <code>mapToAccountResponse(resolvedAccount: <a href="../classes/ResolvedAccountDto.html" target="_self">ResolvedAccountDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/account/mapper/account-response.mapper.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="5"
+                                    class="link-to-prism">apps/server/src/modules/account/controller/mapper/account-response.mapper.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -218,9 +222,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>account</td>
+                                                <td>resolvedAccount</td>
                                             <td>
-                                                            <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                                            <code><a href="../classes/ResolvedAccountDto.html" target="_self" >ResolvedAccountDto</a></code>
                                             </td>
 
                                             <td>
@@ -247,26 +251,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToResponseFromEntity"></a>
+                    <a name="mapToAccountResponses"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>mapToResponseFromEntity</b></span>
-                        <a href="#mapToResponseFromEntity"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToAccountResponses</b></span>
+                        <a href="#mapToAccountResponses"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponseFromEntity(account: <a href="../classes/Account.html" target="_self">Account</a>)</code>
+                    <code>mapToAccountResponses(resolvedAccounts: ResolvedAccountDto[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/account/mapper/account-response.mapper.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/account/controller/mapper/account-response.mapper.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -287,9 +291,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>account</td>
+                                                <td>resolvedAccounts</td>
                                             <td>
-                                                            <code><a href="../classes/Account.html" target="_self" >Account</a></code>
+                                                        <code>ResolvedAccountDto[]</code>
                                             </td>
 
                                             <td>
@@ -302,7 +306,76 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/AccountResponse.html" target="_self" >AccountResponse</a></code>
+                            <b>Returns : </b>    <code>AccountResponse[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToAccountSearchListResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToAccountSearchListResponse</b></span>
+                        <a href="#mapToAccountSearchListResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToAccountSearchListResponse(resolvedSearchListAccountDto: <a href="../classes/ResolvedSearchListAccountDto.html" target="_self">ResolvedSearchListAccountDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/account/controller/mapper/account-response.mapper.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>resolvedSearchListAccountDto</td>
+                                            <td>
+                                                            <code><a href="../classes/ResolvedSearchListAccountDto.html" target="_self" >ResolvedSearchListAccountDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/AccountSearchListResponse.html" target="_self" >AccountSearchListResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -322,29 +395,33 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
-import { Account } from &#x27;@shared/domain/entity&#x27;;
-import { AccountResponse } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountResponse, AccountSearchListResponse } from &#x27;../dto&#x27;;
+import { ResolvedAccountDto, ResolvedSearchListAccountDto } from &#x27;../../uc/dto/resolved-account.dto&#x27;;
 
 export class AccountResponseMapper {
-	static mapToResponseFromEntity(account: Account): AccountResponse {
+	static mapToAccountResponse(resolvedAccount: ResolvedAccountDto): AccountResponse {
 		return new AccountResponse({
-			id: account.id,
-			userId: account.userId?.toString(),
-			activated: account.activated,
-			username: account.username,
-			updatedAt: account.updatedAt,
+			id: resolvedAccount.id,
+			userId: resolvedAccount.userId,
+			activated: resolvedAccount.activated,
+			username: resolvedAccount.username,
+			updatedAt: resolvedAccount.updatedAt,
 		});
 	}
 
-	static mapToResponse(account: AccountDto): AccountResponse {
-		return new AccountResponse({
-			id: account.id,
-			userId: account.userId,
-			activated: account.activated,
-			username: account.username,
-			updatedAt: account.updatedAt,
-		});
+	static mapToAccountResponses(resolvedAccounts: ResolvedAccountDto[]): AccountResponse[] {
+		return resolvedAccounts.map((resolvedAccount) &#x3D;&gt; AccountResponseMapper.mapToAccountResponse(resolvedAccount));
+	}
+
+	static mapToAccountSearchListResponse(
+		resolvedSearchListAccountDto: ResolvedSearchListAccountDto
+	): AccountSearchListResponse {
+		return new AccountSearchListResponse(
+			AccountResponseMapper.mapToAccountResponses(resolvedSearchListAccountDto.data),
+			resolvedSearchListAccountDto.total,
+			resolvedSearchListAccountDto.skip,
+			resolvedSearchListAccountDto.limit
+		);
 	}
 }
 </code></pre>

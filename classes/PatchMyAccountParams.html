@@ -150,6 +150,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#email" >email</a>
                             </li>
@@ -158,10 +159,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#firstName" >firstName</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -211,6 +214,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>email</b></span>
                         <a href="#email"><span class="icon ion-ios-link"></span></a>
@@ -228,13 +232,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEmail()<br />@IsOptional()<br />@ApiProperty({description: &#x27;The new email address for the current user.&#x27;, required: false, nullable: true})<br />
+                            @IsEmail()<br />@SanitizeHtml()<br />@IsOptional()<br />@ApiProperty({description: &#x27;The new email address for the current user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:33</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -247,6 +251,7 @@
                 <td class="col-md-4">
                     <a name="firstName"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -268,13 +273,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsOptional()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The new first name for the current user.&#x27;, required: false, nullable: true})<br />
+                            @IsString()<br />@SanitizeHtml()<br />@IsOptional()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The new first name for the current user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -287,6 +292,7 @@
                 <td class="col-md-4">
                     <a name="lastName"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -308,13 +314,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsOptional()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The new last name for the current user.&#x27;, required: false, nullable: true})<br />
+                            @IsString()<br />@SanitizeHtml()<br />@IsOptional()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The new last name for the current user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:53</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -437,6 +443,7 @@ export class PatchMyAccountParams {
 	passwordNew?: string;
 
 	@IsEmail()
+	@SanitizeHtml()
 	@IsOptional()
 	@ApiProperty({
 		description: &#x27;The new email address for the current user.&#x27;,
@@ -446,6 +453,7 @@ export class PatchMyAccountParams {
 	email?: string;
 
 	@IsString()
+	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
 	@ApiProperty({
@@ -456,6 +464,7 @@ export class PatchMyAccountParams {
 	firstName?: string;
 
 	@IsString()
+	@SanitizeHtml()
 	@IsOptional()
 	@SanitizeHtml()
 	@ApiProperty({
