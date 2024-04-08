@@ -108,4 +108,24 @@ export class CourseController {
 	): Promise<void> {
 		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
 	}
+
+	@Get(':courseId/user-permissions')
+	@ApiOperation({ summary: 'Get permissions for a user in a course.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	@ApiUnprocessableEntityResponse({ description: 'Unsupported role.' })
+	@ApiCreatedResponse({
+		status: 200,
+		schema: { type: 'object', example: { userId: ['permission1', 'permission2'] } },
+	})
+	public async getUserPermissions(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise<{ [userId: string]: string[] }> {
+		const permissions = await this.courseUc.getUserPermissionByCourseId(currentUser.userId, params.courseId);
+
+		return {
+			[currentUser.userId]: permissions,
+		};
+	}
 }

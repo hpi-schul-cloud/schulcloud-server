@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CourseMetadataListResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +13,7 @@ import {
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { readFile } from 'node:fs/promises';
+import { CourseMetadataListResponse } from '../dto';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -53,7 +53,6 @@ describe('Course Controller (API)', () => {
 			const student = createStudent();
 			const teacher = createTeacher();
 			const course = courseFactory.buildWithId({
-				name: 'course #1',
 				teachers: [teacher.user],
 				students: [student.user],
 			});
@@ -100,7 +99,6 @@ describe('Course Controller (API)', () => {
 			const substitutionTeacher = createTeacher();
 			const teacherUnknownToCourse = createTeacher();
 			const course = courseFactory.build({
-				name: 'course #1',
 				teachers: [teacher.user],
 				students: [student1.user, student2.user],
 			});
@@ -160,7 +158,6 @@ describe('Course Controller (API)', () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
 				const course = courseFactory.build({
-					name: 'course #1',
 					teachers: [teacher.user],
 					syncedWithGroup: group,
 				});
@@ -192,7 +189,6 @@ describe('Course Controller (API)', () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
 				const course = courseFactory.build({
-					name: 'course #1',
 					teachers: [teacher.user],
 					syncedWithGroup: group,
 				});
@@ -218,6 +214,33 @@ describe('Course Controller (API)', () => {
 					type: 'UNAUTHORIZED',
 				});
 			});
+		});
+	});
+
+	describe('[GET] /courses/:courseId/user-permissions', () => {
+		const setup = () => {
+			const teacher = createTeacher();
+			const course = courseFactory.buildWithId({
+				teachers: [teacher.user],
+				students: [],
+			});
+
+			return { course, teacher };
+		};
+
+		it('should return teacher course permissions', async () => {
+			const { course, teacher } = setup();
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/user-permissions`);
+			const data = response.body as { [key: string]: string[] };
+
+			expect(response.statusCode).toBe(200);
+			expect(data instanceof Object).toBe(true);
+			expect(Array.isArray(data[teacher.user.id])).toBe(true);
+			expect(data[teacher.user.id].length).toBeGreaterThan(0);
 		});
 	});
 });

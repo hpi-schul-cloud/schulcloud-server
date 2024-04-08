@@ -31,7 +31,7 @@ describe('jwt strategy', () => {
 			],
 		}).compile();
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-		const redisClientMock = RedisMock.createClient();
+		const redisClientMock = new RedisMock();
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 		feathersRedis.setRedisClient(redisClientMock);
 
