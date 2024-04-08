@@ -15,6 +15,8 @@ export class UserResponse {
 		consent,
 		classes,
 		importHash,
+		lastLoginSystemChange,
+		outdatedSince,
 	}: UserResponse) {
 		this._id = _id.toString();
 		this.firstName = firstName;
@@ -27,6 +29,8 @@ export class UserResponse {
 		this.consent = consent ? new ConsentsResponse(consent) : undefined;
 		this.classes = classes;
 		this.importHash = importHash;
+		this.lastLoginSystemChange = lastLoginSystemChange;
+		this.outdatedSince = outdatedSince;
 	}
 
 	@ApiProperty()
@@ -61,4 +65,10 @@ export class UserResponse {
 
 	@ApiProperty()
 	importHash?: string;
+
+	@ApiProperty()
+	lastLoginSystemChange?: Date;
+
+	@ApiProperty()
+	outdatedSince?: Date;
 }
