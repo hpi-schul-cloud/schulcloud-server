@@ -4,19 +4,21 @@ import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Logger } from '@src/core/logger';
 import { UserService } from '@modules/user';
-import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@src/infra/schulconnex-client';
+import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { SynchronizationService } from '../domain/service';
+import {
+	Synchronization,
+	SynchronizationService,
+	SynchronizationStatusModel,
+	synchronizationFactory,
+} from '@modules/synchronization';
 import { SynchronizationUc } from './synchronization.uc';
-import { SynchronizationStatusModel } from '../domain/types';
-import { synchronizationFactory } from '../domain/testing';
-import { Synchronization } from '../domain';
 import { synchronizationTestConfig } from './testing';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
-} from '../domain/loggable-exception';
+} from './loggable-exception';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;

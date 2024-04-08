@@ -19,13 +19,8 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { RoleModule } from '@modules/role';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { RegistrationPinModule } from '@modules/registration-pin';
-import {
-	SynchronizationEntity,
-	SynchronizationModule,
-	SynchronizationRepo,
-	SynchronizationService,
-	SynchronizationUc,
-} from '@modules/synchronization';
+import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';
+import { SynchronizationUc } from './uc';
 import { IdpSyncConsole } from './idp-sync-console';
 
 @Module({

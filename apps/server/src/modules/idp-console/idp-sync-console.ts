@@ -1,6 +1,6 @@
 import { Console, Command } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
-import { SynchronizationUc } from '@modules/synchronization';
+import { SynchronizationUc } from './uc';
 import { UsersSyncOptions, SystemType } from './interface';
 
 @Console({

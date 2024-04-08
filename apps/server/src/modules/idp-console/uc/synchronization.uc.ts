@@ -1,19 +1,17 @@
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-client';
+import { SanisResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ConfigService } from '@nestjs/config';
 import { ErrorLogMessage } from '@src/core/logger/types';
-import { SynchronizationService } from '../domain/service';
-import { Synchronization } from '../domain';
-import { SynchronizationStatusModel } from '../domain/types';
-import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from '../domain/loggable';
+import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
+import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
-} from '../domain/loggable-exception';
-import { SynchronizationConfig } from '../synchronization.config';
+} from './loggable-exception';
+import { SynchronizationConfig } from '../interface';
 
 @Injectable()
 export class SynchronizationUc {
