@@ -8,6 +8,7 @@ chai.use(chaiAsPromised);
 const { expect } = chai;
 
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+const { NotAuthenticated } = require('../../../src/errors');
 
 describe('homework service', () => {
 	let app;
@@ -207,6 +208,15 @@ describe('homework service', () => {
 				expect(err.code).to.equal(403);
 				expect(err.message).to.equal("You don't have one of the permissions: HOMEWORK_CREATE.");
 			}
+		});
+	});
+
+	describe('DELETE', async () => {
+		it('should not allow homework removal', async () => {
+			const { homework, teacher } = await setupHomeworkWithCourse();
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = {};
+			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
 		});
 	});
 

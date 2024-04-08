@@ -352,6 +352,7 @@ exports.before = () => {
 				hasPatchPermission,
 			]),
 		],
+		remove: [disallow()],
 	};
 };
 
