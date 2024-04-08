@@ -4,13 +4,14 @@ import { BoardDoAuthorizableProps, BoardExternalReferenceType, BoardRoles } from
 import { CourseRepo } from '@shared/repo';
 import {
 	cardFactory,
+	columnBoardFactory,
+	columnFactory,
 	courseFactory,
 	mediaBoardFactory,
 	roleFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoAuthorizableService } from './board-do-authorizable.service';
 
@@ -265,7 +266,6 @@ describe(BoardDoAuthorizableService.name, () => {
 						roles: [BoardRoles.EDITOR],
 					},
 				],
-				parentDo: board,
 				rootDo: board,
 			});
 		});
