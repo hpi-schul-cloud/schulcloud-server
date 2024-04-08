@@ -244,7 +244,7 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should call nest feathers roster service', (done) => {
+			it('should call nest feathers roster service', () => {
 				const { nestGroupStub } = setup();
 
 				groupsService
