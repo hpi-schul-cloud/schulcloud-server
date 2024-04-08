@@ -1,10 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { Account, Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { accountFactory, roleFactory, schoolEntityFactory, schoolYearFactory, userFactory } from '@shared/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { accountFactory, roleFactory, schoolEntityFactory, schoolYearFactory, userFactory } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
@@ -15,9 +16,9 @@ describe('users admin repo', () => {
 
 	let em: EntityManager;
 
-	let adminAccount: Account;
-	let studentAccount1: Account;
-	let studentAccount2: Account;
+	let adminAccount: AccountEntity;
+	let studentAccount1: AccountEntity;
+	let studentAccount2: AccountEntity;
 
 	let adminUser: User;
 	let studentUser1: User;
@@ -88,7 +89,7 @@ describe('users admin repo', () => {
 			gradeLevel: 12,
 		});
 
-		const mapUserToAccount = (user: User): Account =>
+		const mapUserToAccount = (user: User): AccountEntity =>
 			accountFactory.buildWithId({
 				userId: user.id,
 				username: user.email,

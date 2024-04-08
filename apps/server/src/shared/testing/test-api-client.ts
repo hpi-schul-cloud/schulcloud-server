@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { Account } from '@shared/domain/entity';
 import supertest, { Response } from 'supertest';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { defaultTestPassword } from './factory/account.factory';
 
 interface AuthenticationResponse {
@@ -96,7 +96,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public async login(account: Account): Promise<this> {
+	public async login(account: AccountEntity): Promise<this> {
 		const path = testReqestConst.loginPath;
 		const params: { username: string; password: string } = {
 			username: account.username,

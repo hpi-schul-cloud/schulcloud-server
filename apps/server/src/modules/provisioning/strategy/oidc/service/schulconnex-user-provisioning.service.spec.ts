@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
+import { AccountService, AccountSave } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
@@ -142,12 +141,12 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 			it('should create a new account', async () => {
 				const { externalUser, schoolId, systemId, hash } = setupUser();
-				const account: AccountSaveDto = new AccountSaveDto({
+				const account: AccountSave = {
 					userId: 'userId',
 					username: hash,
 					systemId,
 					activated: true,
-				});
+				} as AccountSave;
 
 				userService.findByExternalId.mockResolvedValue(null);
 
