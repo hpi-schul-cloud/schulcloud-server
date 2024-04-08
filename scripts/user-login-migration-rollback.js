@@ -10,6 +10,7 @@ program.parse();
 
 const options = program.opts();
 const mongodbUrl = options.url;
+const schoolId = options;
 
 const close = async () => mongoose.connection.close();
 
@@ -72,9 +73,8 @@ const UserLoginMigration = mongoose.model(
 );
 
 const up = async () => {
+	console.info('rollback started');
 	await connect();
-
-	const { schoolId } = options;
 
 	const migrationStart = await UserLoginMigration.findOne({ school: { _id: schoolId } })
 		.select('startedAt')
