@@ -4,11 +4,13 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	LinkElement,
+	MediaBoard,
+	MediaLine,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { EntityId } from '@shared/domain/types';
 
 export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
@@ -61,4 +63,16 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 	}
 
 	private doNothing() {}
+
+	visitMediaBoard(mediaBoard: MediaBoard): void {
+		this.visitChildrenOf(mediaBoard);
+	}
+
+	visitMediaLine(mediaLine: MediaLine): void {
+		this.visitChildrenOf(mediaLine);
+	}
+
+	visitMediaExternalToolElement(): void {
+		this.doNothing();
+	}
 }
