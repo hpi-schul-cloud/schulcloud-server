@@ -109,16 +109,15 @@ export class CommonCartridgeExportService {
 				identifier: createIdentifier(columnBoard.id),
 			});
 
-			if (columnBoard.children.length > 0) {
-				columnBoard.children
-					.filter((child) => child instanceof Column)
-					.map((column) =>
-						organization.addSubOrganization({
-							title: (column as Column).title,
-							identifier: createIdentifier((column as Column).id),
-						})
-					);
-			}
+			columnBoard.children
+				.filter((child) => child instanceof Column)
+				.forEach((column) => {
+					const { id } = column;
+					organization.addSubOrganization({
+						title: (column as Column).title,
+						identifier: createIdentifier(id),
+					});
+				});
 		}
 	}
 

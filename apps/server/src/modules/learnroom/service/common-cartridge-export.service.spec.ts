@@ -9,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
 import {
 	columnBoardFactory,
-	createColumnBoardWithColumn,
+	columnFactory,
 	courseFactory,
 	lessonFactory,
 	setupEntities,
@@ -71,8 +71,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const columnBoard = columnBoardFactory.build();
-		const columnBoardWithChildren = createColumnBoardWithColumn.build();
+		const columnBoard = columnBoardFactory.build({ children: [columnFactory.build()] });
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -81,7 +80,6 @@ describe('CommonCartridgeExportService', () => {
 		configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 		columnBoardServiceMock.findIdsByExternalReference.mockResolvedValue([faker.string.uuid()]);
 		columnBoardServiceMock.findById.mockResolvedValue(columnBoard);
-		columnBoardServiceMock.findById.mockResolvedValue(columnBoardWithChildren);
 
 		const buffer = await sut.exportCourse(
 			course.id,
@@ -92,7 +90,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, columnBoardWithChildren };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard };
 	};
 
 	beforeAll(async () => {
@@ -185,10 +183,10 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add column', async () => {
-				const { archive, columnBoardWithChildren } = await setup();
+				const { archive, columnBoard } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', (columnBoardWithChildren.children[0] as Column).title));
+				expect(manifest).toContain(createXmlString('title', (columnBoard.children[0] as Column).title));
 			});
 		});
 
