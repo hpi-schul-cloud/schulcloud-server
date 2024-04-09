@@ -29,7 +29,6 @@ export class CommonCartridgeFileParser {
 
 		if (organization.resourceType.startsWith('imswl_')) {
 			const resourceString = this.archive.readAsText(organization.resourcePath);
-			console.log('resourceString', resourceString);
 			const resourceXml = new JSDOM(resourceString, { contentType: 'text/xml' }).window.document;
 			const title = resourceXml.querySelector('webLink > title')?.textContent || '';
 			const url = resourceXml.querySelector('webLink > url')?.getAttribute('href') || '';

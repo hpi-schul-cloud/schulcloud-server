@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Column, ColumnBoard, LinkElement } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column, ColumnBoard, ContentElementType } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
+import { LinkContentBody } from '@src/modules/board/controller/dto';
 import {
 	CommonCartridgeFileParser,
 	DEFAULT_FILE_PARSER_OPTIONS,
 	OrganizationProps,
 } from '@src/modules/common-cartridge';
-import { WebLinkResourceProps } from '@src/modules/common-cartridge/import/common-cartridge-import.types';
-import { ObjectId } from 'bson';
+import { ResourceType } from '@src/modules/common-cartridge/import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
 
@@ -77,30 +77,17 @@ export class CommonCartridgeImportService {
 		column: Column,
 		cardProps: OrganizationProps
 	): Promise<void> {
+		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps));
 		const resource = parser.getResource(cardProps);
-		await this.cardService.create(
-			column,
-			undefined,
-			this.mapper.mapOrganizationToCard(cardProps, [
-				new LinkElement({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					title: (resource as WebLinkResourceProps).title,
-					url: (resource as WebLinkResourceProps).url,
-				}),
-			])
-		);
-		// const resource = parser.getResource(cardProps);
 
-		// if (resource?.type === ResourceType.WEB_LINK) {
-		// 	const link = (await this.contentElementService.create(card, ContentElementType.LINK)) as LinkElement;
-		// 	const updatedLink = new LinkContentBody();
+		if (resource?.type === ResourceType.WEB_LINK) {
+			const linkElement = await this.contentElementService.create(card, ContentElementType.LINK);
+			const newLinkProps = new LinkContentBody();
 
-		// 	updatedLink.title = resource.title;
-		// 	updatedLink.url = resource.url;
+			newLinkProps.title = resource.title;
+			newLinkProps.url = resource.url;
 
-		// 	await this.contentElementService.update(link, link);
-		// }
+			await this.contentElementService.update(linkElement, newLinkProps);
+		}
 	}
 }
