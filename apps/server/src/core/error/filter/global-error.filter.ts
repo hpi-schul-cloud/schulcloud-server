@@ -1,49 +1,36 @@
-import { IError, RpcMessage } from '@infra/rabbitmq/rpc-message';
+import { IError, RpcMessage } from '@infra/rabbitmq'; // TODO: Sollte core zugriff auf infra haben?
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
-import { ErrorLogger, Loggable } from '@src/core/logger';
-import { LoggingUtils } from '@src/core/logger/logging.utils';
 import { Response } from 'express';
 import _ from 'lodash';
-import util from 'util';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
-import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
+import { DomainErrorHandler } from '../domain/domainErrorHandler';
 
 @Catch()
 export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
-	constructor(private readonly logger: ErrorLogger) {}
+	constructor(private readonly domainErrorHandler: DomainErrorHandler) {}
 
 	// eslint-disable-next-line consistent-return
 	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
-		const loggable = this.createErrorLoggable(error);
-		this.logger.error(loggable);
+		this.domainErrorHandler.exec(error);
 
-		const contextType = host.getType<'http' | 'rmq'>();
+		const contextType = host.getType<'http' | 'rmq' | 'ws'>();
 
 		if (contextType === 'http') {
 			this.sendHttpResponse(error, host);
 		}
 
 		if (contextType === 'rmq') {
-			return { message: undefined, error };
-		}
-	}
-
-	private createErrorLoggable(error: unknown): Loggable {
-		let loggable: Loggable;
-
-		if (LoggingUtils.isInstanceOfLoggable(error)) {
-			loggable = error;
-		} else if (error instanceof Error) {
-			loggable = new ErrorLoggable(error);
-		} else {
-			const unknownError = new Error(util.inspect(error));
-			loggable = new ErrorLoggable(unknownError);
+			// Ist der return wirklich notwendig?
+			return this.sendRpcResponse(error);
 		}
 
-		return loggable;
+		if (contextType === 'ws') {
+			// Nothing is implemented, only a placeholder!
+			this.sendWsResponse();
+		}
 	}
 
 	private sendHttpResponse(error: T, host: ArgumentsHost): void {
@@ -51,6 +38,15 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 		const httpArgumentHost = host.switchToHttp();
 		const response = httpArgumentHost.getResponse<Response>();
 		response.status(errorResponse.code).json(errorResponse);
+	}
+
+	private sendWsResponse(): void {
+		// Nothing is implemented
+	}
+
+	// naming?
+	private sendRpcResponse(error: T): RpcMessage<unknown> {
+		return { message: undefined, error };
 	}
 
 	private createErrorResponse(error: unknown): ErrorResponse {
@@ -69,7 +65,7 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 		return response;
 	}
 
-	private createErrorResponseForFeathersError(error: FeathersError) {
+	private createErrorResponseForFeathersError(error: FeathersError): ErrorResponse {
 		const { code, className, name, message } = error;
 		const type = _.snakeCase(className).toUpperCase();
 		const title = _.startCase(name);
