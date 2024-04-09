@@ -105,7 +105,7 @@ export class AuthenticationService {
 				config
 			)
 		);
-		console.log(resp.headers);
+		console.log(resp);
 	}
 
 	checkBrutForce(account: AccountDto): void {
