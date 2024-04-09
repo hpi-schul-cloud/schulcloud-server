@@ -1,4 +1,4 @@
-import { AccountDto, AccountSaveDto, AccountService } from '@modules/account';
+import { AccountService, Account, AccountSave } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -333,7 +333,7 @@ export class UserImportUc {
 		user.ldapDn = importUser.ldapDn;
 		user.externalId = importUser.externalId;
 
-		const account: AccountDto = await this.getAccount(user);
+		const account: Account = await this.getAccount(user);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
@@ -352,14 +352,14 @@ export class UserImportUc {
 		await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
 	}
 
-	private async getAccount(user: User): Promise<AccountDto> {
-		let account: AccountDto | null = await this.accountService.findByUserId(user.id);
+	private async getAccount(user: User): Promise<Account> {
+		let account: Account | null = await this.accountService.findByUserId(user.id);
 
 		if (!account) {
-			const newAccount: AccountSaveDto = new AccountSaveDto({
+			const newAccount = {
 				userId: user.id,
 				username: user.email,
-			});
+			} as AccountSave;
 
 			await this.accountService.save(newAccount);
 

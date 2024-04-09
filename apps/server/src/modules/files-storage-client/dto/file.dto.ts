@@ -11,10 +11,16 @@ export class FileDto {
 
 	parentId: EntityId;
 
+	createdAt?: Date;
+
+	updatedAt?: Date;
+
 	constructor(props: FileDomainObjectProps) {
 		this.id = props.id;
 		this.name = props.name;
 		this.parentType = props.parentType;
 		this.parentId = props.parentId;
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
 	}
 }

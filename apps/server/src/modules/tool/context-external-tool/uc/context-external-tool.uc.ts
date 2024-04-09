@@ -45,7 +45,8 @@ export class ContextExternalToolUc {
 		contextExternalToolDto.schoolToolRef.schoolId = schoolId;
 		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		await this.contextExternalToolService.checkContextRestrictions(contextExternalTool);
 
@@ -83,7 +84,8 @@ export class ContextExternalToolUc {
 		});
 		contextExternalTool.schoolToolRef.schoolId = schoolId;
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
@@ -97,8 +99,9 @@ export class ContextExternalToolUc {
 	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
 		const tool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const context = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
-		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
+		await this.toolPermissionHelper.ensureContextPermissions(user, tool, context);
 
 		await this.contextExternalToolService.deleteContextExternalTool(tool);
 	}
@@ -120,8 +123,9 @@ export class ContextExternalToolUc {
 	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
 		const tool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(contextToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
+		await this.toolPermissionHelper.ensureContextPermissions(user, tool, context);
 
 		return tool;
 	}

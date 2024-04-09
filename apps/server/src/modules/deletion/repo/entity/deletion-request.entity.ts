@@ -22,12 +22,15 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	deleteAfter: Date;
 
 	@Property()
+	@Index()
 	targetRefId!: EntityId;
 
 	@Property()
+	@Index()
 	targetRefDomain: DomainName;
 
 	@Property()
+	@Index()
 	status: StatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {

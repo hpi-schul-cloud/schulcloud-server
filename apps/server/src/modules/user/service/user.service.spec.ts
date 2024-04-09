@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountDto, AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
@@ -26,6 +26,7 @@ import {
 	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { CalendarService } from '@src/infra/calendar';
 import { UserService } from './user.service';
 import { UserQuery } from './user-query.type';
 import { UserDto } from '../uc/dto/user.dto';
@@ -40,6 +41,7 @@ describe('UserService', () => {
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
+	let calendarService: DeepMocked<CalendarService>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
@@ -84,6 +86,10 @@ describe('UserService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: CalendarService,
+					useValue: createMock<CalendarService>(),
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -95,6 +101,7 @@ describe('UserService', () => {
 		accountService = module.get(AccountService);
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
+		calendarService = module.get(CalendarService);
 
 		await setupEntities();
 	});
@@ -257,7 +264,7 @@ describe('UserService', () => {
 					permissions: [Permission.DASHBOARD_VIEW],
 				});
 				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
-				const account: AccountDto = new AccountDto({
+				const account: Account = new Account({
 					id: 'accountId',
 					systemId,
 					username: 'username',
@@ -517,6 +524,42 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('removeCalendarEvents', () => {
+		describe('when calendarService.deleteUserData return DomainDeletionReport', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userId = user.id;
+				const deletedEventId = new ObjectId().toHexString();
+
+				const results = [
+					DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [deletedEventId]),
+					]),
+				];
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [deletedEventId]),
+				]);
+
+				calendarService.deleteUserData.mockResolvedValue(results[0]);
+
+				return {
+					expectedResult,
+					userId,
+					user,
+				};
+			};
+
+			it('should return domainOperation object with information about deleted calendarEvents', async () => {
+				const { userId, expectedResult } = setup();
+
+				const result = await service.removeCalendarEvents(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
 	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
@@ -569,13 +612,19 @@ describe('UserService', () => {
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
 				]);
 
+				const calendarEventsDeleted = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
+				]);
+
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.USER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id])],
-					[registrationPinDeleted]
+					[registrationPinDeleted, calendarEventsDeleted]
 				);
 
 				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
+				jest.spyOn(service, 'removeCalendarEvents').mockResolvedValueOnce(calendarEventsDeleted);
+
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
@@ -695,6 +744,73 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('findMultipleByExternalIds', () => {
+		describe('when a users with external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const externalIds: string[] = ['111', '222'];
+				const expectedResult = [userA.id, userB.id];
+
+				userRepo.findByExternalIds.mockResolvedValue(expectedResult);
+
+				return {
+					expectedResult,
+					externalIds,
+				};
+			};
+
+			it('should call userRepo.findByExternalIds', async () => {
+				const { externalIds } = setup();
+
+				await service.findMultipleByExternalIds(externalIds);
+
+				expect(userRepo.findByExternalIds).toBeCalledWith(externalIds);
+			});
+
+			it('should return array with Users id', async () => {
+				const { externalIds, expectedResult } = setup();
+
+				const result = await service.findMultipleByExternalIds(externalIds);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when users with this external id do not exist', () => {
+			it('should return empty array', async () => {
+				userRepo.findByExternalIds.mockResolvedValue([]);
+
+				const result = await service.findMultipleByExternalIds(['externalId1', 'externalId2']);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('updateLastSyncedAt', () => {
+		describe('when a users with thess external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const userIds = [userA.id, userB.id];
+
+				return {
+					userIds,
+				};
+			};
+
+			it('should call userRepo.updateAllUserByLastSyncedAt', async () => {
+				const { userIds } = setup();
+
+				await service.updateLastSyncedAt(userIds);
+
+				expect(userRepo.updateAllUserByLastSyncedAt).toBeCalledWith(userIds);
+			});
+		});
+	});
+
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();
@@ -735,6 +851,56 @@ describe('UserService', () => {
 				await service.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+	});
+
+	describe('findByExternalIdsAndProvidedBySystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userA = userFactory.buildWithId({ externalId: '111' });
+			const userB = userFactory.buildWithId({ externalId: '222' });
+
+			const externalIds: string[] = ['111', '222'];
+			const foundUsers = [userA.id, userB.id];
+
+			return {
+				externalIds,
+				foundUsers,
+				systemId,
+			};
+		};
+
+		describe('when find users By externalIds and systemId', () => {
+			it('should call findMultipleByExternalIds in userService with externalIds', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(service.findMultipleByExternalIds).toHaveBeenCalledWith(externalIds);
+			});
+
+			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(foundUsers, systemId);
+			});
+
+			it('should return array with verified Users', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(accountService, 'findByUserIdsAndSystemId').mockResolvedValueOnce(foundUsers);
+
+				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(result).toEqual(foundUsers);
 			});
 		});
 	});

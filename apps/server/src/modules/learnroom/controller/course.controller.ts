@@ -3,6 +3,8 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Query,
@@ -11,7 +13,6 @@ import {
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
 	ApiBadRequestResponse,
@@ -19,15 +20,15 @@ import {
 	ApiConsumes,
 	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiOperation,
 	ApiTags,
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
-import { CourseImportUc } from '../uc';
-import { CourseExportUc } from '../uc/course-export.uc';
-import { CourseUc } from '../uc/course.uc';
+import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
@@ -40,7 +41,7 @@ export class CourseController {
 		private readonly courseUc: CourseUc,
 		private readonly courseExportUc: CourseExportUc,
 		private readonly courseImportUc: CourseImportUc,
-		private readonly configService: ConfigService
+		private readonly courseSyncUc: CourseSyncUc
 	) {}
 
 	@Get()
@@ -68,7 +69,8 @@ export class CourseController {
 			urlParams.courseId,
 			currentUser.userId,
 			queryParams.version,
-			bodyParams.topics
+			bodyParams.topics,
+			bodyParams.tasks
 		);
 
 		response.set({
@@ -93,5 +95,37 @@ export class CourseController {
 		file: Express.Multer.File
 	): Promise<void> {
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
+	}
+
+	@Post(':courseId/stop-sync')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Stop the synchronization of a course with a group.' })
+	@ApiNoContentResponse({ description: 'The course was successfully disconnected from a group.' })
+	@ApiUnprocessableEntityResponse({ description: 'The course is not synchronized with a group.' })
+	public async stopSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise<void> {
+		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
+	}
+
+	@Get(':courseId/user-permissions')
+	@ApiOperation({ summary: 'Get permissions for a user in a course.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	@ApiUnprocessableEntityResponse({ description: 'Unsupported role.' })
+	@ApiCreatedResponse({
+		status: 200,
+		schema: { type: 'object', example: { userId: ['permission1', 'permission2'] } },
+	})
+	public async getUserPermissions(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise<{ [userId: string]: string[] }> {
+		const permissions = await this.courseUc.getUserPermissionByCourseId(currentUser.userId, params.courseId);
+
+		return {
+			[currentUser.userId]: permissions,
+		};
 	}
 }

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { MongoPatterns, Scope } from '@shared/repo';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 
 export class GroupScope extends Scope<GroupEntity> {
@@ -28,6 +28,14 @@ export class GroupScope extends Scope<GroupEntity> {
 	byUserId(id: EntityId | undefined): this {
 		if (id) {
 			this.addQuery({ users: { user: new ObjectId(id) } });
+		}
+		return this;
+	}
+
+	byNameQuery(nameQuery: string | undefined): this {
+		if (nameQuery) {
+			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+			this.addQuery({ name: new RegExp(escapedName, 'i') });
 		}
 		return this;
 	}

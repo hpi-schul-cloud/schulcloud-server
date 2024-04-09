@@ -6,7 +6,7 @@ import {
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column } from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -28,15 +28,16 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics: string[]
+		exportedTopics: string[],
+		exportedTasks: string[]
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, courseId, version, topics);
-		await this.addTasks(builder, courseId, userId, version);
+		await this.addLessons(builder, courseId, version, exportedTopics);
+		await this.addTasks(builder, courseId, userId, version, exportedTasks);
 		await this.addColumnBoards(builder, courseId);
 
 		return builder.build();
@@ -71,7 +72,8 @@ export class CommonCartridgeExportService {
 		builder: CommonCartridgeFileBuilder,
 		courseId: EntityId,
 		userId: EntityId,
-		version: CommonCartridgeVersion
+		version: CommonCartridgeVersion,
+		exportedTasks: string[]
 	): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 
@@ -85,6 +87,10 @@ export class CommonCartridgeExportService {
 		});
 
 		tasks.forEach((task) => {
+			if (!exportedTasks.includes(task.id)) {
+				return;
+			}
+
 			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 		});
 	}
@@ -98,10 +104,20 @@ export class CommonCartridgeExportService {
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard = await this.columnBoardService.findById(columnBoardId);
 
-			builder.addOrganization({
+			const organization = builder.addOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
+
+			columnBoard.children
+				.filter((child) => child instanceof Column)
+				.forEach((column) => {
+					const { id } = column;
+					organization.addSubOrganization({
+						title: (column as Column).title,
+						identifier: createIdentifier(id),
+					});
+				});
 		}
 	}
 

@@ -7,9 +7,17 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import { columnBoardFactory, courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import {
+	columnBoardFactory,
+	columnFactory,
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	taskFactory,
+} from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
+import { Column } from '@shared/domain/domainobject';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
@@ -25,7 +33,7 @@ describe('CommonCartridgeExportService', () => {
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
 	const getFileContent = (archive: AdmZip, filePath: string): string | undefined =>
 		archive.getEntry(filePath)?.getData().toString();
-	const setupParams = async (version: CommonCartridgeVersion, exportTopics: boolean) => {
+	const setupParams = async (version: CommonCartridgeVersion, exportTopics: boolean, exportTasks: boolean) => {
 		const course = courseFactory.teachersWithId(2).buildWithId();
 		const tasks = taskFactory.buildListWithId(2);
 		const lessons = lessonFactory.buildListWithId(1, {
@@ -63,7 +71,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const columnBoard = columnBoardFactory.build();
+		const columnBoard = columnBoardFactory.build({ children: [columnFactory.build()] });
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -73,7 +81,13 @@ describe('CommonCartridgeExportService', () => {
 		columnBoardServiceMock.findIdsByExternalReference.mockResolvedValue([faker.string.uuid()]);
 		columnBoardServiceMock.findById.mockResolvedValue(columnBoard);
 
-		const buffer = await sut.exportCourse(course.id, faker.string.uuid(), version, exportTopics ? [lesson.id] : []);
+		const buffer = await sut.exportCourse(
+			course.id,
+			faker.string.uuid(),
+			version,
+			exportTopics ? [lesson.id] : [],
+			exportTasks ? tasks.map((task) => task.id) : []
+		);
 		const archive = new AdmZip(buffer);
 
 		return { archive, course, lessons, tasks, taskFromLesson, columnBoard };
@@ -121,7 +135,7 @@ describe('CommonCartridgeExportService', () => {
 
 	describe('exportCourse', () => {
 		describe('when using version 1.1', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true);
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true);
 
 			it('should use schema version 1.1.0', async () => {
 				const { archive } = await setup();
@@ -167,10 +181,17 @@ describe('CommonCartridgeExportService', () => {
 
 				expect(manifest).toContain(createXmlString('title', columnBoard.title));
 			});
+
+			it('should add column', async () => {
+				const { archive, columnBoard } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', (columnBoard.children[0] as Column).title));
+			});
 		});
 
 		describe('when using version 1.3', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_3_0, true);
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_3_0, true, true);
 
 			it('should use schema version 1.3.0', async () => {
 				const { archive } = await setup();
@@ -219,13 +240,25 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('When topics array is empty', () => {
-			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false);
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false, true);
 
 			it("shouldn't add lessons", async () => {
 				const { archive, lessons } = await setup();
 
 				lessons.forEach((lesson) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
+				});
+			});
+		});
+
+		describe('When tasks array is empty', () => {
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true, false);
+
+			it("shouldn't add tasks", async () => {
+				const { archive, tasks } = await setup();
+
+				tasks.forEach((task) => {
+					expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(`<resource identifier="i${task.id}"`);
 				});
 			});
 		});

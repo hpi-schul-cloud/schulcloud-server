@@ -1,13 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import type { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { TestApiClient, UserAndAccountTestFactory, schoolEntityFactory } from '@shared/testing';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ServerTestModule } from '@src/modules/server';
-import type { Account, User } from '@shared/domain/entity';
 import { MeResponse } from '../dto';
 
-const mapToMeResponseObject = (user: User, account: Account): MeResponse => {
-	const permissions = user.resolvePermissions();
+const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: string[]): MeResponse => {
 	const roles = user.getRoles();
 	const role = roles[0];
 	const { school } = user;
@@ -74,25 +75,82 @@ describe('Me Controller (API)', () => {
 		});
 
 		describe('when valid jwt is passed', () => {
-			const setup = async () => {
-				const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent();
+			describe('when user is a student', () => {
+				const setup = async () => {
+					// The LERNSTORE_VIEW permission on the school is set here as an example. See the unit tests for all variations.
+					const school = schoolEntityFactory.build({ permissions: { student: { LERNSTORE_VIEW: true } } });
+					const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([account, user]);
-				em.clear();
+					await em.persistAndFlush([account, user]);
+					em.clear();
 
-				const loggedInClient = await testApiClient.login(account);
-				const expectedResponse = mapToMeResponseObject(user, account);
+					const loggedInClient = await testApiClient.login(account);
+					const expectedPermissions = user.resolvePermissions();
+					const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
-				return { loggedInClient, expectedResponse };
-			};
+					return { loggedInClient, expectedResponse };
+				};
 
-			it('should respond with "me" information and status code 200', async () => {
-				const { loggedInClient, expectedResponse } = await setup();
+				it('should respond with "me" information and status code 200', async () => {
+					const { loggedInClient, expectedResponse } = await setup();
 
-				const response = await loggedInClient.get();
+					const response = await loggedInClient.get();
 
-				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual(expectedResponse);
+					expect(response.statusCode).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual(expectedResponse);
+				});
+			});
+
+			describe('when user is a teacher', () => {
+				const setup = async () => {
+					const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
+
+					await em.persistAndFlush([account, user]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(account);
+					const expectedPermissions = user
+						.resolvePermissions()
+						// In this test the STUDENT_LIST permission is not set on the school and thus filtered out here.
+						// This is just an example. See the unit tests for all variations.
+						.filter((permission) => permission !== Permission.STUDENT_LIST);
+					const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
+
+					return { loggedInClient, expectedResponse };
+				};
+
+				it('should respond with "me" information and status code 200', async () => {
+					const { loggedInClient, expectedResponse } = await setup();
+
+					const response = await loggedInClient.get();
+
+					expect(response.statusCode).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual(expectedResponse);
+				});
+			});
+
+			describe('when user is an admin', () => {
+				const setup = async () => {
+					const { adminAccount: account, adminUser: user } = UserAndAccountTestFactory.buildAdmin();
+
+					await em.persistAndFlush([account, user]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(account);
+					const expectedPermissions = user.resolvePermissions();
+					const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
+
+					return { loggedInClient, expectedResponse };
+				};
+
+				it('should respond with "me" information and status code 200', async () => {
+					const { loggedInClient, expectedResponse } = await setup();
+
+					const response = await loggedInClient.get();
+
+					expect(response.statusCode).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual(expectedResponse);
+				});
 			});
 		});
 	});

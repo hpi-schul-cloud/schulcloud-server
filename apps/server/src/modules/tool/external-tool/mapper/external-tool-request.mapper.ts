@@ -20,12 +20,14 @@ import {
 	Oauth2ToolConfigCreateParams,
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
+	ExternalToolMediumParams,
 } from '../controller/dto';
 import { ExternalTool } from '../domain';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
 	ExternalToolCreate,
+	ExternalToolMediumDto,
 	ExternalToolUpdate,
 	Lti11ToolConfigCreate,
 	Lti11ToolConfigUpdate,
@@ -53,6 +55,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 	[CustomParameterTypeParams.AUTO_CONTEXTNAME]: CustomParameterType.AUTO_CONTEXTNAME,
 	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
 	[CustomParameterTypeParams.AUTO_SCHOOLNUMBER]: CustomParameterType.AUTO_SCHOOLNUMBER,
+	[CustomParameterTypeParams.AUTO_MEDIUMID]: CustomParameterType.AUTO_MEDIUMID,
 };
 
 @Injectable()
@@ -74,6 +77,7 @@ export class ExternalToolRequestMapper {
 		return {
 			id: externalToolUpdateParams.id,
 			name: externalToolUpdateParams.name,
+			description: externalToolUpdateParams.description,
 			url: externalToolUpdateParams.url,
 			logoUrl: externalToolUpdateParams.logoUrl,
 			config: mappedConfig,
@@ -83,6 +87,7 @@ export class ExternalToolRequestMapper {
 			openNewTab: externalToolUpdateParams.openNewTab,
 			version,
 			restrictToContexts: externalToolUpdateParams.restrictToContexts,
+			medium: this.mapRequestToExternalToolMedium(externalToolUpdateParams.medium),
 		};
 	}
 
@@ -111,7 +116,17 @@ export class ExternalToolRequestMapper {
 			openNewTab: externalToolCreateParams.openNewTab,
 			version,
 			restrictToContexts: externalToolCreateParams.restrictToContexts,
+			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
 		};
+	}
+
+	private mapRequestToExternalToolMedium(
+		externalToolMediumParams: ExternalToolMediumParams | undefined
+	): ExternalToolMediumDto | undefined {
+		if (!externalToolMediumParams) {
+			return undefined;
+		}
+		return { ...externalToolMediumParams };
 	}
 
 	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDto {

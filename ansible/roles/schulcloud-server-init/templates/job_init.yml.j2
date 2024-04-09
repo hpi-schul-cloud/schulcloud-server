@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: api-init
-        image: schulcloud/infra-tools:latest
+        image: quay.io/schulcloudverbund/infra-tools:latest
         envFrom:
         - configMapRef:
             name: api-configmap
@@ -29,7 +29,7 @@ spec:
         resources:
           limits:
             cpu: "3000m"
-            memory: "1Gi"
+            memory: "2Gi"
           requests:
             cpu: "100m"
             memory: "150Mi"

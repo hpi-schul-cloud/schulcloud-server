@@ -42,3 +42,5 @@ export class ContextExternalTool extends BaseDO implements ToolVersion {
 		return this.toolVersion;
 	}
 }
+
+export type ContextExternalToolWithId = ContextExternalTool & { id: string };

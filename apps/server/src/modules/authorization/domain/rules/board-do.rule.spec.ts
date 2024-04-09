@@ -1,4 +1,7 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import {
 	columnBoardFactory,
 	drawingElementFactory,
@@ -8,11 +11,8 @@ import {
 	submissionItemFactory,
 	userFactory,
 } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
-import { Permission } from '@shared/domain/interface';
-import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action } from '../type';
 import { BoardDoRule } from './board-do.rule';
 
 describe(BoardDoRule.name, () => {
@@ -62,7 +62,7 @@ describe(BoardDoRule.name, () => {
 
 			it('should return false', () => {
 				const { user } = setup();
-				// @ts-expect-error test wrong entity
+
 				const result = service.isApplicable(user, user);
 
 				expect(result).toStrictEqual(false);
