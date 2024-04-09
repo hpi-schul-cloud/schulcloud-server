@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
 import { ErrorUtils } from '../utils';
-import { DomainErrorHandler } from '../domain/domainErrorHandler';
+import { DomainErrorHandler } from '../domain';
 
 @Catch()
 export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {

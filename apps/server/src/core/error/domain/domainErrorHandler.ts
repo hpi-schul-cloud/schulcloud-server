@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import util from 'util';
-import { ErrorLogger, Loggable, LoggingUtils } from '../../logger';
+import { ErrorLogger, Loggable, LoggingUtils } from '../../logger'; // TODO: alias oder relativer Pfad zwischen den einzelnen Core Bereichen?
 import { ErrorLoggable } from '../loggable';
 
 @Injectable()
