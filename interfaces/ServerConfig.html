@@ -2085,7 +2085,7 @@ const config: ServerConfig &#x3D; {
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
 	// parse [&lt;description&gt;:]&lt;token&gt;,[&lt;description&gt;:]&lt;token&gt;... and  discard description
-	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD&#x27;) as number,
+	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD_MS&#x27;) as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((part) &#x3D;&gt; (part.split(&#x27;:&#x27;).pop() ?? &#x27;&#x27;).trim()),

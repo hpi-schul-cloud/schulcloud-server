@@ -3749,7 +3749,7 @@ This allows adding console commands to execute provider methods.</p>
 	STUDENT_TEAM_CREATION: Configuration.get(&#x27;STUDENT_TEAM_CREATION&#x27;) as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get(&#x27;SYNCHRONIZATION_CHUNK&#x27;) as number,
 	// parse [&lt;description&gt;:]&lt;token&gt;,[&lt;description&gt;:]&lt;token&gt;... and  discard description
-	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD&#x27;) as number,
+	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD_MS&#x27;) as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get(&#x27;ADMIN_API__ALLOWED_API_KEYS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((part) &#x3D;&gt; (part.split(&#x27;:&#x27;).pop() ?? &#x27;&#x27;).trim()),
@@ -4120,7 +4120,7 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
-	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD&#x27;) as number,
+	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get(&#x27;ADMIN_API__MODIFICATION_THRESHOLD_MS&#x27;) as number,
 }</code>
                     </td>
                 </tr>
@@ -4143,7 +4143,7 @@ must use</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>() &#x3D;&gt; {
 	const conf &#x3D; config();
-	conf.ADMIN_API__MODIFICATION_THRESHOLD &#x3D; 1000;
+	conf.ADMIN_API__MODIFICATION_THRESHOLD_MS &#x3D; 1000;
 	return conf;
 }</code>
                     </td>
