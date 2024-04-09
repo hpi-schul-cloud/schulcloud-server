@@ -86,7 +86,7 @@
 	},
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
-		"MODIFICATION_THRESHOLD": 60000
+		"MODIFICATION_THRESHOLD_MS": 60000
 	},
 	"EXIT_ON_ERROR": false,
 	"TEACHER_STUDENT_VISIBILITY": {
