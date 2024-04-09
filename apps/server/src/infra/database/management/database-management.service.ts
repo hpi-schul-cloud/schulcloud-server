@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Collection, Db } from 'mongodb';
+import { Collection, Db } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 
