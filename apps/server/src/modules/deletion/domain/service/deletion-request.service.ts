@@ -42,7 +42,7 @@ export class DeletionRequestService {
 	}
 
 	async findAllItemsToExecute(limit?: number): Promise<DeletionRequest[]> {
-		const threshold = this.configService.get<number>('ADMIN_API__MODIFICATION_THRESHOLD');
+		const threshold = this.configService.get<number>('ADMIN_API__MODIFICATION_THRESHOLD_MS');
 		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(threshold, limit);
 
 		return itemsToDelete;
