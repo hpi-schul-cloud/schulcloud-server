@@ -17,4 +17,5 @@ export const enum DomainName {
 	USER = 'user',
 	SUBMISSIONS = 'submissions',
 	NEWS = 'news',
+	CALENDAR = 'calendar',
 }
