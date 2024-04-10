@@ -1,3 +1,5 @@
+import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+
 export type CommonCartridgeFileParserOptions = {
 	maxSearchDepth: number;
 	pathSeparator: string;
@@ -8,19 +10,6 @@ export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
 	pathSeparator: '/',
 };
 
-export enum OrganizationType {
-	UNKNOWN = 'unknown',
-	TITLE = 'title',
-	WEB_LINK = 'weblink',
-}
-
-export enum ResourceType {
-	UNKNOWN = 'unknown',
-	TITLE = 'title',
-	WEB_CONTENT = 'webcontent',
-	WEB_LINK = 'weblink',
-}
-
 export type OrganizationProps = {
 	path: string;
 	pathDepth: number;
@@ -28,16 +17,19 @@ export type OrganizationProps = {
 	identifierRef?: string;
 	title: string;
 	isResource: boolean;
+	isInlined: boolean;
 	resourcePath: string;
 	resourceType: string;
 };
 
-export type TitleResourceProps = { type: ResourceType.TITLE; title: string };
+export type WebContentResourceProps = {
+	type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+	title: string;
+	html: string;
+};
 
-export type WebContentResourceProps = { type: ResourceType.WEB_CONTENT; title: string; html: string };
+export type WebLinkResourceProps = { type: CommonCartridgeResourceTypeV1P1.WEB_LINK; title: string; url: string };
 
-export type WebLinkResourceProps = { type: ResourceType.WEB_LINK; title: string; url: string };
+export type UnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
 
-export type UnknownResourceProps = { type: ResourceType.UNKNOWN };
-
-export type ResourceProps = TitleResourceProps | WebContentResourceProps | WebLinkResourceProps | UnknownResourceProps;
+export type ResourceProps = WebContentResourceProps | WebLinkResourceProps | UnknownResourceProps;

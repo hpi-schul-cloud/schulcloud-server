@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Column, ColumnBoard, ContentElementType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
-import { LinkContentBody } from '@src/modules/board/controller/dto';
 import {
 	CommonCartridgeFileParser,
 	DEFAULT_FILE_PARSER_OPTIONS,
 	OrganizationProps,
 } from '@src/modules/common-cartridge';
-import { ResourceType } from '@src/modules/common-cartridge/import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
 
@@ -28,7 +26,7 @@ export class CommonCartridgeImportService {
 			maxSearchDepth: 1,
 			pathSeparator: DEFAULT_FILE_PARSER_OPTIONS.pathSeparator,
 		});
-		const course = new Course({ teachers: [user], school: user.school, name: parser.manifest.getTitle() });
+		const course = new Course({ teachers: [user], school: user.school, name: parser.getTitle() });
 
 		await this.courseService.create(course);
 		await this.createColumnBoard(parser, course);
@@ -40,14 +38,14 @@ export class CommonCartridgeImportService {
 				type: BoardExternalReferenceType.Course,
 				id: course.id,
 			},
-			parser.manifest.getTitle()
+			parser.getTitle()
 		);
 
 		await this.createColumns(parser, columnBoard);
 	}
 
 	private async createColumns(parser: CommonCartridgeFileParser, columnBoard: ColumnBoard): Promise<void> {
-		const organizations = parser.manifest.getOrganizations();
+		const organizations = parser.getOrganizations();
 		const columns = organizations.filter((organization) => organization.pathDepth === 0);
 
 		for await (const column of columns) {
@@ -79,15 +77,13 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps));
 		const resource = parser.getResource(cardProps);
+		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
 
-		if (resource?.type === ResourceType.WEB_LINK) {
-			const linkElement = await this.contentElementService.create(card, ContentElementType.LINK);
-			const newLinkProps = new LinkContentBody();
+		if (resource && contentElementType) {
+			const contentElement = await this.contentElementService.create(card, contentElementType);
+			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
 
-			newLinkProps.title = resource.title;
-			newLinkProps.url = resource.url;
-
-			await this.contentElementService.update(linkElement, newLinkProps);
+			await this.contentElementService.update(contentElement, contentElementBody);
 		}
 	}
 }

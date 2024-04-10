@@ -1,12 +1,8 @@
 import AdmZip from 'adm-zip';
-import { JSDOM } from 'jsdom';
-import {
-	DEFAULT_FILE_PARSER_OPTIONS,
-	OrganizationProps,
-	ResourceProps,
-	ResourceType,
-} from './common-cartridge-import.types';
+import { DEFAULT_FILE_PARSER_OPTIONS, OrganizationProps, ResourceProps } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
+import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
+import { CommonCartridgeImportUtils } from './utils/common-cartridge-import-utils';
 import { CommonCartridgeManifestNotFoundException } from './utils/common-cartridge-manifest-not-found.exception';
 import { CommonCartridgeResourceNotFoundException } from './utils/common-cartridge-resource-not-found.exception';
 
@@ -15,32 +11,44 @@ export class CommonCartridgeFileParser {
 
 	private readonly archive: AdmZip;
 
+	private readonly resourceFactory: CommonCartridgeResourceFactory;
+
 	public constructor(file: Buffer, private readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
 		this.archive = new AdmZip(file);
 		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestFileAsString(), this.options);
+		this.resourceFactory = new CommonCartridgeResourceFactory(this.archive);
 	}
 
-	public get manifest(): CommonCartridgeManifestParser {
-		return this.manifestParser;
+	public getSchema(): string | undefined {
+		const schema = this.manifestParser.getSchema();
+
+		return schema;
 	}
 
-	public getResource(organization: OrganizationProps): ResourceProps | null {
+	public getVersion(): string | undefined {
+		const version = this.manifestParser.getVersion();
+
+		return version;
+	}
+
+	public getTitle(): string | undefined {
+		const title = this.manifestParser.getTitle();
+
+		return title;
+	}
+
+	public getOrganizations(): OrganizationProps[] {
+		const organizations = this.manifestParser.getOrganizations();
+
+		return organizations;
+	}
+
+	public getResource(organization: OrganizationProps): ResourceProps | undefined {
 		this.checkOrganization(organization);
 
-		if (organization.resourceType.startsWith('imswl_')) {
-			const resourceString = this.archive.readAsText(organization.resourcePath);
-			const resourceXml = new JSDOM(resourceString, { contentType: 'text/xml' }).window.document;
-			const title = resourceXml.querySelector('webLink > title')?.textContent || '';
-			const url = resourceXml.querySelector('webLink > url')?.getAttribute('href') || '';
+		const resource = this.resourceFactory.create(organization);
 
-			return {
-				type: ResourceType.WEB_LINK,
-				title,
-				url,
-			};
-		}
-
-		return null;
+		return resource;
 	}
 
 	public getResourceAsString(organization: OrganizationProps): string {
@@ -51,12 +59,11 @@ export class CommonCartridgeFileParser {
 		return resource;
 	}
 
-	private getManifestFileAsString(): string | never {
-		// imsmanifest.xml is the standard name, but manifest.xml is also valid until v1.3
-		const manifest = this.archive.getEntry('imsmanifest.xml') || this.archive.getEntry('manifest.xml');
+	private getManifestFileAsString(): string {
+		const manifest = CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
 
 		if (manifest) {
-			return this.archive.readAsText(manifest);
+			return manifest;
 		}
 
 		throw new CommonCartridgeManifestNotFoundException();

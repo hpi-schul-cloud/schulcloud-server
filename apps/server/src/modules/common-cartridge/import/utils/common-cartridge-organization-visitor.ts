@@ -81,6 +81,7 @@ export class CommonCartridgeOrganizationVisitor {
 		const isResource = identifierRef !== '';
 		const resourcePath = isResource ? this.getResourcePath(identifierRef) : '';
 		const resourceType = isResource ? this.getResourceType(identifierRef) : '';
+		const isInlined = isResource && !resourcePath;
 
 		return {
 			path: element.path,
@@ -89,6 +90,7 @@ export class CommonCartridgeOrganizationVisitor {
 			identifierRef,
 			title,
 			isResource,
+			isInlined,
 			resourcePath,
 			resourceType,
 		};

@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { CommonCartridgeImportUtils } from '@src/modules/common-cartridge';
 import AdmZip from 'adm-zip';
+import { JSDOM } from 'jsdom';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
@@ -11,7 +13,7 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 		this.checkValue(value);
 		this.checkSize(value);
 		this.checkFileType(value);
-		this.checkForManifestFile(new AdmZip(value.buffer));
+		this.checkManifestFile(new AdmZip(value.buffer));
 
 		return value;
 	}
@@ -30,18 +32,28 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 
 	private checkFileType(value: Express.Multer.File): void {
 		try {
+			const validateZipFile = () => new AdmZip(value.buffer);
+
 			// checks if the file is a valid zip file
-			// eslint-disable-next-line no-new
-			new AdmZip(value.buffer);
+			validateZipFile();
 		} catch (error) {
 			throw new BadRequestException(error);
 		}
 	}
 
-	private checkForManifestFile(archive: AdmZip): void {
-		const manifest = archive.getEntry('imsmanifest.xml') || archive.getEntry('manifest.xml');
+	private checkManifestFile(archive: AdmZip): void {
+		const manifest = CommonCartridgeImportUtils.getManifestFileAsString(archive);
 		if (!manifest) {
 			throw new BadRequestException('No manifest file found in the archive');
+		}
+
+		try {
+			const validateManifestXml = () => new JSDOM(archive.readAsText(manifest), { contentType: 'text/xml' });
+
+			// checks if the manifest file is a valid XML file
+			validateManifestXml();
+		} catch (error) {
+			throw new BadRequestException('Manifest file is not a valid XML file');
 		}
 	}
 }
