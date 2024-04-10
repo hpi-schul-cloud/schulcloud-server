@@ -2,11 +2,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { NotFoundError } from '@mikro-orm/core';
 import { RocketChatUserMapper } from './mapper';
 import { RocketChatUserEntity } from '../entity';
 import { RocketChatUserRepo } from './rocket-chat-user.repo';
-import { RocketChatUser } from '../domain';
 import { rocketChatUserEntityFactory } from '../entity/testing';
 
 describe(RocketChatUserRepo.name, () => {
@@ -76,7 +74,7 @@ describe(RocketChatUserRepo.name, () => {
 			it('should find the rocketChatUser', async () => {
 				const { entity, expectedRocketChatUser } = await setup();
 
-				const result: RocketChatUser = await repo.findByUserId(entity.userId.toHexString());
+				const result = await repo.findByUserId(entity.userId.toHexString());
 
 				// Verify explicit fields.
 				expect(result).toEqual(expect.objectContaining(expectedRocketChatUser));
@@ -85,16 +83,19 @@ describe(RocketChatUserRepo.name, () => {
 
 		describe('when rocketChatUser does not exist', () => {
 			const setup = () => {
-				const userId = new ObjectId().toHexString();
+				const userId = new ObjectId();
 
 				return {
 					userId,
 				};
 			};
 
-			it('should throw not found error', async () => {
+			it('should return null', async () => {
 				const { userId } = setup();
-				await expect(repo.findByUserId(userId)).rejects.toThrow(NotFoundError);
+
+				const result = await repo.findByUserId(userId.toHexString());
+
+				expect(result).toBeNull();
 			});
 		});
 	});
