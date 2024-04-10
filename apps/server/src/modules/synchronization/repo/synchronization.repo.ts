@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Synchronization } from '../domain';
+import { Synchronization } from '../domain/do';
 import { SynchronizationEntity } from './entity';
 import { SynchronizationMapper } from './mapper';
 
@@ -25,13 +25,16 @@ export class SynchronizationRepo {
 
 	async create(synchronizations: Synchronization): Promise<void> {
 		const synchronizationsEntity: SynchronizationEntity = SynchronizationMapper.mapToEntity(synchronizations);
-		this.em.persist(synchronizationsEntity);
-		await this.em.flush();
+
+		await this.em.persistAndFlush(synchronizationsEntity);
 	}
 
 	async update(synchronization: Synchronization): Promise<void> {
-		const synchronizationEntity = SynchronizationMapper.mapToEntity(synchronization);
-		const referencedEntity = this.em.getReference(SynchronizationEntity, synchronizationEntity.id);
+		const referencedEntity = this.em.getReference(SynchronizationEntity, synchronization.id);
+
+		referencedEntity.status = synchronization.status;
+		referencedEntity.count = synchronization.count;
+		referencedEntity.failureCause = synchronization.failureCause;
 
 		await this.em.persistAndFlush(referencedEntity);
 	}

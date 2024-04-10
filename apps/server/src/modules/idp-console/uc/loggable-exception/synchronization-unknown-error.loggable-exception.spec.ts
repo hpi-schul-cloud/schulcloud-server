@@ -4,7 +4,8 @@ import { SynchronizationUnknownErrorLoggableException } from './synchronization-
 describe(SynchronizationUnknownErrorLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const message = 'Unknonw error during synchronisation process for users provisioned by system';
+			const message =
+				'Unknown error occurred during synchronization process of users provisioned by an external system';
 			const systemId = new ObjectId().toHexString();
 
 			const exception = new SynchronizationUnknownErrorLoggableException(systemId);

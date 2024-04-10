@@ -45,8 +45,16 @@ describe(SynchronizationService.name, () => {
 
 	describe('createSynchronization', () => {
 		describe('when creating a synchronization', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+
+				return { systemId };
+			};
+
 			it('should call synchronizationRepo.create', async () => {
-				await service.createSynchronization();
+				const { systemId } = setup();
+
+				await service.createSynchronization(systemId);
 
 				expect(repo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
