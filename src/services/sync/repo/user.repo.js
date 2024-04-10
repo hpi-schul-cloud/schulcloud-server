@@ -74,7 +74,7 @@ const checkUpdate = async (email, userId) => {
 			{
 				userId,
 				existsInSchool: userExistsInSchool,
-				foundUserByMail,
+				foundUserByMail: foundUserByMail._id,
 			}
 		);
 	}
