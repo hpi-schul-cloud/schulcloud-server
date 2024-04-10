@@ -7,9 +7,17 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import { columnBoardFactory, courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import {
+	columnBoardFactory,
+	columnFactory,
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	taskFactory,
+} from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
+import { Column } from '@shared/domain/domainobject';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
@@ -63,7 +71,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const columnBoard = columnBoardFactory.build();
+		const columnBoard = columnBoardFactory.build({ children: [columnFactory.build()] });
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -172,6 +180,13 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', columnBoard.title));
+			});
+
+			it('should add column', async () => {
+				const { archive, columnBoard } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', (columnBoard.children[0] as Column).title));
 			});
 		});
 

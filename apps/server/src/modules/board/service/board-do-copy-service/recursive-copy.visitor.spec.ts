@@ -1,10 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LinkElement } from '@shared/domain/domainobject';
-import { linkElementFactory, setupEntities } from '@shared/testing';
-import { CopyFileDto } from '@src/modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LinkElement } from '@shared/domain/domainobject';
+import {
+	linkElementFactory,
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
+	setupEntities,
+} from '@shared/testing';
+import { CopyFileDto } from '@src/modules/files-storage-client/dto';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../../copy-helper';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 import { SchoolSpecificFileCopyServiceFactory } from './school-specific-file-copy-service.factory';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
@@ -120,6 +127,48 @@ describe(RecursiveCopyVisitor.name, () => {
 				const copy = visitor.copyMap.get(linkElement.id) as LinkElement;
 
 				expect(copy.imageUrl).toEqual('');
+			});
+		});
+	});
+
+	describe('when copying a media board', () => {
+		const setup = () => {
+			const element = mediaExternalToolElementFactory.build();
+			const line = mediaLineFactory.build({ children: [element] });
+			const board = mediaBoardFactory.build({ children: [line] });
+
+			const visitor = new RecursiveCopyVisitor(
+				createMock<SchoolSpecificFileCopyService>(),
+				contextExternalToolService,
+				toolFeatures
+			);
+
+			return {
+				board,
+				visitor,
+			};
+		};
+
+		it('should fail', async () => {
+			const { visitor, board } = setup();
+
+			await visitor.visitMediaBoardAsync(board);
+
+			expect(visitor.resultMap.get(board.id)).toEqual<CopyStatus>({
+				type: CopyElementType.MEDIA_BOARD,
+				status: CopyStatusEnum.NOT_DOING,
+				elements: [
+					{
+						type: CopyElementType.MEDIA_LINE,
+						status: CopyStatusEnum.NOT_DOING,
+						elements: [
+							{
+								type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
+								status: CopyStatusEnum.NOT_DOING,
+							},
+						],
+					},
+				],
 			});
 		});
 	});

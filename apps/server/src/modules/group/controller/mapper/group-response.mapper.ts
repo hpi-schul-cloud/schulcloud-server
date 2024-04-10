@@ -5,6 +5,8 @@ import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
+	GroupListResponse,
+	GroupPaginationParams,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
@@ -79,5 +81,20 @@ export class GroupResponseMapper {
 		});
 
 		return mapped;
+	}
+
+	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>, pagination: GroupPaginationParams): GroupListResponse {
+		const groupResponseData: GroupResponse[] = groups.data.map(
+			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
+		);
+
+		const response: GroupListResponse = new GroupListResponse(
+			groupResponseData,
+			groups.total,
+			pagination.skip,
+			pagination.limit
+		);
+
+		return response;
 	}
 }

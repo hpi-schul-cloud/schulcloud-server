@@ -1,7 +1,8 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardDo } from './any-board-do';
 import { ColumnBoard } from '../column-board.do';
+import { MediaBoard } from '../media-board';
+import { AnyBoardDo } from './any-board-do';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -19,7 +20,7 @@ export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserWithBoardRoles[];
 	boardDo: AnyBoardDo;
-	rootDo: ColumnBoard;
+	rootDo: ColumnBoard | MediaBoard;
 	parentDo?: AnyBoardDo;
 }
 
@@ -44,7 +45,7 @@ export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> 
 		this.props.parentDo = value;
 	}
 
-	get rootDo(): ColumnBoard {
+	get rootDo(): ColumnBoard | MediaBoard {
 		return this.props.rootDo;
 	}
 }
