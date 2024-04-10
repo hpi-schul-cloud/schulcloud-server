@@ -13,7 +13,8 @@ export class SynchronizationUnknownErrorLoggableException extends InternalServer
 			stack: this.stack,
 			data: {
 				systemId: this.systemId,
-				errorMessage: 'Unknonw error during synchronisation process for users provisioned by system',
+				errorMessage:
+					'Unknown error occurred during synchronization process of users provisioned by an external system',
 			},
 		};
 
