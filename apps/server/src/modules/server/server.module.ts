@@ -36,9 +36,10 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { CollaborativeTextEditorApiModule } from '../collaborative-text-editor/collaborative-text-editor-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -92,6 +93,7 @@ const serverModules = [
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	CollaborativeTextEditorApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
