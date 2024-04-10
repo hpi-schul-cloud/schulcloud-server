@@ -4,23 +4,23 @@ import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
+import type { MediaBoardConfig } from '@modules/board/media-board.config';
+import { DeletionConfig } from '@modules/deletion';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
+import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
+import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { DeletionConfig } from '@modules/deletion';
-import type { MediaBoardConfig } from '@modules/board/media-board.config';
-import { ProvisioningConfig } from '@modules/provisioning';
 import { SynchronizationConfig } from '../synchronization';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
@@ -75,6 +75,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_LOGIN_LINK_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
@@ -121,6 +122,9 @@ const config: ServerConfig = {
 	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED') as boolean,
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
+		'FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED'
+	) as boolean,
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: Configuration.get(
 		'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED'
 	) as boolean,

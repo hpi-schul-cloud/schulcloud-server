@@ -1121,6 +1121,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable collaborative text editor in column board."
+		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1350,7 +1355,6 @@
 					"type": "number",
 					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
-
 			},
 			"default": {
 				"ENABLED": true,
