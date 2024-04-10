@@ -6,8 +6,8 @@ metadata:
   labels:
     app: api-admin
 data:
-  NODE_OPTIONS: "--max-old-space-size=3072"
-  NEST_LOG_LEVEL: "info"
+  NEST_LOG_LEVEL: {{NEST_LOG_LEVEL}}
+  EXIT_ON_ERROR: {{EXIT_ON_ERROR}}
   ADMIN_API__PORT: "4030"
   SC_DOMAIN: "{{ DOMAIN }}"
   FEATURE_PROMETHEUS_METRICS_ENABLED: "true"
