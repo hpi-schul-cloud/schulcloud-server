@@ -4,6 +4,7 @@ import {
 	AnyBoardDo,
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	BoardLayout,
 } from '@shared/domain/domainobject/board/types';
 import { LearnroomElement } from '../../interface';
 import { BoardNode } from './boardnode.entity';
@@ -38,6 +39,9 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 			id: this._contextId.toHexString(),
 		};
 	}
+
+	@Property({ nullable: true })
+	layout?: BoardLayout;
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
 		const domainObject = builder.buildColumnBoard(this);

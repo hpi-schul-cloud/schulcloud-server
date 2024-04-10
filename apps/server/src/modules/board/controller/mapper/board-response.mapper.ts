@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Column, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardLayout, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
 
@@ -20,6 +20,7 @@ export class BoardResponseMapper {
 			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
 			isVisible: board.isVisible,
+			layout: BoardLayout.COLUMNS, // TODO map from domain object
 		});
 		return result;
 	}
