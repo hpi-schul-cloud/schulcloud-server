@@ -91,6 +91,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.DRAWING_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 			BoardNodeType.EXTERNAL_TOOL,
+			BoardNodeType.COLLABORATIVE_TEXT_EDITOR,
 		]);
 
 		const elements = this.buildChildren<
