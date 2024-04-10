@@ -1,36 +1,28 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { ConfigModule } from '@nestjs/config';
 import { ConsoleModule } from 'nestjs-console';
-import { ConsoleWriterModule } from '@infra/console';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
-import { CqrsModule } from '@nestjs/cqrs';
+import { ConfigModule } from '@nestjs/config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { HttpModule } from '@nestjs/axios';
+import { ConsoleWriterModule } from '@infra/console';
+import { UserModule } from '@modules/user';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { RoleRepo, UserRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { LoggerModule } from '@src/core/logger';
-import { UserService } from '@modules/user';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { defaultMikroOrmOptions } from '@modules/server';
 import { AccountModule } from '@modules/account';
-import { RoleService } from '@modules/role';
-import { RegistrationPinService } from '@modules/registration-pin';
-import { DeletionClient } from './deletion-client';
 import { getDeletionClientConfig } from './deletion-client/deletion-client.config';
-import { DeletionQueueConsole } from './deletion-queue.console';
-import { DeletionExecutionConsole } from './deletion-execution.console';
-import { BatchDeletionService } from './services';
-import { BatchDeletionUc, DeletionExecutionUc } from './uc';
-import { defaultMikroOrmOptions } from '../server';
 import { FileEntity } from '../files/entity';
-import { RegistrationPinRepo } from '../registration-pin/repo';
+import { DeletionClient } from './deletion-client';
+import { DeletionQueueConsole } from './deletion-queue.console';
+import { BatchDeletionUc, DeletionExecutionUc } from './uc';
+import { BatchDeletionService } from './services';
+import { DeletionExecutionConsole } from './deletion-execution.console';
 
 @Module({
 	imports: [
 		ConsoleModule,
 		ConsoleWriterModule,
-		HttpModule,
+		UserModule,
 		ConfigModule.forRoot(createConfigModuleOptions(getDeletionClientConfig)),
-		AccountModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -41,23 +33,16 @@ import { RegistrationPinRepo } from '../registration-pin/repo';
 			entities: [...ALL_ENTITIES, FileEntity],
 			debug: true,
 		}),
-		LoggerModule,
-		CqrsModule,
+		AccountModule,
+		HttpModule,
 	],
 	providers: [
 		DeletionClient,
-		BatchDeletionService,
-		BatchDeletionUc,
-		DeletionExecutionUc,
 		DeletionQueueConsole,
+		BatchDeletionUc,
+		BatchDeletionService,
 		DeletionExecutionConsole,
-		UserService,
-		UserRepo,
-		UserDORepo,
-		RoleService,
-		RegistrationPinService,
-		RoleRepo,
-		RegistrationPinRepo,
+		DeletionExecutionUc,
 	],
 })
 export class DeletionConsoleModule {}
