@@ -36,8 +36,8 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findByUserId(userId: EntityId): Promise<RocketChatUser[]> {
-		const user: RocketChatUser[] = await this.rocketChatUserRepo.findByUserId(userId);
+	public async findByUserId(userId: EntityId): Promise<RocketChatUser> {
+		const user: RocketChatUser = await this.rocketChatUserRepo.findByUserId(userId);
 
 		return user;
 	}
@@ -53,19 +53,19 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		);
 		const rocketChatUser = await this.rocketChatUserRepo.findByUserId(userId);
 
-		if (rocketChatUser.length > 0) {
+		if (rocketChatUser) {
 			try {
 				const [, rocketChatUserDeleted] = await Promise.all([
-					this.rocketChatService.deleteUser(rocketChatUser[0].username),
-					this.rocketChatUserRepo.deleteByUserId(rocketChatUser[0].userId),
+					this.rocketChatService.deleteUser(rocketChatUser.username),
+					this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId),
 				]);
 
 				const result = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
-					[DomainOperationReportBuilder.build(OperationType.DELETE, rocketChatUserDeleted, [rocketChatUser[0].id])],
+					[DomainOperationReportBuilder.build(OperationType.DELETE, rocketChatUserDeleted, [rocketChatUser.id])],
 					[
 						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-							DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser[0].username]),
+							DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser.username]),
 						]),
 					]
 				);

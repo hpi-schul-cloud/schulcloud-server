@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
+import { NotFoundError } from '@mikro-orm/core';
 import { RocketChatUserMapper } from './mapper';
 import { RocketChatUserEntity } from '../entity';
 import { RocketChatUserRepo } from './rocket-chat-user.repo';
@@ -75,10 +76,25 @@ describe(RocketChatUserRepo.name, () => {
 			it('should find the rocketChatUser', async () => {
 				const { entity, expectedRocketChatUser } = await setup();
 
-				const result: RocketChatUser[] = await repo.findByUserId(entity.userId.toHexString());
+				const result: RocketChatUser = await repo.findByUserId(entity.userId.toHexString());
 
 				// Verify explicit fields.
-				expect(result[0]).toEqual(expect.objectContaining(expectedRocketChatUser));
+				expect(result).toEqual(expect.objectContaining(expectedRocketChatUser));
+			});
+		});
+
+		describe('when rocketChatUser does not exist', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				return {
+					userId,
+				};
+			};
+
+			it('should throw not found error', async () => {
+				const { userId } = setup();
+				await expect(repo.findByUserId(userId)).rejects.toThrow(NotFoundError);
 			});
 		});
 	});
