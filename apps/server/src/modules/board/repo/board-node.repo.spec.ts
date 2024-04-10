@@ -1,7 +1,7 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode } from '@shared/domain/entity';
+import { ColumnBoardNode } from '@modules/board/repo/entity';
 import {
 	cardNodeFactory,
 	cleanupCollections,

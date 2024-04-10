@@ -3,7 +3,8 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { LegacyBoard, ColumnBoardNode } from '@shared/domain/entity';
+import { LegacyBoard } from '@shared/domain/entity';
+import { ColumnBoardNode } from '@modules/board/repo/entity/column-board-node.entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports

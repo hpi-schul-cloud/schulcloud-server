@@ -1,6 +1,6 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
-import type { AnyBoardDo, MediaExternalToolElement } from '../../../domainobject';
+import type { AnyBoardDo, MediaExternalToolElement } from '@shared/domain/domainobject';
 import { BoardNode, type BoardNodeProps } from '../boardnode.entity';
 import { type BoardDoBuilder, BoardNodeType } from '../types';
 

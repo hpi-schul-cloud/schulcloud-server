@@ -4,7 +4,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
 import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
+import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@modules/board/repo/entity';
 import { InputFormat } from '@shared/domain/types';
 import {
 	cardNodeFactory,

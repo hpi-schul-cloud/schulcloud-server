@@ -8,7 +8,6 @@ import { ColumnBoard } from '@shared/domain/domainobject';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
 	ColumnboardBoardElement,
-	ColumnBoardNode,
 	Course,
 	LegacyBoard,
 	LegacyBoardElement,
@@ -21,6 +20,7 @@ import {
 	isLesson,
 	isTask,
 } from '@shared/domain/entity';
+import { ColumnBoardNode } from '@modules/board/repo/entity/column-board-node.entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';

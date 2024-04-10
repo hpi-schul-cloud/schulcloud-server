@@ -12,7 +12,7 @@ import type {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '../../../domainobject';
+} from '../../../../../shared/domain/domainobject';
 import type { CardNode } from '../card-node.entity';
 import type { ColumnBoardNode } from '../column-board-node.entity';
 import type { ColumnNode } from '../column-node.entity';

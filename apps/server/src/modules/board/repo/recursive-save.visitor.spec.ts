@@ -16,7 +16,7 @@ import {
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
-} from '@shared/domain/entity';
+} from '@modules/board/repo/entity';
 import {
 	cardFactory,
 	columnBoardFactory,

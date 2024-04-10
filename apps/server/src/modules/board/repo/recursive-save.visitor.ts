@@ -33,7 +33,7 @@ import {
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
-} from '@shared/domain/entity';
+} from '@modules/board/repo/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { BoardNodeRepo } from './board-node.repo';

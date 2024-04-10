@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import { DrawingElementNode, RichTextElementNode } from '@shared/domain/entity';
+import { DrawingElementNode, RichTextElementNode } from '@modules/board/repo/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,

@@ -3,7 +3,7 @@ import { type ServerConfig, serverConfig, ServerTestModule } from '@modules/serv
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { BoardNode } from '@shared/domain/entity';
+import { BoardNode } from '@modules/board/repo/entity';
 import { mediaBoardNodeFactory, mediaLineNodeFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
 

@@ -5,7 +5,7 @@ import {
 	MediaExternalToolElement,
 	MediaLine,
 } from '@shared/domain/domainobject';
-import { BoardNodeType } from '@shared/domain/entity';
+import { BoardNodeType } from '@modules/board/repo/entity';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,

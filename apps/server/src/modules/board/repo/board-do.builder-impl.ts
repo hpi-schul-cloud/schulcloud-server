@@ -32,7 +32,7 @@ import {
 	type RichTextElementNode,
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
-} from '@shared/domain/entity';
+} from './entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};

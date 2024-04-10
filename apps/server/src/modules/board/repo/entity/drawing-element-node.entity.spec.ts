@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 import { drawingElementFactory } from '@shared/testing/factory/domainobject/board/drawing-element.do.factory';
+import { DrawingElementNode } from './drawing-element-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 describe(DrawingElementNode.name, () => {

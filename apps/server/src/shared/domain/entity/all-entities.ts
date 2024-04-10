@@ -12,6 +12,7 @@ import { AccountEntity } from '@modules/account/entity/account.entity';
 import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
+// TODO should this be removed?
 import {
 	BoardNode,
 	CardNode,
@@ -27,7 +28,8 @@ import {
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
-} from './boardnode';
+} from '@modules/board/repo/entity';
+
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';

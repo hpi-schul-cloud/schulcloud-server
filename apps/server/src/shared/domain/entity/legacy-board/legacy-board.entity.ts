@@ -1,5 +1,6 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ColumnBoardNode } from '@modules/board/repo/entity/column-board-node.entity';
 import { LearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
@@ -10,7 +11,6 @@ import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boarde
 import { ColumnboardBoardElement } from './column-board-boardelement';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
-import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];

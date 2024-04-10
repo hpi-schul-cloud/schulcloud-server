@@ -22,7 +22,7 @@ import {
 	ColumnBoardNode,
 	ExternalToolElementNodeEntity,
 	RichTextElementNode,
-} from '@shared/domain/entity';
+} from '@modules/board/repo/entity';
 import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,

@@ -21,7 +21,7 @@ import type {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { BoardNode } from '@shared/domain/entity';
+import { BoardNode } from '@modules/board/repo/entity';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

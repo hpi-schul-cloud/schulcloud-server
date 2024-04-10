@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { ColumnBoardNode } from '@shared/domain/entity';
+import { ColumnBoardNode } from '@modules/board/repo/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,

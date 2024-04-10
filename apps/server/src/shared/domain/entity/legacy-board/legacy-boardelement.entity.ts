@@ -1,9 +1,9 @@
 import { Entity, Enum } from '@mikro-orm/core';
+import { ColumnBoardNode } from '@modules/board/repo/entity/column-board-node.entity';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 export type LegacyBoardElementReference = Task | LessonEntity | ColumnBoardNode;
 

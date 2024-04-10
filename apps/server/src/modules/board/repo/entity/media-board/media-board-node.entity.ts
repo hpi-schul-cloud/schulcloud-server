@@ -5,7 +5,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	type MediaBoard,
-} from '../../../domainobject';
+} from '@shared/domain/domainobject';
 import { BoardNode } from '../boardnode.entity';
 import { type RootBoardNodeProps } from '../root-board-node.entity';
 import { type BoardDoBuilder, BoardNodeType } from '../types';

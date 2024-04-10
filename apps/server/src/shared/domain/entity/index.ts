@@ -1,6 +1,7 @@
 export * from './all-entities';
 export * from './base.entity';
-export * from './boardnode';
+// TDOD should be removed?
+export * from '@modules/board/repo/entity';
 export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './dashboard.entity';

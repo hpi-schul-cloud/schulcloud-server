@@ -5,7 +5,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 } from '@shared/domain/domainobject/board/types';
-import { LearnroomElement } from '../../interface';
+import { LearnroomElement } from '@shared/domain/interface';
 import { BoardNode } from './boardnode.entity';
 import { type RootBoardNodeProps } from './root-board-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
