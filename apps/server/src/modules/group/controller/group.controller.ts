@@ -1,7 +1,9 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
+import { IFindQuery } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
@@ -11,7 +13,9 @@ import {
 	ClassInfoSearchListResponse,
 	ClassSortParams,
 	GroupIdParams,
+	GroupListResponse,
 	GroupPaginationParams,
+	GroupParams,
 	GroupResponse,
 } from './dto';
 import { GroupResponseMapper } from './mapper';
@@ -66,6 +70,30 @@ export class GroupController {
 		const group: ResolvedGroupDto = await this.groupUc.getGroup(currentUser.userId, params.groupId);
 
 		const response: GroupResponse = GroupResponseMapper.mapToGroupResponse(group);
+
+		return response;
+	}
+
+	@Get()
+	@ApiOperation({ summary: 'Get a list of all groups.' })
+	@ApiResponse({ status: HttpStatus.OK, type: GroupListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getAllGroups(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() pagination: GroupPaginationParams,
+		@Query() params: GroupParams
+	): Promise<GroupListResponse> {
+		const query: IFindQuery = { pagination, nameQuery: params.nameQuery };
+		const groups: Page<ResolvedGroupDto> = await this.groupUc.getAllGroups(
+			currentUser.userId,
+			currentUser.schoolId,
+			query,
+			params.availableGroupsForCourseSync
+		);
+		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;
 	}

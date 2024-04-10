@@ -6,6 +6,9 @@ import type {
 	ExternalToolElement,
 	FileElement,
 	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -17,6 +20,7 @@ import type { DrawingElementNode } from '../drawing-element-node.entity';
 import type { ExternalToolElementNodeEntity } from '../external-tool-element-node.entity';
 import type { FileElementNode } from '../file-element-node.entity';
 import type { LinkElementNode } from '../link-element-node.entity';
+import type { MediaBoardNode, MediaExternalToolElementNode, MediaLineNode } from '../media-board';
 import type { RichTextElementNode } from '../rich-text-element-node.entity';
 import type { SubmissionContainerElementNode } from '../submission-container-element-node.entity';
 import type { SubmissionItemNode } from '../submission-item-node.entity';
@@ -32,4 +36,8 @@ export interface BoardDoBuilder {
 	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
 	buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem;
 	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement;
+
+	buildMediaBoard(boardNode: MediaBoardNode): MediaBoard;
+	buildMediaLine(boardNode: MediaLineNode): MediaLine;
+	buildMediaExternalToolElement(boardNode: MediaExternalToolElementNode): MediaExternalToolElement;
 }

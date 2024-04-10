@@ -6,6 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
+	MediaBoard,
 	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
@@ -36,6 +37,13 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		if (rootDo.context?.type === BoardExternalReferenceType.Course) {
 			const course = await this.courseRepo.findById(rootDo.context.id);
 			users = this.mapCourseUsersToUserBoardRoles(course);
+		} else if (rootDo.context?.type === BoardExternalReferenceType.User) {
+			users = [
+				{
+					userId: rootDo.context.id,
+					roles: [BoardRoles.EDITOR],
+				},
+			];
 		}
 
 		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, rootDo, parentDo });
@@ -80,14 +88,15 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	}
 
 	// TODO there is a similar method in board-do.service.ts
-	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard | MediaBoard> {
 		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
 		const ids = [...ancestorIds, boardDo.id];
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
 
-		if (!(rootBoardDo instanceof ColumnBoard)) {
-			throw new Error('root boardnode was expected to be a ColumnBoard');
+		// TODO Use an abstract base class for root nodes. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+		if (!(rootBoardDo instanceof ColumnBoard || rootBoardDo instanceof MediaBoard)) {
+			throw new Error('root boardnode was expected to be a ColumnBoard or MediaBoard');
 		}
 
 		return rootBoardDo;

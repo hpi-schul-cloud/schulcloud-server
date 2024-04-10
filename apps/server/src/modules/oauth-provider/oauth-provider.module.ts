@@ -3,7 +3,7 @@ import { LtiToolModule } from '@modules/lti-tool';
 import { PseudonymModule } from '@modules/pseudonym';
 import { ToolModule } from '@modules/tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { TeamsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';

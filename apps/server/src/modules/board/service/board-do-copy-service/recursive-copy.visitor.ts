@@ -1,4 +1,5 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -12,13 +13,15 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
@@ -281,7 +284,36 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitChildrenOf(boardDo: AnyBoardDo) {
+	async visitMediaBoardAsync(original: MediaBoard): Promise<void> {
+		await this.visitChildrenOf(original);
+
+		this.resultMap.set(original.id, {
+			type: CopyElementType.MEDIA_BOARD,
+			status: CopyStatusEnum.NOT_DOING,
+			elements: this.getCopyStatusesForChildrenOf(original),
+		});
+	}
+
+	async visitMediaLineAsync(original: MediaLine): Promise<void> {
+		await this.visitChildrenOf(original);
+
+		this.resultMap.set(original.id, {
+			type: CopyElementType.MEDIA_LINE,
+			status: CopyStatusEnum.NOT_DOING,
+			elements: this.getCopyStatusesForChildrenOf(original),
+		});
+	}
+
+	visitMediaExternalToolElementAsync(original: MediaExternalToolElement): Promise<void> {
+		this.resultMap.set(original.id, {
+			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
+			status: CopyStatusEnum.NOT_DOING,
+		});
+
+		return Promise.resolve();
+	}
+
+	async visitChildrenOf(boardDo: AnyBoardDo): Promise<PromiseSettledResult<void>[]> {
 		return Promise.allSettled(boardDo.children.map((child) => child.acceptAsync(this)));
 	}
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AccountService } from '@src/modules/account';
+import { AccountService, AccountSave } from '@modules/account';
 import { RoleService } from '@src/modules/role';
 import { nanoid } from 'nanoid';
 import { UserService } from '../service';
@@ -34,7 +34,7 @@ export class AdminApiUserUc {
 			username: props.email,
 			userId: user.id,
 			password: initialPassword,
-		});
+		} as AccountSave);
 		return {
 			userId: user.id,
 			accountId: account.id,

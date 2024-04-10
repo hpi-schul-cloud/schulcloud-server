@@ -5,6 +5,7 @@ import { SynchronizationStatusModel } from '../../domain/types';
 
 export interface SynchronizationEntityProps {
 	id?: EntityId;
+	systemId?: string;
 	count?: number;
 	failureCause?: string;
 	status?: SynchronizationStatusModel;
@@ -14,6 +15,9 @@ export interface SynchronizationEntityProps {
 
 @Entity({ tableName: 'synchronizations' })
 export class SynchronizationEntity extends BaseEntityWithTimestamps {
+	@Property({ nullable: true })
+	systemId?: string;
+
 	@Property({ nullable: true })
 	count?: number;
 
@@ -25,8 +29,13 @@ export class SynchronizationEntity extends BaseEntityWithTimestamps {
 
 	constructor(props: SynchronizationEntityProps) {
 		super();
+
 		if (props.id !== undefined) {
 			this.id = props.id;
+		}
+
+		if (props.systemId !== undefined) {
+			this.systemId = props.systemId;
 		}
 
 		if (props.count !== undefined) {

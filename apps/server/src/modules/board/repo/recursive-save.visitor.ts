@@ -1,33 +1,39 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
-import {
+import type {
 	AnyBoardDo,
 	BoardCompositeVisitor,
 	Card,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import {
 	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
+	MediaBoardNode,
+	MediaExternalToolElementNode,
+	MediaLineNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain/entity';
-import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
-import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
 import { EntityId } from '@shared/domain/types';
 
 import { BoardNodeRepo } from './board-node.repo';
@@ -225,5 +231,44 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		} else {
 			this.em.persist(boardNode);
 		}
+	}
+
+	visitMediaBoard(mediaBoard: MediaBoard): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(mediaBoard.id);
+
+		const boardNode: MediaBoardNode = new MediaBoardNode({
+			id: mediaBoard.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			context: mediaBoard.context,
+		});
+
+		this.saveRecursive(boardNode, mediaBoard);
+	}
+
+	visitMediaLine(mediaLine: MediaLine): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(mediaLine.id);
+
+		const boardNode: MediaLineNode = new MediaLineNode({
+			id: mediaLine.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			title: mediaLine.title,
+		});
+
+		this.saveRecursive(boardNode, mediaLine);
+	}
+
+	visitMediaExternalToolElement(mediaElement: MediaExternalToolElement): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(mediaElement.id);
+
+		const boardNode: MediaExternalToolElementNode = new MediaExternalToolElementNode({
+			id: mediaElement.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			contextExternalTool: this.em.getReference(ContextExternalToolEntity, mediaElement.contextExternalToolId),
+		});
+
+		this.saveRecursive(boardNode, mediaElement);
 	}
 }
