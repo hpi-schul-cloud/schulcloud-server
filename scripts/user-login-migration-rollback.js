@@ -8,7 +8,7 @@ program
 	.requiredOption('-s, --schoolId <value>', 'The schoolId of the migrated school, that should be roll-backed.')
 	.addHelpText(
 		'after',
-		'This script rolls back all user-login-migrations of one school. It needs the values of the MongoDB url and the Object Id of the school. The call should look like:\n' +
+		'This script rolls back the user parts of all user-login-migrations of one school. It needs the values of the MongoDB url and the Object Id of the school. The call should look like:\n' +
 			"node .\\scripts\\user-login-migration-rollback.js -s '5f2987e020834114b8efd6f8' -u 'mongodb://localhost:27018/scapp?directConnection=true'"
 	);
 program.parse();
