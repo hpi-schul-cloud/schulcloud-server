@@ -235,7 +235,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createSynchronization()</code>
+                    <code>createSynchronization(systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -251,10 +251,40 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId&gt;</a></code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -281,8 +311,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/domain/service/synchronization.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/synchronization/domain/service/synchronization.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -350,8 +380,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/domain/service/synchronization.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/synchronization/domain/service/synchronization.service.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -406,7 +436,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { Synchronization } from &#x27;..&#x27;;
+import { Synchronization } from &#x27;../do&#x27;;
 import { SynchronizationRepo } from &#x27;../../repo&#x27;;
 import { SynchronizationStatusModel } from &#x27;../types&#x27;;
 
@@ -414,9 +444,10 @@ import { SynchronizationStatusModel } from &#x27;../types&#x27;;
 export class SynchronizationService {
 	constructor(private readonly synchronizationRepo: SynchronizationRepo) {}
 
-	async createSynchronization(): Promise&lt;EntityId&gt; {
+	async createSynchronization(systemId: string): Promise&lt;EntityId&gt; {
 		const newSynchronization &#x3D; new Synchronization({
 			id: new ObjectId().toHexString(),
+			systemId,
 			status: SynchronizationStatusModel.REGISTERED,
 		});
 

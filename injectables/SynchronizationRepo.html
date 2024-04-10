@@ -477,7 +477,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { Synchronization } from &#x27;../domain&#x27;;
+import { Synchronization } from &#x27;../domain/do&#x27;;
 import { SynchronizationEntity } from &#x27;./entity&#x27;;
 import { SynchronizationMapper } from &#x27;./mapper&#x27;;
 
@@ -501,13 +501,16 @@ export class SynchronizationRepo {
 
 	async create(synchronizations: Synchronization): Promise&lt;void&gt; {
 		const synchronizationsEntity: SynchronizationEntity &#x3D; SynchronizationMapper.mapToEntity(synchronizations);
-		this.em.persist(synchronizationsEntity);
-		await this.em.flush();
+
+		await this.em.persistAndFlush(synchronizationsEntity);
 	}
 
 	async update(synchronization: Synchronization): Promise&lt;void&gt; {
-		const synchronizationEntity &#x3D; SynchronizationMapper.mapToEntity(synchronization);
-		const referencedEntity &#x3D; this.em.getReference(SynchronizationEntity, synchronizationEntity.id);
+		const referencedEntity &#x3D; this.em.getReference(SynchronizationEntity, synchronization.id);
+
+		referencedEntity.status &#x3D; synchronization.status;
+		referencedEntity.count &#x3D; synchronization.count;
+		referencedEntity.failureCause &#x3D; synchronization.failureCause;
 
 		await this.em.persistAndFlush(referencedEntity);
 	}

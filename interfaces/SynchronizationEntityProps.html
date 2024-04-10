@@ -184,6 +184,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#systemId" 
+>
+                                            systemId
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#updatedAt" 
 >
                                             updatedAt
@@ -394,6 +401,44 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="systemId"></a>
+                                        <span class="name "><b>systemId</b>
+                                            <a href="#systemId">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>systemId:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="updatedAt"></a>
                                         <span class="name "><b>updatedAt</b>
                                             <a href="#updatedAt">
@@ -440,6 +485,7 @@ import { SynchronizationStatusModel } from &#x27;../../domain/types&#x27;;
 
 export interface SynchronizationEntityProps {
 	id?: EntityId;
+	systemId?: string;
 	count?: number;
 	failureCause?: string;
 	status?: SynchronizationStatusModel;
@@ -449,6 +495,9 @@ export interface SynchronizationEntityProps {
 
 @Entity({ tableName: &#x27;synchronizations&#x27; })
 export class SynchronizationEntity extends BaseEntityWithTimestamps {
+	@Property({ nullable: true })
+	systemId?: string;
+
 	@Property({ nullable: true })
 	count?: number;
 
@@ -460,8 +509,13 @@ export class SynchronizationEntity extends BaseEntityWithTimestamps {
 
 	constructor(props: SynchronizationEntityProps) {
 		super();
+
 		if (props.id !&#x3D;&#x3D; undefined) {
 			this.id &#x3D; props.id;
+		}
+
+		if (props.systemId !&#x3D;&#x3D; undefined) {
+			this.systemId &#x3D; props.systemId;
 		}
 
 		if (props.count !&#x3D;&#x3D; undefined) {

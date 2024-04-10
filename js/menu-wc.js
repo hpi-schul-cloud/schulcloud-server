@@ -1352,6 +1352,23 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/IdentityManagementModule.html" data-type="entity-link" >IdentityManagementModule</a>
                             </li>
                             <li class="link">
+                                <a href="modules/IdpConsoleModule.html" data-type="entity-link" >IdpConsoleModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-IdpConsoleModule-eeff9b9937d0d22878395111f19328f74091afc7812a12967e5be93fac9c4bfc788169e569bebf5feccc45777f6d6f18d63aa88046a39620dbdc0a7b42de892a"' : 'data-bs-target="#xs-injectables-links-module-IdpConsoleModule-eeff9b9937d0d22878395111f19328f74091afc7812a12967e5be93fac9c4bfc788169e569bebf5feccc45777f6d6f18d63aa88046a39620dbdc0a7b42de892a"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-IdpConsoleModule-eeff9b9937d0d22878395111f19328f74091afc7812a12967e5be93fac9c4bfc788169e569bebf5feccc45777f6d6f18d63aa88046a39620dbdc0a7b42de892a"' :
+                                        'id="xs-injectables-links-module-IdpConsoleModule-eeff9b9937d0d22878395111f19328f74091afc7812a12967e5be93fac9c4bfc788169e569bebf5feccc45777f6d6f18d63aa88046a39620dbdc0a7b42de892a"' }>
+                                        <li class="link">
+                                            <a href="injectables/SynchronizationUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SynchronizationUc</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/ImportUserModule.html" data-type="entity-link" >ImportUserModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -2623,13 +2640,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SynchronizationModule.html" data-type="entity-link" >SynchronizationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' : 'data-bs-target="#xs-injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' }>
+                                        'data-bs-target="#injectables-links-module-SynchronizationModule-fbcd1cdc346c2a1e2f5b82dadbad612451da36109ef2637303c76de1d5d932317e98c369773fb36259a7baebe5c897ac111a697153f5b8bae616e01da70d814d"' : 'data-bs-target="#xs-injectables-links-module-SynchronizationModule-fbcd1cdc346c2a1e2f5b82dadbad612451da36109ef2637303c76de1d5d932317e98c369773fb36259a7baebe5c897ac111a697153f5b8bae616e01da70d814d"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' :
-                                        'id="xs-injectables-links-module-SynchronizationModule-c05951eb6cbe67a177e8d3537066be7729ac1be838477e36dfb472676c4bcfe1408f99b36a140602c581998024821fc108c1490d5329d0b18e0250133f67c87d"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SynchronizationModule-fbcd1cdc346c2a1e2f5b82dadbad612451da36109ef2637303c76de1d5d932317e98c369773fb36259a7baebe5c897ac111a697153f5b8bae616e01da70d814d"' :
+                                        'id="xs-injectables-links-module-SynchronizationModule-fbcd1cdc346c2a1e2f5b82dadbad612451da36109ef2637303c76de1d5d932317e98c369773fb36259a7baebe5c897ac111a697153f5b8bae616e01da70d814d"' }>
                                         <li class="link">
                                             <a href="injectables/SynchronizationRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SynchronizationRepo</a>
                                         </li>
@@ -5016,6 +5033,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/IdParams.html" data-type="entity-link" >IdParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/IdpSyncConsole.html" data-type="entity-link" >IdpSyncConsole</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/IdTokenCreationLoggableException.html" data-type="entity-link" >IdTokenCreationLoggableException</a>
                             </li>
                             <li class="link">
@@ -6607,6 +6627,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UsersSearchQueryParams.html" data-type="entity-link" >UsersSearchQueryParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UsersSyncOptionsBuilder.html" data-type="entity-link" >UsersSyncOptionsBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ValidationError.html" data-type="entity-link" >ValidationError</a>
@@ -8601,6 +8624,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserSortQuery.html" data-type="entity-link" >UserSortQuery</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UsersSyncOptions.html" data-type="entity-link" >UsersSyncOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserWithBoardRoles.html" data-type="entity-link" >UserWithBoardRoles</a>

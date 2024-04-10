@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/synchronization/uc/synchronization.uc.ts</code>
+            <code>apps/server/src/modules/idp-console/uc/synchronization.uc.ts</code>
         </p>
 
 
@@ -188,7 +188,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/synchronization/uc/synchronization.uc.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/idp-console/uc/synchronization.uc.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -299,8 +299,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/uc/synchronization.uc.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/modules/idp-console/uc/synchronization.uc.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -381,8 +381,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/uc/synchronization.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/idp-console/uc/synchronization.uc.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -451,8 +451,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/uc/synchronization.uc.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/idp-console/uc/synchronization.uc.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -533,8 +533,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/uc/synchronization.uc.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/idp-console/uc/synchronization.uc.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -639,8 +639,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/uc/synchronization.uc.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/idp-console/uc/synchronization.uc.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -695,19 +695,17 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { SanisResponse, SchulconnexRestClient } from &#x27;@src/infra/schulconnex-client&#x27;;
+import { SanisResponse, SchulconnexRestClient } from &#x27;@infra/schulconnex-client&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
-import { SynchronizationService } from &#x27;../domain/service&#x27;;
-import { Synchronization } from &#x27;../domain&#x27;;
-import { SynchronizationStatusModel } from &#x27;../domain/types&#x27;;
-import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from &#x27;../domain/loggable&#x27;;
+import { Synchronization, SynchronizationService, SynchronizationStatusModel } from &#x27;@modules/synchronization&#x27;;
+import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from &#x27;./loggable&#x27;;
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
-} from &#x27;../domain/loggable-exception&#x27;;
-import { SynchronizationConfig } from &#x27;../synchronization.config&#x27;;
+} from &#x27;./loggable-exception&#x27;;
+import { SynchronizationConfig } from &#x27;../interface&#x27;;
 
 @Injectable()
 export class SynchronizationUc {
@@ -724,7 +722,7 @@ export class SynchronizationUc {
 	public async updateSystemUsersLastSyncedAt(systemId: string): Promise&lt;void&gt; {
 		this.logger.info(new StartSynchronizationLoggable(systemId));
 
-		const synchronizationId &#x3D; await this.synchronizationService.createSynchronization();
+		const synchronizationId &#x3D; await this.synchronizationService.createSynchronization(systemId);
 
 		try {
 			const usersToCheck &#x3D; await this.findUsersToSynchronize(systemId);
@@ -749,7 +747,6 @@ export class SynchronizationUc {
 				0,
 				loggable.getLogMessage()
 			);
-			this.logger.info(loggable);
 		}
 	}
 
@@ -783,14 +780,14 @@ export class SynchronizationUc {
 		userSyncCount: number,
 		error?: ErrorLogMessage
 	): Promise&lt;void&gt; {
-		const synchronizationToUpdate &#x3D; await this.synchronizationService.findById(synchronizationId);
-
-		await this.synchronizationService.update({
-			...synchronizationToUpdate,
-			count: userSyncCount,
+		const newSynchronization &#x3D; new Synchronization({
+			id: synchronizationId,
 			status,
+			count: userSyncCount,
 			failureCause: error ? &#x60;${error?.data?.errorMessage as string}: ${error?.data?.systemId as string}&#x60; : undefined,
-		} as Synchronization);
+		});
+
+		await this.synchronizationService.update(newSynchronization);
 	}
 
 	chunkArray(array: string[], chunkSize: number): string[][] {

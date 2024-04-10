@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/synchronization/repo/mapper/synchronization.mapper.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/synchronization/repo/mapper/synchronization.mapper.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -322,13 +322,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Synchronization } from &#x27;../../domain&#x27;;
-import { SynchronizationEntity } from &#x27;../entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SynchronizationEntity } from &#x27;../entity&#x27;;
+import { Synchronization } from &#x27;../../domain/do&#x27;;
 
 export class SynchronizationMapper {
 	static mapToDO(entity: SynchronizationEntity): Synchronization {
 		return new Synchronization({
 			id: entity.id,
+			systemId: entity.systemId,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			count: entity.count,
@@ -340,6 +341,7 @@ export class SynchronizationMapper {
 	static mapToEntity(domainObject: Synchronization): SynchronizationEntity {
 		return new SynchronizationEntity({
 			id: domainObject.id,
+			systemId: domainObject.systemId,
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			count: domainObject.count,
