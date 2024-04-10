@@ -1,9 +1,10 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { SynchronizationStatusModel } from './types';
+import { SynchronizationStatusModel } from '../types';
 
 export interface SynchronizationProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
+	systemId?: string;
 	count?: number;
 	failureCause?: string;
 	status?: SynchronizationStatusModel;
@@ -16,6 +17,10 @@ export class Synchronization extends DomainObject<SynchronizationProps> {
 
 	get updatedAt(): Date | undefined {
 		return this.props.updatedAt;
+	}
+
+	get systemId(): string | undefined {
+		return this.props.systemId;
 	}
 
 	get count(): number | undefined {
