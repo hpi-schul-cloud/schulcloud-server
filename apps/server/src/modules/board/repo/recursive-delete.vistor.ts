@@ -21,6 +21,7 @@ import type {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
 import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()
@@ -98,6 +99,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);
+	}
+
+	async visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void> {
+		this.deleteNode(collaborativeTextEditorElement);
+		await this.visitChildrenAsync(collaborativeTextEditorElement);
 	}
 
 	async visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {

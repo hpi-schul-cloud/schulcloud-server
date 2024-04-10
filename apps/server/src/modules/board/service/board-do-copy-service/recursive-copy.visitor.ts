@@ -20,6 +20,7 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
@@ -282,6 +283,14 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 
 		return Promise.resolve();
+	}
+
+	async visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void> {
+		return Promise.reject(
+			new Error(`Cannot copy element of type: '${collaborativeTextEditorElement.constructor.name}'`)
+		);
 	}
 
 	async visitMediaBoardAsync(original: MediaBoard): Promise<void> {

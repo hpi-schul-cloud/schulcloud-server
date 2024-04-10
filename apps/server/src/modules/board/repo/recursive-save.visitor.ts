@@ -36,6 +36,8 @@ import {
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
+import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
+import { CollaborativeTextEditorElementNode } from '@shared/domain/entity/boardnode/collaborative-text-editor-element-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
@@ -201,6 +203,19 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(externalToolElement, boardNode);
+	}
+
+	visitCollaborativeTextEditorElement(collaborativeTextEditorElement: CollaborativeTextEditorElement): void {
+		const parentData = this.parentsMap.get(collaborativeTextEditorElement.id);
+
+		const boardNode = new CollaborativeTextEditorElementNode({
+			id: collaborativeTextEditorElement.id,
+			editorId: collaborativeTextEditorElement.editorId,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, collaborativeTextEditorElement);
 	}
 
 	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

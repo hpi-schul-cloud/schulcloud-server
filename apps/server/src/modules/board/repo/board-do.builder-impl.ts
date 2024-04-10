@@ -15,10 +15,11 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
 import {
+	BoardNodeType,
 	type BoardDoBuilder,
 	type BoardNode,
-	BoardNodeType,
 	type CardNode,
 	type ColumnBoardNode,
 	type ColumnNode,
@@ -33,6 +34,7 @@ import {
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
 } from '@shared/domain/entity';
+import { CollaborativeTextEditorElementNode } from '@shared/domain/entity/boardnode/collaborative-text-editor-element-node.entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -204,6 +206,20 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 			contextExternalToolId: boardNode.contextExternalTool?.id,
+		});
+
+		return element;
+	}
+
+	buildCollaborativeTextEditorElement(boardNode: CollaborativeTextEditorElementNode): CollaborativeTextEditorElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: CollaborativeTextEditorElement = new CollaborativeTextEditorElement({
+			id: boardNode.id,
+			editorId: boardNode.editorId,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
 		});
 
 		return element;
