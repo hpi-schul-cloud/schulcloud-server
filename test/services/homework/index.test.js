@@ -2,13 +2,13 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../src/app');
-const { NotAuthenticated, NotFound } = require('../../../src/errors');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+const { NotAuthenticated } = require('../../../src/errors');
 
 describe('homework service', () => {
 	let app;
@@ -212,80 +212,11 @@ describe('homework service', () => {
 	});
 
 	describe('DELETE', async () => {
-		it('should remove a users private task', async () => {
-			const { user, homework } = await setupPrivateHomework();
-			const params = await testObjects.generateRequestParamsFromUser(user);
-			params.query = {};
-			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
-			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
-		});
-		it('should not allow to remove other users private tasks outside courses', async () => {
-			const { homework } = await setupPrivateHomework();
-
-			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const otherStudent = await testObjects.createTestUser({ roles: ['student'] });
-
-			let params;
-			params = await testObjects.generateRequestParamsFromUser(otherTeacher);
-			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-
-			params = await testObjects.generateRequestParamsFromUser(otherStudent);
-			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-		});
-		it('should not allow homework removal by course student', async () => {
-			const { student, homework } = await setupHomeworkWithCourse();
-			const params = await testObjects.generateRequestParamsFromUser(student);
-			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-		});
-		it('should not allow homework removal by any student', async () => {
-			const { homework } = await setupHomeworkWithCourse();
-			const otherStudent = await testObjects.createTestUser({ roles: ['student'] });
-			const params = await testObjects.generateRequestParamsFromUser(otherStudent);
-			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-		});
-		it('should not allow homework removal by any teacher', async () => {
-			const { homework } = await setupHomeworkWithCourse();
-			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const params = await testObjects.generateRequestParamsFromUser(otherTeacher);
-			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-		});
-		it('should allow homework removal by course teacher', async () => {
-			const { teacher, homework } = await setupHomeworkWithCourse();
+		it('should not allow homework removal', async () => {
+			const { homework, teacher } = await setupHomeworkWithCourse();
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = {};
-			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
-			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
-		});
-		it('should allow homework removal by course substitute teacher', async () => {
-			const { substitutionTeacher, homework } = await setupHomeworkWithCourse();
-			const params = await testObjects.generateRequestParamsFromUser(substitutionTeacher);
-			params.query = {};
-			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
-			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
-		});
-		it('should allow teacher to remove private tasks in his course', async () => {
-			const { teacher, homework } = await setupHomeworkWithCourse({ asPrivate: true });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
-			params.query = {};
-			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
-			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
-		});
-		it('should allow substitution teacher to remove private tasks in his course', async () => {
-			const { teacher, homework } = await setupHomeworkWithCourse({ asPrivate: true });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
-			params.query = {};
-			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
-			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
+			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
 		});
 	});
 
