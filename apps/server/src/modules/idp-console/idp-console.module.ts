@@ -1,35 +1,31 @@
 import { Module } from '@nestjs/common';
-import { ConsoleModule } from 'nestjs-console';
-import { CqrsModule } from '@nestjs/cqrs';
-import { ConsoleWriterModule } from '@infra/console';
 import { ConfigModule } from '@nestjs/config';
-import { HttpModule, HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Logger, LoggerModule } from '@src/core/logger';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { SchulconnexRestClient } from '@infra/schulconnex-client';
-import { AccountModule } from '@modules/account';
-import { OauthAdapterService } from '@modules/oauth';
-import { defaultMikroOrmOptions } from '@modules/server';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { UserService } from '@modules/user';
-import { UserRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { RoleModule } from '@modules/role';
-import { IdentityManagementModule } from '@infra/identity-management';
-import { RegistrationPinModule } from '@modules/registration-pin';
+import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { SynchronizationEntity, SynchronizationModule } from '@modules/synchronization';
+import { defaultMikroOrmOptions } from '@modules/server';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { UserModule } from '@modules/user';
+import { LoggerModule } from '@src/core/logger';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { ConsoleWriterModule } from '@infra/console';
+import { ConsoleModule } from 'nestjs-console';
 import { SynchronizationUc } from './uc';
 import { IdpSyncConsole } from './idp-sync-console';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		ConsoleModule,
-		ConsoleWriterModule,
-		LoggerModule,
-		CqrsModule,
+		SchulconnexClientModule.register({
+			apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
+			tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
+			clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
+			clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
+			personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
+		}),
+		SynchronizationModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -40,37 +36,12 @@ import { IdpSyncConsole } from './idp-sync-console';
 			entities: [...ALL_ENTITIES, SynchronizationEntity],
 			debug: true,
 		}),
-		IdentityManagementModule,
-		HttpModule,
-		AccountModule,
-		RegistrationPinModule,
-		RoleModule,
-		SynchronizationModule,
+		UserModule,
+		LoggerModule,
+		RabbitMQWrapperModule,
+		ConsoleWriterModule,
+		ConsoleModule,
 	],
-	providers: [
-		SynchronizationUc,
-		OauthAdapterService,
-		IdpSyncConsole,
-		UserDORepo,
-		UserRepo,
-		UserService,
-		{
-			provide: SchulconnexRestClient,
-			useFactory: (httpService: HttpService, oauthAdapterService: OauthAdapterService, logger: Logger) =>
-				new SchulconnexRestClient(
-					{
-						apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
-						tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
-						clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
-						clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
-						personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
-					},
-					httpService,
-					oauthAdapterService,
-					logger
-				),
-			inject: [HttpService, OauthAdapterService, Logger],
-		},
-	],
+	providers: [SynchronizationUc, IdpSyncConsole],
 })
 export class IdpConsoleModule {}
