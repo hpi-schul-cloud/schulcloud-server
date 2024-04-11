@@ -1,8 +1,12 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName, QueryOrder } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
-import { type UserDO } from '@shared/domain/domainobject';
+import { StringValidator } from '@shared/common';
+import { Page, type UserDO } from '@shared/domain/domainobject';
+import { IFindQuery } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { Group, GroupTypes } from '../domain';
 import { GroupEntity, GroupEntityTypes } from '../entity';
@@ -50,34 +54,87 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObject;
 	}
 
-	public async findByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
-		let groupEntityTypes: GroupEntityTypes[] | undefined;
+	public async findByUserAndGroupTypes(
+		user: UserDO,
+		groupTypes?: GroupTypes[],
+		query?: IFindQuery
+	): Promise<Page<Group>> {
+		const scope: GroupScope = new GroupScope().byUserId(user.id);
 		if (groupTypes) {
-			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+			const groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+			scope.byTypes(groupEntityTypes);
 		}
 
-		const scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id).byTypes(groupEntityTypes);
+		const escapedName = query?.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			scope.byNameQuery(escapedName);
+		}
 
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, {
+			offset: query?.pagination?.skip,
+			limit: query?.pagination?.limit,
+			orderBy: { name: QueryOrder.ASC },
+		});
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
-		return domainObjects;
+		const page: Page<Group> = new Page<Group>(domainObjects, total);
+
+		return page;
 	}
 
-	public async findBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes?: GroupTypes[]): Promise<Group[]> {
-		let groupEntityTypes: GroupEntityTypes[] | undefined;
+	public async findAvailableByUser(user: UserDO, query?: IFindQuery): Promise<Page<Group>> {
+		const pipelineStage: unknown[] = [{ $match: { users: { $elemMatch: { user: new ObjectId(user.id) } } } }];
+		const availableGroups: Page<Group> = await this.findAvailableGroup(
+			pipelineStage,
+			query?.pagination?.skip,
+			query?.pagination?.limit,
+			query?.nameQuery
+		);
+
+		return availableGroups;
+	}
+
+	public async findBySchoolIdAndGroupTypes(
+		school: School,
+		groupTypes?: GroupTypes[],
+		query?: IFindQuery
+	): Promise<Page<Group>> {
+		const scope: GroupScope = new GroupScope().byOrganizationId(school.id);
 		if (groupTypes) {
-			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+			const groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+			scope.byTypes(groupEntityTypes);
 		}
 
-		const scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId).byTypes(groupEntityTypes);
+		const escapedName = query?.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			scope.byNameQuery(escapedName);
+		}
 
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, {
+			offset: query?.pagination?.skip,
+			limit: query?.pagination?.limit,
+			orderBy: { name: QueryOrder.ASC },
+		});
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
-		return domainObjects;
+		const page: Page<Group> = new Page<Group>(domainObjects, total);
+
+		return page;
+	}
+
+	public async findAvailableBySchoolId(school: School, query?: IFindQuery): Promise<Page<Group>> {
+		const pipelineStage: unknown[] = [{ $match: { organization: new ObjectId(school.id) } }];
+
+		const availableGroups: Page<Group> = await this.findAvailableGroup(
+			pipelineStage,
+			query?.pagination?.skip,
+			query?.pagination?.limit,
+			query?.nameQuery
+		);
+
+		return availableGroups;
 	}
 
 	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
@@ -87,7 +144,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	): Promise<Group[]> {
 		const groupEntityType: GroupEntityTypes = GroupTypesToGroupEntityTypesMapping[groupType];
 
-		const scope: Scope<GroupEntity> = new GroupScope()
+		const scope: GroupScope = new GroupScope()
 			.byOrganizationId(schoolId)
 			.bySystemId(systemId)
 			.byTypes([groupEntityType]);
@@ -97,5 +154,66 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
+	}
+
+	private async findAvailableGroup(
+		pipelineStage: unknown[],
+		skip = 0,
+		limit?: number,
+		nameQuery?: string
+	): Promise<Page<Group>> {
+		let nameRegexFilter = {};
+		const pipeline: unknown[] = pipelineStage;
+
+		const escapedName = nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			nameRegexFilter = { name: { $regex: escapedName, $options: 'i' } };
+		}
+
+		pipeline.push(
+			{ $match: nameRegexFilter },
+			{
+				$lookup: {
+					from: 'courses',
+					localField: '_id',
+					foreignField: 'syncedWithGroup',
+					as: 'syncedCourses',
+				},
+			},
+			{ $match: { syncedCourses: { $size: 0 } } },
+			{ $sort: { name: 1 } }
+		);
+
+		if (limit) {
+			pipeline.push({
+				$facet: {
+					total: [{ $count: 'count' }],
+					data: [{ $skip: skip }, { $limit: limit }],
+				},
+			});
+		} else {
+			pipeline.push({
+				$facet: {
+					total: [{ $count: 'count' }],
+					data: [{ $skip: skip }],
+				},
+			});
+		}
+
+		const mongoEntitiesFacet = (await this.em.aggregate(GroupEntity, pipeline)) as [
+			{ total: [{ count: number }]; data: GroupEntity[] }
+		];
+
+		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
+
+		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: GroupEntity) =>
+			this.em.map(GroupEntity, entity)
+		);
+
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+
+		const page: Page<Group> = new Page<Group>(domainObjects, total);
+
+		return page;
 	}
 }

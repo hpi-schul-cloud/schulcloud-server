@@ -1,4 +1,4 @@
-export * from './account-dto.factory';
+export * from './account-do.factory';
 export * from './account.factory';
 export * from './axios-response.factory';
 export * from './base.factory';
@@ -36,6 +36,7 @@ export * from './user.factory';
 export * from './legacy-file-entity-mock.factory';
 export * from './jwt.test.factory';
 export * from './axios-error.factory';
+export * from './tldraw-file-dto.factory';
 export { externalSchoolDtoFactory } from './external-school-dto.factory';
 export * from './context-external-tool-configuration-status-response.factory';
 export * from './school-tool-configuration-status-response.factory';

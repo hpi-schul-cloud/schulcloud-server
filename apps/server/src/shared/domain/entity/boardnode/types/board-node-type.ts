@@ -9,4 +9,8 @@ export enum BoardNodeType {
 	SUBMISSION_CONTAINER_ELEMENT = 'submission-container-element',
 	SUBMISSION_ITEM = 'submission-item',
 	EXTERNAL_TOOL = 'external-tool',
+
+	MEDIA_BOARD = 'media-board',
+	MEDIA_LINE = 'media-line',
+	MEDIA_EXTERNAL_TOOL_ELEMENT = 'media-external-tool-element',
 }
