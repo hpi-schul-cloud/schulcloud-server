@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ErrorUtils } from '@src/core/error/utils';
 import { firstValueFrom } from 'rxjs';
@@ -57,7 +57,10 @@ export class DeletionClient {
 			return resp.data;
 		} catch (err) {
 			// Throw an error if sending deletion request has failed.
-			throw new BadGatewayException('DeletionClient:queueDeletionRequest', ErrorUtils.createHttpExceptionOptions(err));
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(err, 'DeletionClient:queueDeletionRequest')
+			);
 		}
 	}
 
@@ -81,7 +84,10 @@ export class DeletionClient {
 			}
 		} catch (err) {
 			// Throw an error if sending deletion request(s) execution trigger has failed.
-			throw new BadGatewayException('DeletionClient:executeDeletions', ErrorUtils.createHttpExceptionOptions(err));
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(err, 'DeletionClient:executeDeletions')
+			);
 		}
 	}
 
