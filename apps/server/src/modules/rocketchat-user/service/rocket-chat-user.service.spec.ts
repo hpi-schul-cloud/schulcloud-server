@@ -69,13 +69,13 @@ describe(RocketChatUserService.name, () => {
 	});
 
 	describe('findByUserId', () => {
-		describe('when searching rocketChatUser', () => {
+		describe('when rocketChatUser exists', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
 
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
-				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
 
 				return {
 					userId,
@@ -86,9 +86,29 @@ describe(RocketChatUserService.name, () => {
 			it('should return the rocketChatUser', async () => {
 				const { userId, rocketChatUser } = setup();
 
-				const result: RocketChatUser[] = await service.findByUserId(userId);
+				const result = await service.findByUserId(userId);
 
-				expect(result[0]).toEqual(rocketChatUser);
+				expect(result).toEqual(rocketChatUser);
+			});
+		});
+
+		describe('when rocketChatUser does not exist', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(null);
+
+				return {
+					userId,
+				};
+			};
+
+			it('should return null ', async () => {
+				const { userId } = setup();
+
+				const result = await service.findByUserId(userId);
+
+				expect(result).toBeNull();
 			});
 		});
 	});
@@ -98,7 +118,7 @@ describe(RocketChatUserService.name, () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 
-				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([]);
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(null);
 
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
@@ -141,12 +161,12 @@ describe(RocketChatUserService.name, () => {
 			});
 		});
 
-		describe('when rocketChatUser exists', () => {
+		describe('when rocketChatUser exists and succesfull deleted', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
-				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
 				rocketChatService.deleteUser.mockResolvedValueOnce({ success: true });
 
@@ -205,7 +225,33 @@ describe(RocketChatUserService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
-				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
+				rocketChatService.deleteUser.mockRejectedValueOnce({ success: false });
+
+				const expectedError = `Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`;
+
+				return {
+					expectedError,
+					userId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, userId } = setup();
+
+				await expect(service.deleteUserData(userId)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
+			});
+		});
+
+		describe('when rocketChatUser exists and got error during deletion rocketChat user', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
+
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
 				rocketChatService.deleteUser.mockRejectedValueOnce(new Error());
 

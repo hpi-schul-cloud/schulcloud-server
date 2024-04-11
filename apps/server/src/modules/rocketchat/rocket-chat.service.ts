@@ -231,6 +231,9 @@ export class RocketChatService {
 					})
 				)
 		);
+		if (response.status < 200 || response.status > 299) {
+			throw new RocketChatError(response);
+		}
 		return response?.data as GenericData;
 	}
 
