@@ -12,17 +12,43 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError, RequestTimeout } from '@shared/common';
+import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { BoardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
+import {
+	BoardResponse,
+	BoardUrlParams,
+	ColumnResponse,
+	CreateBoardBodyParams,
+	CreateBoardResponse,
+	UpdateBoardTitleParams,
+	VisibilityBodyParams,
+} from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
-import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
+import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 
 @ApiTags('Board')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
+
+	@ApiOperation({ summary: 'Create a new board.' })
+	@ApiResponse({ status: 201, type: CreateBoardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post()
+	async createBoard(
+		@Body() bodyParams: CreateBoardBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CreateBoardResponse> {
+		const board = await this.boardUc.createBoard(currentUser.userId, bodyParams);
+
+		const response = CreateBoardResponseMapper.mapToResponse(board);
+
+		return response;
+	}
 
 	@ApiOperation({ summary: 'Get the skeleton of a a board.' })
 	@ApiResponse({ status: 200, type: BoardResponse })
@@ -67,7 +93,7 @@ export class BoardController {
 	@Patch(':boardId/title')
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: RenameBodyParams,
+		@Body() bodyParams: UpdateBoardTitleParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
@@ -99,5 +125,36 @@ export class BoardController {
 		const response = ColumnResponseMapper.mapToResponse(column);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Create a board copy.' })
+	@ApiResponse({ status: 201, type: CopyApiResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':boardId/copy')
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	async copyBoard(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId);
+		const dto = CopyMapper.mapToResponse(copyStatus);
+		return dto;
+	}
+
+	@ApiOperation({ summary: 'Update the visibility of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/visibility')
+	async updateVisibility(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: VisibilityBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
 	}
 }

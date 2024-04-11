@@ -1,21 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import {
-	contextExternalToolEntityFactory,
-	roleFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { ContextExternalToolRule } from './context-external-tool.rule';
-import { Action } from '../type';
+import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action } from '../type';
+import { ContextExternalToolRule } from './context-external-tool.rule';
 
 describe('ContextExternalToolRule', () => {
 	let service: ContextExternalToolRule;
@@ -41,7 +36,7 @@ describe('ContextExternalToolRule', () => {
 
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
 			schoolExternalToolEntityFactory.build({
 				school,

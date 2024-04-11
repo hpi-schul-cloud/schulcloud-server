@@ -1,16 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { CopyFileDto, FileDto } from '../dto';
-import { FileRequestInfo } from '../interfaces';
-import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
-import { FilesStorageClientMapper } from '../mapper';
+import { FileDO } from '@src/infra/rabbitmq';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
 import { FilesStorageProducer } from './files-storage.producer';
+import { FilesStorageClientMapper } from '../mapper';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { CopyFileDto, FileDto } from '../dto';
 
 @Injectable()
-export class FilesStorageClientAdapterService {
-	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+@EventsHandler(UserDeletedEvent)
+export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private logger: LegacyLogger,
+		private readonly fileStorageMQProducer: FilesStorageProducer,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {
@@ -20,8 +41,8 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
-		const response = await this.fileStorageMQProducer.listFilesOfParent(param);
+	async listFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.listFilesOfParent(parentId);
 
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
@@ -36,9 +57,25 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+	async deleteFiles(fileRecordIds: EntityId[]): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.deleteFiles(fileRecordIds);
+
+		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
+
+		return fileInfos;
+	}
+
+	async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		return response.length;
+		const result = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, response.length, this.getFileRecordsId(response)),
+		]);
+
+		return result;
+	}
+
+	private getFileRecordsId(files: FileDO[]): EntityId[] {
+		return files.map((file) => file.id);
 	}
 }

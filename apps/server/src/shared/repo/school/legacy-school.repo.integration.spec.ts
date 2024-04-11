@@ -15,13 +15,13 @@ import {
 } from '@shared/domain/entity';
 import {
 	legacySchoolDoFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { LegacySchoolRepo } from '..';
+import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {
 	let module: TestingModule;
@@ -82,7 +82,7 @@ describe('LegacySchoolRepo', () => {
 
 	it('should create a school with embedded object', async () => {
 		const schoolYear = schoolYearFactory.build();
-		const school = schoolFactory.build({
+		const school = schoolEntityFactory.build({
 			name: 'test',
 			currentYear: schoolYear,
 			previousExternalId: 'someId',
@@ -114,7 +114,7 @@ describe('LegacySchoolRepo', () => {
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
 			const system: SystemEntity = systemEntityFactory.buildWithId();
-			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
+			const schoolEntity: SchoolEntity = schoolEntityFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
 			await em.persistAndFlush(schoolEntity);
@@ -139,7 +139,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('findBySchoolNumber', () => {
 		it('should find school by schoolnumber', async () => {
-			const schoolEntity: SchoolEntity = schoolFactory.build({ officialSchoolNumber: '12345' });
+			const schoolEntity: SchoolEntity = schoolEntityFactory.build({ officialSchoolNumber: '12345' });
 
 			await em.persistAndFlush(schoolEntity);
 
@@ -157,8 +157,8 @@ describe('LegacySchoolRepo', () => {
 		describe('when there is more than school with the same officialSchoolNumber', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '12345';
-				const schoolEntity: SchoolEntity = schoolFactory.build({ officialSchoolNumber });
-				const schoolEntity2: SchoolEntity = schoolFactory.build({ officialSchoolNumber });
+				const schoolEntity: SchoolEntity = schoolEntityFactory.build({ officialSchoolNumber });
+				const schoolEntity2: SchoolEntity = schoolEntityFactory.build({ officialSchoolNumber });
 
 				await em.persistAndFlush([schoolEntity, schoolEntity2]);
 
@@ -183,7 +183,7 @@ describe('LegacySchoolRepo', () => {
 		it('should map school entity to school domain object', () => {
 			const system: SystemEntity = systemEntityFactory.buildWithId();
 			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
-			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({
+			const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({
 				systems: [system],
 				features: [],
 				currentYear: schoolYear,
@@ -212,7 +212,7 @@ describe('LegacySchoolRepo', () => {
 		});
 
 		it('should return an empty array for systems when entity systems is not initialized', () => {
-			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: undefined });
+			const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({ systems: undefined });
 
 			const schoolDO = repo.mapEntityToDO(schoolEntity);
 

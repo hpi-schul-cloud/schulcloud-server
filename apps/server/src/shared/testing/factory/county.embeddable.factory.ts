@@ -1,5 +1,5 @@
 import { CountyEmbeddable } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from './base.factory';
 
 export const countyEmbeddableFactory = BaseFactory.define<CountyEmbeddable, CountyEmbeddable>(

@@ -37,9 +37,11 @@ describe('DatabaseManagementConsole (API)', () => {
 			const rootCli = consoleService.getRootCli();
 			rootCli.exitOverride(exitFn);
 			const spyConsoleWriterInfo = jest.spyOn(consoleWriter, 'info');
-			return { spyConsoleWriterInfo };
+			const spyConsoleWriterError = jest.spyOn(consoleWriter, 'error');
+			return { spyConsoleWriterInfo, spyConsoleWriterError };
 		};
-		describe('when command not exists', () => {
+
+		describe('when command does not exist', () => {
 			it('should fail for unknown command', async () => {
 				setup();
 				await expect(execute(bootstrap, ['database', 'not_existing_command'])).rejects.toThrow(
@@ -71,6 +73,22 @@ describe('DatabaseManagementConsole (API)', () => {
 				const { spyConsoleWriterInfo } = setup();
 
 				await execute(bootstrap, ['database', 'sync-indexes']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
+			});
+
+			it('should output error if command "migration" is called without flags', async () => {
+				const { spyConsoleWriterError } = setup();
+
+				await execute(bootstrap, ['database', 'migration']);
+
+				expect(spyConsoleWriterError).toBeCalled();
+			});
+
+			it('should provide command "migration"', async () => {
+				const { spyConsoleWriterInfo } = setup();
+
+				await execute(bootstrap, ['database', 'migration', '--up']);
 
 				expect(spyConsoleWriterInfo).toBeCalled();
 			});

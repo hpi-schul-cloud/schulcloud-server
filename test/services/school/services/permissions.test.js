@@ -32,8 +32,6 @@ describe('permissons service', () => {
 		app.unuse('schools');
 		app.unuse('schools/api');
 		app.unuse('/schools/:schoolId/maintenance');
-		app.unuse('schoolsList');
-		app.unuse('schoolsList/api');
 		app.unuse('schoolGroup');
 		app.unuse('gradeLevels');
 		app.unuse('/school/teacher/studentvisibility');

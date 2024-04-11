@@ -1,7 +1,7 @@
 import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '@modules/legacy-school/entity';
 import { SystemProvisioningStrategy } from '../../domain/interface/system-provisioning.strategy';
 import { BaseFactory } from './base.factory';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 import { systemEntityFactory } from './systemEntityFactory';
 
 export const schoolSystemOptionsEntityFactory = BaseFactory.define<
@@ -9,7 +9,7 @@ export const schoolSystemOptionsEntityFactory = BaseFactory.define<
 	SchoolSystemOptionsEntityProps
 >(SchoolSystemOptionsEntity, () => {
 	return {
-		school: schoolFactory.buildWithId(),
+		school: schoolEntityFactory.buildWithId(),
 		system: systemEntityFactory.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }),
 		provisioningOptions: {
 			groupProvisioningOtherEnabled: false,

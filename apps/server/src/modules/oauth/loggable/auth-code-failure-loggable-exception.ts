@@ -1,12 +1,12 @@
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { OauthSsoErrorLoggableException } from './oauth-sso-error-loggable-exception';
+import { InternalServerErrorException } from '@nestjs/common';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class AuthCodeFailureLoggableException extends OauthSsoErrorLoggableException {
+export class AuthCodeFailureLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly errorCode?: string) {
 		super(errorCode ?? 'sso_auth_code_step', 'Authorization Query Object has no authorization code or error');
 	}
 
-	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'SSO_AUTH_CODE_STEP',
 			message: 'Authorization Query Object has no authorization code or error',

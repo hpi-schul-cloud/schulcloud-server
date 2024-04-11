@@ -54,6 +54,8 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-h5p-editor-secret
         command: ['npm', 'run', 'nest:start:h5p:prod']
         readinessProbe:
           httpGet:
@@ -80,10 +82,10 @@ spec:
         resources:
           limits:
             cpu: {{ API_H5P_EDITOR_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_H5P_EDITOR_MEMORY_LIMITS|default("500Mi", true) }}
+            memory: {{ API_H5P_EDITOR_MEMORY_LIMITS|default("8Gi", true) }}
           requests:
             cpu: {{ API_H5P_EDITOR_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_H5P_EDITOR_MEMORY_REQUESTS|default("50Mi", true) }}
+            memory: {{ API_H5P_EDITOR_MEMORY_REQUESTS|default("2Gi", true) }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:

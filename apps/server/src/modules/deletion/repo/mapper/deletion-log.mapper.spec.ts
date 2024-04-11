@@ -1,9 +1,9 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { deletionLogEntityFactory } from '../../entity/testing/factory/deletion-log.entity.factory';
+import { ObjectId } from 'bson';
+import { DeletionLog } from '../../domain/do';
+import { deletionLogFactory } from '../../domain/testing';
+import { DeletionLogEntity } from '../entity';
+import { deletionLogEntityFactory } from '../entity/testing';
 import { DeletionLogMapper } from './deletion-log.mapper';
-import { DeletionLog } from '../../domain/deletion-log.do';
-import { deletionLogFactory } from '../../domain/testing/factory/deletion-log.factory';
-import { DeletionLogEntity } from '../../entity';
 
 describe(DeletionLogMapper.name, () => {
 	describe('mapToDO', () => {
@@ -14,11 +14,10 @@ describe(DeletionLogMapper.name, () => {
 				const expectedDomainObject = new DeletionLog({
 					id: entity.id,
 					domain: entity.domain,
-					operation: entity.operation,
+					operations: entity.operations,
+					subdomainOperations: entity.subdomainOperations,
 					deletionRequestId: entity.deletionRequestId?.toHexString(),
 					performedAt: entity.performedAt,
-					modifiedCount: entity.modifiedCount,
-					deletedCount: entity.deletedCount,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				});
@@ -53,11 +52,10 @@ describe(DeletionLogMapper.name, () => {
 						new DeletionLog({
 							id: entity.id,
 							domain: entity.domain,
-							operation: entity.operation,
+							operations: entity.operations,
+							subdomainOperations: entity.subdomainOperations,
 							deletionRequestId: entity.deletionRequestId?.toHexString(),
 							performedAt: entity.performedAt,
-							modifiedCount: entity.modifiedCount,
-							deletedCount: entity.deletedCount,
 							createdAt: entity.createdAt,
 							updatedAt: entity.updatedAt,
 						})
@@ -92,11 +90,10 @@ describe(DeletionLogMapper.name, () => {
 				const expectedEntities = new DeletionLogEntity({
 					id: domainObject.id,
 					domain: domainObject.domain,
-					operation: domainObject.operation,
+					operations: domainObject.operations,
+					subdomainOperations: domainObject.subdomainOperations,
 					deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 					performedAt: domainObject.performedAt,
-					modifiedCount: domainObject.modifiedCount,
-					deletedCount: domainObject.deletedCount,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				});
@@ -141,11 +138,10 @@ describe(DeletionLogMapper.name, () => {
 						new DeletionLogEntity({
 							id: domainObject.id,
 							domain: domainObject.domain,
-							operation: domainObject.operation,
+							operations: domainObject.operations,
+							subdomainOperations: domainObject.subdomainOperations,
 							deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 							performedAt: domainObject.performedAt,
-							modifiedCount: domainObject.modifiedCount,
-							deletedCount: domainObject.deletedCount,
 							createdAt: domainObject.createdAt,
 							updatedAt: domainObject.updatedAt,
 						})

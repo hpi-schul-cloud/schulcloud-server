@@ -1,13 +1,13 @@
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	roleFactory,
-	schoolExternalToolEntityFactory,
+	schoolEntityFactory,
 	schoolExternalToolFactory,
-	schoolFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
@@ -39,7 +39,7 @@ describe('SchoolExternalToolRule', () => {
 
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const entity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolEntityFactory.build();
 		entity.school = school;
 		const user: User = userFactory.build({ roles: [role], school });

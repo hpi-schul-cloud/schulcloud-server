@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
+import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 
@@ -403,5 +404,17 @@ export class DatabaseManagementUc {
 			}
 		});
 		return systems;
+	}
+
+	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
+		return this.databaseManagementService.migrationUp(from, to, only);
+	}
+
+	public async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
+		return this.databaseManagementService.migrationDown(from, to, only);
+	}
+
+	public async migrationPending(): Promise<UmzugMigration[]> {
+		return this.databaseManagementService.migrationPending();
 	}
 }

@@ -1,3 +1,4 @@
+import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -40,10 +41,18 @@ export class ContentElementService {
 		return parent;
 	}
 
+	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]): Promise<number> {
+		const count: number = await this.boardDoRepo.countBoardUsageForExternalTools(contextExternalTools);
+
+		return count;
+	}
+
 	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
+
 		await this.boardDoRepo.save(parent.children, parent);
+
 		return element;
 	}
 

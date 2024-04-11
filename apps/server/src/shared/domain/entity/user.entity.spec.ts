@@ -1,8 +1,9 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { Role } from '.';
-import { Permission } from '../interface';
+import { LanguageType, Permission, RoleName } from '../interface';
 import { User } from './user.entity';
 
 describe('User Entity', () => {
@@ -24,7 +25,7 @@ describe('User Entity', () => {
 		});
 
 		it('should create a user when passing required properties', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = new User({
 				firstName: 'John',
 				lastName: 'Cale',
@@ -89,6 +90,172 @@ describe('User Entity', () => {
 			const permissions = user.resolvePermissions();
 
 			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
+		});
+	});
+
+	describe('when user is an admin', () => {
+		describe('when school permissions are false', () => {
+			const setup = () => {
+				const role = roleFactory.build({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW],
+				});
+				const school = schoolEntityFactory.build({
+					permissions: {
+						teacher: { [Permission.STUDENT_LIST]: false },
+						student: { [Permission.LERNSTORE_VIEW]: false },
+					},
+				});
+				const user = userFactory.build({ roles: [role], school });
+
+				return { user };
+			};
+
+			it('should return the permissions of the user and not remove the school permissions', () => {
+				const { user } = setup();
+
+				const result = user.resolvePermissions();
+
+				expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW].sort());
+			});
+		});
+	});
+
+	describe('when user is a teacher', () => {
+		describe('when school permissions `STUDENT_LIST` is true', () => {
+			const setup = () => {
+				const role = roleFactory.build({ name: RoleName.TEACHER, permissions: [permissionA] });
+				const school = schoolEntityFactory.build({
+					permissions: { teacher: { [Permission.STUDENT_LIST]: true }, student: { [Permission.LERNSTORE_VIEW]: true } },
+				});
+				const user = userFactory.build({ roles: [role], school });
+
+				return { user };
+			};
+
+			it('should return the permissions of the user and the school permissions', () => {
+				const { user } = setup();
+
+				const result = user.resolvePermissions();
+
+				expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
+			});
+		});
+
+		describe('when school permissions `STUDENT_LIST` is false', () => {
+			const setup = () => {
+				const role = roleFactory.build({ name: RoleName.TEACHER, permissions: [permissionA, Permission.STUDENT_LIST] });
+				const school = schoolEntityFactory.build({
+					permissions: {
+						teacher: { [Permission.STUDENT_LIST]: false },
+						student: { [Permission.LERNSTORE_VIEW]: true },
+					},
+				});
+				const user = userFactory.build({ roles: [role], school });
+
+				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', false);
+				return { user };
+			};
+
+			it('should return the permissions of the user and the school permissions', () => {
+				const { user } = setup();
+
+				const result = user.resolvePermissions();
+
+				expect(result.sort()).toEqual([permissionA].sort());
+			});
+		});
+	});
+
+	describe('when user is a student', () => {
+		describe('when school permissions `LERNSTORE_VIEW` is true', () => {
+			const setup = () => {
+				const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });
+				const school = schoolEntityFactory.build({
+					permissions: { teacher: { [Permission.STUDENT_LIST]: true }, student: { [Permission.LERNSTORE_VIEW]: true } },
+				});
+				const user = userFactory.build({ roles: [role], school });
+
+				return { user };
+			};
+
+			it('should return the permissions of the user and the school permissions', () => {
+				const { user } = setup();
+
+				const result = user.resolvePermissions();
+
+				expect(result.sort()).toEqual([permissionA, Permission.LERNSTORE_VIEW].sort());
+			});
+		});
+
+		describe('when school permissions `LERNSTORE_VIEW` is false', () => {
+			const setup = () => {
+				const role = roleFactory.build({
+					name: RoleName.STUDENT,
+					permissions: [permissionA, Permission.LERNSTORE_VIEW],
+				});
+				const school = schoolEntityFactory.build({
+					permissions: {
+						teacher: { [Permission.STUDENT_LIST]: true },
+						student: { [Permission.LERNSTORE_VIEW]: false },
+					},
+				});
+				const user = userFactory.build({ roles: [role], school });
+
+				return { user };
+			};
+
+			it('should return the permissions of the user and the school permissions', () => {
+				const { user } = setup();
+
+				const result = user.resolvePermissions();
+
+				expect(result.sort()).toEqual([permissionA].sort());
+			});
+		});
+	});
+
+	describe('getRoles', () => {
+		const setup = () => {
+			const roles = roleFactory.buildListWithId(2);
+			const user = userFactory.build({ roles });
+
+			return { user };
+		};
+
+		it('should return the roles as array', () => {
+			const { user } = setup();
+
+			const result = user.getRoles();
+
+			expect(Array.isArray(result)).toBe(true);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toBeInstanceOf(Role);
+		});
+	});
+
+	describe('getInfo', () => {
+		const setup = () => {
+			const expectedResult = {
+				customAvatarBackgroundColor: '#fe8a71',
+				firstName: 'a',
+				lastName: 'b',
+				id: '',
+				language: LanguageType.EN,
+			};
+
+			const user = userFactory.buildWithId(expectedResult);
+			expectedResult.id = user.id;
+
+			return { user, expectedResult };
+		};
+
+		it('should return a less critical subset of informations about the user', () => {
+			const { user, expectedResult } = setup();
+
+			const result = user.getInfo();
+
+			expect(result).toEqual(expectedResult);
 		});
 	});
 });

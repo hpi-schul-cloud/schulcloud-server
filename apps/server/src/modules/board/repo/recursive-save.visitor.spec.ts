@@ -1,15 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import {
 	BoardNodeType,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
+	MediaBoardNode,
+	MediaExternalToolElementNode,
+	MediaLineNode,
 	RichTextElementNode,
-	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain/entity';
@@ -18,13 +22,15 @@ import {
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
-	contextExternalToolEntityFactory,
+	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
 	richTextElementFactory,
 	setupEntities,
-	drawingElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
@@ -249,6 +255,106 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
+	describe('when visiting a media board composite', () => {
+		const setup = () => {
+			const line = mediaLineFactory.build();
+			const board = mediaBoardFactory.build({ children: [line] });
+
+			jest.spyOn(line, 'accept');
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			return {
+				board,
+				line,
+			};
+		};
+
+		it('should create or update the node', () => {
+			const { board } = setup();
+
+			visitor.visitMediaBoard(board);
+
+			const expectedNode: Partial<MediaBoardNode> = {
+				id: board.id,
+				type: BoardNodeType.MEDIA_BOARD,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+
+		it('should visit the children', () => {
+			const { board, line } = setup();
+
+			board.accept(visitor);
+
+			expect(line.accept).toHaveBeenCalledWith(visitor);
+		});
+	});
+
+	describe('when visiting a media line composite', () => {
+		const setup = () => {
+			const element = mediaExternalToolElementFactory.build();
+			const line = mediaLineFactory.build({ children: [element] });
+
+			jest.spyOn(element, 'accept');
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			return {
+				line,
+				element,
+			};
+		};
+
+		it('should create or update the node', () => {
+			const { line } = setup();
+
+			visitor.visitMediaLine(line);
+
+			const expectedNode: Partial<MediaLineNode> = {
+				id: line.id,
+				type: BoardNodeType.MEDIA_LINE,
+				title: line.title,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+
+		it('should visit the children', () => {
+			const { line, element } = setup();
+
+			line.accept(visitor);
+
+			expect(element.accept).toHaveBeenCalledWith(visitor);
+		});
+	});
+
+	describe('when visiting a media external tool element', () => {
+		const setup = () => {
+			const contextExternalTool = contextExternalToolEntityFactory.buildWithId();
+			const mediaExternalToolElement = mediaExternalToolElementFactory.build({
+				contextExternalToolId: contextExternalTool.id,
+			});
+
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			return {
+				contextExternalTool,
+				mediaExternalToolElement,
+			};
+		};
+
+		it('should create or update the node', () => {
+			const { contextExternalTool, mediaExternalToolElement } = setup();
+
+			visitor.visitMediaExternalToolElement(mediaExternalToolElement);
+
+			const expectedNode: Partial<MediaExternalToolElementNode> = {
+				id: mediaExternalToolElement.id,
+				type: BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT,
+				contextExternalTool,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
 	describe('createOrUpdateBoardNode', () => {
 		describe('when the board is new', () => {
 			it('should persist the board node', () => {
@@ -265,6 +371,7 @@ describe(RecursiveSaveVisitor.name, () => {
 			it('should persist the board node', () => {
 				const board = columnBoardFactory.build();
 				const boardNode = columnBoardNodeFactory.build();
+
 				em.getUnitOfWork().getById.mockReturnValue(boardNode);
 
 				visitor.visitColumnBoard(board);

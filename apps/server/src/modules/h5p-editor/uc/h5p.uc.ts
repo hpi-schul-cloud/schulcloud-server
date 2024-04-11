@@ -21,7 +21,7 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
-import { LanguageType } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
@@ -111,8 +111,7 @@ export class H5PEditorUc {
 			return result;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			h5pErrorMapper.mapH5pError(err);
-			return undefined;
+			throw h5pErrorMapper.mapH5pError(err);
 		}
 	}
 
@@ -163,8 +162,7 @@ export class H5PEditorUc {
 			return result;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			h5pErrorMapper.mapH5pError(err);
-			return undefined;
+			throw h5pErrorMapper.mapH5pError(err);
 		}
 	}
 
@@ -233,24 +231,8 @@ export class H5PEditorUc {
 
 		try {
 			const rangeCallback = this.getRange(req);
-			const adapterRangeCallback: (filesize: number) => { end: number; start: number } = (filesize) => {
-				let returnValue = { start: 0, end: 0 };
-
-				if (rangeCallback) {
-					const result = rangeCallback(filesize);
-
-					if (result) {
-						returnValue = { start: result.start, end: result.end };
-					}
-				}
-
-				return returnValue;
-			};
-			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
-				file,
-				user,
-				adapterRangeCallback
-			);
+			// @ts-expect-error rangeCallback can return undefined, typings from @lumieducation/h5p-server are wrong
+			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(file, user, rangeCallback);
 
 			return {
 				data: stream,

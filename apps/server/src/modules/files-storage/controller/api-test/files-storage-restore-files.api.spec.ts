@@ -15,7 +15,7 @@ import {
 	fileRecordFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
@@ -151,7 +151,7 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const roles = roleFactory.buildList(1, { permissions: [] });
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const user = userFactory.build({ roles, school });
 
 				await em.persistAndFlush([user]);
@@ -200,7 +200,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
 				});
@@ -238,6 +238,8 @@ describe(`${baseRouteName} (api)`, () => {
 					name: expect.any(String),
 					url: expect.any(String),
 					parentId: expect.any(String),
+					createdAt: expect.any(String),
+					updatedAt: expect.any(String),
 					parentType: 'schools',
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
@@ -276,7 +278,7 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const roles = roleFactory.buildList(1, { permissions: [] });
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const user = userFactory.build({ roles, school });
 
 				await em.persistAndFlush([user]);
@@ -300,7 +302,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
 				});
@@ -335,6 +337,8 @@ describe(`${baseRouteName} (api)`, () => {
 					name: expect.any(String),
 					url: expect.any(String),
 					parentId: expect.any(String),
+					createdAt: expect.any(String),
+					updatedAt: expect.any(String),
 					parentType: 'schools',
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',

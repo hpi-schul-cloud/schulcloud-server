@@ -1,8 +1,9 @@
-import { Utils } from '@mikro-orm/core';
+import { type FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
-import { BoardNode, ColumnBoardNode } from '@shared/domain/entity';
+import type { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
+import { BoardNode, ExternalToolElementNodeEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
@@ -65,11 +66,13 @@ export class BoardDoRepo {
 	}
 
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const boardNodes = await this.em.find(ColumnBoardNode, {
+		// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+		const boardNodes: BoardNode[] = await this.em.find(BoardNode, {
 			_contextId: new ObjectId(reference.id),
 			_contextType: reference.type,
-		});
-		const ids = boardNodes.map((o) => o.id);
+		} as FilterQuery<BoardNode>);
+
+		const ids: EntityId[] = boardNodes.map((node) => node.id);
 
 		return ids;
 	}
@@ -79,6 +82,21 @@ export class BoardDoRepo {
 		const domainObject = boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
 		return domainObject;
+	}
+
+	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]) {
+		const toolIds: EntityId[] = contextExternalTools
+			.map((tool: ContextExternalTool): EntityId | undefined => tool.id)
+			.filter((id: EntityId | undefined): id is EntityId => !!id);
+
+		const boardNodes: ExternalToolElementNodeEntity[] = await this.em.find(ExternalToolElementNodeEntity, {
+			contextExternalTool: { $in: toolIds },
+		});
+
+		const boardIds: EntityId[] = boardNodes.map((node: ExternalToolElementNodeEntity): EntityId => node.ancestorIds[0]);
+		const boardCount: number = new Set(boardIds).size;
+
+		return boardCount;
 	}
 
 	async getAncestorIds(boardDo: AnyBoardDo): Promise<EntityId[]> {
@@ -95,5 +113,27 @@ export class BoardDoRepo {
 	async delete(domainObject: AnyBoardDo): Promise<void> {
 		await domainObject.acceptAsync(this.deleteVisitor);
 		await this.em.flush();
+	}
+
+	async deleteByExternalReference(reference: BoardExternalReference): Promise<number> {
+		// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+		const boardNodes: BoardNode[] = await this.em.find(BoardNode, {
+			_contextId: new ObjectId(reference.id),
+			_contextType: reference.type,
+		} as FilterQuery<BoardNode>);
+
+		const boardDeletionPromises: Promise<void>[] = boardNodes.map(async (boardNode: BoardNode): Promise<void> => {
+			const descendants: BoardNode[] = await this.boardNodeRepo.findDescendants(boardNode);
+
+			const domainObject: AnyBoardDo = new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
+
+			await domainObject.acceptAsync(this.deleteVisitor);
+		});
+
+		await Promise.all(boardDeletionPromises);
+
+		await this.em.flush();
+
+		return boardNodes.length;
 	}
 }

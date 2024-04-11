@@ -12,3 +12,4 @@ export * from './submission-container-element.do';
 export * from './submission-item.do';
 export * from './submission-item.factory';
 export * from './types';
+export * from './media-board';

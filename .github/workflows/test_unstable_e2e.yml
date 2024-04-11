@@ -38,7 +38,7 @@ jobs:
             SECRET_ES_MERLIN_PW: ${{ secrets.SECRET_ES_MERLIN_PW }}
             DOCKER_ID: ${{ secrets.DOCKER_ID }}
             MY_DOCKER_PASSWORD: ${{ secrets.MY_DOCKER_PASSWORD }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: upload results
         if: always()
         with:

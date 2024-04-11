@@ -1,6 +1,5 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
-import { serverConfig } from '@modules/server/server.config';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
@@ -45,7 +44,7 @@ export class RoomsController {
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.updateVisibilityOfBoardElement(
+		await this.roomsUc.updateVisibilityOfLegacyBoardElement(
 			urlParams.roomId,
 			urlParams.elementId,
 			currentUser.userId,
@@ -63,18 +62,19 @@ export class RoomsController {
 	}
 
 	@Post(':roomId/copy')
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
+		dto.elementsTypes = CopyMapper.mapElementsToTypes(copyStatus);
 		return dto;
 	}
 
 	@Post('lessons/:lessonId/copy')
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,

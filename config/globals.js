@@ -24,14 +24,12 @@ switch (NODE_ENV) {
 }
 
 let defaultDbUrl = null;
-let defaultTldrawDbUrl = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
 		break;
 	default:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
-		defaultTldrawDbUrl = 'mongodb://127.0.0.1:27017/tldraw';
 }
 
 const globals = {
@@ -89,15 +87,6 @@ const globals = {
 	ROCKET_CHAT_ADMIN_USER: process.env.ROCKET_CHAT_ADMIN_ID,
 	ROCKET_CHAT_ADMIN_PASSWORD: process.env.ROCKET_CHAT_ADMIN_ID,
 
-	// etherpad
-	ETHERPAD_API_KEY: process.env.ETHERPAD_API_KEY,
-	ETHERPAD_API_PATH: process.env.ETHERPAD_API_PATH,
-	ETHERPAD_URI: process.env.ETHERPAD_URI,
-	ETHERPAD_OLD_PAD_URI: process.env.ETHERPAD_OLD_PAD_URI,
-	ETHERPAD_OLD_PAD_DOMAIN: process.env.ETHERPAD_OLD_PAD_DOMAIN,
-	ETHERPAD_COOKIE__EXPIRES_SECONDS: process.env.ETHERPAD_COOKIE__EXPIRES_SECONDS,
-	ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: process.env.ETHERPAD_COOKIE_RELEASE_THRESHOLD,
-
 	// nextcloud
 	NEXTCLOUD_BASE_URL: process.env.NEXTCLOUD_BASE_URL,
 	NEXTCLOUD_ADMIN_USER: process.env.NEXTCLOUD_ADMIN_USER,
@@ -106,9 +95,6 @@ const globals = {
 
 	// calendar
 	CALENDAR_URI: process.env.CALENDAR_URI,
-
-	// tldraw
-	TLDRAW_DB_URL: process.env.TLDRAW_DB_URL || defaultTldrawDbUrl,
 };
 
 // validation /////////////////////////////////////////////////

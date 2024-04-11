@@ -1,4 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+	SanisGruppenResponse,
+	SanisResponse,
+	SanisResponseValidationGroups,
+	SanisRole,
+	schulconnexResponseFactory,
+} from '@infra/schulconnex-client';
+import { GroupService } from '@modules/group';
 import { GroupTypes } from '@modules/group/domain';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -19,15 +27,12 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
 import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisResponseValidationGroups,
-	SanisRole,
-} from './response';
+	SchulconnexCourseSyncService,
+	SchulconnexGroupProvisioningService,
+	SchulconnexSchoolProvisioningService,
+	SchulconnexUserProvisioningService,
+} from '../oidc/service';
 import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 import ArgsType = jest.ArgsType;
@@ -65,8 +70,24 @@ describe('SanisStrategy', () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: OidcProvisioningService,
-					useValue: createMock<OidcProvisioningService>(),
+					provide: SchulconnexSchoolProvisioningService,
+					useValue: createMock<SchulconnexSchoolProvisioningService>(),
+				},
+				{
+					provide: SchulconnexUserProvisioningService,
+					useValue: createMock<SchulconnexUserProvisioningService>(),
+				},
+				{
+					provide: SchulconnexGroupProvisioningService,
+					useValue: createMock<SchulconnexGroupProvisioningService>(),
+				},
+				{
+					provide: SchulconnexCourseSyncService,
+					useValue: createMock<SchulconnexCourseSyncService>(),
+				},
+				{
+					provide: GroupService,
+					useValue: createMock<GroupService>(),
 				},
 				{
 					provide: ProvisioningFeatures,
@@ -93,52 +114,7 @@ describe('SanisStrategy', () => {
 		jest.resetAllMocks();
 	});
 
-	const setupSanisResponse = (): SanisResponse => {
-		return {
-			pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-			person: {
-				name: {
-					vorname: 'Hans',
-					familienname: 'Peter',
-				},
-				geburt: {
-					datum: '2023-11-17',
-				},
-			},
-			personenkontexte: [
-				{
-					id: new UUID().toString(),
-					rolle: SanisRole.LEIT,
-					organisation: {
-						id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
-						name: 'schoolName',
-						kennung: 'Kennung',
-						anschrift: {
-							ort: 'Hannover',
-						},
-					},
-					gruppen: [
-						{
-							gruppe: {
-								id: new UUID().toString(),
-								bezeichnung: 'bezeichnung',
-								typ: SanisGroupType.CLASS,
-							},
-							gruppenzugehoerigkeit: {
-								rollen: [SanisGroupRole.TEACHER],
-							},
-							sonstige_gruppenzugehoerige: [
-								{
-									rollen: [SanisGroupRole.STUDENT],
-									ktid: 'ktid',
-								},
-							],
-						},
-					],
-				},
-			],
-		};
-	};
+	const setupSanisResponse = (): SanisResponse => schulconnexResponseFactory.build();
 
 	describe('getType is called', () => {
 		describe('when it is called', () => {

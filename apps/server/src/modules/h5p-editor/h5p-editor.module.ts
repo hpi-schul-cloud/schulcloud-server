@@ -8,14 +8,14 @@ import { UserModule } from '@modules/user';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { H5PEditorController } from './controller/h5p-editor.controller';
-import { H5PContent, H5pEditorTempFile, InstalledLibrary } from './entity';
+import { H5PContent, InstalledLibrary } from './entity';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
-import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
+import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
 
@@ -40,7 +40,7 @@ const imports = [
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
 		allowGlobalContext: true,
-		entities: [...ALL_ENTITIES, H5PContent, H5pEditorTempFile, InstalledLibrary],
+		entities: [...ALL_ENTITIES, H5PContent, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
@@ -53,7 +53,6 @@ const providers = [
 	H5PEditorUc,
 	H5PContentRepo,
 	LibraryRepo,
-	TemporaryFileRepo,
 	H5PEditorProvider,
 	H5PPlayerProvider,
 	H5PAjaxEndpointProvider,

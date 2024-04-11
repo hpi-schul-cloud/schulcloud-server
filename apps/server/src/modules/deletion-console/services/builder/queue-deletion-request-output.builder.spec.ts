@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { QueueDeletionRequestOutput } from '../interface';
 import { QueueDeletionRequestOutputBuilder } from './queue-deletion-request-output.builder';
 

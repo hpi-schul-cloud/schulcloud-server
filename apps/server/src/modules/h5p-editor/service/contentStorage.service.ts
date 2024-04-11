@@ -88,7 +88,7 @@ export class ContentStorage implements IContentStorage {
 		const file: H5pFileDto = {
 			name: filename,
 			data: stream,
-			mimeType: 'application/json',
+			mimeType: 'application/octet-stream',
 		};
 
 		await this.storageClient.create(fullPath, file);
@@ -157,17 +157,15 @@ export class ContentStorage implements IContentStorage {
 	): Promise<Readable> {
 		const filePath = this.getFilePath(contentId, file);
 
-		let range: string;
-		if (rangeEnd === undefined) {
-			// Open ended range
-			range = `${rangeStart}-`;
-		} else {
+		let range: string | undefined;
+		if (rangeStart && rangeEnd) {
 			// Closed range
-			range = `${rangeStart}-${rangeEnd}`;
+			range = `bytes=${rangeStart}-${rangeEnd}`;
 		}
 
-		const fileResponse = await this.storageClient.get(filePath, range);
-		return fileResponse.data;
+		const { data } = await this.storageClient.get(filePath, range);
+
+		return data;
 	}
 
 	public async getMetadata(contentId: string): Promise<IContentMetadata> {

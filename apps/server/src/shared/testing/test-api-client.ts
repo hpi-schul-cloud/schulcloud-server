@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { Account } from '@shared/domain/entity';
 import supertest, { Response } from 'supertest';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { defaultTestPassword } from './factory/account.factory';
 
 interface AuthenticationResponse {
@@ -51,7 +51,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public put(subPath?: string, data = {}): supertest.Test {
+	public put<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.put(path)
@@ -61,7 +61,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public patch(subPath?: string, data = {}): supertest.Test {
+	public patch<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.patch(path)
@@ -71,7 +71,7 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public post(subPath?: string, data = {}): supertest.Test {
+	public post<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)
@@ -81,7 +81,22 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public async login(account: Account): Promise<this> {
+	public postWithAttachment(
+		subPath: string | undefined,
+		fieldName: string,
+		data: Buffer,
+		fileName: string
+	): supertest.Test {
+		const path = this.getPath(subPath);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.post(path)
+			.set('authorization', this.formattedJwt)
+			.attach(fieldName, data, fileName);
+
+		return testRequestInstance;
+	}
+
+	public async login(account: AccountEntity): Promise<this> {
 		const path = testReqestConst.loginPath;
 		const params: { username: string; password: string } = {
 			username: account.username,

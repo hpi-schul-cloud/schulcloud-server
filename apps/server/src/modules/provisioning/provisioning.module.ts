@@ -1,5 +1,6 @@
-import { AccountModule } from '@modules/account/account.module';
+import { AccountModule } from '@modules/account';
 import { GroupModule } from '@modules/group';
+import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system/system.module';
@@ -15,7 +16,12 @@ import {
 	SanisProvisioningStrategy,
 	SanisResponseMapper,
 } from './strategy';
-import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';
+import {
+	SchulconnexCourseSyncService,
+	SchulconnexGroupProvisioningService,
+	SchulconnexSchoolProvisioningService,
+	SchulconnexUserProvisioningService,
+} from './strategy/oidc/service';
 
 @Module({
 	imports: [
@@ -28,11 +34,15 @@ import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioni
 		HttpModule,
 		LoggerModule,
 		GroupModule,
+		LearnroomModule,
 	],
 	providers: [
 		ProvisioningService,
 		SanisResponseMapper,
-		OidcProvisioningService,
+		SchulconnexSchoolProvisioningService,
+		SchulconnexUserProvisioningService,
+		SchulconnexGroupProvisioningService,
+		SchulconnexCourseSyncService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,

@@ -12,3 +12,14 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-deployment.yml.j2
+
+  - name: api worker scaled object
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-ldap-worker-scaled-object.yml.j2
+    when:
+      - WITH_LDAP is defined and WITH_LDAP|bool
+      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
+      - SCALED_API_WORKER_ENABLED is defined and SCALED_API_WORKER_ENABLED|bool
+

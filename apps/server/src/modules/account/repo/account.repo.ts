@@ -1,79 +1,147 @@
-import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { AnyEntity, EntityName, FilterQuery, Primary } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Account } from '@shared/domain/entity/account.entity';
 import { SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { BaseRepo } from '@shared/repo/base.repo';
+import { Counted, EntityId } from '@shared/domain/types';
+import { AccountEntity } from '../entity/account.entity';
+import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { Account } from '../domain/account';
+import { AccountEntityToDoMapper } from './mapper';
+import { AccountScope } from './account-scope';
 
 @Injectable()
-export class AccountRepo extends BaseRepo<Account> {
+export class AccountRepo {
+	constructor(private readonly em: EntityManager) {}
+
 	get entityName() {
-		return Account;
+		return AccountEntity;
+	}
+
+	public async save(account: Account): Promise<Account> {
+		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
+		const existing = await this.em.findOne(AccountEntity, { id: account.id });
+
+		let saved: AccountEntity;
+		if (existing) {
+			saved = this.em.assign(existing, saveEntity);
+		} else {
+			this.em.persist(saveEntity);
+			saved = saveEntity;
+		}
+		await this.flush();
+
+		return AccountEntityToDoMapper.mapToDo(saved);
+	}
+
+	public async findById(id: EntityId | ObjectId): Promise<Account> {
+		const entity = await this.em.findOneOrFail(this.entityName, id as FilterQuery<AccountEntity>);
+
+		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
 	/**
 	 * Finds an account by user id.
 	 * @param userId the user id
 	 */
-	async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
-		return this._em.findOne(Account, { userId: new ObjectId(userId) });
+	public async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
+		const entity = await this.em.findOne(AccountEntity, { userId: new ObjectId(userId) });
+
+		if (!entity) {
+			return null;
+		}
+
+		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
-	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<Account[]> {
+	public async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<Account[]> {
 		const objectIds = userIds.map((id: EntityId | ObjectId) => new ObjectId(id));
-		return this._em.find(Account, { userId: objectIds });
+		const entities = await this.em.find(AccountEntity, { userId: objectIds });
+
+		return AccountEntityToDoMapper.mapEntitiesToDos(entities);
 	}
 
-	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
-		return this._em.findOneOrFail(Account, { userId: new ObjectId(userId) });
+	public async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
+		const entity = await this.em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
+
+		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
-		return this._em.findOne(Account, { username, systemId: new ObjectId(systemId) });
+	public async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
+		const entity = await this.em.findOne(AccountEntity, { username, systemId: new ObjectId(systemId) });
+
+		if (!entity) {
+			return null;
+		}
+
+		return AccountEntityToDoMapper.mapToDo(entity);
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
 		entityName: EntityName<Entity>,
 		id: Primary<Entity> | Primary<Entity>[]
 	): Entity {
-		return this._em.getReference(entityName, id);
+		return this.em.getReference(entityName, id);
 	}
 
-	saveWithoutFlush(account: Account): void {
-		this._em.persist(account);
+	public async saveWithoutFlush(account: Account): Promise<void> {
+		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
+		const existing = await this.em.findOne(AccountEntity, { id: account.id });
+
+		if (existing) {
+			this.em.assign(existing, saveEntity);
+		} else {
+			this.em.persist(saveEntity);
+		}
 	}
 
-	async flush(): Promise<void> {
-		await this._em.flush();
+	public async flush(): Promise<void> {
+		await this.em.flush();
 	}
 
-	async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<[Account[], number]> {
+	public async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<Counted<Account[]>> {
 		return this.searchByUsername(username, skip, limit, true);
 	}
 
-	async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<[Account[], number]> {
+	public async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<Counted<Account[]>> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
-	async deleteById(accountId: EntityId | ObjectId): Promise<void> {
-		const account = await this.findById(accountId);
-		return this.delete(account);
+	public async deleteById(accountId: EntityId | ObjectId): Promise<void> {
+		const entity = await this.em.findOneOrFail(AccountEntity, { id: accountId.toString() });
+		await this.em.removeAndFlush(entity);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise<void> {
-		const account = await this.findByUserId(userId);
-		if (account) {
-			await this._em.removeAndFlush(account);
+	public async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
+		const entities = await this.em.find(this.entityName, { userId: new ObjectId(userId) });
+		if (entities.length === 0) {
+			return [];
 		}
+		await this.em.removeAndFlush(entities);
+
+		return [entities[0].id];
 	}
 
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset = 0, limit = 100): Promise<Account[]> {
-		const result = await this._em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
-		this._em.clear();
+	public async findMany(offset = 0, limit = 100): Promise<Account[]> {
+		const result = await this.em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
+		this.em.clear();
+		return AccountEntityToDoMapper.mapEntitiesToDos(result);
+	}
+
+	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+		const scope = new AccountScope();
+		const userIdScope = new AccountScope();
+
+		userIdScope.byUserIdsAndSystemId(userIds, systemId);
+
+		scope.addQuery(userIdScope.query);
+
+		const foundUsers = await this.em.find(AccountEntity, scope.query);
+
+		const result = foundUsers.filter((user) => user.userId !== undefined).map(({ userId }) => userId!.toHexString());
+
 		return result;
 	}
 
@@ -82,11 +150,10 @@ export class AccountRepo extends BaseRepo<Account> {
 		offset: number,
 		limit: number,
 		exactMatch: boolean
-	): Promise<[Account[], number]> {
-		// escapes every character, that's not a unicode letter or number
+	): Promise<Counted<Account[]>> {
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
 		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
-		return this._em.findAndCount(
+		const [entities, count] = await this.em.findAndCount(
 			this.entityName,
 			{
 				// NOTE: The default behavior of the MongoDB driver allows
@@ -101,5 +168,7 @@ export class AccountRepo extends BaseRepo<Account> {
 				orderBy: { username: 1 },
 			}
 		);
+		const accounts = AccountEntityToDoMapper.mapEntitiesToDos(entities);
+		return [accounts, count];
 	}
 }

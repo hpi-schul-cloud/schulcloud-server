@@ -47,6 +47,14 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.type;
 	}
 
+	get validFrom(): Date | undefined {
+		return this.props.validFrom;
+	}
+
+	get validUntil(): Date | undefined {
+		return this.props.validUntil;
+	}
+
 	removeUser(user: UserDO): void {
 		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== user.id);
 	}
@@ -56,7 +64,7 @@ export class Group extends DomainObject<GroupProps> {
 	}
 
 	addUser(user: GroupUser): void {
-		if (!this.users.find((u) => u.userId === user.userId)) {
+		if (!this.users.find((u: GroupUser): boolean => u.userId === user.userId)) {
 			this.users.push(user);
 		}
 	}

@@ -7,28 +7,29 @@ import { getResolvedValues } from '@shared/common/utils/promise';
 import { ColumnBoard } from '@shared/domain/domainobject';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnBoardTarget,
 	ColumnboardBoardElement,
+	ColumnBoardNode,
 	Course,
+	LegacyBoard,
+	LegacyBoardElement,
+	LegacyBoardElementType,
 	LessonBoardElement,
 	LessonEntity,
 	Task,
 	TaskBoardElement,
 	User,
-	isColumnBoardTarget,
 	isLesson,
 	isTask,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { sortBy } from 'lodash';
 
+import { BoardNodeRepo } from '@modules/board/repo';
+
 type BoardCopyParams = {
-	originalBoard: Board;
+	originalBoard: LegacyBoard;
 	destinationCourse: Course;
 	user: User;
 };
@@ -37,21 +38,23 @@ type BoardCopyParams = {
 export class BoardCopyService {
 	constructor(
 		private readonly logger: LegacyLogger,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: LegacyBoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		private readonly boardNodeRepo: BoardNodeRepo
 	) {}
 
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
 		const { originalBoard, user, destinationCourse } = params;
 
-		const boardElements: BoardElement[] = originalBoard.getElements();
+		const boardElements: LegacyBoardElement[] = originalBoard.getElements();
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
-		const references: BoardElement[] = this.extractReferences(elements);
 
-		let boardCopy: Board = new Board({ references, course: destinationCourse });
+		const references: LegacyBoardElement[] = await this.extractReferences(elements);
+
+		let boardCopy: LegacyBoard = new LegacyBoard({ references, course: destinationCourse });
 		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
@@ -63,7 +66,7 @@ export class BoardCopyService {
 
 		status = this.updateCopiedEmbeddedTasksOfLessons(status);
 		if (status.copyEntity) {
-			boardCopy = status.copyEntity as Board;
+			boardCopy = status.copyEntity as LegacyBoard;
 		}
 
 		status = await this.swapLinkedIdsInBoards(status);
@@ -79,7 +82,7 @@ export class BoardCopyService {
 	}
 
 	private async copyBoardElements(
-		boardElements: BoardElement[],
+		boardElements: LegacyBoardElement[],
 		user: User,
 		destinationCourse: Course
 	): Promise<CopyStatus[]> {
@@ -88,15 +91,18 @@ export class BoardCopyService {
 				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
 
-			if (element.boardElementType === BoardElementType.Task && isTask(element.target)) {
+			if (element.boardElementType === LegacyBoardElementType.Task && isTask(element.target)) {
 				return this.copyTask(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (element.boardElementType === BoardElementType.Lesson && isLesson(element.target)) {
+			if (element.boardElementType === LegacyBoardElementType.Lesson && isLesson(element.target)) {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (element.boardElementType === BoardElementType.ColumnBoard && isColumnBoardTarget(element.target)) {
+			if (
+				element.boardElementType === LegacyBoardElementType.ColumnBoard &&
+				element.target instanceof ColumnBoardNode
+			) {
 				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
@@ -129,12 +135,12 @@ export class BoardCopyService {
 	}
 
 	private async copyColumnBoard(
-		columnBoardTarget: ColumnBoardTarget,
+		columnBoardNode: ColumnBoardNode,
 		user: User,
 		destinationCourse: Course
 	): Promise<CopyStatus> {
 		return this.columnBoardCopyService.copyColumnBoard({
-			originalColumnBoardId: columnBoardTarget.columnBoardId,
+			originalColumnBoardId: columnBoardNode.id,
 			userId: user.id,
 			destinationExternalReference: {
 				id: destinationCourse.id,
@@ -143,9 +149,10 @@ export class BoardCopyService {
 		});
 	}
 
-	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
-		const references: BoardElement[] = [];
-		statuses.forEach((status) => {
+	private async extractReferences(statuses: CopyStatus[]): Promise<LegacyBoardElement[]> {
+		const references: LegacyBoardElement[] = [];
+		for (const status of statuses) {
+			// statuses.forEach((status) => {
 			if (status.copyEntity instanceof Task) {
 				const taskElement = new TaskBoardElement({ target: status.copyEntity });
 				references.push(taskElement);
@@ -155,12 +162,14 @@ export class BoardCopyService {
 				references.push(lessonElement);
 			}
 			if (status.copyEntity instanceof ColumnBoard) {
+				// eslint-disable-next-line no-await-in-loop
+				const columnBoardNode = (await this.boardNodeRepo.findById(status.copyEntity.id)) as ColumnBoardNode;
 				const columnBoardElement = new ColumnboardBoardElement({
-					target: new ColumnBoardTarget({ columnBoardId: status.copyEntity.id, title: status.copyEntity.title }),
+					target: columnBoardNode,
 				});
 				references.push(columnBoardElement);
 			}
-		});
+		}
 		return references;
 	}
 
@@ -182,7 +191,7 @@ export class BoardCopyService {
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => map.set(key, value.id));
 
-		if (copyStatus.copyEntity instanceof Board && copyStatus.originalEntity instanceof Board) {
+		if (copyStatus.copyEntity instanceof LegacyBoard && copyStatus.originalEntity instanceof LegacyBoard) {
 			map.set(copyStatus.originalEntity.course.id, copyStatus.copyEntity.course.id);
 		}
 

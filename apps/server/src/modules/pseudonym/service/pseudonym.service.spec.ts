@@ -4,10 +4,19 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions } from '@shared/domain/interface';
-
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
+import { EventBus } from '@nestjs/cqrs';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
@@ -18,6 +27,7 @@ describe('PseudonymService', () => {
 
 	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
 	let externalToolPseudonymRepo: DeepMocked<ExternalToolPseudonymRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,12 +45,19 @@ describe('PseudonymService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(PseudonymService);
 		pseudonymRepo = module.get(PseudonymsRepo);
 		externalToolPseudonymRepo = module.get(ExternalToolPseudonymRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	beforeEach(() => {
@@ -392,7 +409,7 @@ describe('PseudonymService', () => {
 		});
 	});
 
-	describe('deleteByUserId', () => {
+	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
@@ -405,28 +422,43 @@ describe('PseudonymService', () => {
 			it('should throw an error', async () => {
 				const { user } = setup();
 
-				await expect(service.deleteByUserId(user.id as string)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.deleteUserData(user.id as string)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
+				const pseudonymsDeleted = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const externalPseudonymsDeleted = [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				];
 
-				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(2);
-				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(3);
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
+					DomainOperationReportBuilder.build(
+						OperationType.DELETE,
+						pseudonymsDeleted.length + externalPseudonymsDeleted.length,
+						[...pseudonymsDeleted, ...externalPseudonymsDeleted]
+					),
+				]);
+
+				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(pseudonymsDeleted);
+				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(externalPseudonymsDeleted);
 
 				return {
+					expectedResult,
 					user,
 				};
 			};
 
 			it('should delete pseudonyms by userId', async () => {
-				const { user } = setup();
+				const { expectedResult, user } = setup();
 
-				const result5 = await service.deleteByUserId(user.id as string);
+				const result = await service.deleteUserData(user.id as string);
 
-				expect(result5).toEqual(5);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
@@ -535,6 +567,50 @@ describe('PseudonymService', () => {
 				expect(result).toEqual(
 					`<iframe src="${host}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`
 				);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

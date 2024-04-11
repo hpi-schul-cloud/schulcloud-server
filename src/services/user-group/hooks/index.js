@@ -5,8 +5,10 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const {
+	splitClassIdsInGroupsAndClasses,
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeColumnBoard,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
@@ -25,6 +27,7 @@ exports.before = {
 	create: [
 		globalHooks.injectUserId,
 		globalHooks.hasPermission('COURSE_CREATE'),
+		splitClassIdsInGroupsAndClasses,
 		removeSubstitutionDuplicates,
 		restrictToCurrentSchool,
 	],
@@ -39,6 +42,7 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictChangesToArchivedCourse,
 		globalHooks.permitGroupOperation,
+		splitClassIdsInGroupsAndClasses,
 		removeSubstitutionDuplicates,
 		deleteWholeClassFromCourse,
 	],
@@ -63,5 +67,5 @@ exports.after = {
 	create: [addWholeClassToCourse],
 	update: [],
 	patch: [addWholeClassToCourse],
-	remove: [],
+	remove: [removeColumnBoard],
 };

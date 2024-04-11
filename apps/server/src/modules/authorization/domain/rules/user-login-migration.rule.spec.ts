@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizationContext } from '../type';
+import { schoolEntityFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action, AuthorizationContext } from '../type';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
 
 describe('UserLoginMigrationRule', () => {
@@ -82,7 +82,7 @@ describe('UserLoginMigrationRule', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
 				const user = userFactory.buildWithId({
-					school: schoolFactory.buildWithId(undefined, schoolId),
+					school: schoolEntityFactory.buildWithId(undefined, schoolId),
 				});
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({ schoolId });
 				const context: AuthorizationContext = {
@@ -119,7 +119,7 @@ describe('UserLoginMigrationRule', () => {
 		describe('when the user has all permissions, but is at a different school', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId({
-					school: schoolFactory.buildWithId(undefined, new ObjectId().toHexString()),
+					school: schoolEntityFactory.buildWithId(undefined, new ObjectId().toHexString()),
 				});
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({ schoolId: new ObjectId().toHexString() });
 				const context: AuthorizationContext = {
@@ -149,7 +149,7 @@ describe('UserLoginMigrationRule', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
 				const user = userFactory.buildWithId({
-					school: schoolFactory.buildWithId(undefined, schoolId),
+					school: schoolEntityFactory.buildWithId(undefined, schoolId),
 				});
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({ schoolId });
 				const context: AuthorizationContext = {

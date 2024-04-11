@@ -1,17 +1,20 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
+import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { type UserDO } from '@shared/domain/domainobject';
+import { Page, type UserDO } from '@shared/domain/domainobject';
+import { IFindQuery } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupTypes } from '../domain';
+import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
-	constructor(private readonly groupRepo: GroupRepo) {}
+	constructor(private readonly groupRepo: GroupRepo, private readonly eventBus: EventBus) {}
 
 	public async findById(id: EntityId): Promise<Group> {
-		const group: Group | null = await this.groupRepo.findById(id);
+		const group: Group | null = await this.groupRepo.findGroupById(id);
 
 		if (!group) {
 			throw new NotFoundLoggableException(Group.name, { id });
@@ -21,7 +24,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	}
 
 	public async tryFindById(id: EntityId): Promise<Group | null> {
-		const group: Group | null = await this.groupRepo.findById(id);
+		const group: Group | null = await this.groupRepo.findGroupById(id);
 
 		return group;
 	}
@@ -32,16 +35,36 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
-	public async findGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes);
+	public async findGroupsByUserAndGroupTypes(
+		user: UserDO,
+		groupTypes?: GroupTypes[],
+		query?: IFindQuery
+	): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes, query);
 
 		return groups;
 	}
 
-	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
+	public async findAvailableGroupsByUser(user: UserDO, query?: IFindQuery): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findAvailableByUser(user, query);
+
+		return groups;
+	}
+
+	public async findGroupsBySchoolIdAndGroupTypes(
+		school: School,
+		groupTypes?: GroupTypes[],
+		query?: IFindQuery
+	): Promise<Page<Group>> {
+		const group: Page<Group> = await this.groupRepo.findBySchoolIdAndGroupTypes(school, groupTypes, query);
 
 		return group;
+	}
+
+	public async findAvailableGroupsBySchoolId(school: School, query?: IFindQuery): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findAvailableBySchoolId(school, query);
+
+		return groups;
 	}
 
 	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
@@ -66,5 +89,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 	public async delete(group: Group): Promise<void> {
 		await this.groupRepo.delete(group);
+
+		await this.eventBus.publish(new GroupDeletedEvent(group));
 	}
 }

@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { ILibraryName } from '@lumieducation/h5p-server';
+import { IFileStats, ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
@@ -12,9 +12,8 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent, H5PContentParentType, H5PContentProperties, H5pEditorTempFile } from '../../entity';
+import { H5PContent, H5PContentParentType, H5PContentProperties } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
@@ -46,9 +45,9 @@ const helpers = {
 			data: `Data #${n}`,
 		};
 		const h5pContentProperties: H5PContentProperties = {
-			creatorId: new ObjectID().toString(),
-			parentId: new ObjectID().toString(),
-			schoolId: new ObjectID().toString(),
+			creatorId: new ObjectId().toString(),
+			parentId: new ObjectId().toString(),
+			schoolId: new ObjectId().toString(),
 			metadata,
 			content,
 			parentType: H5PContentParentType.Lesson,
@@ -57,7 +56,7 @@ const helpers = {
 
 		return {
 			withID(id?: number) {
-				const objectId = new ObjectID(id);
+				const objectId = new ObjectId(id);
 				h5pContent._id = objectId;
 				h5pContent.id = objectId.toString();
 
@@ -270,34 +269,31 @@ describe('H5PEditor Controller (api)', () => {
 					content: 'File Content',
 				};
 
-				const mockTempFile = new H5pEditorTempFile({
-					filename: mockFile.name,
-					ownedByUserId: studentUser.id,
-					expiresAt: new Date(),
+				const mockFileStats: IFileStats = {
 					birthtime: new Date(),
 					size: mockFile.content.length,
-				});
+				};
 
-				return { loggedInClient, mockFile, mockTempFile };
+				return { loggedInClient, mockFile, mockFileStats };
 			};
 
 			it('should return the content file', async () => {
-				const { loggedInClient, mockFile, mockTempFile } = await setup();
+				const { loggedInClient, mockFile, mockFileStats } = await setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				temporaryStorage.getFileStats.mockResolvedValueOnce(mockTempFile);
+				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`);
 
-				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
+				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.text).toBe(mockFile.content);
 			});
 
 			it('should work with range requests', async () => {
-				const { loggedInClient, mockFile, mockTempFile } = await setup();
+				const { loggedInClient, mockFile, mockFileStats } = await setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				temporaryStorage.getFileStats.mockResolvedValueOnce(mockTempFile);
+				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`).set('Range', 'bytes=2-4');
 

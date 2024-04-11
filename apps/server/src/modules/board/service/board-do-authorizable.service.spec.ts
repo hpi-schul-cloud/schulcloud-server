@@ -1,9 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizableProps, BoardExternalReferenceType, BoardRoles } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
-import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	courseFactory,
+	mediaBoardFactory,
+	roleFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 import { BoardDoRepo } from '../repo';
 import { BoardDoAuthorizableService } from './board-do-authorizable.service';
 
@@ -34,6 +42,10 @@ describe(BoardDoAuthorizableService.name, () => {
 		await setupEntities();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	afterAll(async () => {
 		await module.close();
 	});
@@ -41,8 +53,12 @@ describe(BoardDoAuthorizableService.name, () => {
 	describe('findById', () => {
 		describe('when finding a board domainobject', () => {
 			const setup = () => {
+				const course = courseFactory.build();
 				const columnBoard = columnBoardFactory.build();
-				boardDoRepo.findById.mockResolvedValue(columnBoard);
+				boardDoRepo.findById.mockResolvedValueOnce(columnBoard);
+				boardDoRepo.findById.mockResolvedValueOnce(columnBoard);
+				courseRepo.findById.mockResolvedValueOnce(course);
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([columnBoard.id]);
 
 				return { columnBoardId: columnBoard.id };
 			};
@@ -68,13 +84,16 @@ describe(BoardDoAuthorizableService.name, () => {
 	describe('getBoardAuthorizable', () => {
 		describe('when having an empty board', () => {
 			const setup = () => {
+				const course = courseFactory.build();
 				const board = columnBoardFactory.build();
-				return { board };
+				return { board, course };
 			};
 
 			it('should return an empty usergroup', async () => {
-				const { board } = setup();
+				const { board, course } = setup();
 				boardDoRepo.findById.mockResolvedValueOnce(board);
+				courseRepo.findById.mockResolvedValueOnce(course);
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([board.id]);
 
 				const userGroup = await service.getBoardAuthorizable(board);
 
@@ -97,6 +116,7 @@ describe(BoardDoAuthorizableService.name, () => {
 				const board = columnBoardFactory.build({ context: { type: BoardExternalReferenceType.Course, id: course.id } });
 				boardDoRepo.findById.mockResolvedValueOnce(board);
 				courseRepo.findById.mockResolvedValueOnce(course);
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([board.id]);
 				return {
 					board,
 					teacherId: teacher.id,
@@ -117,22 +137,12 @@ describe(BoardDoAuthorizableService.name, () => {
 					return map;
 				}, {});
 
-				const userRoleEnums = boardDoAuthorizable.users.reduce((map, user) => {
-					map[user.userId] = user.userRoleEnum;
-					return map;
-				}, {});
-
 				expect(boardDoAuthorizable.users).toHaveLength(5);
 				expect(userPermissions[teacherId]).toEqual([BoardRoles.EDITOR]);
-				expect(userRoleEnums[teacherId]).toEqual(UserRoleEnum.TEACHER);
 				expect(userPermissions[substitutionTeacherId]).toEqual([BoardRoles.EDITOR]);
-				expect(userRoleEnums[substitutionTeacherId]).toEqual(UserRoleEnum.SUBSTITUTION_TEACHER);
 				expect(userPermissions[studentIds[0]]).toEqual([BoardRoles.READER]);
-				expect(userRoleEnums[studentIds[0]]).toEqual(UserRoleEnum.STUDENT);
 				expect(userPermissions[studentIds[1]]).toEqual([BoardRoles.READER]);
-				expect(userRoleEnums[studentIds[1]]).toEqual(UserRoleEnum.STUDENT);
 				expect(userPermissions[studentIds[2]]).toEqual([BoardRoles.READER]);
-				expect(userRoleEnums[studentIds[2]]).toEqual(UserRoleEnum.STUDENT);
 			});
 
 			it('should return the users with their names', async () => {
@@ -161,6 +171,37 @@ describe(BoardDoAuthorizableService.name, () => {
 				expect(firstNames[students[2].id]).toEqual(students[2].firstName);
 				expect(lastNames[students[2].id]).toEqual(students[2].lastName);
 			});
+
+			it('should return the boardDo', async () => {
+				const { board } = setup();
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+
+				expect(boardDoAuthorizable.boardDo).toEqual(board);
+			});
+
+			it('should return the parentDo', async () => {
+				setup();
+				const column = columnFactory.build();
+				const card = cardFactory.build();
+
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(column);
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(card);
+
+				expect(boardDoAuthorizable.parentDo).toEqual(column);
+			});
+
+			it('should return the rootDo', async () => {
+				const { board } = setup();
+				const column = columnFactory.build();
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([column.id, board.id]);
+				boardDoRepo.findById.mockResolvedValueOnce(board);
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+
+				expect(boardDoAuthorizable.rootDo).toEqual(board);
+			});
 		});
 
 		describe('when trying to create a boardDoAuthorizable on a column without a columnboard as root', () => {
@@ -169,7 +210,10 @@ describe(BoardDoAuthorizableService.name, () => {
 				const teacher = userFactory.buildWithId({ roles });
 				const students = userFactory.buildListWithId(3);
 				const column = columnFactory.build();
+
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([]);
 				boardDoRepo.findById.mockResolvedValueOnce(column);
+
 				return { column, teacherId: teacher.id, studentIds: students.map((s) => s.id) };
 			};
 
@@ -185,6 +229,7 @@ describe(BoardDoAuthorizableService.name, () => {
 				const teacher = userFactory.buildWithId();
 				const board = columnBoardFactory.withoutContext().build();
 				boardDoRepo.findById.mockResolvedValueOnce(board);
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([board.id]);
 				return { board, teacherId: teacher.id };
 			};
 
@@ -193,6 +238,39 @@ describe(BoardDoAuthorizableService.name, () => {
 
 				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
 				expect(boardDoAuthorizable.users).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('when having a media board bound to a user', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = mediaBoardFactory.build({ context: { type: BoardExternalReferenceType.User, id: user.id } });
+
+			boardDoRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.getAncestorIds.mockResolvedValueOnce([board.id]);
+
+			return {
+				user,
+				board,
+			};
+		};
+
+		it('should return the boardDoAuthorizable', async () => {
+			const { board, user } = setup();
+
+			const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+
+			expect(boardDoAuthorizable.getProps()).toEqual<BoardDoAuthorizableProps>({
+				id: board.id,
+				boardDo: board,
+				users: [
+					{
+						userId: user.id,
+						roles: [BoardRoles.EDITOR],
+					},
+				],
+				rootDo: board,
 			});
 		});
 	});

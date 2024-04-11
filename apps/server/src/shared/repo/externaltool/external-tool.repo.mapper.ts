@@ -1,16 +1,23 @@
-import { UnprocessableEntityException } from '@nestjs/common';
+import { EntityData } from '@mikro-orm/core';
 import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
 import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
 import { ToolConfigType } from '@modules/tool/common/enum';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
+import {
+	BasicToolConfig,
+	ExternalTool,
+	ExternalToolMedium,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '@modules/tool/external-tool/domain';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
+	ExternalToolMediumEntity,
 } from '@modules/tool/external-tool/entity';
-import { EntityData } from '@mikro-orm/core';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -34,6 +41,7 @@ export class ExternalToolRepoMapper {
 		return new ExternalTool({
 			id: entity.id,
 			name: entity.name,
+			description: entity.description,
 			url: entity.url,
 			logoUrl: entity.logoUrl,
 			logo: entity.logoBase64,
@@ -44,6 +52,18 @@ export class ExternalToolRepoMapper {
 			openNewTab: entity.openNewTab,
 			version: entity.version,
 			restrictToContexts: entity.restrictToContexts,
+			medium: this.mapExternalToolMediumEntityToDO(entity.medium),
+		});
+	}
+
+	private static mapExternalToolMediumEntityToDO(entity?: ExternalToolMediumEntity): ExternalToolMedium | undefined {
+		if (!entity) {
+			return undefined;
+		}
+
+		return new ExternalToolMedium({
+			mediumId: entity.mediumId,
+			publisher: entity.publisher,
 		});
 	}
 
@@ -70,7 +90,6 @@ export class ExternalToolRepoMapper {
 			key: lti11Config.key,
 			secret: lti11Config.secret,
 			lti_message_type: lti11Config.lti_message_type,
-			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
 			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
@@ -95,6 +114,7 @@ export class ExternalToolRepoMapper {
 
 		return {
 			name: entityDO.name,
+			description: entityDO.description,
 			url: entityDO.url,
 			logoUrl: entityDO.logoUrl,
 			logoBase64: entityDO.logo,
@@ -105,7 +125,19 @@ export class ExternalToolRepoMapper {
 			openNewTab: entityDO.openNewTab,
 			version: entityDO.version,
 			restrictToContexts: entityDO.restrictToContexts,
+			medium: this.mapExternalToolMediumDOToEntity(entityDO.medium),
 		};
+	}
+
+	private static mapExternalToolMediumDOToEntity(medium?: ExternalToolMedium): ExternalToolMediumEntity | undefined {
+		if (!medium) {
+			return undefined;
+		}
+
+		return new ExternalToolMediumEntity({
+			mediumId: medium.mediumId,
+			publisher: medium.publisher,
+		});
 	}
 
 	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfig): BasicToolConfigEntity {
@@ -131,7 +163,6 @@ export class ExternalToolRepoMapper {
 			key: lti11Config.key,
 			secret: lti11Config.secret,
 			lti_message_type: lti11Config.lti_message_type,
-			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
 			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});

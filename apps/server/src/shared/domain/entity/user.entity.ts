@@ -1,16 +1,12 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { EntityWithSchool } from '../interface';
+import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-
-export enum LanguageType {
-	DE = 'de',
-	EN = 'en',
-	ES = 'es',
-	UK = 'uk',
-}
 
 export interface UserProperties {
 	email: string;
@@ -28,7 +24,18 @@ export interface UserProperties {
 	outdatedSince?: Date;
 	previousExternalId?: string;
 	birthday?: Date;
+	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
+	lastSyncedAt?: Date;
+	consent?: ConsentEntity;
+}
+
+interface UserInfo {
+	id: EntityId;
+	firstName: string;
+	lastName: string;
+	language?: LanguageType;
+	customAvatarBackgroundColor?: string;
 }
 
 @Entity({ tableName: 'users' })
@@ -86,7 +93,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
 
-	@Property({ nullable: true })
+	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
 
 	@Property({ nullable: true })
@@ -102,8 +109,17 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	birthday?: Date;
 
+	@Property({ nullable: true })
+	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
+
+	@Embedded(() => ConsentEntity, { nullable: true, object: true })
+	consent?: ConsentEntity;
+
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
+
+	@Property({ nullable: true })
+	lastSyncedAt?: Date;
 
 	constructor(props: UserProperties) {
 		super();
@@ -122,7 +138,10 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
 		this.birthday = props.birthday;
+		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.parents = props.parents;
+		this.lastSyncedAt = props.lastSyncedAt;
+		this.consent = props.consent;
 	}
 
 	public resolvePermissions(): string[] {
@@ -132,14 +151,68 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 		let permissions: string[] = [];
 
-		const roles = this.roles.getItems();
+		const roles = this.getRoles();
 		roles.forEach((role) => {
 			const rolePermissions = role.resolvePermissions();
 			permissions = [...permissions, ...rolePermissions];
 		});
 
-		const uniquePermissions = [...new Set(permissions)];
+		const setOfPermission = this.resolveSchoolPermissions(permissions, roles);
+
+		const uniquePermissions = [...setOfPermission];
 
 		return uniquePermissions;
+	}
+
+	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
+	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
+		const setOfPermission = new Set(permissions);
+		const schoolPermissions = this.school.permissions;
+
+		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
+			return setOfPermission;
+		}
+
+		if (this.school.permissions) {
+			if (roles.some((role) => role.name === RoleName.STUDENT)) {
+				if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+					setOfPermission.add(Permission.LERNSTORE_VIEW);
+				} else {
+					setOfPermission.delete(Permission.LERNSTORE_VIEW);
+				}
+			}
+
+			if (roles.some((role) => role.name === RoleName.TEACHER)) {
+				const canStudentListByDefault = Configuration.get(
+					'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
+				) as boolean;
+
+				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
+					setOfPermission.add(Permission.STUDENT_LIST);
+				} else {
+					setOfPermission.delete(Permission.STUDENT_LIST);
+				}
+			}
+		}
+
+		return setOfPermission;
+	}
+
+	public getRoles(): Role[] {
+		const roles = this.roles.getItems();
+
+		return roles;
+	}
+
+	public getInfo(): UserInfo {
+		const userInfo = {
+			id: this.id,
+			firstName: this.firstName,
+			lastName: this.lastName,
+			language: this.language,
+			customAvatarBackgroundColor: this.customAvatarBackgroundColor,
+		};
+
+		return userInfo;
 	}
 }

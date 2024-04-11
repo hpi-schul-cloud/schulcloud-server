@@ -1,17 +1,18 @@
+import {
+	SanisGruppenResponse,
+	SanisResponse,
+	SanisSonstigeGruppenzugehoerigeResponse,
+} from '@infra/schulconnex-client';
+import { SanisErreichbarkeitenResponse, SchulconnexCommunicationType } from '@infra/schulconnex-client/response';
+import { SanisGroupRole } from '@infra/schulconnex-client/response/sanis-group-role';
+import { SanisGroupType } from '@infra/schulconnex-client/response/sanis-group-type';
+import { SanisRole } from '@infra/schulconnex-client/response/sanis-role';
 import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
-import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisRole,
-	SanisSonstigeGruppenzugehoerigeResponse,
-} from './response';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
@@ -54,18 +55,27 @@ export class SanisResponseMapper {
 	}
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
+		let email: string | undefined;
+		if (source.personenkontexte[0].erreichbarkeiten?.length) {
+			const emailContact: SanisErreichbarkeitenResponse | undefined = source.personenkontexte[0].erreichbarkeiten.find(
+				(contact: SanisErreichbarkeitenResponse): boolean => contact.typ === SchulconnexCommunicationType.EMAIL
+			);
+			email = emailContact?.kennung;
+		}
+
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			roles: [this.mapSanisRoleToRoleName(source)],
+			roles: [SanisResponseMapper.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
+			email,
 		});
 
 		return mapped;
 	}
 
-	private mapSanisRoleToRoleName(source: SanisResponse): RoleName {
+	public static mapSanisRoleToRoleName(source: SanisResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 

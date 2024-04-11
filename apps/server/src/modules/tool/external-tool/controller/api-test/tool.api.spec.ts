@@ -1,19 +1,19 @@
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
+import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
+	cleanupCollections,
+	columnBoardNodeFactory,
+	externalToolElementNodeFactory,
+	externalToolFactory,
+	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
-	cleanupCollections,
-	contextExternalToolEntityFactory,
-	externalToolEntityFactory,
-	externalToolFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
 } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -25,9 +25,10 @@ import {
 	ToolConfigType,
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolMetadata } from '../../domain';
 import { ExternalToolEntity } from '../../entity';
+import { externalToolEntityFactory } from '../../testing';
 import {
 	ExternalToolCreateParams,
 	ExternalToolMetadataResponse,
@@ -364,6 +365,7 @@ describe('ToolController (API)', () => {
 	describe('[POST] tools/external-tools/:externalToolId', () => {
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
+			description: 'This is a tool description',
 			parameters: [
 				{
 					name: 'key',
@@ -388,6 +390,10 @@ describe('ToolController (API)', () => {
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
+			medium: {
+				mediumId: 'mediumId',
+				publisher: 'publisher',
+			},
 		};
 
 		describe('when valid data is given', () => {
@@ -396,6 +402,7 @@ describe('ToolController (API)', () => {
 				const params = { ...postParams, id: toolId };
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
 					.withBase64Logo()
+					.withMedium()
 					.buildWithId({ version: 1 }, toolId);
 
 				const base64Logo: string = externalToolEntity.logoBase64 as string;
@@ -431,7 +438,8 @@ describe('ToolController (API)', () => {
 				expect(body.id).toBeDefined();
 				expect(body).toEqual<ExternalToolResponse>({
 					id: body.id,
-					name: 'Tool 1',
+					name: params.name,
+					description: params.description,
 					parameters: [
 						{
 							name: 'key',
@@ -457,6 +465,10 @@ describe('ToolController (API)', () => {
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
 					version: 2,
+					medium: {
+						mediumId: params.medium?.mediumId ?? '',
+						publisher: params.medium?.publisher,
+					},
 				});
 			});
 		});
@@ -660,7 +672,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
@@ -669,6 +681,7 @@ describe('ToolController (API)', () => {
 				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
 					schoolTool: schoolExternalToolEntitys[0],
 					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
 				});
 
 				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
@@ -677,10 +690,14 @@ describe('ToolController (API)', () => {
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
-					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: { course: 3, boardElement: 2 },
-				});
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardTools[0],
+						parent: board,
+					}
+				);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([
@@ -691,12 +708,14 @@ describe('ToolController (API)', () => {
 					...schoolExternalToolEntitys,
 					...courseTools,
 					...boardTools,
+					board,
+					...externalToolElements,
 				]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, toolId, externalToolEntity, externalToolMetadata };
+				return { loggedInClient, toolId, externalToolEntity };
 			};
 
 			it('should return the metadata of externalTool', async () => {
@@ -708,10 +727,87 @@ describe('ToolController (API)', () => {
 				expect(response.body).toEqual<ExternalToolMetadataResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
-						course: 3,
-						boardElement: 2,
+						course: 1,
+						boardElement: 1,
 					},
 				});
+			});
+		});
+	});
+
+	describe('[GET] tools/external-tools/:externalToolId/datasheet', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = setup();
+
+				const response: Response = await testApiClient.get(`${toolId}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				// this date will only have a daily precision, which should not impact successful tests
+				const date = new Date();
+				const year = date.getFullYear();
+				const month = date.getMonth() + 1;
+				const day = date.getDate();
+				const dateString = `${year}-${month}-${day}`;
+
+				return { loggedInClient, externalToolEntity, dateString };
+			};
+
+			it('should return the datasheet of the externalTool', async () => {
+				const { loggedInClient, externalToolEntity, dateString } = await setup();
+
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.header).toEqual(
+					expect.objectContaining({
+						'content-type': 'application/pdf',
+						'content-disposition': `inline; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}.pdf`,
+					})
+				);
+				expect(response.body).toEqual(expect.any(Buffer));
+			});
+		});
+
+		describe('when external tool cannot be found', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, toolId };
+			};
+
+			it('should return a not found exception', async () => {
+				const { loggedInClient, toolId } = await setup();
+
+				const response: Response = await loggedInClient.get(`${toolId}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 	});

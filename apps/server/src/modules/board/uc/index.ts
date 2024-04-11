@@ -4,3 +4,4 @@ export * from './card.uc';
 export * from './column.uc';
 export * from './element.uc';
 export * from './submission-item.uc';
+export * from './media-board';

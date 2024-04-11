@@ -8,6 +8,7 @@ export enum FilesStorageEvents {
 	'LIST_FILES_OF_PARENT' = 'list-files-of-parent',
 	'DELETE_FILES_OF_PARENT' = 'delete-files-of-parent',
 	'REMOVE_CREATORID_OF_FILES' = 'remove-creatorId-of-files',
+	'DELETE_FILES' = 'delete-files',
 }
 
 export enum ScanStatus {
@@ -25,6 +26,7 @@ export enum FileRecordParentType {
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
+	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
 }
 
@@ -56,4 +58,6 @@ export interface FileDO {
 	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
 }

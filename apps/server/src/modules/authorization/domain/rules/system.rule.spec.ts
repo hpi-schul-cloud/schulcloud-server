@@ -3,7 +3,7 @@ import { System } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { schoolFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { SystemRule } from './system.rule';
@@ -84,7 +84,7 @@ describe(SystemRule.name, () => {
 			const setup = () => {
 				const system: System = systemFactory.build();
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const user: User = userFactory.buildWithId({ school });
@@ -123,7 +123,7 @@ describe(SystemRule.name, () => {
 			const setup = () => {
 				const system: System = systemFactory.build();
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const user: User = userFactory.buildWithId({ school });
@@ -150,7 +150,7 @@ describe(SystemRule.name, () => {
 		describe('when the user reads a system that is not at his school', () => {
 			const setup = () => {
 				const system: System = systemFactory.build();
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [],
 				});
 				const user: User = userFactory.buildWithId({ school });
@@ -178,7 +178,7 @@ describe(SystemRule.name, () => {
 			const setup = () => {
 				const system: System = systemFactory.build({ ldapConfig: { provider: 'general' } });
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const user: User = userFactory.buildWithId({ school });
@@ -206,7 +206,7 @@ describe(SystemRule.name, () => {
 			const setup = () => {
 				const system: System = systemFactory.build({ ldapConfig: { provider: 'other provider' } });
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const user: User = userFactory.buildWithId({ school });
@@ -234,7 +234,7 @@ describe(SystemRule.name, () => {
 			const setup = () => {
 				const system: System = systemFactory.build({ ldapConfig: undefined });
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId(undefined, system.id);
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [systemEntity],
 				});
 				const user: User = userFactory.buildWithId({ school });

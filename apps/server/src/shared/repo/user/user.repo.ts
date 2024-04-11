@@ -25,6 +25,21 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
+	async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
+		const user: User | null = await this._em.findOne(User, { id });
+
+		if (!user) {
+			return null;
+		}
+
+		if (populate) {
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this.populateRoles(user.roles.getItems());
+		}
+
+		return user;
+	}
+
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<User> {
 		const [users] = await this._em.findAndCount(User, { externalId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
@@ -142,7 +157,13 @@ export class UserRepo extends BaseRepo<User> {
 
 		const userDocuments = await this._em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users = userDocuments.map((userDocument) => this._em.map(User, userDocument));
+		const users = userDocuments.map((userDocument) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { createdAt, updatedAt, ...newUserDocument } = userDocument;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			return this._em.map(User, newUserDocument);
+		});
 		await this._em.populate(users, ['roles']);
 		return [users, count];
 	}
@@ -156,15 +177,19 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this._em.nativeDelete(User, {
+		const deletedUserNumber = await this._em.nativeDelete(User, {
 			id: userId,
 		});
+
 		return deletedUserNumber;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
-		const user = await this._em.findOneOrFail(User, { id: userId });
-		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		const user: User | null = await this._em.findOne(User, { id: userId });
+		let parentsEmails: string[] = [];
+		if (user !== null) {
+			parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		}
 
 		return parentsEmails;
 	}
@@ -187,5 +212,33 @@ export class UserRepo extends BaseRepo<User> {
 
 	async flush(): Promise<void> {
 		await this._em.flush();
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this._em.find(User, { school: schoolId, firstName, lastName });
+
+		return users;
+	}
+
+	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
+		const foundUsers = await this._em.find(
+			User,
+			{ externalId: { $in: externalIds } },
+			{ fields: ['id', 'externalId'] }
+		);
+
+		const users = foundUsers.map(({ id }) => id);
+
+		return users;
+	}
+
+	public async updateAllUserByLastSyncedAt(userIds: string[]): Promise<void> {
+		await this._em.nativeUpdate(
+			User,
+			{
+				id: { $in: userIds },
+			},
+			{ lastSyncedAt: new Date() }
+		);
 	}
 }

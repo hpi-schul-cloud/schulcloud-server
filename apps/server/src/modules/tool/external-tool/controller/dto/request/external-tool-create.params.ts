@@ -9,25 +9,31 @@ import {
 	Oauth2ToolConfigCreateParams,
 } from './config';
 import { CustomParameterPostParams } from './custom-parameter.params';
+import { ExternalToolMediumParams } from './external-tool-medium.params';
 
 @ApiExtraModels(Lti11ToolConfigCreateParams, Oauth2ToolConfigCreateParams, BasicToolConfigParams)
 export class ExternalToolCreateParams {
 	@IsString()
-	@ApiProperty()
+	@ApiProperty({ type: String, description: 'Name of the external tool' })
 	name!: string;
 
 	@IsString()
 	@IsOptional()
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: String, description: 'Description of the external tool' })
+	description?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional({ type: String, description: 'URL of the external tool' })
 	url?: string;
 
 	@IsString()
 	@IsOptional()
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ type: String, description: 'URL of the logo of the external tool' })
 	logoUrl?: string;
 
 	@ValidateNested()
-	@Type(/* istanbul ignore next */ () => ExternalToolConfigCreateParams, {
+	@Type(() => ExternalToolConfigCreateParams, {
 		keepDiscriminatorProperty: true,
 		discriminator: {
 			property: 'type',
@@ -39,6 +45,7 @@ export class ExternalToolCreateParams {
 		},
 	})
 	@ApiProperty({
+		description: 'Configuration of the external tool',
 		oneOf: [
 			{ $ref: getSchemaPath(BasicToolConfigParams) },
 			{ $ref: getSchemaPath(Lti11ToolConfigCreateParams) },
@@ -50,12 +57,12 @@ export class ExternalToolCreateParams {
 	@ValidateNested({ each: true })
 	@IsArray()
 	@IsOptional()
-	@ApiPropertyOptional({ type: [CustomParameterPostParams] })
-	@Type(/* istanbul ignore next */ () => CustomParameterPostParams)
+	@ApiPropertyOptional({ type: [CustomParameterPostParams], description: 'Custom parameters of the external tool' })
+	@Type(() => CustomParameterPostParams)
 	parameters?: CustomParameterPostParams[];
 
 	@IsBoolean()
-	@ApiProperty()
+	@ApiProperty({ description: 'Tool can be hidden, those tools cant be added to e.g. school, course or board' })
 	isHidden!: boolean;
 
 	@IsBoolean()
@@ -67,12 +74,22 @@ export class ExternalToolCreateParams {
 	isDeactivated!: boolean;
 
 	@IsBoolean()
-	@ApiProperty()
+	@ApiProperty({ description: 'Tool should be opened in a new tab' })
 	openNewTab!: boolean;
 
 	@IsArray()
 	@IsOptional()
 	@IsEnum(ToolContextType, { each: true })
-	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
+	@ApiPropertyOptional({
+		enum: ToolContextType,
+		enumName: 'ToolContextType',
+		isArray: true,
+		description: 'Restrict tools to specific contexts',
+	})
 	restrictToContexts?: ToolContextType[];
+
+	@ValidateNested()
+	@IsOptional()
+	@ApiPropertyOptional({ type: ExternalToolMediumParams, description: 'Medium of the external tool' })
+	medium?: ExternalToolMediumParams;
 }

@@ -1,13 +1,29 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
-import { CardNode, RichTextElementNode } from '@shared/domain/entity';
+import {
+	AnyBoardDo,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	ColumnBoard,
+} from '@shared/domain/domainobject';
+import {
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ExternalToolElementNodeEntity,
+	RichTextElementNode,
+} from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,
 	cardNodeFactory,
@@ -16,12 +32,18 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
+	contextExternalToolFactory,
 	courseFactory,
+	externalToolElementNodeFactory,
 	fileElementFactory,
+	mediaBoardNodeFactory,
+	mediaExternalToolElementNodeFactory,
+	mediaLineNodeFactory,
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
+import { ContextExternalTool } from '../../tool/context-external-tool/domain';
+import { ContextExternalToolEntity } from '../../tool/context-external-tool/entity';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -267,6 +289,62 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
+	describe('countBoardUsageForExternalTools', () => {
+		describe('when counting the amount of boards used by the selected tools', () => {
+			const setup = async () => {
+				const contextExternalToolId: EntityId = new ObjectId().toHexString();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
+					undefined,
+					contextExternalToolId
+				);
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId(
+					undefined,
+					contextExternalToolId
+				);
+				const otherContextExternalToolEntity: ContextExternalToolEntity =
+					contextExternalToolEntityFactory.buildWithId();
+
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const otherBoard: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const card: CardNode = cardNodeFactory.buildWithId({ parent: board });
+				const otherCard: CardNode = cardNodeFactory.buildWithId({ parent: otherBoard });
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						parent: card,
+						contextExternalTool: contextExternalToolEntity,
+					}
+				);
+				const otherExternalToolElement: ExternalToolElementNodeEntity = externalToolElementNodeFactory.buildWithId({
+					parent: otherCard,
+					contextExternalTool: otherContextExternalToolEntity,
+				});
+
+				await em.persistAndFlush([
+					board,
+					otherBoard,
+					card,
+					otherCard,
+					...externalToolElements,
+					otherExternalToolElement,
+					contextExternalToolEntity,
+				]);
+
+				return {
+					contextExternalTool,
+				};
+			};
+
+			it('should return the amount of boards used by the selected tools', async () => {
+				const { contextExternalTool } = await setup();
+
+				const result: number = await repo.countBoardUsageForExternalTools([contextExternalTool]);
+
+				expect(result).toEqual(1);
+			});
+		});
+	});
+
 	describe('getAncestorIds', () => {
 		describe('when having only a root boardnode', () => {
 			const setup = async () => {
@@ -506,6 +584,73 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(card);
 
 				expect(card.acceptAsync).toHaveBeenCalledWith(recursiveDeleteVisitor);
+			});
+		});
+	});
+
+	describe('deleteByExternalReference', () => {
+		describe('when deleting a board by its external reference', () => {
+			const setup = async () => {
+				const courseContext: BoardExternalReference = {
+					id: new ObjectId().toHexString(),
+					type: BoardExternalReferenceType.Course,
+				};
+				const courseBoard = columnBoardNodeFactory.buildWithId({ context: courseContext });
+				const courseColumn = columnNodeFactory.buildWithId({ parent: courseBoard });
+				const courseCard = cardNodeFactory.buildWithId({ parent: courseColumn });
+				const courseElement = richTextElementNodeFactory.buildWithId({ parent: courseCard });
+
+				const userContext: BoardExternalReference = {
+					id: new ObjectId().toHexString(),
+					type: BoardExternalReferenceType.User,
+				};
+				const userMediaBoard = mediaBoardNodeFactory.buildWithId({ context: userContext });
+				const userMediaLine = mediaLineNodeFactory.buildWithId({ parent: userMediaBoard });
+				const userMediaElement = mediaExternalToolElementNodeFactory.buildWithId({ parent: userMediaLine });
+
+				await em.persistAndFlush([
+					courseBoard,
+					courseColumn,
+					courseCard,
+					courseElement,
+					userMediaBoard,
+					userMediaLine,
+					userMediaElement,
+				]);
+				em.clear();
+
+				return {
+					courseContext,
+					courseBoard,
+					courseColumn,
+					courseCard,
+					courseElement,
+					userMediaBoard,
+					userMediaLine,
+					userMediaElement,
+				};
+			};
+
+			it('should delete a board with the given reference', async () => {
+				const { courseContext, courseBoard, courseColumn, courseCard, courseElement } = await setup();
+
+				await repo.deleteByExternalReference(courseContext);
+				em.clear();
+
+				await expect(
+					em.find(BoardNode, { id: { $in: [courseBoard.id, courseColumn.id, courseCard.id, courseElement.id] } })
+				).resolves.toHaveLength(0);
+			});
+
+			it('should not delete a board without the given reference', async () => {
+				const { courseContext, userMediaBoard, userMediaLine, userMediaElement } = await setup();
+
+				await repo.deleteByExternalReference(courseContext);
+				em.clear();
+
+				await expect(
+					em.find(BoardNode, { id: { $in: [userMediaBoard.id, userMediaLine.id, userMediaElement.id] } })
+				).resolves.toHaveLength(3);
 			});
 		});
 	});

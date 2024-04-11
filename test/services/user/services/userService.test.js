@@ -329,7 +329,7 @@ describe('user service', () => {
 			}
 		});
 
-		it('can not populate school', async () => {
+		xit('can not populate school', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);

@@ -11,4 +11,5 @@ export type LearnroomMetadata = {
 	startDate?: Date;
 	untilDate?: Date;
 	copyingSince?: Date;
+	isSynchronized: boolean;
 };

@@ -4,13 +4,14 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
+import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
+import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { TldrawDrawing } from '@modules/tldraw/entities';
-import { Account } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
@@ -20,6 +21,9 @@ import {
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
+	MediaBoardNode,
+	MediaExternalToolElementNode,
+	MediaLineNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -30,10 +34,9 @@ import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.mod
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
-	Board,
-	BoardElement,
 	ColumnboardBoardElement,
-	ColumnBoardTarget,
+	LegacyBoard,
+	LegacyBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -54,14 +57,13 @@ import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
-	Account,
-	Board,
-	BoardElement,
+	AccountEntity,
+	LegacyBoard,
+	LegacyBoardElement,
 	BoardNode,
 	CardNode,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
-	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,
@@ -73,6 +75,9 @@ export const ALL_ENTITIES = [
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
+	MediaBoardNode,
+	MediaLineNode,
+	MediaExternalToolElementNode,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,

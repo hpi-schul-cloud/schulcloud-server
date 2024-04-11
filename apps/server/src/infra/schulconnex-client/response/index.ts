@@ -1,0 +1,16 @@
+export * from './sanis.response';
+export * from './sanis-role';
+export * from './sanis-group-role';
+export * from './sanis-group-type';
+export * from './sanis-name-response';
+export * from './sanis-gruppe-response';
+export * from './sanis-gruppen-response';
+export * from './sanis-organisation-response';
+export * from './sanis-personenkontext-response';
+export * from './sanis-gruppenzugehoerigkeit-response';
+export * from './sanis-person-response';
+export * from './sanis-sonstige-gruppenzugehoerige-response';
+export * from './sanis-anschrift-response';
+export * from './sanis-response-validation-groups';
+export { SanisErreichbarkeitenResponse } from './sanis-erreichbarkeiten-response';
+export { SchulconnexCommunicationType } from './schulconnex-communication-type';

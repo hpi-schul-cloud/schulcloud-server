@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amqp-files-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: amqp-files
+data:
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
+  EXIT_ON_ERROR: "{{ EXIT_ON_ERROR }}"

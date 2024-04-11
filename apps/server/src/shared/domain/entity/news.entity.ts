@@ -12,9 +12,8 @@ export interface NewsProperties {
 	content: string;
 	displayAt: Date;
 	school: EntityId | SchoolEntity;
-	creator: EntityId | User;
+	creator?: EntityId | User;
 	target: EntityId | NewsTarget;
-
 	externalId?: string;
 	source?: 'internal' | 'rss';
 	sourceDescription?: string;
@@ -61,13 +60,25 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	school!: SchoolEntity;
 
-	@ManyToOne('User', { fieldName: 'creatorId' })
-	creator!: User;
+	@ManyToOne('User', { fieldName: 'creatorId', nullable: true })
+	creator?: User;
 
 	@ManyToOne('User', { fieldName: 'updaterId', nullable: true })
 	updater?: User;
 
 	permissions: string[] = [];
+
+	public removeCreatorReference(creatorId: EntityId): void {
+		if (creatorId === this.creator?.id) {
+			this.creator = undefined;
+		}
+	}
+
+	public removeUpdaterReference(updaterId: EntityId): void {
+		if (updaterId === this.updater?.id) {
+			this.updater = undefined;
+		}
+	}
 
 	constructor(props: NewsProperties) {
 		super();

@@ -26,4 +26,8 @@ export class RocketChatUserMapper {
 			updatedAt: domainObject.updatedAt,
 		});
 	}
+
+	static mapToDOs(entities: RocketChatUserEntity[]): RocketChatUser[] {
+		return entities.map((entity) => this.mapToDO(entity));
+	}
 }

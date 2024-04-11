@@ -6,7 +6,7 @@ type EmptyResultQueryType = typeof EmptyResultQuery;
 type ScopeOperator = '$and' | '$or';
 
 export class Scope<T> {
-	private _queries: FilterQuery<T | EmptyResultQueryType>[] = [];
+	private _queries: (FilterQuery<T> | EmptyResultQueryType)[] = [];
 
 	private _operator: ScopeOperator;
 

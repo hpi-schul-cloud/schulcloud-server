@@ -1,21 +1,21 @@
-import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { CalendarModule } from '@infra/calendar';
-import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
-import { TeamsRepo } from '@shared/repo';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { LoggerModule } from '@src/core/logger';
-import { ConverterUtil } from '@shared/common';
 import { UserModule } from '@modules/user';
+import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+import { ConverterUtil } from '@shared/common';
+import { TeamsRepo } from '@shared/repo';
+import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
+import { LoggerModule } from '@src/core/logger';
+import { LearnroomModule } from '../learnroom';
 import { BBBService, BbbSettings } from './bbb';
+import { VideoConferenceDeprecatedController } from './controller';
+import { VideoConferenceSettings } from './interface';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
-import { VideoConferenceDeprecatedController } from './controller';
 import VideoConferenceConfiguration from './video-conference-config';
-import { VideoConferenceSettings } from './interface';
-import { LearnroomModule } from '../learnroom';
 
 @Module({
 	imports: [

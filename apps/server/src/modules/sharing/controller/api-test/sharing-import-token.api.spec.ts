@@ -13,7 +13,7 @@ import {
 	courseFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { Request } from 'express';
@@ -80,12 +80,12 @@ describe(`share token import (api)`, () => {
 	});
 
 	beforeEach(() => {
-		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+		Configuration.set('FEATURE_COURSE_SHARE', true);
 	});
 
 	const setup = async (context?: ShareTokenContext) => {
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const roles = roleFactory.buildList(1, {
 			permissions: [Permission.COURSE_CREATE],
 		});
@@ -113,7 +113,7 @@ describe(`share token import (api)`, () => {
 
 	describe('with the feature disabled', () => {
 		it('should return status 500', async () => {
-			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+			Configuration.set('FEATURE_COURSE_SHARE', false);
 			const { token } = await setup();
 
 			const response = await api.post({ token }, { newName: 'NewName' });
@@ -159,8 +159,8 @@ describe(`share token import (api)`, () => {
 
 	describe('with invalid context', () => {
 		const setup2 = async () => {
-			const school = schoolFactory.build();
-			const otherSchool = schoolFactory.build();
+			const school = schoolEntityFactory.build();
+			const otherSchool = schoolEntityFactory.build();
 			const roles = roleFactory.buildList(1, {
 				permissions: [Permission.COURSE_CREATE],
 			});

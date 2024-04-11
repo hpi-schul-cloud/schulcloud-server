@@ -3,18 +3,15 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { type SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import {
-	cleanupCollections,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-} from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
@@ -50,7 +47,7 @@ describe('SchoolExternalToolRepo', () => {
 
 	const createTools = () => {
 		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-		const school: SchoolEntity = schoolFactory.buildWithId();
+		const school: SchoolEntity = schoolEntityFactory.buildWithId();
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,

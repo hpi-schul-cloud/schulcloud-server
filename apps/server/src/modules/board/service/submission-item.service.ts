@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 import { ValidationError } from '@shared/common';
 import { isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain/domainobject';
@@ -27,6 +27,8 @@ export class SubmissionItemService {
 		submissionContainer: SubmissionContainerElement,
 		payload: { completed: boolean }
 	): Promise<SubmissionItem> {
+		this.checkNotLocked(submissionContainer);
+
 		const submissionItem = new SubmissionItem({
 			id: new ObjectId().toHexString(),
 			createdAt: new Date(),
@@ -43,17 +45,35 @@ export class SubmissionItemService {
 	}
 
 	async update(submissionItem: SubmissionItem, completed: boolean): Promise<void> {
+		const parent = await this.getParent(submissionItem);
+
+		submissionItem.completed = completed;
+
+		await this.boardDoRepo.save(submissionItem, parent);
+	}
+
+	async delete(submissionItem: SubmissionItem): Promise<void> {
+		await this.getParent(submissionItem);
+
+		await this.boardDoRepo.delete(submissionItem);
+	}
+
+	private async getParent(submissionItem: SubmissionItem): Promise<SubmissionContainerElement> {
 		const submissionContainterElement = await this.boardDoRepo.findParentOfId(submissionItem.id);
+
 		if (!isSubmissionContainerElement(submissionContainterElement)) {
 			throw new UnprocessableEntityException();
 		}
 
+		this.checkNotLocked(submissionContainterElement);
+
+		return submissionContainterElement;
+	}
+
+	private checkNotLocked(submissionContainterElement: SubmissionContainerElement): void {
 		const now = new Date();
 		if (submissionContainterElement.dueDate && submissionContainterElement.dueDate < now) {
 			throw new ValidationError('not allowed to save anymore');
 		}
-		submissionItem.completed = completed;
-
-		await this.boardDoRepo.save(submissionItem, submissionContainterElement);
 	}
 }

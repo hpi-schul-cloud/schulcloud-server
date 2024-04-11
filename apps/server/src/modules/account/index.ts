@@ -1,3 +1,4 @@
 export * from './account.module';
-export * from './account-config';
-export { AccountService, AccountDto, AccountSaveDto } from './services';
+export { AccountConfig } from './account-config';
+export { AccountService } from './services';
+export * from './domain';

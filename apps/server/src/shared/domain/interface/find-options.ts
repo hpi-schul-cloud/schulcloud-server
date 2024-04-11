@@ -14,3 +14,10 @@ export interface IFindOptions<T> {
 	pagination?: Pagination;
 	order?: SortOrderMap<T>;
 }
+
+export interface IFindQuery {
+	pagination?: Pagination;
+	nameQuery?: string;
+}
+
+export type SortOrderNumberType = Partial<Record<string, number>>;

@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfigEntity, SchoolEntity, SystemEntity } from '@shared/domain/entity';
-import { TestApiClient, UserAndAccountTestFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
+import { schoolEntityFactory, systemEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Response } from 'supertest';
 import { PublicSystemListResponse, PublicSystemResponse } from '../dto';
 
@@ -112,7 +112,7 @@ describe('System (API)', () => {
 		describe('when the endpoint is called with a known systemId', () => {
 			const setup = async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig({ provider: 'general' }).buildWithId();
-				const school: SchoolEntity = schoolFactory.build({ systems: [system] });
+				const school: SchoolEntity = schoolEntityFactory.build({ systems: [system] });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([system, adminAccount, adminUser, school]);

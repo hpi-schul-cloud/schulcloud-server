@@ -1,15 +1,17 @@
 import { MikroORM } from '@mikro-orm/core';
+import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { Collection, Db } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
-import { Collection, Db } from 'mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
 	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
 
 	private get db(): Db {
-		return this.em.getConnection('write').getDb();
+		const connection = this.em.getConnection('write').getDb();
+		return connection;
 	}
 
 	getDatabaseCollection(collectionName: string): Collection {
@@ -26,6 +28,7 @@ export class DatabaseManagementService {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
 		});
+
 		return insertedCount;
 	}
 
@@ -65,5 +68,39 @@ export class DatabaseManagementService {
 
 	async syncIndexes(): Promise<void> {
 		return this.orm.getSchemaGenerator().ensureIndexes();
+	}
+
+	async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
+		const migrator = this.orm.getMigrator();
+		const params = this.migrationParams(only, from, to);
+		await migrator.up(params);
+	}
+
+	async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
+		const migrator = this.orm.getMigrator();
+		const params = this.migrationParams(only, from, to);
+
+		await migrator.down(params);
+	}
+
+	async migrationPending(): Promise<UmzugMigration[]> {
+		const migrator = this.orm.getMigrator();
+		const pendingMigrations = await migrator.getPendingMigrations();
+		return pendingMigrations;
+	}
+
+	private migrationParams(only?: string, from?: string, to?: string) {
+		const params: MigrateOptions = {};
+		if (only) {
+			params.migrations = [only];
+		} else {
+			if (from) {
+				params.from = from;
+			}
+			if (to) {
+				params.to = to;
+			}
+		}
+		return params;
 	}
 }

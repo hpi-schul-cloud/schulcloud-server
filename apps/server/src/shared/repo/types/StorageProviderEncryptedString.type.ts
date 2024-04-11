@@ -6,16 +6,15 @@ import CryptoJs from 'crypto-js';
  * Serialization type to transparent encrypt string values in database.
  */
 export class StorageProviderEncryptedStringType extends Type<string, string> {
-	// TODO modularize service?
-	private key: string;
-
-	constructor(customKey?: string) {
+	constructor(private customKey?: string) {
 		super();
-		if (customKey) {
-			this.key = customKey;
-		} else {
-			this.key = Configuration.get('S3_KEY') as string;
+	}
+
+	private get key() {
+		if (this.customKey) {
+			return this.customKey;
 		}
+		return Configuration.get('S3_KEY') as string;
 	}
 
 	convertToDatabaseValue(value: string | undefined): string {

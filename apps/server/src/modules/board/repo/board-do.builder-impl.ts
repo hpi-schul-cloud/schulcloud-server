@@ -4,29 +4,35 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
 	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import {
-	BoardNodeType,
 	type BoardDoBuilder,
 	type BoardNode,
+	BoardNodeType,
 	type CardNode,
 	type ColumnBoardNode,
 	type ColumnNode,
+	type DrawingElementNode,
 	type ExternalToolElementNodeEntity,
 	type FileElementNode,
 	type LinkElementNode,
+	type MediaBoardNode,
+	type MediaExternalToolElementNode,
+	type MediaLineNode,
 	type RichTextElementNode,
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
 } from '@shared/domain/entity';
-import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -54,6 +60,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 			context: boardNode.context,
+			isVisible: boardNode.isVisible ?? false,
 		});
 
 		return columnBoard;
@@ -231,5 +238,51 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		} else {
 			single(boardNode, type);
 		}
+	}
+
+	buildMediaBoard(boardNode: MediaBoardNode): MediaBoard {
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.MEDIA_LINE);
+
+		const lines: MediaLine[] = this.buildChildren<MediaLine>(boardNode);
+
+		const mediaBoard: MediaBoard = new MediaBoard({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			children: lines,
+			context: boardNode.context,
+		});
+
+		return mediaBoard;
+	}
+
+	buildMediaLine(boardNode: MediaLineNode): MediaLine {
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT);
+
+		const elements: MediaExternalToolElement[] = this.buildChildren<MediaExternalToolElement>(boardNode);
+
+		const mediaLine: MediaLine = new MediaLine({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			children: elements,
+			title: boardNode.title,
+		});
+
+		return mediaLine;
+	}
+
+	buildMediaExternalToolElement(boardNode: MediaExternalToolElementNode): MediaExternalToolElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: MediaExternalToolElement = new MediaExternalToolElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			contextExternalToolId: boardNode.contextExternalTool.id,
+		});
+
+		return element;
 	}
 }

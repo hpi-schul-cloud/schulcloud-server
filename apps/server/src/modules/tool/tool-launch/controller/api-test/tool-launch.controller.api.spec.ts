@@ -5,23 +5,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	basicToolConfigFactory,
-	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
 	courseFactory,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
 	customParameterFactory,
+	schoolEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { ExternalToolEntity } from '../../../external-tool/entity';
+import { externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
@@ -58,7 +58,7 @@ describe('ToolLaunchController (API)', () => {
 	describe('[GET] tools/context/{contextExternalToolId}/launch', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -126,7 +126,7 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user wants to launch an outdated tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -178,7 +178,7 @@ describe('ToolLaunchController (API)', () => {
 		describe('when user wants to launch a deactivated tool', () => {
 			describe('when external tool is deactivated', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolFactory.buildWithId();
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.CONTEXT_TOOL_USER,
 					]);
@@ -230,7 +230,7 @@ describe('ToolLaunchController (API)', () => {
 
 			describe('when school external tool is deactivated', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolFactory.buildWithId();
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.CONTEXT_TOOL_USER,
 					]);
@@ -285,8 +285,8 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user wants to launch tool from another school', () => {
 			const setup = async () => {
-				const toolSchool: SchoolEntity = schoolFactory.buildWithId();
-				const usersSchool: SchoolEntity = schoolFactory.buildWithId();
+				const toolSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const usersSchool: SchoolEntity = schoolEntityFactory.buildWithId();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school: usersSchool }, [
 					Permission.CONTEXT_TOOL_USER,

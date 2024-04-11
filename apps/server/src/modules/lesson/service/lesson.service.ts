@@ -1,20 +1,39 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { LessonRepo } from '../repository';
 
 @Injectable()
-export class LessonService implements AuthorizationLoaderService {
+@EventsHandler(UserDeletedEvent)
+export class LessonService implements AuthorizationLoaderService, DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(LessonService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
@@ -37,11 +56,11 @@ export class LessonService implements AuthorizationLoaderService {
 		return lessons;
 	}
 
-	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Lessons',
-				DomainModel.LESSONS,
+				DomainName.LESSONS,
 				userId,
 				StatusModel.PENDING
 			)
@@ -62,10 +81,18 @@ export class LessonService implements AuthorizationLoaderService {
 
 		const numberOfUpdatedLessons = updatedLessons.length;
 
+		const result = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
+			DomainOperationReportBuilder.build(
+				OperationType.UPDATE,
+				numberOfUpdatedLessons,
+				this.getLessonsId(updatedLessons)
+			),
+		]);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from Classes',
-				DomainModel.LESSONS,
+				DomainName.LESSONS,
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedLessons,
@@ -73,6 +100,10 @@ export class LessonService implements AuthorizationLoaderService {
 			)
 		);
 
-		return numberOfUpdatedLessons;
+		return result;
+	}
+
+	private getLessonsId(lessons: LessonEntity[]): EntityId[] {
+		return lessons.map((lesson) => lesson.id);
 	}
 }

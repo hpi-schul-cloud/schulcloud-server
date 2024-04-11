@@ -1,21 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { System } from '../domain';
-import { SystemRepo } from '../repo';
+import { SYSTEM_REPO, System, SystemRepo } from '../domain';
 
 @Injectable()
 export class SystemService {
-	constructor(private readonly systemRepo: SystemRepo) {}
+	constructor(@Inject(SYSTEM_REPO) private readonly systemRepo: SystemRepo) {}
 
 	public async findById(id: EntityId): Promise<System | null> {
-		const system: System | null = await this.systemRepo.findById(id);
+		const system = await this.systemRepo.getSystemById(id);
 
 		return system;
 	}
 
-	public async delete(domainObject: System): Promise<boolean> {
-		const deleted: boolean = await this.systemRepo.delete(domainObject);
+	public async getSystems(id: EntityId[]): Promise<System[]> {
+		const systems = await this.systemRepo.getSystemsByIds(id);
 
-		return deleted;
+		return systems;
+	}
+
+	public async findAllForLdapLogin(): Promise<System[]> {
+		const systems = await this.systemRepo.findAllForLdapLogin();
+
+		return systems;
+	}
+
+	public async delete(domainObject: System): Promise<boolean> {
+		await this.systemRepo.delete(domainObject);
+
+		return true;
 	}
 }
