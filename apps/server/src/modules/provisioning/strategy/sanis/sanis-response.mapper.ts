@@ -83,7 +83,9 @@ export class SanisResponseMapper {
 		const groupNames: string[] = [];
 
 		source.personenkontexte[0]?.gruppen?.forEach((group: SanisGruppenResponse) => {
-			groupNames.push(group.gruppe.bezeichnung);
+			if (group.gruppe.typ === SanisGroupType.CLASS) {
+				groupNames.push(group.gruppe.bezeichnung);
+			}
 		});
 
 		return groupNames;

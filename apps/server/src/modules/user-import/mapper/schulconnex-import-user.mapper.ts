@@ -1,4 +1,4 @@
-import { SanisGruppenResponse, SanisResponse } from '@infra/schulconnex-client';
+import { SanisResponse } from '@infra/schulconnex-client';
 import { SanisResponseMapper } from '@modules/provisioning';
 import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
