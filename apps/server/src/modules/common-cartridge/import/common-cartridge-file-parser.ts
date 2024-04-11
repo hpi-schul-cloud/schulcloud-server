@@ -74,7 +74,7 @@ export class CommonCartridgeFileParser {
 	}
 
 	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
-		if (!organization.isResource && !this.archive.getEntry(organization.resourcePath)) {
+		if (!organization.isResource || !this.archive.getEntry(organization.resourcePath)) {
 			throw new CommonCartridgeResourceNotFoundException();
 		}
 	}
