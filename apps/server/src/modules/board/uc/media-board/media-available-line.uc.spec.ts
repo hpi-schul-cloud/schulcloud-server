@@ -24,7 +24,7 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { SchoolExternalTool } from '../../../tool/school-external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 import { MediaAvailableLineUc } from './media-available-line.uc';

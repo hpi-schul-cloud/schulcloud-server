@@ -6,7 +6,7 @@ import { BoardDoAuthorizable, MediaAvailableLine, type MediaBoard } from '@share
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { SchoolExternalTool } from '../../../tool/school-external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 
