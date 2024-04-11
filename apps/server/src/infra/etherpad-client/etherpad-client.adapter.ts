@@ -43,14 +43,16 @@ export class EtherpadClientAdapter {
 		const groupId = groupResponse.data.data?.groupID;
 
 		if (groupId) {
-			const padID = await this.hasPad(groupId, parentId);
-			if (padID) {
-				return { padId: padID, groupId };
-			}
-			const padResponse = await this.groupApi.createGroupPadUsingGET(groupID, parentId);
-			const padID = padResponse.data.data as unknown as string;
+			let padId = await this.hasPad(groupId, parentId);
 
-			return { padId, groupId };
+			if (padId) {
+				return padId;
+			}
+
+			const padResponse = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
+			padId = padResponse.data.data as unknown as string;
+
+			return padId;
 		}
 
 		return undefined;

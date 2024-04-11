@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, ForbiddenException, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -22,13 +23,15 @@ export class CollaborativeTextEditorController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res() res: Response
 	): Promise<void> {
-		const { sessionId, sessionValidUntil, url } =
-			await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
-				currentUser.userId,
-				getCollaborativeTextEditorForParentParams
-			);
+		const { sessionId, url } = await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
+			currentUser.userId,
+			getCollaborativeTextEditorForParentParams
+		);
 
-		res.cookie('sessionID', sessionId, { expires: sessionValidUntil });
+		const cookieExpiresSeconds = Configuration.get('JWT_TIMEOUT_SECONDS') as string;
+		const sessionCookieExpireDate = new Date(Date.now() + Number(cookieExpiresSeconds) * 1000);
+
+		res.cookie('sessionID', sessionId, { expires: sessionCookieExpireDate });
 		res.redirect(url);
 	}
 }
