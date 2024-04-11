@@ -47,30 +47,4 @@ describe('CommonCartridgeImportUtils', () => {
 			});
 		});
 	});
-
-	describe('hasManifestFile', () => {
-		describe('when manifest file is found', () => {
-			const setup = () => setupArchive('imsmanifest.xml');
-
-			it('should return true', () => {
-				const { archive } = setup();
-
-				const hasManifest = CommonCartridgeImportUtils.hasManifestFile(archive);
-
-				expect(hasManifest).toEqual(true);
-			});
-		});
-
-		describe('when manifest file is not found', () => {
-			const setup = () => setupArchive('not-manifest.xml');
-
-			it('should return false', () => {
-				const { archive } = setup();
-
-				const hasManifest = CommonCartridgeImportUtils.hasManifestFile(archive);
-
-				expect(hasManifest).toEqual(false);
-			});
-		});
-	});
 });

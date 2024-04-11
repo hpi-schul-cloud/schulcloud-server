@@ -31,7 +31,7 @@ export class CardService {
 		const card = new Card({
 			id: new ObjectId().toHexString(),
 			title: props?.title || '',
-			height: 150,
+			height: props?.height || 150,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

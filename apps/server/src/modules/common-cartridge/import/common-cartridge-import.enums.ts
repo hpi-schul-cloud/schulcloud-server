@@ -4,6 +4,7 @@ export enum CommonCartridgeResourceTypeV1P1 {
 	WEB_LINK = 'imswl_xmlv1p1',
 }
 
+// TODO: remove this enum
 export enum CommonCartridgeResourceTypeV1P3 {
 	WEB_LINK = 'imswl_xmlv1p3',
 }

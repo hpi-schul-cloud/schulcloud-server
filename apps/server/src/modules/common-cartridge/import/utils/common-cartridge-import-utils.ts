@@ -11,8 +11,4 @@ export class CommonCartridgeImportUtils {
 
 		return undefined;
 	}
-
-	public static hasManifestFile(archive: AdmZip): boolean {
-		return !!CommonCartridgeImportUtils.getManifestFileAsString(archive);
-	}
 }
