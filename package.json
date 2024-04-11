@@ -202,7 +202,6 @@
 		"lodash": "^4.17.19",
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
-		"mongodb": "^5.9.2",
 		"mongodb-memory-server-global": "^9.1.8",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "^6.12.3",
