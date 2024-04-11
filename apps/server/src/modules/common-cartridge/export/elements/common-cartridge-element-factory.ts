@@ -1,6 +1,7 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { VersionNotSupportedLoggableException } from '../error';
 import { CommonCartridgeElement } from '../interfaces';
-import { OmitVersionAndFolder, createVersionNotSupportedError } from '../utils';
+import { OmitVersionAndFolder } from '../utils';
 import {
 	CommonCartridgeElementFactoryV110,
 	CommonCartridgeMetadataElementPropsV110,
@@ -46,7 +47,7 @@ export class CommonCartridgeElementFactory {
 			case CommonCartridgeVersion.V_1_3_0:
 				return CommonCartridgeElementFactoryV130.createElement(props);
 			default:
-				throw createVersionNotSupportedError(version);
+				throw new VersionNotSupportedLoggableException(version);
 		}
 	}
 }

@@ -1,9 +1,9 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import {
 	createCommonCartridgeManifestResourcePropsV130,
 	createCommonCartridgeWebContentResourcePropsV130,
 	createCommonCartridgeWeblinkResourcePropsV130,
 } from '../../../testing/common-cartridge-resource-props.factory';
+import { ResourceTypeNotSupportedLoggableException } from '../../error';
 import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
 import { CommonCartridgeResourceFactoryV130 } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourceV130 } from './common-cartridge-web-content-resource';
@@ -41,10 +41,10 @@ describe('CommonCartridgeResourceFactoryV130', () => {
 		});
 
 		describe('when resource type is not supported', () => {
-			it('should throw error', () => {
+			it('should throw ResourceTypeNotSupportedLoggableException', () => {
 				expect(() =>
 					CommonCartridgeResourceFactoryV130.createResource({} as CommonCartridgeWebLinkResourcePropsV130)
-				).toThrow(InternalServerErrorException);
+				).toThrow(ResourceTypeNotSupportedLoggableException);
 			});
 		});
 	});

@@ -1,6 +1,7 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { VersionNotSupportedLoggableException } from '../error';
 import { CommonCartridgeResource } from '../interfaces';
-import { OmitVersionAndFolder, createVersionNotSupportedError } from '../utils';
+import { OmitVersionAndFolder } from '../utils';
 import {
 	CommonCartridgeManifestResourcePropsV110,
 	CommonCartridgeResourceFactoryV110,
@@ -38,7 +39,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeVersion.V_1_3_0:
 				return CommonCartridgeResourceFactoryV130.createResource(props);
 			default:
-				throw createVersionNotSupportedError(version);
+				throw new VersionNotSupportedLoggableException(version);
 		}
 	}
 }
