@@ -1,3 +1,4 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -9,16 +10,15 @@ import {
 	schoolToolConfigurationStatusFactory,
 	setupEntities,
 } from '@shared/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
+import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
-import { CommonToolService } from '../../common/service';
 
 describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
@@ -363,7 +363,11 @@ describe('ExternalToolConfigurationService', () => {
 			it('should return ToolContextTypes', () => {
 				const types: ToolContextType[] = service.getToolContextTypes();
 
-				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+				expect(types).toEqual([
+					ToolContextType.COURSE,
+					ToolContextType.BOARD_ELEMENT,
+					ToolContextType.MEDIA_BOARD_ELEMENT,
+				]);
 			});
 		});
 	});

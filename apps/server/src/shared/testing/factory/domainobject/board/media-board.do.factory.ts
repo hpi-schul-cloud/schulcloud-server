@@ -1,8 +1,22 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReferenceType, MediaBoard, type MediaBoardProps } from '@shared/domain/domainobject';
+import {
+	BoardExternalReferenceType,
+	MediaBoard,
+	type MediaBoardProps,
+	MediaExternalToolElement,
+} from '@shared/domain/domainobject';
+import { DeepPartial } from 'fishery';
 import { BaseFactory } from '../../base.factory';
 
-export const mediaBoardFactory = BaseFactory.define<MediaBoard, MediaBoardProps>(MediaBoard, () => {
+class MediaBoardFactory extends BaseFactory<MediaBoard, MediaBoardProps> {
+	addChild(child: MediaExternalToolElement): this {
+		const params: DeepPartial<MediaBoardProps> = { children: [child] };
+
+		return this.params(params);
+	}
+}
+
+export const mediaBoardFactory = MediaBoardFactory.define(MediaBoard, () => {
 	return {
 		id: new ObjectId().toHexString(),
 		children: [],

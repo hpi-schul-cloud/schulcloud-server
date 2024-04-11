@@ -48,6 +48,7 @@ export class CommonToolMetadataService {
 			contextExternalToolCountPerContext: {
 				[ContextExternalToolType.BOARD_ELEMENT]: 0,
 				[ContextExternalToolType.COURSE]: 0,
+				[ContextExternalToolType.MEDIA_SHELF]: 0,
 			},
 		});
 

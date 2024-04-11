@@ -44,6 +44,8 @@ export type ExternalToolDto<T> = {
 	restrictToContexts?: ToolContextType[];
 
 	medium?: ExternalToolMediumDto;
+
+	createAt?: Date;
 };
 
 export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;

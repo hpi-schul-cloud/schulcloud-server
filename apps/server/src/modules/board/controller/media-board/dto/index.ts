@@ -7,3 +7,5 @@ export {
 export { LineUrlParams } from './line.url.params';
 export { ElementUrlParams } from './element.url.params';
 export { MoveElementBodyParams } from './move-element.body.params';
+export { MediaAvailableLineResponse } from './media-available-line.response';
+export { MediaAvailableLineElementResponse } from './media-available-line-element.response';

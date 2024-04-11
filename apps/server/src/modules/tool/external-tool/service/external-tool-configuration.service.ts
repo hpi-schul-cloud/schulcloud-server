@@ -53,19 +53,9 @@ export class ExternalToolConfigurationService {
 		availableSchoolExternalTools: SchoolExternalTool[]
 	): ContextExternalToolTemplateInfo[] {
 		const toolsWithSchoolTool: (ContextExternalToolTemplateInfo | null)[] = availableSchoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool) => {
-				const externalTool: ExternalTool | undefined = externalTools.find(
-					(tool: ExternalTool) => schoolExternalTool.toolId === tool.id
-				);
-
-				if (!externalTool) {
-					return null;
-				}
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
+			(schoolExternalTool) => {
+				const externalTool = externalTools.find((tool) => schoolExternalTool.toolId === tool.id);
+				return externalTool ? { externalTool, schoolExternalTool } : null;
 			}
 		);
 
