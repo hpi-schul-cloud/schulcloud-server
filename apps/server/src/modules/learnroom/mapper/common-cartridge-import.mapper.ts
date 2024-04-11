@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
 import { AnyElementContentBody, LinkContentBody } from '@src/modules/board/controller/dto';
-import { CommonCartridgeResourceTypeV1P1, OrganizationProps } from '@src/modules/common-cartridge';
+import { CommonCartridgeOrganizationProps, CommonCartridgeResourceTypeV1P1 } from '@src/modules/common-cartridge';
 import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebLinkResourceProps,
@@ -9,13 +9,13 @@ import {
 
 @Injectable()
 export class CommonCartridgeImportMapper {
-	public mapOrganizationToColumn(organization: OrganizationProps): ColumnInitProps {
+	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps): ColumnInitProps {
 		return {
 			title: organization.title,
 		};
 	}
 
-	public mapOrganizationToCard(organization: OrganizationProps): CardInitProps {
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps): CardInitProps {
 		return {
 			title: organization.title,
 			height: 150,

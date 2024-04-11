@@ -19,7 +19,7 @@ export { CommonCartridgeFileParser } from './import/common-cartridge-file-parser
 export { CommonCartridgeResourceTypeV1P1 } from './import/common-cartridge-import.enums';
 export {
 	CommonCartridgeFileParserOptions,
+	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
-	CommonCartridgeOrganizationProps as OrganizationProps,
 } from './import/common-cartridge-import.types';
 export { CommonCartridgeImportUtils } from './import/utils/common-cartridge-import-utils';

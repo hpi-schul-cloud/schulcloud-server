@@ -4,8 +4,8 @@ import { Course, User } from '@shared/domain/entity';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import {
 	CommonCartridgeFileParser,
+	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
-	OrganizationProps,
 } from '@src/modules/common-cartridge';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
@@ -56,8 +56,8 @@ export class CommonCartridgeImportService {
 	private async createColumn(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: OrganizationProps,
-		organizations: OrganizationProps[]
+		columnProps: CommonCartridgeOrganizationProps,
+		organizations: CommonCartridgeOrganizationProps[]
 	): Promise<void> {
 		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
 		const cards = organizations.filter(
@@ -73,7 +73,7 @@ export class CommonCartridgeImportService {
 	private async createCard(
 		parser: CommonCartridgeFileParser,
 		column: Column,
-		cardProps: OrganizationProps
+		cardProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps));
 		const resource = parser.getResource(cardProps);
