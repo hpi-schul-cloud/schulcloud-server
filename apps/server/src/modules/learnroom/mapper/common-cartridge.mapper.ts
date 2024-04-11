@@ -12,6 +12,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
+import { RichTextElement } from '@shared/domain/domainobject';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
@@ -115,6 +116,16 @@ export class CommonCartridgeMapper {
 		return {
 			version,
 			identifier: createIdentifier(course.id),
+		};
+	}
+
+	public mapRichTextElementToResource(element: RichTextElement): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.WEB_CONTENT,
+			identifier: createIdentifier(element.id),
+			title: element.inputFormat,
+			html: `<h1>${element.inputFormat}</h1><p>${element.text}</p>`,
+			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 		};
 	}
 }
