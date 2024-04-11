@@ -17,7 +17,8 @@ export class CollaborativeTextEditorUc {
 
 	async getCollaborativeTextEditorForParent(
 		userId: string,
-		params: GetCollaborativeTextEditorForParentParams
+		params: GetCollaborativeTextEditorForParentParams,
+		sessionCookieExpireDate: Date
 	): Promise<CollaborativeTextEditor> {
 		const [user, board] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
@@ -31,7 +32,11 @@ export class CollaborativeTextEditorUc {
 			AuthorizationContextBuilder.read([Permission.COURSE_VIEW])
 		);
 
-		const textEditor = await this.collaborativeTextEditorService.createCollaborativeTextEditor(userId, params);
+		const textEditor = await this.collaborativeTextEditorService.createCollaborativeTextEditor(
+			userId,
+			params,
+			sessionCookieExpireDate
+		);
 
 		return textEditor;
 	}

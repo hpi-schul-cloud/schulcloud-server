@@ -23,15 +23,15 @@ export class CollaborativeTextEditorController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res() res: Response
 	): Promise<void> {
-		const { sessionId, url } = await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
+		const cookieExpiresMilliseconds = Number(Configuration.get('JWT_TIMEOUT_SECONDS')) * 1000;
+		const sessionCookieExpireDate = new Date(Date.now() + cookieExpiresMilliseconds);
+		const { sessions, url } = await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
 			currentUser.userId,
-			getCollaborativeTextEditorForParentParams
+			getCollaborativeTextEditorForParentParams,
+			sessionCookieExpireDate
 		);
 
-		const cookieExpiresSeconds = Configuration.get('JWT_TIMEOUT_SECONDS') as string;
-		const sessionCookieExpireDate = new Date(Date.now() + Number(cookieExpiresSeconds) * 1000);
-
-		res.cookie('sessionID', sessionId, { expires: sessionCookieExpireDate });
+		res.cookie('sessionID', sessions.toString(), { expires: sessionCookieExpireDate });
 		res.redirect(url);
 	}
 }

@@ -26,16 +26,21 @@ export class EtherpadClientAdapter {
 		return authorID;
 	}
 
-	async getOrCreateSession(userId: EntityId, parentId: EntityId): Promise<string> {
-		const authorId = await this.getOrCreateAuthor(userId);
+	async getOrCreateSession(authorId: EntityId, parentId: EntityId, sessionCookieExpireDate: Date): Promise<string> {
 		const groupResponse = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
 		const session = await this.sessionApi.createSessionUsingGET(
 			groupResponse.data.data?.groupID,
 			authorId,
-			(Date.now() + 60 * 60 * 1000).toString()
+			sessionCookieExpireDate.getTime().toString()
 		);
 
 		return session.data.data?.sessionID as unknown as string;
+	}
+
+	async listSessionsOfAuthor(authorId: string) {
+		const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
+
+		return Object.keys(response.data.data as object);
 	}
 
 	async getOrCreateCollaborativeTextEditor(userId: EntityId, parentId: EntityId): Promise<string | undefined> {

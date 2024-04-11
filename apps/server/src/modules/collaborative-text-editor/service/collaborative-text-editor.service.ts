@@ -13,20 +13,27 @@ export class CollaborativeTextEditorService {
 
 	async createCollaborativeTextEditor(
 		userId: string,
-		params: GetCollaborativeTextEditorForParentParams
+		params: GetCollaborativeTextEditorForParentParams,
+		sessionCookieExpireDate: Date
 	): Promise<CollaborativeTextEditor> {
 		const padId = await this.collaborativeTextEditorAdapter.getOrCreateCollaborativeTextEditor(userId, params.parentId);
 
-		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSession(userId, params.parentId);
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthor(userId);
+		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSession(
+			authorId,
+			params.parentId,
+			sessionCookieExpireDate
+		);
+		const authorsSessions = await this.collaborativeTextEditorAdapter.listSessionsOfAuthor(authorId);
 		const basePath = Configuration.has('ETHERPAD__PAD_URI')
 			? (Configuration.get('ETHERPAD__PAD_URI') as string)
 			: undefined;
 
-		if (sessionId && padId && basePath) {
+		if (sessionId && padId && basePath && authorsSessions) {
 			const url = `${basePath}/${padId}`;
 
 			return {
-				sessionId,
+				sessions: [...authorsSessions, sessionId],
 				url,
 			};
 		}
