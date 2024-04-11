@@ -19,6 +19,10 @@ export class EtherpadClientAdapter {
 
 		const authorID = response.data.data?.authorID;
 
+		if (!authorID) {
+			throw new Error('Could not create author');
+		}
+
 		return authorID;
 	}
 
@@ -36,17 +40,17 @@ export class EtherpadClientAdapter {
 
 	async getOrCreateCollaborativeTextEditor(userId: EntityId, parentId: EntityId): Promise<string | undefined> {
 		const groupResponse = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
-		const groupID = groupResponse.data.data?.groupID;
+		const groupId = groupResponse.data.data?.groupID;
 
-		if (groupID) {
-			const padId = await this.hasPad(groupID, parentId);
-			if (padId) {
-				return padId;
+		if (groupId) {
+			const padID = await this.hasPad(groupId, parentId);
+			if (padID) {
+				return { padId: padID, groupId };
 			}
 			const padResponse = await this.groupApi.createGroupPadUsingGET(groupID, parentId);
 			const padID = padResponse.data.data as unknown as string;
 
-			return padID;
+			return { padId, groupId };
 		}
 
 		return undefined;
