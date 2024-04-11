@@ -1,9 +1,10 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, ForbiddenException, NotFoundException, Post } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
+import { Response } from 'express';
 import { CollaborativeTextEditorUc } from '../uc/collaborative-text-editor.uc';
-import { CreateCollaborativeTextEditorBodyParams } from './dto/create-collaborative-text-editor.body.params';
+import { GetCollaborativeTextEditorForParentParams } from './dto/get-collaborative-text-editor-for-parent.params';
 
 @ApiTags('CollaborativeTextEditor')
 @Authenticate('jwt')
@@ -11,19 +12,23 @@ import { CreateCollaborativeTextEditorBodyParams } from './dto/create-collaborat
 export class CollaborativeTextEditorController {
 	constructor(private readonly collaborativeTextEditorUc: CollaborativeTextEditorUc) {}
 
-	@ApiOperation({ summary: 'Create a new CollaborativeTextEditor.' })
-	//@ApiResponse({ status: 201, type: CreateCollaborativeTextEditorResponse })
+	@ApiOperation({ summary: 'Redirect to CollaborativeTextEditor' })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@Post()
-	async createCollaborativeTextEditor(
-		@Body() collaborativeTextEditorParams: CreateCollaborativeTextEditorBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+	@Get('boardId/:boardId/parentId/:parentId')
+	async getCollaborativeTextEditorForParent(
+		@Param() getCollaborativeTextEditorForParentParams: GetCollaborativeTextEditorForParentParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Res() res: Response
 	): Promise<void> {
-		await this.collaborativeTextEditorUc.createCollaborativeTextEditor(
-			currentUser.userId,
-			collaborativeTextEditorParams
-		);
+		const { sessionId, sessionValidUntil, url } =
+			await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
+				currentUser.userId,
+				getCollaborativeTextEditorForParentParams
+			);
+
+		res.cookie('sessionID', sessionId, { expires: sessionValidUntil });
+		res.redirect(url);
 	}
 }

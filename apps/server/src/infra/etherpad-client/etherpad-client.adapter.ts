@@ -22,13 +22,19 @@ export class EtherpadClientAdapter {
 		return authorID;
 	}
 
-	async getOrCreateSession(authorId: EntityId, parentId: EntityId) {
-		const session = this.sessionApi.createSessionUsingGET(parentId, authorId);
+	async getOrCreateSession(userId: EntityId, parentId: EntityId): Promise<string> {
+		const authorId = await this.getOrCreateAuthor(userId);
+		const groupResponse = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
+		const session = await this.sessionApi.createSessionUsingGET(
+			groupResponse.data.data?.groupID,
+			authorId,
+			(Date.now() + 60 * 60 * 1000).toString()
+		);
 
-		return session;
+		return session.data.data?.sessionID as unknown as string;
 	}
 
-	async getOrCreateCollaborativeTextEditor(userId: EntityId, parentId: EntityId) {
+	async getOrCreateCollaborativeTextEditor(userId: EntityId, parentId: EntityId): Promise<string | undefined> {
 		const groupResponse = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
 		const groupID = groupResponse.data.data?.groupID;
 
@@ -38,10 +44,12 @@ export class EtherpadClientAdapter {
 				return padId;
 			}
 			const padResponse = await this.groupApi.createGroupPadUsingGET(groupID, parentId);
-			const padID = padResponse.data.data;
+			const padID = padResponse.data.data as unknown as string;
 
 			return padID;
 		}
+
+		return undefined;
 	}
 
 	private async hasPad(groupID: string, parentId: string) {
