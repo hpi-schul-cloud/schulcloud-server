@@ -980,6 +980,9 @@
                             <a href="#sharedAdminPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>sharedAdminPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
                         </li>
                         <li>
+                            <a href="#sharedCommandOptions" title="apps/server/src/modules/deletion-console/deletion-queue.console.ts" ><b>sharedCommandOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-queue.console.ts)</a>
+                        </li>
+                        <li>
                             <a href="#shareTokenFactory" title="apps/server/src/shared/testing/factory/share-token.do.factory.ts" ><b>shareTokenFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../share-token.do.factory.ts)</a>
                         </li>
                         <li>
@@ -12904,6 +12907,53 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 </div>
                 </td>
             </tr>
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/deletion-console/deletion-queue.console.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sharedCommandOptions"></a>
+                    <span class="name">
+                        <span ><b>sharedCommandOptions</b></span>
+                        <a href="#sharedCommandOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>CommandOption[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+	{
+		flags: &#x27;-trd, --targetRefDomain &lt;value&gt;&#x27;,
+		description: &#x27;Name of the target ref domain.&#x27;,
+		required: false,
+		defaultValue: &#x27;user&#x27;,
+	},
+	{
+		flags: &#x27;-dim, --deleteInMinutes &lt;value&gt;&#x27;,
+		description: &#x27;Number of minutes after which the data deletion process should begin.&#x27;,
+		required: false,
+		defaultValue: 43200, // 43200 minutes &#x3D; 30 days
+	},
+	{
+		flags: &#x27;-cdm, --callsDelayMs &lt;value&gt;&#x27;,
+		description: &#x27;Delay between all the performed client calls, in milliseconds.&#x27;,
+		required: false,
+	},
+]</code>
+                    </td>
+                </tr>
+
 
         </tbody>
     </table>

@@ -828,13 +828,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/DeletionConsoleModule.html" data-type="entity-link" >DeletionConsoleModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' }>
+                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-07a7418efd188b7f73407b932d09cb3e4bfad508c28d104c309277a0cc4b512d3109e83d51407d2b0622983726ef07a34a62c9bc1f49d6a23129fc7d4fc5cb6e"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-07a7418efd188b7f73407b932d09cb3e4bfad508c28d104c309277a0cc4b512d3109e83d51407d2b0622983726ef07a34a62c9bc1f49d6a23129fc7d4fc5cb6e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' :
-                                        'id="xs-injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-07a7418efd188b7f73407b932d09cb3e4bfad508c28d104c309277a0cc4b512d3109e83d51407d2b0622983726ef07a34a62c9bc1f49d6a23129fc7d4fc5cb6e"' :
+                                        'id="xs-injectables-links-module-DeletionConsoleModule-07a7418efd188b7f73407b932d09cb3e4bfad508c28d104c309277a0cc4b512d3109e83d51407d2b0622983726ef07a34a62c9bc1f49d6a23129fc7d4fc5cb6e"' }>
                                         <li class="link">
                                             <a href="injectables/BatchDeletionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BatchDeletionService</a>
                                         </li>
@@ -6440,6 +6440,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UnknownQueryTypeLoggableException.html" data-type="entity-link" >UnknownQueryTypeLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UnsyncedEntitiesOptionsBuilder.html" data-type="entity-link" >UnsyncedEntitiesOptionsBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UpdateAccount.html" data-type="entity-link" >UpdateAccount</a>
                             </li>
                             <li class="link">
@@ -8576,6 +8579,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UniqueKey.html" data-type="entity-link" >UniqueKey</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UnsyncedEntitiesOptions.html" data-type="entity-link" >UnsyncedEntitiesOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UrlHandler.html" data-type="entity-link" >UrlHandler</a>

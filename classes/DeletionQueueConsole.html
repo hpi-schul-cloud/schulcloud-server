@@ -152,6 +152,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#pushDeletionRequests" >pushDeletionRequests</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#unsyncedEntities" >unsyncedEntities</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -175,7 +180,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/deletion-console/deletion-queue.console.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/deletion-console/deletion-queue.console.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -261,8 +266,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/deletion-console/deletion-queue.console.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/deletion-console/deletion-queue.console.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -308,6 +313,83 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unsyncedEntities"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>unsyncedEntities</b></span>
+                        <a href="#unsyncedEntities"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>unsyncedEntities(options: <a href="../interfaces/UnsyncedEntitiesOptions.html" target="_self">UnsyncedEntitiesOptions</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Command({command: &#x27;unsynced&#x27;, description: &#x27;Finds unsynchronized users and queue them for deletion.&#x27;, options: undefined})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/deletion-console/deletion-queue.console.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UnsyncedEntitiesOptions.html" target="_self" >UnsyncedEntitiesOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -318,10 +400,30 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Console, Command } from &#x27;nestjs-console&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Console, Command, CommandOption } from &#x27;nestjs-console&#x27;;
 import { ConsoleWriterService } from &#x27;@infra/console&#x27;;
-import { PushDeletionRequestsOptions } from &#x27;./interface&#x27;;
+import { PushDeletionRequestsOptions, UnsyncedEntitiesOptions } from &#x27;./interface&#x27;;
 import { BatchDeletionUc } from &#x27;./uc&#x27;;
+
+const sharedCommandOptions: CommandOption[] &#x3D; [
+	{
+		flags: &#x27;-trd, --targetRefDomain &lt;value&gt;&#x27;,
+		description: &#x27;Name of the target ref domain.&#x27;,
+		required: false,
+		defaultValue: &#x27;user&#x27;,
+	},
+	{
+		flags: &#x27;-dim, --deleteInMinutes &lt;value&gt;&#x27;,
+		description: &#x27;Number of minutes after which the data deletion process should begin.&#x27;,
+		required: false,
+		defaultValue: 43200, // 43200 minutes &#x3D; 30 days
+	},
+	{
+		flags: &#x27;-cdm, --callsDelayMs &lt;value&gt;&#x27;,
+		description: &#x27;Delay between all the performed client calls, in milliseconds.&#x27;,
+		required: false,
+	},
+];
 
 @Console({ command: &#x27;queue&#x27;, description: &#x27;Console providing an access to the deletion queue.&#x27; })
 export class DeletionQueueConsole {
@@ -336,21 +438,7 @@ export class DeletionQueueConsole {
 				description: &#x27;Path of the file containing all the references to the data that should be deleted.&#x27;,
 				required: true,
 			},
-			{
-				flags: &#x27;-trd, --targetRefDomain &lt;value&gt;&#x27;,
-				description: &#x27;Name of the target ref domain.&#x27;,
-				required: false,
-			},
-			{
-				flags: &#x27;-dim, --deleteInMinutes &lt;value&gt;&#x27;,
-				description: &#x27;Number of minutes after which the data deletion process should begin.&#x27;,
-				required: false,
-			},
-			{
-				flags: &#x27;-cdm, --callsDelayMs &lt;value&gt;&#x27;,
-				description: &#x27;Delay between all the performed client calls, in milliseconds.&#x27;,
-				required: false,
-			},
+			...sharedCommandOptions,
 		],
 	})
 	async pushDeletionRequests(options: PushDeletionRequestsOptions): Promise&lt;void&gt; {
@@ -362,6 +450,47 @@ export class DeletionQueueConsole {
 		);
 
 		this.consoleWriter.info(JSON.stringify(summary));
+	}
+
+	@Command({
+		command: &#x27;unsynced&#x27;,
+		description: &#x27;Finds unsynchronized users and queue them for deletion.&#x27;,
+		options: [
+			{
+				flags: &#x27;-si, --systemId &lt;value&gt;&#x27;,
+				description: &#x27;ID of a synchronized system.&#x27;,
+				required: true,
+			},
+			{
+				flags: &#x27;-ufm, --unsyncedForMinutes &lt;value&gt;&#x27;,
+				description:
+					&#x27;Number of minutes that must have passed before entity can be considered unsynchronized. Minimum value: 60.&#x27;,
+				required: false,
+				defaultValue: 10080, // 10080 minutes &#x3D; 7 days
+			},
+			...sharedCommandOptions,
+		],
+	})
+	async unsyncedEntities(options: UnsyncedEntitiesOptions): Promise&lt;void&gt; {
+		if (options.unsyncedForMinutes &lt; 60) {
+			throw new Error(&#x60;invalid &quot;unsyncedForMinutes&quot; option value - minimum value is 60&#x60;);
+		}
+
+		this.consoleWriter.info(
+			JSON.stringify({ message: &#x27;starting queueing unsynchronized entities for deletion&#x27;, options })
+		);
+
+		const summary &#x3D; await this.batchDeletionUc.deleteUnsynchronizedRefs(
+			options.systemId,
+			options.unsyncedForMinutes,
+			options.targetRefDomain,
+			options.deleteInMinutes,
+			options.callsDelayMs
+		);
+
+		this.consoleWriter.info(
+			JSON.stringify({ message: &#x27;successfully finished queueing unsynchronized entities for deletion&#x27;, summary })
+		);
 	}
 }
 </code></pre>

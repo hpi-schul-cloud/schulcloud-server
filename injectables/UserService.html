@@ -181,6 +181,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findUnsynchronizedUserIds" >findUnsynchronizedUserIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findUserBySchoolAndName" >findUserBySchoolAndName</a>
                             </li>
                             <li>
@@ -990,6 +995,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findUnsynchronizedUserIds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findUnsynchronizedUserIds</b></span>
+                        <a href="#findUnsynchronizedUserIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findUnsynchronizedUserIds(unsyncedForMinutes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="268"
+                                    class="link-to-prism">apps/server/src/modules/user/service/user.service.ts:268</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>unsyncedForMinutes</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findUserBySchoolAndName"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -1754,8 +1829,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="268"
-                                    class="link-to-prism">apps/server/src/modules/user/service/user.service.ts:268</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="275"
+                                    class="link-to-prism">apps/server/src/modules/user/service/user.service.ts:275</a></div>
                         </td>
                     </tr>
 
@@ -2350,6 +2425,13 @@ export class UserService implements DeletionService, IEventHandler&lt;UserDelete
 		}
 
 		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
+	}
+
+	public async findUnsynchronizedUserIds(unsyncedForMinutes: number): Promise&lt;string[]&gt; {
+		const unsyncedForMiliseconds &#x3D; unsyncedForMinutes * 60000;
+		const differenceBetweenCurrentDateAndUnsyncedTime &#x3D; new Date().getTime() - unsyncedForMiliseconds;
+		const dateOfLastSyncToBeLookedFrom &#x3D; new Date(differenceBetweenCurrentDateAndUnsyncedTime);
+		return this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
 	}
 
 	public async removeCalendarEvents(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {

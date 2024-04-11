@@ -143,8 +143,17 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#buildInputsQueueDeletionRequestsAndReturnSummary" >buildInputsQueueDeletionRequestsAndReturnSummary</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteRefsFromTxtFile" >deleteRefsFromTxtFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUnsynchronizedRefs" >deleteUnsynchronizedRefs</a>
                             </li>
                         </ul>
                     </td>
@@ -164,12 +173,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(batchDeletionService: <a href="../injectables/BatchDeletionService.html" target="_self">BatchDeletionService</a>)</code>
+<code>constructor(batchDeletionService: <a href="../injectables/BatchDeletionService.html" target="_self">BatchDeletionService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -198,6 +207,30 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>accountService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AccountService.html" target="_self" >AccountService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -212,6 +245,112 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildInputsQueueDeletionRequestsAndReturnSummary"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>buildInputsQueueDeletionRequestsAndReturnSummary</b></span>
+                        <a href="#buildInputsQueueDeletionRequestsAndReturnSummary"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildInputsQueueDeletionRequestsAndReturnSummary(refs: string[], targetRefDomain: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, deleteInMinutes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, callsDelayMilliseconds?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>refs</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>targetRefDomain</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>deleteInMinutes</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>callsDelayMilliseconds</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/BatchDeletionSummary.html" target="_self" >Promise&lt;BatchDeletionSummary&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -234,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -328,6 +467,137 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUnsynchronizedRefs"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUnsynchronizedRefs</b></span>
+                        <a href="#deleteUnsynchronizedRefs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUnsynchronizedRefs(systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unsyncedForMinutes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, targetRefDomain: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, deleteInMinutes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, callsDelayMilliseconds?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/deletion-console/uc/batch-deletion.uc.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>unsyncedForMinutes</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>10080</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>targetRefDomain</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>&#x27;user&#x27;</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>deleteInMinutes</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>43200</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>callsDelayMilliseconds</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/BatchDeletionSummary.html" target="_self" >Promise&lt;BatchDeletionSummary&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -335,6 +605,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { AccountService } from &#x27;@modules/account&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { BatchDeletionSummaryBuilder, BatchDeletionSummaryDetailBuilder } from &#x27;../builder&#x27;;
 import { BatchDeletionService, ReferencesService } from &#x27;../services&#x27;;
 import { QueueDeletionRequestInputBuilder } from &#x27;../services/builder&#x27;;
@@ -343,7 +615,11 @@ import { BatchDeletionSummary, BatchDeletionSummaryOverallStatus } from &#x27;./
 
 @Injectable()
 export class BatchDeletionUc {
-	constructor(private readonly batchDeletionService: BatchDeletionService) {}
+	constructor(
+		private readonly batchDeletionService: BatchDeletionService,
+		private readonly userService: UserService,
+		private readonly accountService: AccountService
+	) {}
 
 	async deleteRefsFromTxtFile(
 		refsFilePath: string,
@@ -354,13 +630,44 @@ export class BatchDeletionUc {
 		// First, load all the references from the provided text file (with given path).
 		const refsFromTxtFile &#x3D; ReferencesService.loadFromTxtFile(refsFilePath);
 
+		return this.buildInputsQueueDeletionRequestsAndReturnSummary(
+			refsFromTxtFile,
+			targetRefDomain,
+			deleteInMinutes,
+			callsDelayMilliseconds
+		);
+	}
+
+	async deleteUnsynchronizedRefs(
+		systemId: string,
+		unsyncedForMinutes &#x3D; 10080,
+		targetRefDomain &#x3D; &#x27;user&#x27;,
+		deleteInMinutes &#x3D; 43200, // 43200 minutes &#x3D; 720 hours &#x3D; 30 days
+		callsDelayMilliseconds?: number
+	): Promise&lt;BatchDeletionSummary&gt; {
+		const unsynchronizedUserIds &#x3D; await this.userService.findUnsynchronizedUserIds(unsyncedForMinutes);
+
+		const accountIds &#x3D; await this.accountService.findByUserIdsAndSystemId(unsynchronizedUserIds, systemId);
+
+		return this.buildInputsQueueDeletionRequestsAndReturnSummary(
+			accountIds,
+			targetRefDomain,
+			deleteInMinutes,
+			callsDelayMilliseconds
+		);
+	}
+
+	private async buildInputsQueueDeletionRequestsAndReturnSummary(
+		refs: string[],
+		targetRefDomain: string,
+		deleteInMinutes: number,
+		callsDelayMilliseconds?: number
+	): Promise&lt;BatchDeletionSummary&gt; {
 		const inputs: QueueDeletionRequestInput[] &#x3D; [];
 
 		// For each reference found in a given file, add it to the inputs
 		// array (with added targetRefDomain and deleteInMinutes fields).
-		refsFromTxtFile.forEach((ref) &#x3D;&gt;
-			inputs.push(QueueDeletionRequestInputBuilder.build(targetRefDomain, ref, deleteInMinutes))
-		);
+		refs.forEach((ref) &#x3D;&gt; inputs.push(QueueDeletionRequestInputBuilder.build(targetRefDomain, ref, deleteInMinutes)));
 
 		// Measure the overall queueing execution time by setting the start...
 		const startTime &#x3D; performance.now();
