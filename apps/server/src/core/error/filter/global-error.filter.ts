@@ -1,52 +1,69 @@
-import { IError, RpcMessage } from '@infra/rabbitmq'; // TODO: Sollte core zugriff auf infra haben?
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { IError, RpcMessage } from '@infra/rabbitmq';
+import {
+	ArgumentsHost,
+	Catch,
+	ExceptionFilter,
+	HttpException,
+	InternalServerErrorException,
+	ContextType,
+} from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { Response } from 'express';
 import _ from 'lodash';
+import { WsException } from '@nestjs/websockets';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
 import { ErrorUtils } from '../utils';
 import { DomainErrorHandler } from '../domain';
 
+enum UseableContextType {
+	http = 'http',
+	rpc = 'rpc',
+	ws = 'ws',
+}
+
 @Catch()
-export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<E extends IError> implements ExceptionFilter<E> {
 	constructor(private readonly domainErrorHandler: DomainErrorHandler) {}
 
-	// eslint-disable-next-line consistent-return
-	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
+	catch(error: E, host: ArgumentsHost): void | RpcMessage<undefined> | WsException {
 		this.domainErrorHandler.exec(error);
 
-		const contextType = host.getType<'http' | 'rmq' | 'ws'>();
-
-		if (contextType === 'http') {
-			this.sendHttpResponse(error, host);
-		}
-
-		if (contextType === 'rmq') {
-			// Ist der return wirklich notwendig?
-			return this.sendRpcResponse(error);
-		}
-
-		if (contextType === 'ws') {
-			// Nothing is implemented, only a placeholder!
-			this.sendWsResponse();
+		const contextType = host.getType<ContextType>();
+		switch (contextType) {
+			case UseableContextType.http:
+				return this.sendHttpResponse(error, host);
+			case UseableContextType.rpc:
+				return this.sendRpcResponse(error);
+			case UseableContextType.ws:
+				return this.sendWsResponse(error);
+			default:
+				return undefined;
 		}
 	}
 
-	private sendHttpResponse(error: T, host: ArgumentsHost): void {
+	private sendHttpResponse(error: E, host: ArgumentsHost): void {
 		const errorResponse = this.createErrorResponse(error);
 		const httpArgumentHost = host.switchToHttp();
 		const response = httpArgumentHost.getResponse<Response>();
 		response.status(errorResponse.code).json(errorResponse);
 	}
 
-	private sendWsResponse(): void {
-		// Nothing is implemented
+	private sendRpcResponse(error: E): RpcMessage<undefined> {
+		const rpcError = { message: undefined, error };
+
+		return rpcError;
 	}
 
-	// naming?
-	private sendRpcResponse(error: T): RpcMessage<unknown> {
-		return { message: undefined, error };
+	// 	// https://docs.nestjs.com/websockets/exception-filters
+	private sendWsResponse(error: E): WsException {
+		const wsError = new WsException(error);
+
+		// TODO: Need to implemented an rewrite in correct way
+		// const wsArgumentHost = host.switchToWs();
+		// wsArgumentHost.getClient();
+
+		return wsError;
 	}
 
 	private createErrorResponse(error: unknown): ErrorResponse {
