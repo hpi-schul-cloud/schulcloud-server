@@ -33,8 +33,11 @@ export class CommonCartridgeResourceFactory {
 		return isValidOrganization;
 	}
 
-	private createWebLinkResource(content: string): CommonCartridgeWebLinkResourceProps {
-		// TODO: Can throw an error if the content is not a valid XML
+	private createWebLinkResource(content: string): CommonCartridgeWebLinkResourceProps | undefined {
+		if (!this.isValidXml(content)) {
+			return undefined;
+		}
+
 		const resource = new JSDOM(content, { contentType: 'text/xml' }).window.document;
 		const title = resource.querySelector('webLink > title')?.textContent || '';
 		const url = resource.querySelector('webLink > url')?.getAttribute('href') || '';
@@ -44,5 +47,17 @@ export class CommonCartridgeResourceFactory {
 			title,
 			url,
 		};
+	}
+
+	private isValidXml(content: string): boolean {
+		try {
+			const validateXml = () => new JSDOM(content, { contentType: 'text/xml' });
+
+			validateXml();
+
+			return true;
+		} catch (error) {
+			return false;
+		}
 	}
 }

@@ -117,8 +117,7 @@ export class CommonCartridgeOrganizationVisitor {
 	private getResourcePath(identifierRef: string): string {
 		const path =
 			this.document
-				.querySelector(`manifest > resources > resource[identifier="${identifierRef}"]`)
-				?.querySelector('file') // TODO: move to first querySelector
+				.querySelector(`manifest > resources > resource[identifier="${identifierRef}"] > file`)
 				?.getAttribute('href') || '';
 
 		return path;
