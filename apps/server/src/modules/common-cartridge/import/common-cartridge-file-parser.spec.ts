@@ -51,6 +51,10 @@ describe('CommonCartridgeFileParser', () => {
 		jest.clearAllMocks();
 	});
 
+	it('should be defined', () => {
+		expect(sut).toBeDefined();
+	});
+
 	describe('constructor', () => {
 		describe('when manifest file is found', () => {
 			const setup = async () => {

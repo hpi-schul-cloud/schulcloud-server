@@ -44,16 +44,16 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 	private checkManifestFile(archive: AdmZip): void {
 		const manifest = CommonCartridgeImportUtils.getManifestFileAsString(archive);
 		if (!manifest) {
-			throw new BadRequestException('No manifest file found in the archive');
+			throw new BadRequestException('No manifest file found');
 		}
 
 		try {
-			const validateManifestXml = () => new JSDOM(archive.readAsText(manifest), { contentType: 'text/xml' });
+			const validateManifestXml = () => new JSDOM(manifest, { contentType: 'text/xml' });
 
 			// checks if the manifest file is a valid XML file
 			validateManifestXml();
 		} catch (error) {
-			throw new BadRequestException('Manifest file is not a valid XML file');
+			throw new BadRequestException('No valid manifest file found');
 		}
 	}
 }
