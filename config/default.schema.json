@@ -1341,27 +1341,26 @@
 			"properties": {
 				"ENABLED": {
 					"type": "boolean",
+					"default": true,
 					"description": "Flag to turn on/off the Admin API."
 				},
 				"PORT": {
 					"type": "number",
+					"default": 4030,
 					"description": "Port of the exposed Admin API server."
 				},
 				"ALLOWED_API_KEYS": {
 					"type": "string",
+					"default": "",
 					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
 				},
 				"MODIFICATION_THRESHOLD_MS": {
 					"type": "number",
+					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
 			},
-			"default": {
-				"ENABLED": true,
-				"PORT": 4030,
-				"MODIFICATION_THRESHOLD_MS": 60000,
-				"ALLOWED_API_KEYS": ""
-			}
+			"default": {}
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
 			"type": "boolean",
