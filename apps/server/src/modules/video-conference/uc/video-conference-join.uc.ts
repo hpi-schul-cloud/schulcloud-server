@@ -27,6 +27,9 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
+		console.log('############################');
+		console.log(isGuest, role);
+
 		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
