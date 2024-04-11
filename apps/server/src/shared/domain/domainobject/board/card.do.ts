@@ -49,7 +49,7 @@ export interface CardProps extends BoardCompositeProps {
 	height: number;
 }
 
-export type CardInitProps = Omit<CardProps, 'id' | 'createdAt' | 'updatedAt'>;
+export type CardInitProps = Omit<CardProps, keyof BoardCompositeProps>;
 
 export function isCard(reference: unknown): reference is Card {
 	return reference instanceof Card;

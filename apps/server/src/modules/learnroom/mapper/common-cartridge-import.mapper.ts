@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
+import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
 import { AnyElementContentBody, LinkContentBody } from '@src/modules/board/controller/dto';
 import { CommonCartridgeResourceTypeV1P1, OrganizationProps } from '@src/modules/common-cartridge';
 import {
@@ -15,11 +15,10 @@ export class CommonCartridgeImportMapper {
 		};
 	}
 
-	public mapOrganizationToCard(organization: OrganizationProps, children?: AnyBoardDo[]): CardInitProps {
+	public mapOrganizationToCard(organization: OrganizationProps): CardInitProps {
 		return {
 			title: organization.title,
 			height: 150,
-			children,
 		};
 	}
 
