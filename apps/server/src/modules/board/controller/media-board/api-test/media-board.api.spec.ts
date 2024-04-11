@@ -11,9 +11,9 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { contextExternalToolEntityFactory } from '../../../../tool/context-external-tool/testing';
-import { externalToolEntityFactory } from '../../../../tool/external-tool/testing';
-import { schoolExternalToolEntityFactory } from '../../../../tool/school-external-tool/testing';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaAvailableLineResponse, type MediaBoardResponse, MediaLineResponse } from '../dto';
 
 const baseRouteName = '/media-boards';
@@ -349,6 +349,83 @@ describe('Media Board (API)', () => {
 							description: unusedExternalTool.description,
 						},
 					],
+				});
+			});
+		});
+
+		describe('when the user is unauthorized', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				return {
+					mediaBoard,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { mediaBoard } = await setup();
+
+				const response = await testApiClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+
+		describe('when the user is invalid', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: new ObjectId().toHexString(),
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
 				});
 			});
 		});
