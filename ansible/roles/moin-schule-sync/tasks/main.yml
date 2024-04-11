@@ -18,3 +18,10 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: moin-schule-users-sync-cronjob-configmap.yml.j2
+
+- name: unsynced moin.schule users deletion queueing CronJob
+  when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true and WITH_UNSYNCED_ENTITIES_DELETION is defined and WITH_UNSYNCED_ENTITIES_DELETION|bool == true
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: moin-schule-users-deletion-queueing-cronjob.yml.j2
