@@ -2,18 +2,18 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Utils } from '@mikro-orm/core';
-import { BoardNode, BoardNodeProps } from './board-node.do';
-import { BoardNodeEntity } from './board-node.entity';
+import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
-import { joinPath } from './path-utils';
+import { joinPath } from '../domain/path-utils';
+import { AnyBoardNode, AnyBoardNodeProps } from '../domain';
 
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<BoardNode> {
+	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
 		const props = await this.em.findOneOrFail(BoardNodeEntity, { id });
-		const descendants = await this.findDescendants(props);
+		const descendants = await this.findDescendants(props, depth);
 
 		const builder = new TreeBuilder(descendants);
 		const boardNode = builder.build(props);
@@ -23,7 +23,7 @@ export class BoardNodeRepo {
 
 	// TODO findByIds()
 
-	persist(boardNode: BoardNode | BoardNode[]): BoardNodeRepo {
+	persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
 		boardNodes.forEach((bn) => {
@@ -40,17 +40,17 @@ export class BoardNodeRepo {
 		return this;
 	}
 
-	async persistAndFlush(boardNode: BoardNode | BoardNode[]): Promise<void> {
+	async persistAndFlush(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		return this.persist(boardNode).flush();
 	}
 
-	remove(boardNode: BoardNode): BoardNodeRepo {
+	remove(boardNode: AnyBoardNode): BoardNodeRepo {
 		this.em.remove(this.getProps(boardNode));
 
 		return this;
 	}
 
-	async removeAndFlush(boardNode: BoardNode): Promise<void> {
+	async removeAndFlush(boardNode: AnyBoardNode): Promise<void> {
 		await this.em.removeAndFlush(this.getProps(boardNode));
 	}
 
@@ -58,7 +58,7 @@ export class BoardNodeRepo {
 		return this.em.flush();
 	}
 
-	private async findDescendants(props: BoardNodeProps, depth?: number): Promise<BoardNodeProps[]> {
+	private async findDescendants(props: AnyBoardNodeProps, depth?: number): Promise<AnyBoardNodeProps[]> {
 		const levelQuery = depth !== undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
 		const pathOfChildren = joinPath(props.path, props.id);
 
@@ -70,13 +70,13 @@ export class BoardNodeRepo {
 		return descendants;
 	}
 
-	private getProps(boardNode: BoardNode): BoardNodeProps {
+	private getProps(boardNode: AnyBoardNode): AnyBoardNodeProps {
 		// @ts-ignore
 		const { props } = boardNode;
 		return props;
 	}
 
-	private setProps(boardNode: BoardNode, props: BoardNodeProps): void {
+	private setProps(boardNode: AnyBoardNode, props: AnyBoardNodeProps): void {
 		// @ts-ignore
 		boardNode.props = props;
 	}

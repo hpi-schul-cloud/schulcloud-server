@@ -1,25 +1,27 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { ObjectId } from 'bson';
 import { Factory } from 'fishery';
-import { BoardNodeProps } from './board-node.do';
-import { BoardNodeEntity } from './board-node.entity';
-import { boardNodeFactory } from './board-node.factory';
+import { CardProps } from '../domain';
+import { BoardNodeEntity } from './entity/board-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
+import { cardFactory } from '../testing';
 
-const propsFactory = Factory.define<BoardNodeProps>(({ sequence }) => {
+const propsFactory = Factory.define<CardProps>(({ sequence }) => {
 	return {
 		id: new ObjectId().toHexString(),
 		path: '',
 		level: 0,
-		title: `column board #${sequence}`,
+		title: `card #${sequence}`,
 		position: 0,
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		type: BoardNodeType.CARD,
+		height: 42,
 	};
 });
 
@@ -47,7 +49,7 @@ describe('BoardNodeRepo', () => {
 
 	describe('when persisting', () => {
 		it('should work', async () => {
-			const boardNode = boardNodeFactory.build();
+			const boardNode = cardFactory.build();
 
 			repo.persist(boardNode);
 			await repo.flush();
@@ -74,7 +76,7 @@ describe('BoardNodeRepo', () => {
 
 	describe('after persisting a single node', () => {
 		const setup = () => {
-			const boardNode = boardNodeFactory.build();
+			const boardNode = cardFactory.build();
 			em.clear();
 
 			return { boardNode };
@@ -92,7 +94,7 @@ describe('BoardNodeRepo', () => {
 
 	describe('after persisting multiple nodes', () => {
 		const setup = () => {
-			const boardNodes = boardNodeFactory.buildList(2);
+			const boardNodes = cardFactory.buildList(2);
 			em.clear();
 
 			return { boardNodes };
@@ -110,8 +112,8 @@ describe('BoardNodeRepo', () => {
 
 	describe('after a tree was peristed', () => {
 		const setup = async () => {
-			const parent = boardNodeFactory.build();
-			const children = boardNodeFactory.buildList(2);
+			const parent = cardFactory.build();
+			const children = cardFactory.buildList(2);
 			children.forEach((child) => parent.addChild(child));
 			await repo.persistAndFlush([parent, ...children]);
 			em.clear();
