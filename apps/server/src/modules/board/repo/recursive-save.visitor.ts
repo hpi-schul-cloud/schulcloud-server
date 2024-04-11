@@ -210,7 +210,6 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		const boardNode = new CollaborativeTextEditorElementNode({
 			id: collaborativeTextEditorElement.id,
-			editorId: collaborativeTextEditorElement.editorId,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});

@@ -217,7 +217,6 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const element: CollaborativeTextEditorElement = new CollaborativeTextEditorElement({
 			id: boardNode.id,
-			editorId: boardNode.editorId,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

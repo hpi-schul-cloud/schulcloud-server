@@ -124,7 +124,6 @@ export class ContentElementFactory {
 	private buildCollaborativeTextEditor() {
 		const element = new CollaborativeTextEditorElement({
 			id: new ObjectId().toHexString(),
-			editorId: '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
