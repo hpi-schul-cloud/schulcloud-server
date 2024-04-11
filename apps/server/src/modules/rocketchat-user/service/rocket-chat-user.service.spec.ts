@@ -227,22 +227,30 @@ describe(RocketChatUserService.name, () => {
 
 				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
-				rocketChatService.deleteUser.mockRejectedValueOnce({ success: false });
+				rocketChatService.deleteUser.mockResolvedValueOnce({ success: false });
 
-				const expectedError = `Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`;
+				const expectedResult = DomainDeletionReportBuilder.build(
+					DomainName.ROCKETCHATUSER,
+					[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [rocketChatUser.id])],
+					[
+						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
+							DomainOperationReportBuilder.build(OperationType.DELETE, 0, [rocketChatUser.username]),
+						]),
+					]
+				);
 
 				return {
-					expectedError,
+					expectedResult,
 					userId,
 				};
 			};
 
-			it('should throw an error', async () => {
-				const { expectedError, userId } = setup();
+			it('should return domainOperation object with information about deleted user', async () => {
+				const { userId, expectedResult } = setup();
 
-				await expect(service.deleteUserData(userId)).rejects.toThrowError(
-					new DeletionErrorLoggableException(expectedError)
-				);
+				const result: DomainDeletionReport = await service.deleteUserData(userId);
+
+				expect(result).toEqual(expectedResult);
 			});
 		});
 

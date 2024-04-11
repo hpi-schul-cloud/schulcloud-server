@@ -60,7 +60,7 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 				if (deletedUserFormRocketChatService.success === true) {
 					const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
 
-					const result = this.newMethod(
+					const result = this.buildResultAndLog(
 						rocketChatUserDeleted,
 						1,
 						userId,
@@ -71,8 +71,7 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 
 					return result;
 				}
-
-				const result = this.newMethod(
+				const result = this.buildResultAndLog(
 					0,
 					0,
 					userId,
@@ -99,20 +98,20 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 				);
 			}
 		} else {
-			const result = this.newMethod(0, 0, userId, 'RocketChat user already deleted', StatusModel.FINISHED);
+			const result = this.buildResultAndLog(0, 0, userId, 'RocketChat user already deleted', StatusModel.FINISHED);
 
 			return result;
 		}
 	}
 
-	private newMethod(
+	private buildResultAndLog(
 		rocketChatUserDeleted: number,
 		rocketChatServiceUserDeleted: number,
 		userId: string,
 		message: string,
 		status: StatusModel,
 		rocketChatUser?: RocketChatUser
-	) {
+	): DomainDeletionReport {
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.ROCKETCHATUSER,
 			[
