@@ -45,7 +45,7 @@ export type ExternalToolDto<T> = {
 
 	medium?: ExternalToolMediumDto;
 
-	createAt?: Date;
+	createdAt?: Date;
 };
 
 export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;
