@@ -19,29 +19,38 @@ export class EtherpadClientAdapter {
 
 		const authorID = response.data.data?.authorID;
 
+		if (!authorID) {
+			throw new Error('Could not create author');
+		}
+
 		return authorID;
 	}
 
-	async getOrCreateSession(authorId: EntityId, parentId: EntityId) {
-		const session = this.sessionApi.createSessionUsingGET(parentId, authorId);
+	async getOrCreateSession(authorId: EntityId, groupId: EntityId, validUntil: number = 2220) {
+		const session = await this.sessionApi.createSessionUsingGET(groupId, authorId, (Date.now() + validUntil) as any);
 
-		return session;
+		if (!session.data.data?.sessionID) {
+			throw new Error('Could not create session');
+		}
+
+		return session.data.data?.sessionID;
 	}
 
 	async getOrCreateCollaborativeTextEditor(userId: EntityId, parentId: EntityId) {
 		const groupResponse = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
-		const groupID = groupResponse.data.data?.groupID;
+		const groupId = groupResponse.data.data?.groupID;
 
-		if (groupID) {
-			const padId = await this.hasPad(groupID, parentId);
-			if (padId) {
-				return padId;
+		if (groupId) {
+			const padID = await this.hasPad(groupId, parentId);
+			if (padID) {
+				return { padId: padID, groupId };
 			}
-			const padResponse = await this.groupApi.createGroupPadUsingGET(groupID, parentId);
-			const padID = padResponse.data.data;
+			const padResponse = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
+			const padId = (padResponse.data.data as { padID?: string })?.padID || '';
 
-			return padID;
+			return { padId, groupId };
 		}
+		throw new Error('Could not create group');
 	}
 
 	private async hasPad(groupID: string, parentId: string) {

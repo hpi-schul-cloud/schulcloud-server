@@ -10,11 +10,15 @@ export class CollaborativeTextEditorService {
 	}
 
 	async createCollaborativeTextEditor(userId: string, params: CreateCollaborativeTextEditorBodyParams) {
-		const result = await this.collaborativeTextEditorAdapter.getOrCreateCollaborativeTextEditor(
+		const { padId, groupId } = await this.collaborativeTextEditorAdapter.getOrCreateCollaborativeTextEditor(
 			userId,
 			params.parentId
 		);
 
-		return result;
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthor(userId);
+		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSession(authorId, groupId);
+
+		console.log(padId, groupId, sessionId);
+		return { padId, groupId, sessionId };
 	}
 }
