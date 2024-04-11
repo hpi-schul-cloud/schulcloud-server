@@ -1,5 +1,9 @@
 import AdmZip from 'adm-zip';
-import { DEFAULT_FILE_PARSER_OPTIONS, OrganizationProps, ResourceProps } from './common-cartridge-import.types';
+import {
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceProps,
+	DEFAULT_FILE_PARSER_OPTIONS,
+} from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 import { CommonCartridgeImportUtils } from './utils/common-cartridge-import-utils';
@@ -37,13 +41,13 @@ export class CommonCartridgeFileParser {
 		return title;
 	}
 
-	public getOrganizations(): OrganizationProps[] {
+	public getOrganizations(): CommonCartridgeOrganizationProps[] {
 		const organizations = this.manifestParser.getOrganizations();
 
 		return organizations;
 	}
 
-	public getResource(organization: OrganizationProps): ResourceProps | undefined {
+	public getResource(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
 		this.checkOrganization(organization);
 
 		const resource = this.resourceFactory.create(organization);
@@ -51,7 +55,7 @@ export class CommonCartridgeFileParser {
 		return resource;
 	}
 
-	public getResourceAsString(organization: OrganizationProps): string {
+	public getResourceAsString(organization: CommonCartridgeOrganizationProps): string {
 		this.checkOrganization(organization);
 
 		const resource = this.archive.readAsText(organization.resourcePath);
@@ -69,7 +73,7 @@ export class CommonCartridgeFileParser {
 		throw new CommonCartridgeManifestNotFoundException();
 	}
 
-	private checkOrganization(organization: OrganizationProps): void {
+	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
 		if (!organization.isResource && !this.archive.getEntry(organization.resourcePath)) {
 			throw new CommonCartridgeResourceNotFoundException();
 		}

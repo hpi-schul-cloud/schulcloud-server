@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { CommonCartridgeFileParserOptions, OrganizationProps } from './common-cartridge-import.types';
+import { CommonCartridgeFileParserOptions, CommonCartridgeOrganizationProps } from './common-cartridge-import.types';
 import { CommonCartridgeOrganizationVisitor } from './utils/common-cartridge-organization-visitor';
 
 export class CommonCartridgeManifestParser {
@@ -27,7 +27,7 @@ export class CommonCartridgeManifestParser {
 		return result?.textContent ?? undefined;
 	}
 
-	public getOrganizations(): OrganizationProps[] {
+	public getOrganizations(): CommonCartridgeOrganizationProps[] {
 		const visitor = new CommonCartridgeOrganizationVisitor(this.doc, this.options);
 		const result = visitor.findAllOrganizations();
 

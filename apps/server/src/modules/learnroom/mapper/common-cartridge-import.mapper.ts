@@ -3,8 +3,8 @@ import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/doma
 import { AnyElementContentBody, LinkContentBody } from '@src/modules/board/controller/dto';
 import { CommonCartridgeResourceTypeV1P1, OrganizationProps } from '@src/modules/common-cartridge';
 import {
-	ResourceProps,
-	WebLinkResourceProps,
+	CommonCartridgeResourceProps,
+	CommonCartridgeWebLinkResourceProps,
 } from '@src/modules/common-cartridge/import/common-cartridge-import.types';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	public mapResourceToContentElementBody(resource: ResourceProps): AnyElementContentBody {
+	public mapResourceToContentElementBody(resource: CommonCartridgeResourceProps): AnyElementContentBody {
 		switch (resource.type) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createLinkContentElementBody(resource);
@@ -42,7 +42,7 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	private createLinkContentElementBody(resource: WebLinkResourceProps): AnyElementContentBody {
+	private createLinkContentElementBody(resource: CommonCartridgeWebLinkResourceProps): AnyElementContentBody {
 		const body = new LinkContentBody();
 
 		body.title = resource.title;

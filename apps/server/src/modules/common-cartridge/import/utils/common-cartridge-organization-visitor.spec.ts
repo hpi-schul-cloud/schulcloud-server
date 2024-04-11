@@ -1,7 +1,7 @@
 import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
 import { JSDOM } from 'jsdom';
-import { DEFAULT_FILE_PARSER_OPTIONS, OrganizationProps } from '../common-cartridge-import.types';
+import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../common-cartridge-import.types';
 import { CommonCartridgeOrganizationVisitor } from './common-cartridge-organization-visitor';
 
 describe('CommonCartridgeOrganizationVisitor', () => {
@@ -40,7 +40,7 @@ describe('CommonCartridgeOrganizationVisitor', () => {
 
 				expect(result).toHaveLength(117);
 				result.forEach((organization) => {
-					expect(organization).toEqual<OrganizationProps>({
+					expect(organization).toEqual<CommonCartridgeOrganizationProps>({
 						identifier: expect.any(String),
 						identifierRef: expect.any(String),
 						title: expect.any(String),

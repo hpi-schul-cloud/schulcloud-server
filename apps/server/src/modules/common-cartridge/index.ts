@@ -20,6 +20,6 @@ export { CommonCartridgeResourceTypeV1P1 } from './import/common-cartridge-impor
 export {
 	CommonCartridgeFileParserOptions,
 	DEFAULT_FILE_PARSER_OPTIONS,
-	OrganizationProps,
+	CommonCartridgeOrganizationProps as OrganizationProps,
 } from './import/common-cartridge-import.types';
 export { CommonCartridgeImportUtils } from './import/utils/common-cartridge-import-utils';

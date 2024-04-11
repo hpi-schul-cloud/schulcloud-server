@@ -10,7 +10,7 @@ export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
 	pathSeparator: '/',
 };
 
-export type OrganizationProps = {
+export type CommonCartridgeOrganizationProps = {
 	path: string;
 	pathDepth: number;
 	identifier: string;
@@ -22,14 +22,21 @@ export type OrganizationProps = {
 	resourceType: string;
 };
 
-export type WebContentResourceProps = {
+export type CommonCartridgeWebContentResourceProps = {
 	type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
 	title: string;
 	html: string;
 };
 
-export type WebLinkResourceProps = { type: CommonCartridgeResourceTypeV1P1.WEB_LINK; title: string; url: string };
+export type CommonCartridgeWebLinkResourceProps = {
+	type: CommonCartridgeResourceTypeV1P1.WEB_LINK;
+	title: string;
+	url: string;
+};
 
-export type UnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
+export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
 
-export type ResourceProps = WebContentResourceProps | WebLinkResourceProps | UnknownResourceProps;
+export type CommonCartridgeResourceProps =
+	| CommonCartridgeWebContentResourceProps
+	| CommonCartridgeWebLinkResourceProps
+	| CommonCartridgeUnknownResourceProps;

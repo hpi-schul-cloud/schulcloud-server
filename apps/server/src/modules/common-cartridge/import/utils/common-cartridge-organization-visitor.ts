@@ -1,4 +1,4 @@
-import { CommonCartridgeFileParserOptions, OrganizationProps } from '../common-cartridge-import.types';
+import { CommonCartridgeFileParserOptions, CommonCartridgeOrganizationProps } from '../common-cartridge-import.types';
 
 type SearchElement = { depth: number; path: string; element: Element };
 
@@ -21,7 +21,7 @@ type SearchElement = { depth: number; path: string; element: Element };
 export class CommonCartridgeOrganizationVisitor {
 	constructor(private readonly document: Document, private readonly options: CommonCartridgeFileParserOptions) {}
 
-	public findAllOrganizations(): OrganizationProps[] {
+	public findAllOrganizations(): CommonCartridgeOrganizationProps[] {
 		const organizations = this.search().map((element) => this.createOrganizationProps(element));
 
 		return organizations;
@@ -74,7 +74,7 @@ export class CommonCartridgeOrganizationVisitor {
 		});
 	}
 
-	private createOrganizationProps(element: SearchElement): OrganizationProps {
+	private createOrganizationProps(element: SearchElement): CommonCartridgeOrganizationProps {
 		const title = this.getElementTitle(element.element);
 		const identifier = this.getElementIdentifier(element.element);
 		const identifierRef = this.getElementIdentifierRef(element.element);

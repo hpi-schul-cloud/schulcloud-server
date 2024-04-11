@@ -1,12 +1,16 @@
 import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';
 import { CommonCartridgeResourceTypeV1P1, CommonCartridgeResourceTypeV1P3 } from './common-cartridge-import.enums';
-import { OrganizationProps, ResourceProps, WebLinkResourceProps } from './common-cartridge-import.types';
+import {
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceProps,
+	CommonCartridgeWebLinkResourceProps,
+} from './common-cartridge-import.types';
 
 export class CommonCartridgeResourceFactory {
 	constructor(private readonly archive: AdmZip) {}
 
-	public create(organization: OrganizationProps): ResourceProps | undefined {
+	public create(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
 		if (!this.isValidOrganization(organization)) {
 			return undefined;
 		}
@@ -22,14 +26,14 @@ export class CommonCartridgeResourceFactory {
 		}
 	}
 
-	private isValidOrganization(organization: OrganizationProps): boolean {
+	private isValidOrganization(organization: CommonCartridgeOrganizationProps): boolean {
 		const { isResource, isInlined, resourcePath } = organization;
 		const isValidOrganization = isResource && !isInlined && resourcePath !== '';
 
 		return isValidOrganization;
 	}
 
-	private createWebLinkResource(content: string): WebLinkResourceProps {
+	private createWebLinkResource(content: string): CommonCartridgeWebLinkResourceProps {
 		// TODO: Can throw an error if the content is not a valid XML
 		const resource = new JSDOM(content, { contentType: 'text/xml' }).window.document;
 		const title = resource.querySelector('webLink > title')?.textContent || '';
