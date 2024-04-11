@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { CollaborativeTextEditorAdapter } from './collaborative-text-editor.adapter';
+import { EtherpadClientModule } from '@src/infra/etherpad-client';
+import { etherpadClientConfig } from './config';
 import { CollaborativeTextEditorService } from './service/collaborative-text-editor.service';
 
 @Module({
-	imports: [LoggerModule],
-	providers: [CollaborativeTextEditorService, CollaborativeTextEditorAdapter],
+	imports: [LoggerModule, EtherpadClientModule.register(etherpadClientConfig)],
+	providers: [CollaborativeTextEditorService],
 	exports: [CollaborativeTextEditorService],
 })
 export class CollaborativeTextEditorModule {}
