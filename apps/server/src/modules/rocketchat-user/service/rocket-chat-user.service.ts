@@ -53,7 +53,11 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		);
 		const rocketChatUser = await this.rocketChatUserRepo.findByUserId(userId);
 
-		if (rocketChatUser !== null) {
+		if (rocketChatUser === null) {
+			const result = this.buildResultAndLog(0, 0, userId, 'RocketChat user already deleted', StatusModel.FINISHED);
+  
+			return result;
+		}
 			try {
 				const deletedUserFormRocketChatService = await this.rocketChatService.deleteUser(rocketChatUser.username);
 
