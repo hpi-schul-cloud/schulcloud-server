@@ -21,7 +21,7 @@ export class SchulconnexFetchImportUsersService {
 		}
 
 		const response: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({
-			vollstaendig: ['personen', 'personenkontexte', 'organisationen'],
+			vollstaendig: ['personen', 'personenkontexte', 'organisationen', 'gruppen'],
 			'organisation.id': externalSchoolId,
 		});
 
