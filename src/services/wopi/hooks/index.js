@@ -96,7 +96,10 @@ const setContentDispositionHeader = async (context) => {
 	const { fileId } = context.params.route;
 	const file = await FileModel.findOne({ _id: fileId });
 
+	// Setting this header should prevent HTML files from being openend in the browser, because that could be exploited by sending a direct link to a malicious file.
+	// Since this endpoint is not intended to be used by a browser, we can safely set the header for all responses.
 	context.http.headers = { 'Content-Disposition': `attachment; filename="${file.name}"` };
+
 	return context;
 };
 
