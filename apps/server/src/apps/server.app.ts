@@ -19,7 +19,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
-// import { join } from 'path';
+import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
@@ -36,12 +36,9 @@ async function bootstrap() {
 	sourceMapInstall();
 
 	// create the NestJS application on a seperate express instance
-	// const nestExpress = express();
-	// const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	// const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter, { cors: true });
-	const nestApp = await NestFactory.create(ServerModule, {
-		cors: true,
-	});
+	const nestExpress = express();
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
@@ -59,7 +56,7 @@ async function bootstrap() {
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider
 	// TODO remove if not needed anymore
-	// nestExpress.set('feathersApp', feathersExpress);
+	nestExpress.set('feathersApp', feathersExpress);
 
 	// customize nest app settings
 	nestApp.enableCors();
@@ -111,28 +108,28 @@ async function bootstrap() {
 
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	// rootExpress.use('/api/v1', feathersExpress);
-	// rootExpress.use('/api/v3', nestExpress);
-	// rootExpress.use('/internal', internalServerExpress);
-	// rootExpress.use(express.static(join(__dirname, '../static-assets')));
+	rootExpress.use('/api/v1', feathersExpress);
+	rootExpress.use('/api/v3', nestExpress);
+	rootExpress.use('/internal', internalServerExpress);
+	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
-	// // logger middleware for deprecated paths
-	// // TODO remove when all calls to the server are migrated
-	// const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-	// 	legacyLogger.error(req.path, 'DEPRECATED-PATH');
-	// 	next();
-	// };
+	// logger middleware for deprecated paths
+	// TODO remove when all calls to the server are migrated
+	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+		legacyLogger.error(req.path, 'DEPRECATED-PATH');
+		next();
+	};
 
-	// // safety net for deprecated paths not beginning with version prefix
-	// // TODO remove when all calls to the server are migrated
-	// // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	// rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
+	// safety net for deprecated paths not beginning with version prefix
+	// TODO remove when all calls to the server are migrated
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	// rootExpress.use('/', logDeprecatedPaths, feathersExpress);
+	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	const port = 3030;
 
-	await nestApp.listen(port, () => {
+	rootExpress.listen(port, () => {
 		logger.info(
 			new AppStartLoggable({
 				appName: 'Main server app',
