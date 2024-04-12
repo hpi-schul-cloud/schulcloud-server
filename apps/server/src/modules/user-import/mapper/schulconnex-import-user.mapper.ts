@@ -24,7 +24,7 @@ export class SchulconnexImportUserMapper {
 				lastName: externalUser.person.name.familienname,
 				roleNames: ImportUser.isImportUserRole(role) ? [role] : [],
 				email: `${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid}@schul-cloud.org`,
-				classNames: groups ? SanisResponseMapper.mapToGroupNameArr(groups) : [],
+				classNames: groups ? SanisResponseMapper.mapToGroupNameList(groups) : [],
 			});
 
 			return importUser;

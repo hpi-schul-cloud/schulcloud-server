@@ -79,7 +79,7 @@ export class SanisResponseMapper {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 
-	public static mapToGroupNameArr(groups: SanisGruppenResponse[]): string[] {
+	public static mapToGroupNameList(groups: SanisGruppenResponse[]): string[] {
 		const groupNames: string[] = [];
 
 		groups.forEach((group: SanisGruppenResponse) => {
