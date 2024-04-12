@@ -3,8 +3,8 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
+import { CommonCartridgeGuard } from '../../common-cartridge.guard';
 import { CommonCartridgeResource } from '../../interfaces';
-import { checkIntendedUse } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV130 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -26,7 +26,10 @@ export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResour
 
 	constructor(private readonly props: CommonCartridgeWebContentResourcePropsV130) {
 		super(props);
-		checkIntendedUse(props.intendedUse, CommonCartridgeWebContentResourceV130.SUPPORTED_INTENDED_USES);
+		CommonCartridgeGuard.checkIntendedUse(
+			props.intendedUse,
+			CommonCartridgeWebContentResourceV130.SUPPORTED_INTENDED_USES
+		);
 	}
 
 	public canInline(): boolean {

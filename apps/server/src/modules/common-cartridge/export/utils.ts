@@ -23,9 +23,3 @@ export function createIdentifier(identifier?: string | ObjectId): string {
 
 	return `i${identifier.toString()}`;
 }
-
-export function checkIntendedUse(intendedUse: string, supportedIntendedUses: string[]): void | never {
-	if (!supportedIntendedUses.includes(intendedUse)) {
-		throw new Error(`Intended use ${intendedUse} is not supported`);
-	}
-}
