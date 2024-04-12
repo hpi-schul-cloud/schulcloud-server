@@ -1,15 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
+	AnyMediaBoardDo,
 	BoardExternalReferenceType,
 	MediaBoard,
 	type MediaBoardProps,
-	MediaExternalToolElement,
 } from '@shared/domain/domainobject';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from '../../base.factory';
 
 class MediaBoardFactory extends BaseFactory<MediaBoard, MediaBoardProps> {
-	addChild(child: MediaExternalToolElement): this {
+	addChild(child: AnyMediaBoardDo): this {
 		const params: DeepPartial<MediaBoardProps> = { children: [child] };
 
 		return this.params(params);

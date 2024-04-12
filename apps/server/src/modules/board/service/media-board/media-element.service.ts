@@ -7,7 +7,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	type AnyMediaContentElementDo,
-	ColumnBoard,
 	isAnyMediaContentElement,
 	MediaBoard,
 	MediaExternalToolElement,
@@ -36,10 +35,25 @@ export class MediaElementService {
 		return element;
 	}
 
+	public async checkElementExists(
+		mediaBoard: MediaBoard,
+		schoolExternalTool: SchoolExternalToolWithId
+	): Promise<boolean> {
+		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
+			schoolToolRef: { schoolToolId: schoolExternalTool.id },
+		});
+
+		const exists = mediaBoard
+			.getChildrenOfType(MediaExternalToolElement)
+			.some((element) => contextExternalTools.some((tool) => tool.id === element.contextExternalToolId));
+
+		return exists;
+	}
+
 	public async createContextExternalToolForMediaBoard(
 		user: User,
 		schoolExternalTool: SchoolExternalToolWithId,
-		mediaBoard: ColumnBoard | MediaBoard
+		mediaBoard: MediaBoard
 	): Promise<ContextExternalToolWithId> {
 		const contextExternalTool: ContextExternalToolWithId =
 			await this.contextExternalToolService.saveContextExternalTool(

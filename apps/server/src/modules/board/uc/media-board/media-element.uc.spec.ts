@@ -16,9 +16,10 @@ import {
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
-import { SchoolExternalToolWithId } from '../../../tool/school-external-tool/domain';
+import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, BoardDoService, MediaElementService, MediaLineService } from '../../service';
+import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
 import { MediaElementUc } from './media-element.uc';
 
 describe(MediaElementUc.name, () => {
@@ -30,7 +31,7 @@ describe(MediaElementUc.name, () => {
 	let mediaElementService: DeepMocked<MediaElementService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
-	let boardDoService: DeepMocked<BoardDoService>;
+	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	beforeAll(async () => {
@@ -60,8 +61,8 @@ describe(MediaElementUc.name, () => {
 					useValue: createMock<ConfigService>(),
 				},
 				{
-					provide: BoardDoService,
-					useValue: createMock<BoardDoService>(),
+					provide: MediaBoardService,
+					useValue: createMock<MediaBoardService>(),
 				},
 				{
 					provide: SchoolExternalToolService,
@@ -76,7 +77,7 @@ describe(MediaElementUc.name, () => {
 		mediaElementService = module.get(MediaElementService);
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		configService = module.get(ConfigService);
-		boardDoService = module.get(BoardDoService);
+		mediaBoardService = module.get(MediaBoardService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 	});
 
@@ -157,7 +158,7 @@ describe(MediaElementUc.name, () => {
 	});
 
 	describe('createElement', () => {
-		describe('when the user creates a new media element', () => {
+		describe('when the user creates a not existing media element', () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
@@ -174,8 +175,10 @@ describe(MediaElementUc.name, () => {
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoService.getRootBoardDo.mockResolvedValueOnce(mediaBoard);
+				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([mediaBoard.id]);
+				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				mediaElementService.checkElementExists.mockResolvedValueOnce(false);
 				mediaElementService.createContextExternalToolForMediaBoard.mockResolvedValueOnce(contextExternalTool);
 				mediaElementService.createExternalToolElement.mockResolvedValueOnce(mediaElement);
 
@@ -202,6 +205,14 @@ describe(MediaElementUc.name, () => {
 				);
 			});
 
+			it('should check if element exists already on board', async () => {
+				const { user, mediaLine, mediaElement, mediaBoard, schoolExternalTool } = setup();
+
+				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
+
+				expect(mediaElementService.checkElementExists).toHaveBeenCalledWith(mediaBoard, schoolExternalTool);
+			});
+
 			it('should create the element', async () => {
 				const { user, mediaLine, mediaElement, contextExternalTool } = setup();
 
@@ -216,6 +227,48 @@ describe(MediaElementUc.name, () => {
 				const result: MediaExternalToolElement = await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
 				expect(result).toBe(mediaElement);
+			});
+		});
+
+		describe('when the user creates an existing media element', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+				const mediaLine = mediaLineFactory.build();
+				const mediaElement = mediaExternalToolElementFactory.build();
+				const schoolExternalTool: SchoolExternalToolWithId =
+					schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
+				const contextExternalTool: ContextExternalToolWithId = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
+					.buildWithId() as ContextExternalToolWithId;
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([mediaBoard.id]);
+				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
+				mediaElementService.checkElementExists.mockResolvedValueOnce(true);
+
+				return {
+					user,
+					mediaElement,
+					mediaLine,
+					boardDoAuthorizable,
+					mediaBoard,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaBoard, mediaLine, mediaElement, schoolExternalTool } = setup();
+
+				await expect(uc.createElement(user.id, mediaElement.id, mediaLine.id, 1)).rejects.toThrow(
+					new MediaBoardElementAlreadyExistsLoggableException(mediaBoard.id, schoolExternalTool.id)
+				);
 			});
 		});
 

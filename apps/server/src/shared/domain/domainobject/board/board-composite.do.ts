@@ -42,14 +42,14 @@ export abstract class BoardComposite<T extends BoardCompositeProps> extends Doma
 		return exists;
 	}
 
-	getChildrenOfType<U>(type: new (...args: U[]) => U): U[] {
+	getChildrenOfType<U extends AnyBoardDo>(type: new (...args: U[]) => U): U[] {
 		const childrenOfType: U[] = [];
 		for (const child of this.children) {
 			if (child.children) {
 				childrenOfType.push(...child.getChildrenOfType(type));
 			}
 			if (child instanceof type) {
-				childrenOfType.push(child as U);
+				childrenOfType.push(child);
 			}
 		}
 

@@ -149,6 +149,8 @@ describe(`${BoardComposite.name}`, () => {
 			const { parent, children } = setup();
 			const expectedChildren = [children[3].children[0], children[3]];
 
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			const result: SecondBoardObject[] = parent.getChildrenOfType(SecondBoardObject);
 
 			expect(result).toEqual(expectedChildren);

@@ -1,11 +1,14 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ContextExternalToolWithId } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
+import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import {
 	type AnyMediaContentElementDo,
 	BoardDoAuthorizable,
+	BoardExternalReferenceType,
 	ColumnBoard,
 	MediaBoard,
 	MediaExternalToolElement,
@@ -13,10 +16,9 @@ import {
 } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
-import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, BoardDoService, MediaElementService, MediaLineService } from '../../service';
+import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
 
 @Injectable()
 export class MediaElementUc {
@@ -26,7 +28,7 @@ export class MediaElementUc {
 		private readonly mediaElementService: MediaElementService,
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly boardDoService: BoardDoService,
+		private readonly mediaBoardService: MediaBoardService,
 		private readonly schoolExternalToolService: SchoolExternalToolService
 	) {}
 
@@ -71,11 +73,17 @@ export class MediaElementUc {
 		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
 		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
-		const mediaBoard: ColumnBoard | MediaBoard = await this.boardDoService.getRootBoardDo(line);
+		const boardIds: EntityId[] = await this.mediaBoardService.findIdsByExternalReference({
+			type: BoardExternalReferenceType.User,
+			id: user.id,
+		});
+		const mediaBoard: MediaBoard = await this.mediaBoardService.findById(boardIds[0]);
 
 		const schoolExternalTool: SchoolExternalToolWithId = await this.schoolExternalToolService.findById(
 			schoolExternalToolId
 		);
+
+		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
 
 		const createdContexExternalTool: ContextExternalToolWithId =
 			await this.mediaElementService.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
@@ -87,6 +95,17 @@ export class MediaElementUc {
 		);
 
 		return createdElement;
+	}
+
+	private async checkElementExistsAlreadyOnBoardAndThrow(
+		mediaBoard: MediaBoard,
+		schoolExternalTool: SchoolExternalToolWithId
+	): Promise<void> {
+		const exists = await this.mediaElementService.checkElementExists(mediaBoard, schoolExternalTool);
+
+		if (exists) {
+			throw new MediaBoardElementAlreadyExistsLoggableException(mediaBoard.id, schoolExternalTool.id);
+		}
 	}
 
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {

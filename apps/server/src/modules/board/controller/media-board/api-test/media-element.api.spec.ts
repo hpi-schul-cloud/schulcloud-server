@@ -416,34 +416,20 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
-					context: {
-						id: studentUser.id,
-						type: BoardExternalReferenceType.User,
-					},
-				});
-				const mediaLine = mediaLineNodeFactory.buildWithId({
-					parent: mediaBoard,
-				});
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
-					parent: mediaLine,
-				});
-
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
+				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
 
 				return {
 					studentClient,
-					mediaElement,
 				};
 			};
 
 			it('should return forbidden', async () => {
-				const { studentClient, mediaElement } = await setup();
+				const { studentClient } = await setup();
 
-				const response = await studentClient.delete(`${mediaElement.id}`);
+				const response = await studentClient.delete(`${new ObjectId().toHexString()}`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				expect(response.body).toEqual({

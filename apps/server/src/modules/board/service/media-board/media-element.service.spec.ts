@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum';
 import type { ContextExternalToolWithId } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -242,6 +243,60 @@ describe(MediaElementService.name, () => {
 				await service.move(element, line, 3);
 
 				expect(boardDoService.move).toHaveBeenCalledWith(element, line, 3);
+			});
+		});
+	});
+
+	describe('checkElementExists', () => {
+		describe('when an element exists', () => {
+			const setup = () => {
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
+				const contextExternalTool = contextExternalToolFactory.withSchoolExternalToolRef(schoolExternalTool.id).build();
+				const element = mediaExternalToolElementFactory.build({ contextExternalToolId: contextExternalTool.id });
+				const line = mediaLineFactory.addChild(element).build();
+				const mediaBoard = mediaBoardFactory.addChild(line).build();
+
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
+
+				return {
+					mediaBoard,
+					schoolExternalTool,
+				};
+			};
+
+			it('should return true if the element exists', async () => {
+				const { mediaBoard, schoolExternalTool } = setup();
+
+				const result = await service.checkElementExists(mediaBoard, schoolExternalTool);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when an element does not exist', () => {
+			const setup = () => {
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
+				const contextExternalTool = contextExternalToolFactory.withSchoolExternalToolRef(schoolExternalTool.id).build();
+				const element = mediaExternalToolElementFactory.build({ contextExternalToolId: new ObjectId().toHexString() });
+				const line = mediaLineFactory.addChild(element).build();
+				const mediaBoard = mediaBoardFactory.addChild(line).build();
+
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
+
+				return {
+					mediaBoard,
+					schoolExternalTool,
+				};
+			};
+
+			it('should return false if the element does not exist', async () => {
+				const { mediaBoard, schoolExternalTool } = setup();
+
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
+
+				const result = await service.checkElementExists(mediaBoard, schoolExternalTool);
+
+				expect(result).toBe(false);
 			});
 		});
 	});
