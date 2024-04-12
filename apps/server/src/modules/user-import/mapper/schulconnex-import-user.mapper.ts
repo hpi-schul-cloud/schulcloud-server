@@ -1,4 +1,4 @@
-import { SanisResponse } from '@infra/schulconnex-client';
+import { SanisGroupType, SanisGruppenResponse, SanisResponse } from '@infra/schulconnex-client';
 import { SanisResponseMapper } from '@modules/provisioning';
 import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
@@ -11,6 +11,9 @@ export class SchulconnexImportUserMapper {
 	): ImportUser[] {
 		const importUsers: ImportUser[] = response.map((externalUser: SanisResponse): ImportUser => {
 			const role: RoleName = SanisResponseMapper.mapSanisRoleToRoleName(externalUser);
+			const groups: SanisGruppenResponse[] | undefined = externalUser.personenkontexte[0]?.gruppen?.filter(
+				(group) => group.gruppe.typ === SanisGroupType.CLASS
+			);
 
 			const importUser: ImportUser = new ImportUser({
 				system,
@@ -21,6 +24,7 @@ export class SchulconnexImportUserMapper {
 				lastName: externalUser.person.name.familienname,
 				roleNames: ImportUser.isImportUserRole(role) ? [role] : [],
 				email: `${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid}@schul-cloud.org`,
+				classNames: groups ? SanisResponseMapper.mapToGroupNameList(groups) : [],
 			});
 
 			return importUser;
