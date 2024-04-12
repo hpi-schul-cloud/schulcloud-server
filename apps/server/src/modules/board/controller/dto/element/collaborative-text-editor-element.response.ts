@@ -7,6 +7,7 @@ export class CollaborativeTextEditorElementResponse {
 		this.id = props.id;
 		this.type = props.type;
 		this.timestamps = props.timestamps;
+		this.content = props.content;
 	}
 
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
@@ -17,4 +18,7 @@ export class CollaborativeTextEditorElementResponse {
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;
+
+	@ApiProperty()
+	content: object;
 }

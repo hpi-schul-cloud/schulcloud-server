@@ -20,6 +20,7 @@ export class CollaborativeTextEditorElementResponseMapper implements BaseRespons
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.COLLABORATIVE_TEXT_EDITOR,
+			content: {},
 		});
 
 		return result;
