@@ -124,7 +124,7 @@ export class CommonCartridgeMapper {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(element.id),
 			title: 'card content',
-			html: `<h1>${element.inputFormat}</h1><p>${element.text}</p>`,
+			html: `<p>${element.text}</p>`,
 			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 		};
 	}

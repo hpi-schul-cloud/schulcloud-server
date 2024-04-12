@@ -18,6 +18,7 @@ import {
 } from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
+import { ContentElementFactory, ContentElementType } from '@shared/domain/domainobject';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
@@ -28,6 +29,7 @@ describe('CommonCartridgeExportService', () => {
 	let taskServiceMock: DeepMocked<TaskService>;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 	let columnBoardServiceMock: DeepMocked<ColumnBoardService>;
+	const contentElementFactory = new ContentElementFactory();
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
@@ -71,7 +73,8 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const card = cardFactory.build();
+		const contentElement = contentElementFactory.build(ContentElementType.RICH_TEXT);
+		const card = cardFactory.build({ children: [contentElement] });
 		const column = columnFactory.build({ children: [card] });
 		const columnBoard = columnBoardFactory.build({ children: [column] });
 
@@ -92,7 +95,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card, contentElement };
 	};
 
 	beforeAll(async () => {
@@ -259,6 +262,13 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', card.title));
+			});
+
+			it('should add content element of cards', async () => {
+				const { archive, contentElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(`<resource identifier="i${contentElement.id}"`);
 			});
 		});
 
