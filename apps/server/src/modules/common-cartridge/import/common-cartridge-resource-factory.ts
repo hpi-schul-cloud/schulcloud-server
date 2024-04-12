@@ -1,6 +1,6 @@
 import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';
-import { CommonCartridgeResourceTypeV1P1, CommonCartridgeResourceTypeV1P3 } from './common-cartridge-import.enums';
+import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
@@ -19,7 +19,6 @@ export class CommonCartridgeResourceFactory {
 
 		switch (organization.resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
-			case CommonCartridgeResourceTypeV1P3.WEB_LINK:
 				return this.createWebLinkResource(content);
 			default:
 				return undefined;
