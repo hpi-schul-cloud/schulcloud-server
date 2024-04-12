@@ -7,10 +7,12 @@ import {
 	HttpStatus,
 	NotFoundException,
 	Param,
+	Post,
 	Put,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
@@ -18,8 +20,15 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
+import { MediaExternalToolElement } from '@shared/domain/domainobject';
 import { MediaElementUc } from '../../uc';
-import { ElementUrlParams, MoveElementBodyParams } from './dto';
+import {
+	CreateMediaElementBodyParams,
+	ElementUrlParams,
+	MediaExternalToolElementResponse,
+	MoveElementBodyParams,
+} from './dto';
+import { MediaExternalToolElementResponseMapper } from './mapper';
 
 @ApiTags('Media Element')
 @Authenticate('jwt')
@@ -45,5 +54,26 @@ export class MediaElementController {
 			bodyParams.toLineId,
 			bodyParams.toPosition
 		);
+	}
+
+	@ApiOperation({ summary: 'Create a new element.' })
+	@ApiCreatedResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@Post()
+	public async createElement(
+		@Body() params: CreateMediaElementBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<MediaExternalToolElementResponse> {
+		const element: MediaExternalToolElement = await this.mediaElementUc.createElement(
+			currentUser.userId,
+			params.schoolExternalToolId,
+			params.lineId,
+			params.position
+		);
+
+		const response: MediaExternalToolElementResponse = MediaExternalToolElementResponseMapper.mapToResponse(element);
+
+		return response;
 	}
 }

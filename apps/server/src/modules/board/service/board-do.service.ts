@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, ColumnBoard } from '@shared/domain/domainobject';
+import { AnyBoardDo, ColumnBoard, MediaBoard } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { BoardDoRepo } from '../repo';
@@ -34,13 +34,13 @@ export class BoardDoService {
 	}
 
 	// TODO there is a similar method in board-do-authorizable.service.ts
-	async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+	async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard | MediaBoard> {
 		const ancestorIds: EntityId[] = await this.boardDoRepo.getAncestorIds(boardDo);
 		const idHierarchy: EntityId[] = [...ancestorIds, boardDo.id];
 		const rootId: EntityId = idHierarchy[0];
 		const rootBoardDo: AnyBoardDo = await this.boardDoRepo.findById(rootId, 1);
 
-		if (rootBoardDo instanceof ColumnBoard) {
+		if (rootBoardDo instanceof ColumnBoard || rootBoardDo instanceof MediaBoard) {
 			return rootBoardDo;
 		}
 

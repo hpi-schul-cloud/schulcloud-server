@@ -5,7 +5,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
-import { SchoolExternalTool } from '../domain';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
@@ -18,9 +18,11 @@ export class SchoolExternalToolService {
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
-	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
+	// TODO: N21-1885 - Refactor to return SchoolExternalToolWithId without cast
+	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalToolWithId> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
-		return schoolExternalTool;
+
+		return schoolExternalTool as SchoolExternalToolWithId;
 	}
 
 	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {

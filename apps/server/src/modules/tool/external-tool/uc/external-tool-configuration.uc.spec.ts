@@ -19,9 +19,9 @@ import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
+import { ContextExternalToolService } from '../../context-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -745,7 +745,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				const result = await uc.getToolContextTypes(userId);
 
-				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD]);
 			});
 		});
 

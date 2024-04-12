@@ -9,3 +9,4 @@ export { ElementUrlParams } from './element.url.params';
 export { MoveElementBodyParams } from './move-element.body.params';
 export { MediaAvailableLineResponse } from './media-available-line.response';
 export { MediaAvailableLineElementResponse } from './media-available-line-element.response';
+export { CreateMediaElementBodyParams } from './create-media-element.body.params';

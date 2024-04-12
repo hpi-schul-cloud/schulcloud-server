@@ -141,7 +141,7 @@ describe(MediaAvailableLineService.name, () => {
 					.withCustomParameters(1, { scope: CustomParameterScope.CONTEXT })
 					.buildWithId();
 				const restrictedExternalTool: ExternalTool = externalToolFactory.buildWithId({
-					restrictToContexts: [ToolContextType.MEDIA_BOARD_ELEMENT],
+					restrictToContexts: [ToolContextType.MEDIA_BOARD],
 				});
 				const validExternalToolNew: ExternalTool = externalToolFactory.buildWithId({ createdAt: new Date(2024, 1, 2) });
 				const validExternalToolOld: ExternalTool = externalToolFactory.buildWithId({ createdAt: new Date(2023, 1, 2) });

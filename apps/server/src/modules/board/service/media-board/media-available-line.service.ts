@@ -73,7 +73,7 @@ export class MediaAvailableLineService {
 
 	private restrictsToMediaBoardElementContext(tool: ExternalTool): boolean {
 		const restrictsToMediaBoard = tool.restrictToContexts
-			? tool.restrictToContexts.includes(ToolContextType.MEDIA_BOARD_ELEMENT)
+			? tool.restrictToContexts.includes(ToolContextType.MEDIA_BOARD)
 			: false;
 
 		return restrictsToMediaBoard;

@@ -46,3 +46,5 @@ export class SchoolExternalTool extends BaseDO implements ToolVersion {
 		return this.toolVersion;
 	}
 }
+
+export type SchoolExternalToolWithId = SchoolExternalTool & { id: string };
