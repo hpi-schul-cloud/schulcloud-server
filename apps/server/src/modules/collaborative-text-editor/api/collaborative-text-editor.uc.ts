@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService } from '@src/modules/board';
-import { GetCollaborativeTextEditorForParentParams } from '../controller/dto/get-collaborative-text-editor-for-parent.params';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
 import { CollaborativeTextEditorService } from '../service/collaborative-text-editor.service';
+import { GetCollaborativeTextEditorForParentParams } from './dto/get-collaborative-text-editor-for-parent.params';
 
 @Injectable()
 export class CollaborativeTextEditorUc {

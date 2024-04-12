@@ -3,7 +3,7 @@ import { Controller, ForbiddenException, Get, NotFoundException, Param, Res } fr
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Response } from 'express';
-import { CollaborativeTextEditorUc } from '../uc/collaborative-text-editor.uc';
+import { CollaborativeTextEditorUc } from './collaborative-text-editor.uc';
 import { GetCollaborativeTextEditorForParentParams } from './dto/get-collaborative-text-editor-for-parent.params';
 
 @ApiTags('CollaborativeTextEditor')

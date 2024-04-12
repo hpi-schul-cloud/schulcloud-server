@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
 import { ServerConfig } from '@src/modules/server';
-import { GetCollaborativeTextEditorForParentParams } from '../controller/dto/get-collaborative-text-editor-for-parent.params';
+import { GetCollaborativeTextEditorForParentParams } from '../api/dto/get-collaborative-text-editor-for-parent.params';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
 
 @Injectable()
@@ -63,7 +63,7 @@ export class CollaborativeTextEditorService {
 	}
 
 	private buildPath(editorId: string): string {
-		const basePath = this.configService.get('ETHERPAD__PAD_URI');
+		const basePath = this.configService.get<string>('ETHERPAD__PAD_URI');
 
 		if (!basePath) throw new InternalServerErrorException('ETHERPAD__PAD_URI is not defined');
 
