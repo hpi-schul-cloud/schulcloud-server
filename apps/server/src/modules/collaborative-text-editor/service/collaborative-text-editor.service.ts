@@ -18,6 +18,7 @@ export class CollaborativeTextEditorService {
 
 	async createCollaborativeTextEditor(
 		userId: string,
+		userName: string,
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
 		const sessionExpiryDate = this.buildSessionExpiryDate();

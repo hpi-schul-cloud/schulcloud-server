@@ -31,7 +31,12 @@ export class CollaborativeTextEditorUc {
 			AuthorizationContextBuilder.read([Permission.COURSE_VIEW])
 		);
 
-		const textEditor = await this.collaborativeTextEditorService.createCollaborativeTextEditor(userId, params);
+		const userName = `${user.firstName} ${user.lastName}`;
+		const textEditor = await this.collaborativeTextEditorService.createCollaborativeTextEditor(
+			userId,
+			userName,
+			params
+		);
 
 		return textEditor;
 	}
