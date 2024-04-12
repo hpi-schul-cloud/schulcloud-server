@@ -35,6 +35,7 @@ export type ColumnBoardMetaData = {
 	published: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	layout: string;
 };
 
 export type RoomBoardElementDTO = {

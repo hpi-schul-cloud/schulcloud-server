@@ -1,6 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import {
 	AnyBoardDo,
+	BoardLayout,
 	Card,
 	Column,
 	ColumnBoard,
@@ -61,6 +62,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			context: boardNode.context,
 			isVisible: boardNode.isVisible ?? false,
+			layout: boardNode.layout ?? BoardLayout.COLUMNS,
 		});
 
 		return columnBoard;

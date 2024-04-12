@@ -3,6 +3,7 @@ import {
 	AnyBoardDo,
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	BoardLayout,
 	ColumnBoard,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -37,7 +38,7 @@ export class ColumnBoardService {
 		return titleMap;
 	}
 
-	async create(context: BoardExternalReference, title = ''): Promise<ColumnBoard> {
+	async create(context: BoardExternalReference, layout: BoardLayout, title = ''): Promise<ColumnBoard> {
 		const columnBoard = new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title,
@@ -46,6 +47,7 @@ export class ColumnBoardService {
 			updatedAt: new Date(),
 			context,
 			isVisible: false,
+			layout,
 		});
 
 		await this.boardDoRepo.save(columnBoard);

@@ -2,13 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 
 export class BoardColumnBoardResponse {
-	constructor({ id, columnBoardId, title, published, createdAt, updatedAt }: BoardColumnBoardResponse) {
+	constructor({ id, columnBoardId, title, published, createdAt, updatedAt, layout }: BoardColumnBoardResponse) {
 		this.id = id;
 		this.columnBoardId = columnBoardId;
 		this.title = title;
 		this.published = published;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.layout = layout;
 	}
 
 	@ApiProperty()
@@ -29,4 +30,7 @@ export class BoardColumnBoardResponse {
 
 	@ApiProperty()
 	columnBoardId: string;
+
+	@ApiProperty()
+	layout: string;
 }

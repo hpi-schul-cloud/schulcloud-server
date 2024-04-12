@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, BoardLayout, ColumnBoard } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { CardService, ColumnBoardService, ColumnService } from '@src/modules/board';
 import {
@@ -37,6 +37,7 @@ export class CommonCartridgeImportService {
 				type: BoardExternalReferenceType.Course,
 				id: course.id,
 			},
+			BoardLayout.COLUMNS,
 			parser.manifest.getTitle()
 		);
 

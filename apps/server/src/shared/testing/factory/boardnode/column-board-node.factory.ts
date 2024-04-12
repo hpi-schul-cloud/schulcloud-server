@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject/board/types';
 import { ColumnBoardNode, ColumnBoardNodeProps } from '@shared/domain/entity';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../base.factory';
@@ -14,6 +14,7 @@ export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, Column
 				id: new ObjectId().toHexString(),
 			},
 			isVisible: true,
+			layout: BoardLayout.COLUMNS,
 		};
 	}
 );

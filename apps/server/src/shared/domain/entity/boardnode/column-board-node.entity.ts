@@ -22,6 +22,8 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 		this._contextId = new ObjectId(props.context.id);
 
 		this.isVisible = props.isVisible ?? false;
+
+		this.layout = props.layout ?? BoardLayout.COLUMNS;
 	}
 
 	@Property({ fieldName: 'contextType' })
@@ -65,4 +67,5 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 
 export interface ColumnBoardNodeProps extends RootBoardNodeProps {
 	isVisible: boolean;
+	layout: BoardLayout;
 }
