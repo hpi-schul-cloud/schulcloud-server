@@ -17,7 +17,7 @@ export class CollaborativeTextEditorController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@Get('boardId/:boardId/parentId/:parentId')
+	@Get('parentId/:parentId')
 	async getCollaborativeTextEditorForParent(
 		@Param() getCollaborativeTextEditorForParentParams: GetCollaborativeTextEditorForParentParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -25,6 +25,7 @@ export class CollaborativeTextEditorController {
 	): Promise<void> {
 		const cookieExpiresMilliseconds = Number(Configuration.get('JWT_TIMEOUT_SECONDS')) * 1000;
 		const sessionCookieExpireDate = new Date(Date.now() + cookieExpiresMilliseconds);
+
 		const { sessions, url } = await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
 			currentUser.userId,
 			getCollaborativeTextEditorForParentParams,

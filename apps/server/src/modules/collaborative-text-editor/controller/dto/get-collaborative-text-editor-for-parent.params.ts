@@ -8,11 +8,4 @@ export class GetCollaborativeTextEditorForParentParams {
 	})
 	@IsMongoId()
 	parentId!: string;
-
-	@ApiProperty({
-		required: true,
-		nullable: false,
-	})
-	@IsMongoId()
-	boardId!: string;
 }
