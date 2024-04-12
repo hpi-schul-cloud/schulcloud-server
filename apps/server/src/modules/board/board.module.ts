@@ -11,7 +11,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SocketGateway } from './gateway/socket.gateway';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -58,7 +57,6 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
-		SocketGateway,
 		MediaBoardService,
 		MediaLineService,
 		MediaElementService,
