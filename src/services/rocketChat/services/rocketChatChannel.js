@@ -284,6 +284,8 @@ class RocketChatChannel {
 	}
 
 	async onTeamPatched(result) {
+		console.log('>>>onTeamPatched', JSON.stringify(result.features));
+
 		try {
 			if (result.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
 				await this.unarchiveChannel(result._id);
@@ -302,6 +304,8 @@ class RocketChatChannel {
 	 * @param {Object} context event context given by the Team service
 	 */
 	onTeamUsersChanged(context) {
+		console.log('>>>onTeamUsersChanged', JSON.stringify(context.features));
+
 		const { team } = (context || {}).additionalInfosTeam || {};
 		let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add;
 		let removedUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).remove;
@@ -318,6 +322,8 @@ class RocketChatChannel {
 	 * @param {*} context
 	 */
 	async onRemoved(context) {
+		console.log('>>>onRemoved', console.log(JSON.stringify(context.features));
+
 		this.deleteChannel(context._id);
 	}
 
