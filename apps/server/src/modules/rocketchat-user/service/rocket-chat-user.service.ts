@@ -55,56 +55,51 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 
 		if (rocketChatUser === null) {
 			const result = this.buildResultAndLog(0, 0, userId, 'RocketChat user already deleted', StatusModel.FINISHED);
-  
+
 			return result;
 		}
-			try {
-				const deletedUserFormRocketChatService = await this.rocketChatService.deleteUser(rocketChatUser.username);
+		try {
+			const deletedUserFormRocketChatService = await this.rocketChatService.deleteUser(rocketChatUser.username);
 
-				if (deletedUserFormRocketChatService.success === true) {
-					const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
+			if (deletedUserFormRocketChatService.success === true) {
+				const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
 
-					const result = this.buildResultAndLog(
-						rocketChatUserDeleted,
-						1,
-						userId,
-						'Successfully deleted user from rocket chat',
-						StatusModel.SUCCESS,
-						rocketChatUser
-					);
-
-					return result;
-				}
 				const result = this.buildResultAndLog(
-					0,
-					0,
+					rocketChatUserDeleted,
+					1,
 					userId,
-					'Failed to delete user from RocketChat service',
-					StatusModel.FAILED,
+					'Successfully deleted user from rocket chat',
+					StatusModel.SUCCESS,
 					rocketChatUser
 				);
 
 				return result;
-			} catch {
-				this.logger.warning(
-					new DataDeletionDomainOperationLoggable(
-						'Failed to delete user data from RocketChatUser collection / RocketChat service',
-						DomainName.ROCKETCHATUSER,
-						userId,
-						StatusModel.FAILED,
-						0,
-						0
-					)
-				);
-
-				throw new DeletionErrorLoggableException(
-					`Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`
-				);
 			}
-		} else {
-			const result = this.buildResultAndLog(0, 0, userId, 'RocketChat user already deleted', StatusModel.FINISHED);
+			const result = this.buildResultAndLog(
+				0,
+				0,
+				userId,
+				'Failed to delete user from RocketChat service',
+				StatusModel.FAILED,
+				rocketChatUser
+			);
 
 			return result;
+		} catch {
+			this.logger.warning(
+				new DataDeletionDomainOperationLoggable(
+					'Failed to delete user data from RocketChatUser collection / RocketChat service',
+					DomainName.ROCKETCHATUSER,
+					userId,
+					StatusModel.FAILED,
+					0,
+					0
+				)
+			);
+
+			throw new DeletionErrorLoggableException(
+				`Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`
+			);
 		}
 	}
 
