@@ -22,12 +22,15 @@ export class CollaborativeTextEditorService {
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
 		const sessionExpiryDate = this.buildSessionExpiryDate();
+		const { parentId } = params;
 
-		const padId = await this.collaborativeTextEditorAdapter.getOrCreateCollaborativeTextEditor(userId, params.parentId);
-		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthor(userId);
+		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroup(parentId);
+		const padId = await this.collaborativeTextEditorAdapter.getOrCreatePad(groupId, parentId);
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthor(userId, userName);
 		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSession(
+			groupId,
 			authorId,
-			params.parentId,
+			parentId,
 			sessionExpiryDate
 		);
 		const authorsSessionIds = await this.collaborativeTextEditorAdapter.listSessionsOfAuthor(authorId);
