@@ -1,10 +1,9 @@
 import { WebSocketGateway, SubscribeMessage } from '@nestjs/websockets';
+import { LegacyLogger } from '@src/core/logger';
 import { Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
 	path: '/collaboration',
-	// path: '/collaboration',
 	cors: {
 		origin: '*',
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -15,7 +14,8 @@ import { Logger } from '@nestjs/common';
 	},
 })
 export class SocketGateway {
-	private readonly logger = new Logger(SocketGateway.name);
+	// TODO: use loggables instead of legacy logger
+	constructor(private readonly logger: LegacyLogger) {}
 
 	@SubscribeMessage('update-card-request')
 	handleUpdateCard(client: Socket, data: unknown) {

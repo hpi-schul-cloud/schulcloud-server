@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import { CoreModule } from '@src/core';
 import { SocketGateway } from './gateway/socket.gateway';
+import { config } from './board-collaboration.config';
 
 @Module({
-	imports: [LoggerModule],
+	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))],
 	providers: [SocketGateway],
 	exports: [],
 })
