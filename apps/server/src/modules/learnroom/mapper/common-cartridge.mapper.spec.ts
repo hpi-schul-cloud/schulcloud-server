@@ -419,6 +419,7 @@ describe('CommonCartridgeMapper', () => {
 
 			it('should map to web content', () => {
 				const { richTextElement } = setup();
+
 				const resourceProps = sut.mapRichTextElementToResource(richTextElement);
 
 				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
