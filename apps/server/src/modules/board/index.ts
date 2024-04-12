@@ -1,5 +1,4 @@
 export { BoardModule } from './board.module';
-export { BoardCollaborationModule } from './board-collaboration.module';
 export * from './service/board-do-authorizable.service';
 export * from './service/card.service';
 export * from './service/column-board.service';

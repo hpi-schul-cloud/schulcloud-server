@@ -14,8 +14,8 @@ import { SocketGateway } from './gateway/socket.gateway';
 @Module({
 	imports: [
 		CoreModule,
-		RabbitMQWrapperModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
+		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
