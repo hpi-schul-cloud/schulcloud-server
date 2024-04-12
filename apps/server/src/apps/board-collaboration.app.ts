@@ -2,17 +2,14 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 
-// import { ServerModule } from '@modules/server';
-
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-// import { SwaggerDocumentOptions } from '@nestjs/swagger';
+import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
-// import { BoardModule } from '@src/modules/board';
 import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
-// import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -25,12 +22,12 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	// const options: SwaggerDocumentOptions = {
-	// 	operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
-	// };
-	// enableOpenApiDocs(nestApp, 'docs', options);
+	const options: SwaggerDocumentOptions = {
+		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
+	};
+	enableOpenApiDocs(nestApp, 'docs', options);
 
-	// await nestApp.init();
+	await nestApp.init();
 
 	const port = 4450;
 	const basePath = '/api/v3';
