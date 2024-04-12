@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
 import { BoardNodeEntity } from './board-node.entity';
 
 describe('entity', () => {
@@ -26,6 +26,9 @@ describe('entity', () => {
 
 	it('persists', async () => {
 		const entity = new BoardNodeEntity();
+		entity.type = BoardNodeType.CARD;
+		entity.height = 42;
+		entity.title = undefined;
 
 		await orm.em.persistAndFlush(entity);
 		orm.em.clear();
