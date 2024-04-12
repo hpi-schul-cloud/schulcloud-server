@@ -3,7 +3,7 @@ import {
 	createCommonCartridgeWebContentResourcePropsV130,
 	createCommonCartridgeWeblinkResourcePropsV130,
 } from '../../../testing/common-cartridge-resource-props.factory';
-import { ResourceTypeNotSupportedLoggableException } from '../../error';
+import { ResourceTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
 import { CommonCartridgeResourceFactoryV130 } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourceV130 } from './common-cartridge-web-content-resource';

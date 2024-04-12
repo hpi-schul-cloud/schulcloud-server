@@ -3,7 +3,7 @@ import {
 	createCommonCartridgeWebContentResourcePropsV130,
 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
-import { VersionNotSupportedLoggableException } from '../error';
+import { VersionNotSupportedLoggableException } from '../errors';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourcePropsV110, CommonCartridgeWebContentResourceV110 } from './v1.1.0';
 import { CommonCartridgeWebContentResourceV130 } from './v1.3.0';

@@ -5,7 +5,7 @@ import {
 	createCommonCartridgeResourcesWrapperElementPropsV130,
 } from '../../../testing/common-cartridge-element-props.factory';
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
-import { ElementTypeNotSupportedLoggableException } from '../../error';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElementFactoryV130 } from './common-cartridge-element-factory';
 import { CommonCartridgeMetadataElementV130 } from './common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationElementV130 } from './common-cartridge-organization-element';

@@ -1,5 +1,5 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { VersionNotSupportedLoggableException } from '../error';
+import { VersionNotSupportedLoggableException } from '../errors';
 import { CommonCartridgeResource } from '../interfaces';
 import { OmitVersionAndFolder } from '../utils';
 import {

@@ -1,5 +1,5 @@
 import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
-import { ResourceTypeNotSupportedLoggableException } from '../../error';
+import { ResourceTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource } from '../../interfaces';
 import {
 	CommonCartridgeManifestResourcePropsV110,

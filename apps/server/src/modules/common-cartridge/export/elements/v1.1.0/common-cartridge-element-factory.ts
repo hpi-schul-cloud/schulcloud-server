@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
-import { ElementTypeNotSupportedLoggableException } from '../../error';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElement } from '../../interfaces';
 import {
 	CommonCartridgeMetadataElementPropsV110,
