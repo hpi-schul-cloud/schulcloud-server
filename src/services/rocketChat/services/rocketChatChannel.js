@@ -284,14 +284,17 @@ class RocketChatChannel {
 	}
 
 	async onTeamPatched(result) {
-		console.log('>>>onTeamPatched', JSON.stringify(result.features));
+		console.log('>>> onTeamPatched');
+		console.log('>>> result.features', JSON.stringify(result.features));
 
 		try {
-			if (result.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
-				await this.unarchiveChannel(result._id);
-				await this.synchronizeModerators(result._id);
+			const updatedTeam = await this.app.service('teams').get(result._id);
+			console.log('>>> updatedTeam.features', JSON.stringify(updatedTeam.features));
+			if (updatedTeam.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
+				await this.unarchiveChannel(updatedTeam._id);
+				await this.synchronizeModerators(updatedTeam._id);
 			} else {
-				await this.archiveChannel(result._id);
+				await this.archiveChannel(updatedTeam._id);
 			}
 		} catch (err) {
 			asyncErrorLog(err, 'An error was thrown in onTeamPatched event.');
@@ -304,8 +307,6 @@ class RocketChatChannel {
 	 * @param {Object} context event context given by the Team service
 	 */
 	onTeamUsersChanged(context) {
-		console.log('>>>onTeamUsersChanged', JSON.stringify(context.features));
-
 		const { team } = (context || {}).additionalInfosTeam || {};
 		let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add;
 		let removedUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).remove;
@@ -322,8 +323,6 @@ class RocketChatChannel {
 	 * @param {*} context
 	 */
 	async onRemoved(context) {
-		console.log('>>>onRemoved', console.log(JSON.stringify(context.features));
-
 		this.deleteChannel(context._id);
 	}
 
