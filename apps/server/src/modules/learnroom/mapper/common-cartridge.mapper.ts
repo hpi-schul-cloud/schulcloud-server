@@ -123,7 +123,7 @@ export class CommonCartridgeMapper {
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(element.id),
-			title: 'card content',
+			title: 'content',
 			html: `<p>${element.text}</p>`,
 			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 		};

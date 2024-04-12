@@ -135,7 +135,7 @@ export class CommonCartridgeExportService {
 		});
 
 		card.children
-			.filter((child) => child instanceof RichTextElement /* || instanceof LinkElement */)
+			.filter((child) => child instanceof RichTextElement)
 			.forEach((child) =>
 				cardOrganization.addResource(this.commonCartridgeMapper.mapRichTextElementToResource(child as RichTextElement))
 			);
