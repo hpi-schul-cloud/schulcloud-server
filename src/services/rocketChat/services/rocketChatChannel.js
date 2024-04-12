@@ -284,12 +284,8 @@ class RocketChatChannel {
 	}
 
 	async onTeamPatched(result) {
-		console.log('>>> onTeamPatched');
-		console.log('>>> result.features', JSON.stringify(result.features));
-
 		try {
 			const updatedTeam = await this.app.service('teams').get(result._id);
-			console.log('>>> updatedTeam.features', JSON.stringify(updatedTeam.features));
 			if (updatedTeam.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
 				await this.unarchiveChannel(updatedTeam._id);
 				await this.synchronizeModerators(updatedTeam._id);
