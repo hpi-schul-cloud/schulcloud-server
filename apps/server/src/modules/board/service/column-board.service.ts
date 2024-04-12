@@ -4,6 +4,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	ColumnBoard,
+	MediaBoard,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -26,7 +27,7 @@ export class ColumnBoardService {
 		return ids;
 	}
 
-	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard | MediaBoard> {
 		const rootboardDo = this.boardDoService.getRootBoardDo(boardDo);
 
 		return rootboardDo;

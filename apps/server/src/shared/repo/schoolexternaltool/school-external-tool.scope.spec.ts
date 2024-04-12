@@ -46,4 +46,20 @@ describe('SchoolExternalToolScope', () => {
 			});
 		});
 	});
+
+	describe('byIsDeactivated', () => {
+		describe('when isDeactivated parameter is undefined', () => {
+			it('should return scope without added status to query', () => {
+				scope.byIsDeactivated(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when isDeactivated parameter is defined', () => {
+			it('should return scope with added status to query', () => {
+				scope.byIsDeactivated(true);
+				expect(scope.query).toEqual({ status: { isDeactivated: true } });
+			});
+		});
+	});
 });

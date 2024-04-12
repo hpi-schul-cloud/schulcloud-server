@@ -2,6 +2,7 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import {
 	Body,
 	Controller,
+	Delete,
 	ForbiddenException,
 	HttpCode,
 	HttpStatus,
@@ -75,5 +76,18 @@ export class MediaElementController {
 		const response: MediaExternalToolElementResponse = MediaExternalToolElementResponseMapper.mapToResponse(element);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Delete a single element.' })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Delete(':elementId')
+	public async deleteElement(
+		@Param() urlParams: ElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.mediaElementUc.deleteElement(currentUser.userId, urlParams.elementId);
 	}
 }

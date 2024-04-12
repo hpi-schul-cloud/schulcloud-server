@@ -13,7 +13,8 @@ import {
 } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../../../tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
+import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, BoardDoService, MediaElementService, MediaLineService } from '../../service';
 
@@ -86,5 +87,19 @@ export class MediaElementUc {
 		);
 
 		return createdElement;
+	}
+
+	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
+			element
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaElementService.delete(element);
 	}
 }

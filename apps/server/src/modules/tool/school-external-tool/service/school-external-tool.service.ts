@@ -29,6 +29,7 @@ export class SchoolExternalToolService {
 		let schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
 			toolId: query.toolId,
+			isDeactivated: query.isDeactivated,
 		});
 
 		schoolExternalTools = await this.enrichWithDataFromExternalTools(schoolExternalTools);

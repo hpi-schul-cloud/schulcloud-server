@@ -2,11 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { ContextExternalTool, ContextExternalToolWithId, ContextRef } from '@modules/tool/context-external-tool/domain';
-import {
-	SchoolExternalTool,
-	SchoolExternalToolRefDO,
-	SchoolExternalToolWithId,
-} from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolRefDO, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -71,7 +67,7 @@ export class MediaElementService {
 			contextExternalToolId: contextExternalTool.id,
 		});
 
-		parent.addChild(element);
+		parent.addChild(element, position);
 
 		await this.boardDoRepo.save(parent.children, parent);
 

@@ -27,6 +27,7 @@ export class MediaAvailableLineService {
 	public async getUnusedAvailableSchoolExternalTools(user: User, board: MediaBoard): Promise<SchoolExternalTool[]> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
 			schoolId: user.school?.id,
+			isDeactivated: false,
 		});
 
 		const contextExternalToolsByBoard: ContextExternalTool[] = await this.getContextExternalToolsByBoard(board);
@@ -34,7 +35,7 @@ export class MediaAvailableLineService {
 		const unusedSchoolExternalTools: SchoolExternalTool[] = schoolExternalTools.filter(
 			(schoolExternalTool: SchoolExternalTool) => {
 				const isUsedByBoard = contextExternalToolsByBoard.some((contextExternalTool: ContextExternalTool) =>
-					this.isContextExternalToolUsedBySchoolTool(contextExternalTool, schoolExternalTool)
+					this.isContextExternalToolUsedBySchoolExternalTool(contextExternalTool, schoolExternalTool)
 				);
 
 				return !isUsedByBoard;
@@ -79,7 +80,7 @@ export class MediaAvailableLineService {
 		return restrictsToMediaBoard;
 	}
 
-	private isContextExternalToolUsedBySchoolTool(
+	private isContextExternalToolUsedBySchoolExternalTool(
 		contextExternalTool: ContextExternalTool,
 		schoolExternalTool: SchoolExternalTool
 	): boolean {

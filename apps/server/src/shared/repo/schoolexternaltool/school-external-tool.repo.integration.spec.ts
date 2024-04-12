@@ -13,6 +13,7 @@ import { type SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '../../testing/factory/school-external-tool-configuration-status-entity.factory';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {
@@ -51,11 +52,15 @@ describe('SchoolExternalToolRepo', () => {
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
+			status: schoolExternalToolConfigurationStatusEntityFactory.build({ isDeactivated: false }),
 		});
-		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
+		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+			status: undefined,
+		});
 		const schoolExternalTool3: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
+			status: schoolExternalToolConfigurationStatusEntityFactory.build({ isDeactivated: true }),
 		});
 
 		return { externalToolEntity, school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 };
@@ -204,6 +209,49 @@ describe('SchoolExternalToolRepo', () => {
 				const result: SchoolExternalTool[] = await repo.find(query);
 
 				expect(result[0].toolId).toEqual(schoolExternalTool1.tool.id);
+			});
+		});
+
+		describe('when isDeactivated is given', () => {
+			const setup = async () => {
+				const { school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 } = createTools();
+
+				await em.persistAndFlush([school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3]);
+				em.clear();
+
+				return { schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 };
+			};
+
+			describe('when deactivated is set to false', () => {
+				it('should return all active school external tools', async () => {
+					const { schoolExternalTool1 } = await setup();
+
+					const result: SchoolExternalTool[] = await repo.find({ isDeactivated: false });
+
+					expect(result).toHaveLength(1);
+					expect(result[0].id).toEqual(schoolExternalTool1.id);
+				});
+			});
+
+			describe('when deactivated is set to true', () => {
+				it('should return all deactivated school external tools', async () => {
+					const { schoolExternalTool3 } = await setup();
+
+					const result: SchoolExternalTool[] = await repo.find({ isDeactivated: true });
+
+					expect(result).toHaveLength(1);
+					expect(result[0].id).toEqual(schoolExternalTool3.id);
+				});
+			});
+
+			describe('when deactivated is undefined', () => {
+				it('should return all school external tools', async () => {
+					await setup();
+
+					const result: SchoolExternalTool[] = await repo.find({ isDeactivated: undefined });
+
+					expect(result).toHaveLength(3);
+				});
 			});
 		});
 

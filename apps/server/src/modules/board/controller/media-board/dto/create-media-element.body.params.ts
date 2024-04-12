@@ -6,7 +6,6 @@ export class CreateMediaElementBodyParams {
 	@ApiProperty({ description: 'The id of the line where the element is created' })
 	lineId!: string;
 
-	@IsMongoId()
 	@ApiProperty({ description: 'The position where the element is created' })
 	position!: number;
 

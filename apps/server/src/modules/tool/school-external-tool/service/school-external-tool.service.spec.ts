@@ -8,7 +8,7 @@ import {
 	schoolToolConfigurationStatusFactory,
 } from '@shared/testing/factory';
 import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
+import { ExternalToolService } from '../../external-tool';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalToolConfigurationStatus } from '../controller/domain/school-external-tool-configuration-status';
 import { SchoolExternalTool } from '../domain';
@@ -74,22 +74,40 @@ describe('SchoolExternalToolService', () => {
 
 	describe('findSchoolExternalTools', () => {
 		describe('when called with query', () => {
-			it('should call repo with query', async () => {
-				const { schoolExternalTool } = legacySetup();
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalToolQuery: SchoolExternalToolQuery = {
+					schoolId: schoolExternalTool.schoolId,
+					toolId: schoolExternalTool.toolId,
+					isDeactivated: !!schoolExternalTool.status?.isDeactivated,
+				};
 
-				await service.findSchoolExternalTools(schoolExternalTool);
+				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+				toolFearures.toolStatusWithoutVersions = false;
+
+				return {
+					schoolExternalTool,
+					schoolExternalToolId: schoolExternalTool.id as string,
+					schoolExternalToolQuery,
+				};
+			};
+
+			it('should call repo with query', async () => {
+				const { schoolExternalTool, schoolExternalToolQuery } = setup();
+
+				await service.findSchoolExternalTools(schoolExternalToolQuery);
 
 				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith<[Required<SchoolExternalToolQuery>]>({
 					schoolId: schoolExternalTool.schoolId,
 					toolId: schoolExternalTool.toolId,
+					isDeactivated: !!schoolExternalTool.status?.isDeactivated,
 				});
 			});
 
 			it('should return schoolExternalTool array', async () => {
-				const { schoolExternalTool } = legacySetup();
-				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool, schoolExternalTool]);
+				const { schoolExternalToolQuery } = setup();
 
-				const result: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalTool);
+				const result: SchoolExternalTool[] = await service.findSchoolExternalTools(schoolExternalToolQuery);
 
 				expect(Array.isArray(result)).toBe(true);
 			});
