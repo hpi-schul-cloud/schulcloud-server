@@ -92,6 +92,11 @@ const setLockResponseHeader = (hook) => {
 	return hook;
 };
 
+const setContentDispositionHeader = (context) => {
+	context.http.headers = { 'Content-Disposition': 'attachment' };
+	return context;
+};
+
 exports.before = {
 	all: [wopiAuthentication, mapPayload],
 	find: [],
@@ -104,7 +109,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
+	find: [setContentDispositionHeader],
 	get: [],
 	create: [setLockResponseHeader],
 	update: [],
