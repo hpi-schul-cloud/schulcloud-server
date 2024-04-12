@@ -178,6 +178,10 @@
                             <li>
                                 <a href="#mapToExternalUserDto" >mapToExternalUserDto</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToGroupNameList" >mapToGroupNameList</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -266,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -416,8 +420,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -485,8 +489,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -666,6 +670,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToGroupNameList"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToGroupNameList</b></span>
+                        <a href="#mapToGroupNameList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToGroupNameList(groups: <a href="../classes/SanisGruppenResponse.html" target="_self">SanisGruppenResponse[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>groups</td>
+                                            <td>
+                                                            <code><a href="../classes/SanisGruppenResponse.html" target="_self" >SanisGruppenResponse[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
             <section data-compodoc="block-properties">
     
@@ -782,6 +855,16 @@ export class SanisResponseMapper {
 
 	public static mapSanisRoleToRoleName(source: SanisResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
+	}
+
+	public static mapToGroupNameList(groups: SanisGruppenResponse[]): string[] {
+		const groupNames: string[] &#x3D; [];
+
+		groups.forEach((group: SanisGruppenResponse) &#x3D;&gt; {
+			groupNames.push(group.gruppe.bezeichnung);
+		});
+
+		return groupNames;
 	}
 
 	public mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
