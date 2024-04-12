@@ -47,10 +47,11 @@ export class SocketGateway {
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('delete-card-success', data);
 		client.emit('delete-card-success', data);
+		8;
 	}
 
 	@SubscribeMessage('create-card-request')
-	handleCreateCard(client: Socket, data: Record<string, any>) {
+	handleCreateCard(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 
@@ -67,14 +68,14 @@ export class SocketGateway {
 	}
 
 	@SubscribeMessage('move-card-request')
-	handleMoveCard(client: Socket, data: Record<string, any>) {
+	handleMoveCard(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('move-card-success', data);
 	}
 
 	@SubscribeMessage('move-column-request')
-	handleMoveColumn(client: Socket, data: Record<string, any>) {
+	handleMoveColumn(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('move-column-success', data);

@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { SocketGateway } from './gateway/socket.gateway';
-import { config } from './board-collaboration.config';
 import { ConsoleWriterModule } from '@src/infra/console';
-import { BoardModule } from './board.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { defaultMikroOrmOptions } from '../server';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
+import { config } from './board-collaboration.config';
+import { defaultMikroOrmOptions } from '../server';
+import { BoardModule } from './board.module';
+import { SocketGateway } from './gateway/socket.gateway';
 
 @Module({
 	imports: [

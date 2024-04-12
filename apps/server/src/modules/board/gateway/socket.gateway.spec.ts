@@ -1,6 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { Socket, io } from 'socket.io-client';
+import { LegacyLogger } from '@src/core/logger';
+import { createMock } from '@golevelup/ts-jest';
 import { SocketGateway } from './socket.gateway';
 
 describe('SocketGateway', () => {
@@ -10,7 +12,13 @@ describe('SocketGateway', () => {
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			providers: [SocketGateway],
+			providers: [
+				SocketGateway,
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
+			],
 		}).compile();
 		app = testingModule.createNestApplication();
 
@@ -18,8 +26,8 @@ describe('SocketGateway', () => {
 
 		ioClient = io('http://localhost:3031', {
 			autoConnect: false,
-			path: '/api/v3/collaboration',
-			// transports: ['websocket', 'polling'],
+			path: '/collaboration',
+			transports: ['websocket', 'polling'],
 		});
 
 		await app.listen(3031);

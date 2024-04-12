@@ -40,7 +40,7 @@ async function bootstrap() {
 
 	console.log('##########################################');
 	console.log(`### Start Board Collaboration Server   ###`);
-	console.log(`### Port:     ${port}                  ###`);
+	console.log(`### Port:      ${port}                     ###`);
 	console.log(`### Base path: ${basePath}             ###`);
 	console.log('##########################################');
 }
