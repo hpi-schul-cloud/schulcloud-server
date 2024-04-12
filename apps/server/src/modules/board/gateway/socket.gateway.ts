@@ -47,7 +47,6 @@ export class SocketGateway {
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('delete-card-success', data);
 		client.emit('delete-card-success', data);
-		8;
 	}
 
 	@SubscribeMessage('create-card-request')
