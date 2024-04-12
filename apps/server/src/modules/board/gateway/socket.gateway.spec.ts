@@ -16,12 +16,13 @@ describe('SocketGateway', () => {
 
 		gateway = app.get<SocketGateway>(SocketGateway);
 
-		ioClient = io('http://localhost:3000', {
+		ioClient = io('http://localhost:3031', {
 			autoConnect: false,
-			transports: ['websocket', 'polling'],
+			path: '/api/v3/collaboration',
+			// transports: ['websocket', 'polling'],
 		});
 
-		await app.listen(3000);
+		await app.listen(3031);
 	});
 
 	afterAll(async () => {

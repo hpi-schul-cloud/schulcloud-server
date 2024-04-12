@@ -67,6 +67,8 @@
 		"nest:start:admin-api-server": "nest start admin-api-server",
 		"nest:start:admin-api-server:debug": "nest start admin-api-server --debug --watch",
 		"nest:start:admin-api-server:prod": "node dist/apps/server/apps/admin-api-server.app",
+		"nest:start:board-collaboration": "nest start board-collaboration",
+		"nest:start:board-collaboration:dev": "nest start board-collaboration --watch --",
 		"nest:start:management:dev": "nest start management --watch",
 		"nest:start:management:debug": "nest start management --debug --watch",
 		"nest:start:management:prod": "node dist/apps/server/apps/management.app",
