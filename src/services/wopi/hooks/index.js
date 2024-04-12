@@ -92,8 +92,11 @@ const setLockResponseHeader = (hook) => {
 	return hook;
 };
 
-const setContentDispositionHeader = (context) => {
-	context.http.headers = { 'Content-Disposition': 'attachment' };
+const setContentDispositionHeader = async (context) => {
+	const { fileId } = context.params.route;
+	const file = await FileModel.findOne({ _id: fileId });
+
+	context.http.headers = { 'Content-Disposition': `attachment; filename="${file.name}"` };
 	return context;
 };
 
