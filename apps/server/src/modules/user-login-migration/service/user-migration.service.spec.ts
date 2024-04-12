@@ -7,6 +7,7 @@ import { UserDO } from '@shared/domain/domainobject';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
+import { MultipleUsersFoundLoggableException } from '../loggable/user-is-already-migrated.loggable-exception';
 import { UserMigrationService } from './user-migration.service';
 
 describe(UserMigrationService.name, () => {
@@ -230,6 +231,61 @@ describe(UserMigrationService.name, () => {
 
 				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(
 					new UserMigrationDatabaseOperationFailedLoggableException(userId, 'migration', error)
+				);
+			});
+		});
+
+		describe('when user is already migrated', () => {
+			const setup = () => {
+				const targetSystemId = new ObjectId().toHexString();
+
+				const role = roleFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const targetExternalId = 'newUserExternalId';
+				const sourceExternalId = 'currentUserExternalId';
+				const user: UserDO = userDoFactory.buildWithId({
+					id: userId,
+					createdAt: mockDate,
+					updatedAt: mockDate,
+					email: 'emailMock',
+					firstName: 'firstNameMock',
+					lastName: 'lastNameMock',
+					schoolId: 'schoolMock',
+					roles: [role],
+					externalId: sourceExternalId,
+				});
+
+				const accountId = new ObjectId().toHexString();
+				const sourceSystemId = new ObjectId().toHexString();
+				const accountDto: Account = new Account({
+					id: accountId,
+					updatedAt: new Date(),
+					createdAt: new Date(),
+					userId,
+					username: '',
+					systemId: sourceSystemId,
+				});
+
+				userService.findByExternalId.mockRejectedValueOnce(new MultipleUsersFoundLoggableException());
+				userService.findById.mockResolvedValueOnce({ ...user });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
+
+				return {
+					user,
+					userId,
+					targetExternalId,
+					sourceExternalId,
+					accountDto,
+					sourceSystemId,
+					targetSystemId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { userId, targetExternalId, targetSystemId } = setup();
+
+				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(
+					new MultipleUsersFoundLoggableException()
 				);
 			});
 		});

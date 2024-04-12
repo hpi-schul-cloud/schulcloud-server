@@ -15,6 +15,8 @@ export class UserMigrationService {
 	) {}
 
 	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
+		await this.userService.findByExternalId(externalUserId, targetSystemId);
+
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
 
