@@ -9,7 +9,7 @@ export class RocketChatModule {
 			module: RocketChatModule,
 			imports: [
 				HttpModule.register({
-					timeout: 30000,
+					timeout: options.rocketchatClientTimeoutInMs,
 				}),
 			],
 			providers: [
