@@ -1,22 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Logger } from '@src/core/logger';
 import { UserService } from '@modules/user';
-import { SanisResponse, SchulconnexRestClient, schulconnexResponseFactory } from '@src/infra/schulconnex-client';
+import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { SynchronizationService } from '../domain/service';
+import {
+	Synchronization,
+	SynchronizationService,
+	SynchronizationStatusModel,
+	synchronizationFactory,
+} from '@modules/synchronization';
 import { SynchronizationUc } from './synchronization.uc';
-import { SynchronizationStatusModel } from '../domain/types';
-import { synchronizationFactory } from '../domain/testing';
-import { Synchronization } from '../domain';
 import { synchronizationTestConfig } from './testing';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
-} from '../domain/loggable-exception';
+} from './loggable-exception';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -216,7 +218,8 @@ describe(SynchronizationUc.name, () => {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					data: expect.objectContaining({
 						systemId,
-						errorMessage: 'Unknonw error during synchronisation process for users provisioned by system',
+						errorMessage:
+							'Unknown error occurred during synchronization process of users provisioned by an external system',
 					}),
 				};
 
@@ -318,13 +321,11 @@ describe(SynchronizationUc.name, () => {
 				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 				const userSyncCount = 2;
 				const status = SynchronizationStatusModel.SUCCESS;
-				const synchronizationToUpdate = {
-					...synchronization,
-					count: userSyncCount,
+				const synchronizationToUpdate = new Synchronization({
+					id: synchronizationId,
 					status,
-				} as Synchronization;
-
-				synchronizationService.findById.mockResolvedValueOnce(synchronization);
+					count: userSyncCount,
+				});
 
 				return {
 					status,
@@ -336,15 +337,7 @@ describe(SynchronizationUc.name, () => {
 				};
 			};
 
-			it('should call the synchronizationService.findById to find the synchronization', async () => {
-				const { synchronizationId, status, userSyncCount } = setup();
-
-				await uc.updateSynchronization(synchronizationId, status, userSyncCount);
-
-				expect(synchronizationService.findById).toHaveBeenCalledWith(synchronizationId);
-			});
-
-			it('should call the synchronizationService.update to log detainls about synchronization of systemId', async () => {
+			it('should call the synchronizationService.update to log details about synchronization of systemId', async () => {
 				const { synchronizationId, synchronizationToUpdate, status, userSyncCount } = setup();
 
 				await uc.updateSynchronization(synchronizationId, status, userSyncCount);
