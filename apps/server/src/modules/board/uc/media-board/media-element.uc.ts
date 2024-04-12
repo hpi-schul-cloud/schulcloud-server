@@ -9,7 +9,6 @@ import {
 	type AnyMediaContentElementDo,
 	BoardDoAuthorizable,
 	BoardExternalReferenceType,
-	ColumnBoard,
 	MediaBoard,
 	MediaExternalToolElement,
 	type MediaLine,

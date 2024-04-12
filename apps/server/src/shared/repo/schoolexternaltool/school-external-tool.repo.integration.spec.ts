@@ -11,9 +11,13 @@ import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/d
 import { Test, TestingModule } from '@nestjs/testing';
 import { type SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	schoolEntityFactory,
+	schoolExternalToolConfigurationStatusEntityFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { schoolExternalToolConfigurationStatusEntityFactory } from '../../testing/factory/school-external-tool-configuration-status-entity.factory';
+
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {

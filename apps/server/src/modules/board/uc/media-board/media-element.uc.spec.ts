@@ -2,6 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolWithId } from '@modules//tool/context-external-tool/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
+import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -16,7 +17,6 @@ import {
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
-import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
