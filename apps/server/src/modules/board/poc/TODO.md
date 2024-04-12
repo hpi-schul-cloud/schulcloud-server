@@ -4,6 +4,9 @@
   [ ] `getTitlesByIds`
   [ ] `countBoardUsageForExternalTools`
   [ ] (`findParentOfId`)
+[ ] refactor unit tests from 
+    `board/repo/board-node.repo.spec.ts` and `board/repo/board-do.repo.spec.ts` 
+    to `board/poc/repo/board-node.repo.spec.ts`
 [ ] `BoardNode.isAllowedAsChild()`, see `BoardComposite.isAllowedAsChild()`
 
 [ ] recursive delete
