@@ -80,6 +80,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
 
+				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK;
 				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
 				admZipMock.readAsText.mockReturnValue(faker.lorem.sentence());
 
