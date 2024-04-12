@@ -5,6 +5,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
+import { MultipleUsersFoundInMigrationLoggableException } from '../loggable/user-migrated-already.loggable-exception';
 
 @Injectable()
 export class UserMigrationService {
@@ -15,7 +16,7 @@ export class UserMigrationService {
 	) {}
 
 	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
-		await this.userService.findByExternalId(externalUserId, targetSystemId);
+		await this.checkForExternalIdDuplicatesAndThrow(externalUserId, targetSystemId);
 
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
@@ -53,6 +54,13 @@ export class UserMigrationService {
 			await this.accountService.save(accountCopy);
 		} catch (error: unknown) {
 			this.logger.warning(new UserMigrationDatabaseOperationFailedLoggableException(currentUserId, 'rollback', error));
+		}
+	}
+
+	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId) {
+		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, targetSystemId);
+		if (existingUser) {
+			throw new MultipleUsersFoundInMigrationLoggableException(externalUserId);
 		}
 	}
 }

@@ -2,13 +2,13 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class MultipleUsersFoundLoggableException extends BusinessError implements Loggable {
-	constructor() {
+export class MultipleUsersFoundInMigrationLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly externalUserId: string) {
 		super(
 			{
-				type: 'MULTIPLE_USERS_MIGRATION_LOGGABLE_EXCEPTION',
+				type: 'USER_HAS_ALREADY_MIGRATED',
 				title: 'User has already migrated',
-				defaultMessage: 'User has already migrated',
+				defaultMessage: 'User with externalId has already migrated',
 			},
 			HttpStatus.INTERNAL_SERVER_ERROR,
 			{
@@ -22,6 +22,9 @@ export class MultipleUsersFoundLoggableException extends BusinessError implement
 			type: this.type,
 			message: this.message,
 			stack: this.stack,
+			data: {
+				externalUserId: this.externalUserId,
+			},
 		};
 	}
 }

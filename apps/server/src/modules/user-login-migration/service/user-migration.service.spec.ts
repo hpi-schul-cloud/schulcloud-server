@@ -6,8 +6,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
-import { MultipleUsersFoundLoggableException } from '../loggable/user-is-already-migrated.loggable-exception';
+import {
+	UserMigrationDatabaseOperationFailedLoggableException,
+	MultipleUsersFoundInMigrationLoggableException,
+} from '../loggable';
 import { UserMigrationService } from './user-migration.service';
 
 describe(UserMigrationService.name, () => {
@@ -265,10 +267,9 @@ describe(UserMigrationService.name, () => {
 					username: '',
 					systemId: sourceSystemId,
 				});
+				const err = new MultipleUsersFoundInMigrationLoggableException(targetExternalId);
 
-				userService.findByExternalId.mockRejectedValueOnce(new MultipleUsersFoundLoggableException());
-				userService.findById.mockResolvedValueOnce({ ...user });
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
+				userService.findByExternalId.mockRejectedValueOnce(err);
 
 				return {
 					user,
@@ -278,15 +279,14 @@ describe(UserMigrationService.name, () => {
 					accountDto,
 					sourceSystemId,
 					targetSystemId,
+					err,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { userId, targetExternalId, targetSystemId } = setup();
+				const { userId, targetExternalId, targetSystemId, err } = setup();
 
-				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(
-					new MultipleUsersFoundLoggableException()
-				);
+				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(err);
 			});
 		});
 	});

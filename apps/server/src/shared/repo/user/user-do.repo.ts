@@ -1,5 +1,5 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
-import { MultipleUsersFoundLoggableException } from '@modules/user-login-migration/loggable/user-is-already-migrated.loggable-exception';
+import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable/multiple-users-found.loggable-exception';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
@@ -84,7 +84,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 
 		if (userEntitys.length > 1) {
-			throw new MultipleUsersFoundLoggableException();
+			throw new MultipleUsersFoundLoggableException(externalId);
 		}
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;

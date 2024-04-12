@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { MultipleUsersFoundLoggableException } from '@modules/user-login-migration/loggable/user-is-already-migrated.loggable-exception';
+import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable/multiple-users-found.loggable-exception';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
@@ -163,7 +163,7 @@ describe('UserRepo', () => {
 
 			it('should throw error', async () => {
 				await expect(repo.findByExternalId(users[0].externalId as string, system.id)).rejects.toThrow(
-					new MultipleUsersFoundLoggableException()
+					new MultipleUsersFoundLoggableException(externalId)
 				);
 			});
 		});
