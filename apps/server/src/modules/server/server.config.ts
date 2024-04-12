@@ -21,6 +21,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { CollaborativeTextEditorConfig } from '../collaborative-text-editor/collaborative-text-editor.config';
 import { SynchronizationConfig } from '../synchronization';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
@@ -57,6 +58,7 @@ export interface ServerConfig
 		SchulconnexClientConfig,
 		SynchronizationConfig,
 		DeletionConfig,
+		CollaborativeTextEditorConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -209,6 +211,7 @@ const config: ServerConfig = {
 	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
 		? (Configuration.get('ETHERPAD__PAD_URI') as string)
 		: undefined,
+	ETHERPAD_COOKIE__EXPIRES_SECONDS: Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS') as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
