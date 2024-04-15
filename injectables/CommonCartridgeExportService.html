@@ -554,8 +554,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -969,7 +969,7 @@
 import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { TaskService } from &#x27;@modules/task&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReferenceType, Column, Card } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardExternalReferenceType, Column, Card, RichTextElement } from &#x27;@shared/domain/domainobject&#x27;;
 import { ComponentProperties } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ColumnBoardService } from &#x27;@src/modules/board&#x27;;
@@ -1092,10 +1092,16 @@ export class CommonCartridgeExportService {
 
 	private addCardToOrganization(card: Card, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
 		const { id } &#x3D; card;
-		organizationBuilder.addSubOrganization({
+		const cardOrganization &#x3D; organizationBuilder.addSubOrganization({
 			title: card.title,
 			identifier: createIdentifier(id),
 		});
+
+		card.children
+			.filter((child) &#x3D;&gt; child instanceof RichTextElement)
+			.forEach((child) &#x3D;&gt;
+				cardOrganization.addResource(this.commonCartridgeMapper.mapRichTextElementToResource(child as RichTextElement))
+			);
 	}
 
 	private addComponentToOrganization(
