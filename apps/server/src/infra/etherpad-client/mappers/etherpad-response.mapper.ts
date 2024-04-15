@@ -38,8 +38,9 @@ export class EtherpadResponseMapper {
 	}
 
 	static mapToPadResponse(pad: InlineResponse2001 | undefined): PadId {
-		if (pad?.data && 'padID' in pad.data && pad.data.padID) {
-			const padId = pad.data.padID as string;
+		// InlineResponse2001 has wrong type definition
+		if (pad && 'padID' in pad && pad.padID) {
+			const padId = pad.padID as string;
 
 			return padId;
 		}
