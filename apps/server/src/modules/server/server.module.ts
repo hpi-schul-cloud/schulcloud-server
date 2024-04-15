@@ -39,6 +39,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { AlertModule } from '@modules/alert/alert.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -92,6 +93,7 @@ const serverModules = [
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	AlertModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
