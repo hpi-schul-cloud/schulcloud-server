@@ -30,7 +30,11 @@ export class CollaborativeTextEditorController {
 			getCollaborativeTextEditorForParentParams
 		);
 
-		res.cookie('sessionID', textEditor.sessions.toString(), { expires: textEditor.sessionExpiryDate });
+		res.cookie('sessionID', textEditor.sessions.toString(), {
+			expires: textEditor.sessionExpiryDate,
+			httpOnly: true,
+			secure: true,
+		});
 
 		const dto = CollaborativeTextEditorMapper.mapCollaborativeTextEditorToResponse(textEditor);
 
