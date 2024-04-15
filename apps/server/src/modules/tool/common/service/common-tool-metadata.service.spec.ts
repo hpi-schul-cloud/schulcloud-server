@@ -66,7 +66,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
-						mediaBoardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
@@ -94,7 +94,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
-						mediaBoardElement: 2,
+						mediaBoard: 2,
 					},
 				});
 			});
@@ -120,7 +120,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
-						mediaBoardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
@@ -146,7 +146,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
-						mediaBoardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
