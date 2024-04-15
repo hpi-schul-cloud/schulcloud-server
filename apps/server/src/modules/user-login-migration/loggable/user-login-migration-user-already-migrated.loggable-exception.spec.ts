@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MultipleUsersFoundInMigrationLoggableException } from './user-migrated-already.loggable-exception';
+import { MultipleUsersFoundInMigrationLoggableException } from './user-login-migration-user-already-migrated.loggable-exception';
 
 describe(MultipleUsersFoundInMigrationLoggableException.name, () => {
 	describe('getLogMessage', () => {
