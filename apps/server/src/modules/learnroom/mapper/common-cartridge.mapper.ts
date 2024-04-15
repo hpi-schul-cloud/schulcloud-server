@@ -122,10 +122,18 @@ export class CommonCartridgeMapper {
 	public mapRichTextElementToResource(element: RichTextElement): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
+			title: this.getTextTitle(element.text),
 			identifier: createIdentifier(element.id),
-			title: element.text.slice(0, 50).concat('...'),
 			html: `<p>${element.text}</p>`,
 			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 		};
+	}
+
+	private getTextTitle(text: string): string {
+		const title = text
+			.slice(0, 50)
+			.replace(/<[^>]*>?/gm, '')
+			.concat('...');
+		return title;
 	}
 }
