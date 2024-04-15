@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
@@ -34,10 +34,6 @@ export class CollaborativeTextEditorService {
 			sessionExpiryDate
 		);
 		const authorsSessionIds = await this.collaborativeTextEditorAdapter.listSessionsOfAuthor(authorId);
-
-		if (!sessionId || !padId || !authorsSessionIds) {
-			throw new InternalServerErrorException('Could not create collaborative text editor');
-		}
 
 		const url = this.buildPath(padId);
 		const uniqueSessionIds = this.removeDuplicateSessions([...authorsSessionIds, sessionId]);
