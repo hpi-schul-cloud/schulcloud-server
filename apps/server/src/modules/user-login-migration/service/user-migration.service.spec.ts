@@ -95,6 +95,7 @@ describe(UserMigrationService.name, () => {
 				});
 
 				userService.findById.mockResolvedValueOnce({ ...user });
+				userService.findByExternalId.mockResolvedValue(null);
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
 
 				return {
