@@ -799,6 +799,11 @@
 			"default": null,
 			"description": "rocketchat admin password"
 		},
+		"ROCKET_CHAT_CLIENT_TIMEOUT_MS": {
+			"type": "number",
+			"default": 30000,
+			"description": "rocketchat client timeout in milliseconds"
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
