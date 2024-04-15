@@ -1,6 +1,7 @@
 /* eslint-disable no-multi-spaces */
 
 const { authenticate } = require('@feathersjs/authentication');
+const { isProvider, iff } = require('feathers-hooks-common');
 const { NotFound, BadRequest, Conflict } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
 const { mapPayload } = require('../../../hooks');
@@ -112,7 +113,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [setContentDispositionHeader],
+	find: [iff(isProvider('rest'), setContentDispositionHeader)],
 	get: [],
 	create: [setLockResponseHeader],
 	update: [],
