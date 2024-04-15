@@ -1,4 +1,4 @@
-import { BulkWriteResult } from 'mongodb';
+import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
