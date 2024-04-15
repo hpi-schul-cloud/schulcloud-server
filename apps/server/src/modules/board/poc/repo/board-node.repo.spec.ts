@@ -9,6 +9,7 @@ import { CardProps } from '../domain';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
 import { cardFactory } from '../testing';
+// import { Card } from '../domain/card.do';
 
 const propsFactory = Factory.define<CardProps>(({ sequence }) => {
 	return {
@@ -71,6 +72,87 @@ describe('BoardNodeRepo', () => {
 			const boardNode = await repo.findById(props.id);
 
 			expect(boardNode.id).toBeDefined();
+		});
+	});
+	/*
+	describe('when finding by class and id', () => {
+		describe('when the node is not of the given class', () => {
+			const setup = async () => {
+				const props = em.create(BoardNodeEntity, propsFactory.build());
+				await em.persistAndFlush(props);
+				em.clear();
+
+				return { props };
+			};
+
+			it('should throw an error', async () => {
+				const { props } = await setup();
+
+				await expect(repo.findByClassAndId(Card, props.id)).rejects.toThrowError();
+			});
+		});
+	});
+	 */
+
+	describe('when finding multiple nodes by known ids', () => {
+		const setup = async () => {
+			const props = em.create(BoardNodeEntity, propsFactory.build());
+
+			const child = cardFactory.build();
+
+			const propsWithChildren = em.create(BoardNodeEntity, propsFactory.build());
+
+			// em.find.mockResolvedValueOnce([child]);
+
+			await em.persistAndFlush([props, propsWithChildren]);
+			em.clear();
+			propsWithChildren.children = [child];
+
+			return { props, propsWithChildren, child };
+		};
+
+		it('should find the node', async () => {
+			const { props, propsWithChildren } = await setup();
+
+			const boardNodes = await repo.findByIds([props.id, propsWithChildren.id]);
+
+			expect(boardNodes[0].id).toBeDefined();
+			expect(boardNodes[1].id).toBeDefined();
+		});
+	});
+
+	describe('when finding titles by ids', () => {
+		const setup = async () => {
+			const propWithTitle = em.create(BoardNodeEntity, propsFactory.build());
+			const propWithoutTitle = em.create(BoardNodeEntity, propsFactory.build({ title: undefined }));
+			await em.persistAndFlush([propWithTitle, propWithoutTitle]);
+			em.clear();
+
+			return { propWithTitle, propWithoutTitle };
+		};
+
+		it('should find the titles', async () => {
+			const { propWithTitle, propWithoutTitle } = await setup();
+
+			const titles = await repo.getTitlesByIds([propWithTitle.id, propWithoutTitle.id]);
+
+			expect(titles[propWithTitle.id]).toEqual(propWithTitle.title);
+		});
+
+		it('should return for single id', async () => {
+			const { propWithTitle } = await setup();
+
+			const titles = await repo.getTitlesByIds(propWithTitle.id);
+
+			expect(titles[propWithTitle.id]).toEqual(propWithTitle.title);
+		});
+
+		it('should return empty string for nodes without title', async () => {
+			const { propWithoutTitle } = await setup();
+
+			const titles = await repo.getTitlesByIds(propWithoutTitle.id);
+
+			expect(titles[propWithoutTitle.id]).toEqual('');
 		});
 	});
 

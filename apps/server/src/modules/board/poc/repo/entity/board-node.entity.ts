@@ -1,13 +1,17 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
-import { InputFormat } from '@shared/domain/types';
+import { EntityId, InputFormat } from '@shared/domain/types';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { AnyBoardNode, AllBoardNodeProps } from '../../domain';
+
+const PATH_SEPARATOR = ',';
 
 @Entity({ tableName: 'boardnodes' })
 export class BoardNodeEntity extends BaseEntityWithTimestamps implements Partial<AllBoardNodeProps> {
 	@Index()
 	@Property({ nullable: false })
-	path = ','; // TODO find better way to provide defaults!
+	path = PATH_SEPARATOR; // TODO find better way to provide defaults!
 
 	@Property({ nullable: false, type: 'integer' })
 	level = 0;
@@ -25,6 +29,16 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements Partial
 	@Property({ nullable: true })
 	title?: string;
 
+	/* ColumnBoardNode props */
+	@Property({ nullable: true, fieldName: 'contextType' })
+	_contextType?: BoardExternalReferenceType;
+
+	@Property({ nullable: false, fieldName: 'contextType' })
+	_contextId?: ObjectId;
+
+	@Property({ type: 'boolean', nullable: false })
+	isVisible = false;
+
 	/* Card props */
 	@Property({ nullable: true })
 	height?: number;
@@ -35,4 +49,14 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements Partial
 
 	@Property({ nullable: true })
 	inputFormat?: InputFormat;
+
+	/* ExternalToolElement props */
+	// TODO migration and only store ids not the whole entity
+	@Property({ nullable: true, fieldName: 'contextExternalToolId' })
+	contextExternalToolId?: ObjectId;
+
+	get ancestorIds(): EntityId[] {
+		const parentIds = this.path.split(PATH_SEPARATOR).filter((id) => id !== '');
+		return parentIds;
+	}
 }
