@@ -1,18 +1,18 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	collaborativeTextEditorNodeFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
 import { ServerTestModule } from '@src/modules/server';
@@ -72,7 +72,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			it('should return 400', async () => {
 				const { loggedInClient } = await setup();
 
-				const response = await loggedInClient.get(`parentId/123`);
+				const response = await loggedInClient.get(`content-element/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual(
@@ -142,11 +142,11 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					sessionCookieExpiryDate,
 				} = await setup();
 
-				const response = await loggedInClient.get(`parentId/${collaborativeTextEditorElement.id}`);
+				const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
-				expect(response.status).toEqual(HttpStatus.FOUND);
+				expect(response.status).toEqual(HttpStatus.OK);
 				// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-				expect(response.headers['location']).toEqual(expectedPath);
+				expect(response.body['url']).toEqual(expectedPath);
 				// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
 				expect(response.headers['set-cookie'][0]).toContain(
 					`sessionID=${expectedSessions}; Path=/; Expires=${sessionCookieExpiryDate}`
