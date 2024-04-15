@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MultipleUsersFoundInMigrationLoggableException } from './user-login-migration-user-already-migrated.loggable-exception';
+import { UserLoginMigrationUserAlreadyMigratedLoggableException } from './user-login-migration-user-already-migrated.loggable-exception';
 
-describe(MultipleUsersFoundInMigrationLoggableException.name, () => {
+describe(UserLoginMigrationUserAlreadyMigratedLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const externalUserId = new ObjectId().toHexString();
-			const exception = new MultipleUsersFoundInMigrationLoggableException(externalUserId);
+			const exception = new UserLoginMigrationUserAlreadyMigratedLoggableException(externalUserId);
 
 			return {
 				exception,

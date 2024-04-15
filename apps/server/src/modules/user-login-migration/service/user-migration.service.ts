@@ -6,7 +6,7 @@ import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import {
 	UserMigrationDatabaseOperationFailedLoggableException,
-	MultipleUsersFoundInMigrationLoggableException,
+	UserLoginMigrationUserAlreadyMigratedLoggableException,
 } from '../loggable';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class UserMigrationService {
 	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId) {
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, targetSystemId);
 		if (existingUser) {
-			throw new MultipleUsersFoundInMigrationLoggableException(externalUserId);
+			throw new UserLoginMigrationUserAlreadyMigratedLoggableException(externalUserId);
 		}
 	}
 }

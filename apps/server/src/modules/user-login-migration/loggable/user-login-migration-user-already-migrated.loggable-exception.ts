@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class MultipleUsersFoundInMigrationLoggableException extends BusinessError implements Loggable {
+export class UserLoginMigrationUserAlreadyMigratedLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly externalUserId: string) {
 		super(
 			{

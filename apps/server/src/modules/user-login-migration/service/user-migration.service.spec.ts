@@ -8,7 +8,7 @@ import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	UserMigrationDatabaseOperationFailedLoggableException,
-	MultipleUsersFoundInMigrationLoggableException,
+	UserLoginMigrationUserAlreadyMigratedLoggableException,
 } from '../loggable';
 import { UserMigrationService } from './user-migration.service';
 
@@ -268,7 +268,7 @@ describe(UserMigrationService.name, () => {
 					username: '',
 					systemId: sourceSystemId,
 				});
-				const err = new MultipleUsersFoundInMigrationLoggableException(targetExternalId);
+				const err = new UserLoginMigrationUserAlreadyMigratedLoggableException(targetExternalId);
 
 				userService.findByExternalId.mockRejectedValueOnce(err);
 
