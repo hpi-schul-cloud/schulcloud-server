@@ -11,6 +11,7 @@ import { ErrorResponse } from '../dto';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
 import { GlobalErrorFilter } from './global-error.filter';
+import { DomainErrorHandler } from '../domain';
 
 class SampleBusinessError extends BusinessError {
 	constructor() {
@@ -70,6 +71,7 @@ describe('GlobalErrorFilter', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				GlobalErrorFilter,
+				DomainErrorHandler,
 				{
 					provide: ErrorLogger,
 					useValue: createMock<ErrorLogger>(),
@@ -362,12 +364,17 @@ describe('GlobalErrorFilter', () => {
 			});
 		});
 
-		describe('when context is rmq', () => {
+		describe('given context is rmq', () => {
+			const mockArgumentHostRmq = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('rmq');
+
+				return argumentsHost;
+			};
+
 			describe('when error is unknown error', () => {
 				const setup = () => {
-					const argumentsHost = createMock<ArgumentsHost>();
-					argumentsHost.getType.mockReturnValueOnce('rmq');
-
+					const argumentsHost = mockArgumentHostRmq();
 					const error = new Error();
 
 					return { error, argumentsHost };
@@ -384,10 +391,53 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a LoggableError', () => {
 				const setup = () => {
+					const argumentsHost = mockArgumentHostRmq();
 					const causeError = new Error('Cause error');
 					const error = new SampleLoggableExceptionWithCause('test', causeError);
-					const argumentsHost = createMock<ArgumentsHost>();
-					argumentsHost.getType.mockReturnValueOnce('rmq');
+
+					return { error, argumentsHost };
+				};
+
+				it('should return appropriate error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual({ message: undefined, error });
+				});
+			});
+		});
+
+		describe('given context is rpc', () => {
+			const mockArgumentHostRpc = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('rpc');
+
+				return argumentsHost;
+			};
+
+			describe('when error is unknown error', () => {
+				const setup = () => {
+					const argumentsHost = mockArgumentHostRpc();
+					const error = new Error();
+
+					return { error, argumentsHost };
+				};
+
+				it('should return an RpcMessage with the error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual({ message: undefined, error });
+				});
+			});
+
+			describe('when error is a LoggableError', () => {
+				const setup = () => {
+					const argumentsHost = mockArgumentHostRpc();
+					const causeError = new Error('Cause error');
+					const error = new SampleLoggableExceptionWithCause('test', causeError);
 
 					return { error, argumentsHost };
 				};

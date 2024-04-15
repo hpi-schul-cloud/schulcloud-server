@@ -1,12 +1,5 @@
 import { IError, RpcMessage } from '@infra/rabbitmq';
-import {
-	ArgumentsHost,
-	Catch,
-	ExceptionFilter,
-	HttpException,
-	InternalServerErrorException,
-	ContextType,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { Response } from 'express';
 import _ from 'lodash';
@@ -16,10 +9,12 @@ import { FeathersError } from '../interface';
 import { ErrorUtils } from '../utils';
 import { DomainErrorHandler } from '../domain';
 
+// It look like ContextType from @nestjs/common' do not match correctly
 enum UseableContextType {
 	http = 'http',
 	rpc = 'rpc',
 	ws = 'ws',
+	rmq = 'rmq',
 }
 
 @Catch()
@@ -29,11 +24,12 @@ export class GlobalErrorFilter<E extends IError> implements ExceptionFilter<E> {
 	catch(error: E, host: ArgumentsHost): void | RpcMessage<undefined> | WsException {
 		this.domainErrorHandler.exec(error);
 
-		const contextType = host.getType<ContextType>();
+		const contextType = host.getType<UseableContextType>();
 		switch (contextType) {
 			case UseableContextType.http:
 				return this.sendHttpResponse(error, host);
 			case UseableContextType.rpc:
+			case UseableContextType.rmq:
 				return this.sendRpcResponse(error);
 			case UseableContextType.ws:
 				return this.sendWsResponse(error);
