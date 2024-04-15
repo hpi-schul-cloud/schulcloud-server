@@ -6,11 +6,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 import { Response } from 'express';
+import { WsException } from '@nestjs/websockets';
 import { ErrorResponse } from '../dto';
 import { ErrorUtils } from '../utils';
 import { GlobalErrorFilter } from './global-error.filter';
 import { DomainErrorHandler } from '../domain';
-import { WsException } from '@nestjs/websockets';
 
 class SampleBusinessError extends BusinessError {
 	constructor() {
