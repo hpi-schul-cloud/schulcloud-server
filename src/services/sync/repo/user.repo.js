@@ -65,14 +65,16 @@ const checkUpdate = async (email, userId) => {
 	if (users.length === 0) {
 		return;
 	}
-	if (!equalIds(users[0]._id, userId)) {
-		const userExistsInSchool = users[0].schoolId;
+	const foundUserByMail = users[0];
+	if (!equalIds(foundUserByMail._id, userId)) {
+		const userExistsInSchool = foundUserByMail.schoolId;
 		throw new BadRequest(
 			`User cannot be updated. User and email don't match.
 		User with the same email already exists in school ${userExistsInSchool}`,
 			{
 				userId,
 				existsInSchool: userExistsInSchool,
+				foundUserByMail: foundUserByMail._id,
 			}
 		);
 	}
