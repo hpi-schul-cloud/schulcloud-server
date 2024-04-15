@@ -1,9 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { SchoolExternalToolRepo } from '@shared/repo';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
@@ -14,8 +13,7 @@ export class SchoolExternalToolService {
 	constructor(
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {}
 
 	async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
@@ -63,25 +61,15 @@ export class SchoolExternalToolService {
 			isDeactivated: this.isToolDeactivated(externalTool, tool),
 		});
 
-		if (this.toolFeatures.toolStatusWithoutVersions) {
-			try {
-				await this.schoolExternalToolValidationService.validate(tool);
+		try {
+			await this.schoolExternalToolValidationService.validate(tool);
 
-				status.isOutdatedOnScopeSchool = false;
-
-				return status;
-			} catch (err) {
-				return status;
-			}
-		}
-
-		if (externalTool.version <= tool.toolVersion) {
 			status.isOutdatedOnScopeSchool = false;
 
 			return status;
+		} catch (err) {
+			return status;
 		}
-
-		return status;
 	}
 
 	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<void> {
@@ -91,6 +79,7 @@ export class SchoolExternalToolService {
 	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		let createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
+
 		return createdSchoolExternalTool;
 	}
 

@@ -13,6 +13,7 @@ describe(SynchronizationEntity.name, () => {
 			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
+					systemId: new ObjectId().toHexString(),
 					count: 1,
 					failureCause: '',
 					status: SynchronizationStatusModel.REGISTERED,
@@ -42,6 +43,7 @@ describe(SynchronizationEntity.name, () => {
 
 				const entityProps = {
 					id: entity.id,
+					systemId: entity.systemId,
 					count: entity.count,
 					failureCause: entity?.failureCause,
 					status: entity?.status,

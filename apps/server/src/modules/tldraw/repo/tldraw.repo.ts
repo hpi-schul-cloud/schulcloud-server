@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { BulkWriteResult, Collection, Sort } from 'mongodb';
+import { BulkWriteResult, Collection, Sort } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { TldrawDrawing } from '../entities';
 

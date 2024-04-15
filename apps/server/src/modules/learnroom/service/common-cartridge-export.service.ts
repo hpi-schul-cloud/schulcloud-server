@@ -6,7 +6,7 @@ import {
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Column } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column, Card, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -111,14 +111,34 @@ export class CommonCartridgeExportService {
 
 			columnBoard.children
 				.filter((child) => child instanceof Column)
-				.forEach((column) => {
-					const { id } = column;
-					organization.addSubOrganization({
-						title: (column as Column).title,
-						identifier: createIdentifier(id),
-					});
-				});
+				.forEach((column) => this.addColumnToOrganization(column as Column, organization));
 		}
+	}
+
+	private addColumnToOrganization(column: Column, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
+		const { id } = column;
+		const columnOrganization = organizationBuilder.addSubOrganization({
+			title: column.title,
+			identifier: createIdentifier(id),
+		});
+
+		column.children
+			.filter((child) => child instanceof Card)
+			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
+	}
+
+	private addCardToOrganization(card: Card, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
+		const { id } = card;
+		const cardOrganization = organizationBuilder.addSubOrganization({
+			title: card.title,
+			identifier: createIdentifier(id),
+		});
+
+		card.children
+			.filter((child) => child instanceof RichTextElement)
+			.forEach((child) =>
+				cardOrganization.addResource(this.commonCartridgeMapper.mapRichTextElementToResource(child as RichTextElement))
+			);
 	}
 
 	private addComponentToOrganization(

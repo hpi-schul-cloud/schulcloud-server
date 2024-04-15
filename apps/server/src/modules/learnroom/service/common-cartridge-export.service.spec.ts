@@ -10,14 +10,15 @@ import { ComponentType } from '@shared/domain/entity';
 import {
 	columnBoardFactory,
 	columnFactory,
+	cardFactory,
 	courseFactory,
 	lessonFactory,
 	setupEntities,
 	taskFactory,
+	richTextElementFactory,
 } from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
-import { Column } from '@shared/domain/domainobject';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
@@ -71,7 +72,10 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const columnBoard = columnBoardFactory.build({ children: [columnFactory.build()] });
+		const textCardElement = richTextElementFactory.build();
+		const card = cardFactory.build({ children: [textCardElement] });
+		const column = columnFactory.build({ children: [card] });
+		const columnBoard = columnBoardFactory.build({ children: [column] });
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -90,7 +94,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card, textCardElement };
 	};
 
 	beforeAll(async () => {
@@ -183,10 +187,17 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add column', async () => {
-				const { archive, columnBoard } = await setup();
+				const { archive, column } = await setup();
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
-				expect(manifest).toContain(createXmlString('title', (columnBoard.children[0] as Column).title));
+				expect(manifest).toContain(createXmlString('title', column.title));
+			});
+
+			it('should add card', async () => {
+				const { archive, card } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', card.title));
 			});
 		});
 
@@ -236,6 +247,27 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', columnBoard.title));
+			});
+
+			it('should add column', async () => {
+				const { archive, column } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', column.title));
+			});
+
+			it('should add card', async () => {
+				const { archive, card } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', card.title));
+			});
+
+			it('should add content element of cards', async () => {
+				const { archive, textCardElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(`<resource identifier="i${textCardElement.id}"`);
 			});
 		});
 

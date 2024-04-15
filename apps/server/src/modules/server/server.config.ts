@@ -21,7 +21,7 @@ import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { DeletionConfig } from '@modules/deletion';
 import type { MediaBoardConfig } from '@modules/board/media-board.config';
 import { ProvisioningConfig } from '@modules/provisioning';
-import { SynchronizationConfig } from '../synchronization';
+import { SynchronizationConfig } from '@modules/idp-console';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
 
@@ -170,7 +170,7 @@ const config: ServerConfig = {
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
-	ADMIN_API__MODIFICATION_THRESHOLD: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD') as number,
+	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),

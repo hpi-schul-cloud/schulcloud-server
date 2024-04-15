@@ -10,6 +10,7 @@ export interface RocketChatOptions {
 	adminPassword?: string;
 	adminId?: string;
 	adminToken?: string;
+	rocketchatClientTimeoutInMs?: number;
 }
 
 export interface RocketChatGroupModel {
