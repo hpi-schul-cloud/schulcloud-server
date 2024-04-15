@@ -164,7 +164,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, toolVersionService: <a href="../injectables/ToolVersionService.html" target="_self">ToolVersionService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, toolVersionService: <a href="../injectables/ToolConfigurationStatusService.html" target="_self">ToolConfigurationStatusService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -238,7 +238,7 @@
                                                         <td>toolVersionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ToolVersionService.html" target="_self" >ToolVersionService</a></code>
+                                                                        <code><a href="../injectables/ToolConfigurationStatusService.html" target="_self" >ToolConfigurationStatusService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -345,7 +345,7 @@ import { SchoolExternalToolService } from &#x27;../../school-external-tool/servi
 import { ContextExternalTool, ToolReference } from &#x27;../domain&#x27;;
 import { ToolReferenceMapper } from &#x27;../mapper&#x27;;
 import { ContextExternalToolService } from &#x27;./context-external-tool.service&#x27;;
-import { ToolVersionService } from &#x27;./tool-version-service&#x27;;
+import { ToolConfigurationStatusService } from &#x27;./tool-configuration-status.service&#x27;;
 
 @Injectable()
 export class ToolReferenceService {
@@ -354,7 +354,7 @@ export class ToolReferenceService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly toolVersionService: ToolVersionService
+		private readonly toolVersionService: ToolConfigurationStatusService
 	) {}
 
 	async getToolReference(contextExternalToolId: EntityId): Promise&lt;ToolReference&gt; {

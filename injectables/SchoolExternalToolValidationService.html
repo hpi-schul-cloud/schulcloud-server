@@ -143,10 +143,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkVersionMatch" >checkVersionMatch</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#validate" >validate</a>
                             </li>
@@ -168,12 +164,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -214,18 +210,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>toolFeatures</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -240,87 +224,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkVersionMatch"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>checkVersionMatch</b></span>
-                        <a href="#checkVersionMatch"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkVersionMatch(schoolExternalToolVersion: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, externalToolVersion: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:34</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolExternalToolVersion</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>externalToolVersion</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -343,8 +246,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -396,28 +299,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { CommonToolValidationService } from &#x27;../../common/service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
-import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { SchoolExternalTool } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class SchoolExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise&lt;void&gt; {
 		const loadedExternalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
-
-		if (!this.toolFeatures.toolStatusWithoutVersions) {
-			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
-		}
 
 		const errors: ValidationError[] &#x3D; this.commonToolValidationService.validateParameters(
 			loadedExternalTool,
@@ -426,14 +323,6 @@ export class SchoolExternalToolValidationService {
 
 		if (errors.length) {
 			throw errors[0];
-		}
-	}
-
-	private checkVersionMatch(schoolExternalToolVersion: number, externalToolVersion: number): void {
-		if (schoolExternalToolVersion !&#x3D;&#x3D; externalToolVersion) {
-			throw new ValidationError(
-				&#x60;tool_version_mismatch: The version ${schoolExternalToolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolVersion}.&#x60;
-			);
 		}
 	}
 }

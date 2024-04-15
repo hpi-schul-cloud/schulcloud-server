@@ -728,13 +728,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ContextExternalToolModule.html" data-type="entity-link" >ContextExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' }>
+                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' :
-                                        'id="xs-injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' :
+                                        'id="xs-injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' }>
                                         <li class="link">
                                             <a href="injectables/ContextExternalToolAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContextExternalToolAuthorizableService</a>
                                         </li>
@@ -745,10 +745,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/ContextExternalToolValidationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContextExternalToolValidationService</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/ToolReferenceService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolReferenceService</a>
+                                            <a href="injectables/ToolConfigurationStatusService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolConfigurationStatusService</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/ToolVersionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolVersionService</a>
+                                            <a href="injectables/ToolReferenceService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolReferenceService</a>
                                         </li>
                                     </ul>
                                 </li>

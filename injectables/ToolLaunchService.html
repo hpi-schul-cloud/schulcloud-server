@@ -191,7 +191,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../injectables/BasicToolLaunchStrategy.html" target="_self">BasicToolLaunchStrategy</a>, lti11ToolLaunchStrategy: <a href="../injectables/Lti11ToolLaunchStrategy.html" target="_self">Lti11ToolLaunchStrategy</a>, oauth2ToolLaunchStrategy: <a href="../injectables/OAuth2ToolLaunchStrategy.html" target="_self">OAuth2ToolLaunchStrategy</a>, toolVersionService: <a href="../injectables/ToolVersionService.html" target="_self">ToolVersionService</a>)</code>
+<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../injectables/BasicToolLaunchStrategy.html" target="_self">BasicToolLaunchStrategy</a>, lti11ToolLaunchStrategy: <a href="../injectables/Lti11ToolLaunchStrategy.html" target="_self">Lti11ToolLaunchStrategy</a>, oauth2ToolLaunchStrategy: <a href="../injectables/OAuth2ToolLaunchStrategy.html" target="_self">OAuth2ToolLaunchStrategy</a>, toolVersionService: <a href="../injectables/ToolConfigurationStatusService.html" target="_self">ToolConfigurationStatusService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -277,7 +277,7 @@
                                                         <td>toolVersionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ToolVersionService.html" target="_self" >ToolVersionService</a></code>
+                                                                        <code><a href="../injectables/ToolConfigurationStatusService.html" target="_self" >ToolConfigurationStatusService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -666,7 +666,7 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalToolConfigurationStatus } from &#x27;../../common/domain&#x27;;
 import { ToolConfigType } from &#x27;../../common/enum&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { ToolVersionService } from &#x27;../../context-external-tool/service/tool-version-service&#x27;;
+import { ToolConfigurationStatusService } from &#x27;../../context-external-tool/service/tool-configuration-status.service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
@@ -691,7 +691,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly toolVersionService: ToolVersionService
+		private readonly toolVersionService: ToolConfigurationStatusService
 	) {
 		this.strategies &#x3D; new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
