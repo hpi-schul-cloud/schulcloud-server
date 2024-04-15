@@ -91,7 +91,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 				await service.getData(school, system);
 
 				expect(schulconnexRestClient.getPersonenInfo).toHaveBeenCalledWith({
-					vollstaendig: ['personen', 'personenkontexte', 'organisationen'],
+					vollstaendig: ['personen', 'personenkontexte', 'organisationen', 'gruppen'],
 					'organisation.id': school.externalId,
 				});
 			});
