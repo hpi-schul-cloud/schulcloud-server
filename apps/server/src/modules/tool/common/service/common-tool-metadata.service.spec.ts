@@ -106,6 +106,7 @@ describe(CommonToolMetadataService.name, () => {
 			const setup = () => {
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(0);
 			};
 
@@ -132,6 +133,7 @@ describe(CommonToolMetadataService.name, () => {
 
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
 			};
 
@@ -146,7 +148,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
-						mediaBoard: 0,
+						mediaBoard: 2,
 					},
 				});
 			});
