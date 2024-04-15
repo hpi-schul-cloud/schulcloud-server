@@ -1,5 +1,6 @@
-import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';
@@ -12,7 +13,8 @@ export class ToolReferenceUc {
 	constructor(
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly toolReferenceService: ToolReferenceService,
-		private readonly toolPermissionHelper: ToolPermissionHelper
+		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async getToolReferencesForContext(
@@ -26,8 +28,9 @@ export class ToolReferenceUc {
 			contextRef
 		);
 
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const toolReferencesPromises: Promise<ToolReference | null>[] = contextExternalTools.map(
-			async (contextExternalTool: ContextExternalTool) => this.tryBuildToolReference(userId, contextExternalTool)
+			async (contextExternalTool: ContextExternalTool) => this.tryBuildToolReference(user, contextExternalTool)
 		);
 
 		const toolReferencesWithNull: (ToolReference | null)[] = await Promise.all(toolReferencesPromises);
@@ -39,11 +42,11 @@ export class ToolReferenceUc {
 	}
 
 	private async tryBuildToolReference(
-		userId: EntityId,
+		user: User,
 		contextExternalTool: ContextExternalTool
 	): Promise<ToolReference | null> {
 		try {
-			await this.ensureToolPermissions(userId, contextExternalTool);
+			await this.ensureToolPermissions(user, contextExternalTool);
 
 			const toolReference: ToolReference = await this.toolReferenceService.getToolReference(
 				contextExternalTool.id as string
@@ -60,7 +63,8 @@ export class ToolReferenceUc {
 			contextExternalToolId
 		);
 
-		await this.ensureToolPermissions(userId, contextExternalTool);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		await this.ensureToolPermissions(user, contextExternalTool);
 
 		const toolReference: ToolReference = await this.toolReferenceService.getToolReference(
 			contextExternalTool.id as string
@@ -69,11 +73,11 @@ export class ToolReferenceUc {
 		return toolReference;
 	}
 
-	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
+	private async ensureToolPermissions(user: User, contextExternalTool: ContextExternalTool): Promise<void> {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
 		const promise: Promise<void> = this.toolPermissionHelper.ensureContextPermissions(
-			userId,
+			user,
 			contextExternalTool,
 			context
 		);

@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
@@ -26,6 +26,7 @@ const learnroomMock = (id: string, name: string) => {
 				title: name,
 				shortTitle: name.substr(0, 2),
 				displayColor: '#ACACAC',
+				isSynchronized: false,
 			};
 		},
 	};

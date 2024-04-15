@@ -10,6 +10,7 @@ import {
 	AutoContextNameStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoMediumIdStrategy,
 } from '../auto-parameter-strategy';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
@@ -37,6 +38,10 @@ describe('OAuth2ToolLaunchStrategy', () => {
 				{
 					provide: AutoContextNameStrategy,
 					useValue: createMock<AutoContextNameStrategy>(),
+				},
+				{
+					provide: AutoMediumIdStrategy,
+					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 			],
 		}).compile();

@@ -1,8 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const { Forbidden, GeneralError, NotFound, NotAuthenticated } = require('../../../errors');
-const logger = require('../../../logger');
+const { Forbidden, GeneralError, NotFound } = require('../../../errors');
 
 const globalHooks = require('../../../hooks');
 const { equal: equalIds, isValid: isValidId } = require('../../../helper/compare').ObjectId;
@@ -301,33 +300,6 @@ const hasCreatePermission = async (context) => {
 	}
 	context.data = data;
 };
-const restrictHomeworkDeletion = async (context) => {
-	// expect authenticated user
-	const { userId } = context.params.account;
-	if (isValidId(userId) !== true) throw new NotAuthenticated('missing a valid authenticated user id', { userId });
-	// expect homeworkId given
-	const homeworkId = context.id;
-	if (isValidId(homeworkId) !== true) throw new NotFound('missing a valid homework id', { homeworkId });
-
-	// expect homework to be deleted to exist
-	const homeworkWithPopulatedCourse = await context.app
-		.service('homework')
-		.get(homeworkId, { query: { $populate: ['courseId'] } });
-
-	if (homeworkWithPopulatedCourse === null) throw new NotFound();
-
-	if (hasHomeworkPermission(userId, homeworkWithPopulatedCourse)) return context;
-
-	throw new Forbidden('homework deletion failed', { homeworkId, userId });
-};
-
-const logDeletionAttempt = (context) => {
-	logger.alert(`user ${context.params.account.userId} tries to delete homework ${context.id}`);
-};
-
-const logDeletionPermit = (context) => {
-	logger.alert(`user ${context.params.account.userId} permitted to delete homework ${context.id}`);
-};
 
 const addLessonInfoToSingle = async (hook, data) => {
 	const { lessonId } = data;
@@ -380,15 +352,7 @@ exports.before = () => {
 				hasPatchPermission,
 			]),
 		],
-		remove: [
-			iff(isProvider('external'), [
-				globalHooks.hasPermission('HOMEWORK_CREATE'),
-				globalHooks.permitGroupOperation,
-				logDeletionAttempt,
-				restrictHomeworkDeletion,
-				logDeletionPermit,
-			]),
-		],
+		remove: [disallow()],
 	};
 };
 
@@ -399,5 +363,6 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
+	// TODO use nest-endpoint instead
 	remove: [],
 };

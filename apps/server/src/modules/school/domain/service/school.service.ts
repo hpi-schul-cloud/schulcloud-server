@@ -1,11 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TypeGuard } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
+import { SchoolHasNoSystemLoggableException, SystemCanNotBeDeletedLoggableException } from '../error';
+import { SystemNotFoundLoggableException } from '../error/system-not-found.loggable-exception';
 import { SchoolFactory } from '../factory';
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import { SchoolQuery } from '../query';
@@ -61,6 +64,18 @@ export class SchoolService {
 		}
 	}
 
+	public async getSchoolSystems(school: School): Promise<System[]> {
+		const { systemIds } = school.getProps();
+
+		let schoolSystems: System[] = [];
+
+		if (TypeGuard.isArrayWithElements(systemIds)) {
+			schoolSystems = await this.systemService.getSystems(systemIds);
+		}
+
+		return schoolSystems;
+	}
+
 	public async getSchoolsForLdapLogin(): Promise<SchoolForLdapLogin[]> {
 		const ldapLoginSystems = await this.systemService.findAllForLdapLogin();
 		const ldapLoginSystemsIds = ldapLoginSystems.map((system) => system.id);
@@ -74,15 +89,40 @@ export class SchoolService {
 		return schoolsForLdapLogin;
 	}
 
-	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
-		const school = await this.getSchoolById(schoolId);
-
+	public async updateSchool(school: School, body: SchoolUpdateBody) {
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
 
 		let updatedSchool = await this.schoolRepo.save(fullSchoolObject);
 		updatedSchool = this.addInstanceFeatures(updatedSchool);
 
 		return updatedSchool;
+	}
+
+	public async removeSystemFromSchool(school: School, systemId: EntityId): Promise<void> {
+		if (!school.hasSystem(systemId)) {
+			throw new SchoolHasNoSystemLoggableException(school.id, systemId);
+		}
+
+		const system = await this.tryFindAndRemoveSystem(systemId);
+
+		school.removeSystem(system.id);
+
+		await this.schoolRepo.save(school);
+	}
+
+	private async tryFindAndRemoveSystem(systemId: string) {
+		const system = await this.systemService.findById(systemId);
+		if (!system) {
+			throw new SystemNotFoundLoggableException(systemId);
+		}
+
+		if (system.isDeletable()) {
+			await this.systemService.delete(system);
+		} else {
+			throw new SystemCanNotBeDeletedLoggableException(systemId);
+		}
+
+		return system;
 	}
 
 	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {

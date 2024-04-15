@@ -219,4 +219,36 @@ export class UserRepo extends BaseRepo<User> {
 
 		return users;
 	}
+
+	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
+		const foundUsers = await this._em.find(
+			User,
+			{ externalId: { $in: externalIds } },
+			{ fields: ['id', 'externalId'] }
+		);
+
+		const users = foundUsers.map(({ id }) => id);
+
+		return users;
+	}
+
+	public async updateAllUserByLastSyncedAt(userIds: string[]): Promise<void> {
+		await this._em.nativeUpdate(
+			User,
+			{
+				id: { $in: userIds },
+			},
+			{ lastSyncedAt: new Date() }
+		);
+	}
+
+	public async findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom: Date): Promise<string[]> {
+		const foundUsers = await this._em.find(User, {
+			lastSyncedAt: {
+				$lte: dateOfLastSyncToBeLookedFrom,
+			},
+		});
+
+		return foundUsers.map((user) => user.id);
+	}
 }

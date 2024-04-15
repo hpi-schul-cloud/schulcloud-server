@@ -1,6 +1,5 @@
-import { AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 // invalid import
-import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto, RoleService } from '@modules/role';
@@ -30,6 +29,7 @@ import {
 	StatusModel,
 	OperationReportHelper,
 } from '@modules/deletion';
+import { CalendarService } from '@src/infra/calendar';
 import { UserQuery } from './user-query.type';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserMapper } from '../mapper/user.mapper';
@@ -45,6 +45,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
 		private readonly registrationPinService: RegistrationPinService,
+		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus
 	) {
@@ -82,7 +83,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
 		const user: UserDO = await this.findById(userId);
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+		const account: Account = await this.accountService.findByUserIdOrFail(userId);
 
 		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
 
@@ -186,6 +187,8 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
 
+		const calendarEventsDeleted = await this.removeCalendarEvents(userId);
+
 		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
 
 		if (numberOfDeletedUsers === 0) {
@@ -195,7 +198,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.USER,
 			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-			[registrationPinDeleted]
+			[registrationPinDeleted, calendarEventsDeleted]
 		);
 
 		this.logger.info(
@@ -224,6 +227,22 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return users;
 	}
 
+	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
+		const foundUsers = await this.findMultipleByExternalIds(externalIds);
+
+		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
+
+		return verifiedUsers;
+	}
+
+	public async findMultipleByExternalIds(externalIds: string[]): Promise<string[]> {
+		return this.userRepo.findByExternalIds(externalIds);
+	}
+
+	public async updateLastSyncedAt(userIds: string[]): Promise<void> {
+		await this.userRepo.updateAllUserByLastSyncedAt(userIds);
+	}
+
 	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
 		const userToDeletion = await this.userRepo.findByIdOrNull(userId);
 		const parentEmails = await this.getParentEmailsFromUser(userId);
@@ -244,5 +263,21 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		}
 
 		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
+	}
+
+	public async findUnsynchronizedUserIds(unsyncedForMinutes: number): Promise<string[]> {
+		const unsyncedForMiliseconds = unsyncedForMinutes * 60000;
+		const differenceBetweenCurrentDateAndUnsyncedTime = new Date().getTime() - unsyncedForMiliseconds;
+		const dateOfLastSyncToBeLookedFrom = new Date(differenceBetweenCurrentDateAndUnsyncedTime);
+		return this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
+	}
+
+	public async removeCalendarEvents(userId: EntityId): Promise<DomainDeletionReport> {
+		let extractedOperationReport: DomainOperationReport[] = [];
+		const results = await this.calendarService.deleteUserData(userId);
+
+		extractedOperationReport = OperationReportHelper.extractOperationReports([results]);
+
+		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
 	}
 }

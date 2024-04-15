@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -12,11 +13,13 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
 	setupEntities,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {
@@ -77,6 +80,31 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 				expect(columns[0].acceptAsync).toHaveBeenCalledWith(service);
 				expect(columns[1].acceptAsync).toHaveBeenCalledWith(service);
+			});
+		});
+	});
+
+	describe('when used as a visitor on a media board composite', () => {
+		describe('acceptAsync', () => {
+			it('should delete the board node', async () => {
+				const board = mediaBoardFactory.build();
+
+				await board.acceptAsync(service);
+
+				expect(em.remove).toHaveBeenCalled();
+			});
+
+			it('should make the children accept the service', async () => {
+				const lines = mediaLineFactory.buildList(2).map((lin) => {
+					lin.acceptAsync = jest.fn();
+					return lin;
+				});
+				const board = mediaBoardFactory.build({ children: lines });
+
+				await board.acceptAsync(service);
+
+				expect(lines[0].acceptAsync).toHaveBeenCalledWith(service);
+				expect(lines[1].acceptAsync).toHaveBeenCalledWith(service);
 			});
 		});
 	});
@@ -329,6 +357,86 @@ describe(RecursiveDeleteVisitor.name, () => {
 				);
 				expect(em.remove).toHaveBeenCalledWith(
 					em.getReference(childExternalToolElement.constructor, childExternalToolElement.id)
+				);
+			});
+		});
+	});
+
+	describe('visitMediaExternalToolElementAsync', () => {
+		describe('when the linked context external tool exists', () => {
+			const setup = () => {
+				const contextExternalTool = contextExternalToolFactory.buildWithId();
+				const childMediaExternalToolElement = mediaExternalToolElementFactory.build();
+				const mediaExternalToolElement = mediaExternalToolElementFactory.build({
+					children: [childMediaExternalToolElement],
+					contextExternalToolId: contextExternalTool.id,
+				});
+
+				contextExternalToolService.findById.mockResolvedValue(contextExternalTool);
+
+				return {
+					mediaExternalToolElement,
+					childMediaExternalToolElement,
+					contextExternalTool,
+				};
+			};
+
+			it('should delete the context external tool that is linked to the element', async () => {
+				const { mediaExternalToolElement, contextExternalTool } = setup();
+
+				await service.visitMediaExternalToolElementAsync(mediaExternalToolElement);
+
+				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should call entity remove', async () => {
+				const { mediaExternalToolElement, childMediaExternalToolElement } = setup();
+
+				await service.visitMediaExternalToolElementAsync(mediaExternalToolElement);
+
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(mediaExternalToolElement.constructor, mediaExternalToolElement.id)
+				);
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(childMediaExternalToolElement.constructor, childMediaExternalToolElement.id)
+				);
+			});
+		});
+
+		describe('when the external tool does not exist anymore', () => {
+			const setup = () => {
+				const childMediaExternalToolElement = mediaExternalToolElementFactory.build();
+				const mediaExternalToolElement = mediaExternalToolElementFactory.build({
+					children: [childMediaExternalToolElement],
+					contextExternalToolId: new ObjectId().toHexString(),
+				});
+
+				contextExternalToolService.findById.mockResolvedValue(null);
+
+				return {
+					mediaExternalToolElement,
+					childMediaExternalToolElement,
+				};
+			};
+
+			it('should not try to delete the context external tool that is linked to the element', async () => {
+				const { mediaExternalToolElement } = setup();
+
+				await service.visitMediaExternalToolElementAsync(mediaExternalToolElement);
+
+				expect(contextExternalToolService.deleteContextExternalTool).not.toHaveBeenCalled();
+			});
+
+			it('should call entity remove', async () => {
+				const { mediaExternalToolElement, childMediaExternalToolElement } = setup();
+
+				await service.visitMediaExternalToolElementAsync(mediaExternalToolElement);
+
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(mediaExternalToolElement.constructor, mediaExternalToolElement.id)
+				);
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(childMediaExternalToolElement.constructor, childMediaExternalToolElement.id)
 				);
 			});
 		});

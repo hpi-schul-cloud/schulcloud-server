@@ -15,7 +15,7 @@ interface SchoolLogo {
 interface SchoolInfo {
 	id: EntityId;
 	name: string;
-	language?: string;
+	language?: LanguageType;
 	logo?: SchoolLogo;
 }
 
@@ -95,6 +95,20 @@ export class School extends DomainObject<SchoolProps> {
 		const result = hasEligiblePurpose && isNotOwnSchool;
 
 		return result;
+	}
+
+	public hasSystem(systemId: EntityId): boolean {
+		const { systemIds } = this.props;
+
+		const result = systemIds?.includes(systemId) ?? false;
+
+		return result;
+	}
+
+	public removeSystem(systemId: EntityId) {
+		if (this.props.systemIds) {
+			this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
+		}
 	}
 }
 

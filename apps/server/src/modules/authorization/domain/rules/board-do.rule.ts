@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { BoardDoAuthorizable, BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject/board/types';
-import { User } from '@shared/domain/entity/user.entity';
 import {
+	ColumnBoard,
 	isDrawingElement,
 	isSubmissionItem,
 	isSubmissionItemContent,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
+import { BoardDoAuthorizable, BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject/board/types';
+import { User } from '@shared/domain/entity/user.entity';
 import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizationContext, Rule } from '../type';
+import { EntityId } from '@shared/domain/types';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action, AuthorizationContext, Rule } from '../type';
 
 @Injectable()
 export class BoardDoRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, boardDoAuthorizable: BoardDoAuthorizable): boolean {
+	public isApplicable(user: User, boardDoAuthorizable: unknown): boolean {
 		const isMatched = boardDoAuthorizable instanceof BoardDoAuthorizable;
 
 		return isMatched;
@@ -33,7 +34,11 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
-		if (boardDoAuthorizable.rootDo.isVisible !== true && !this.isBoardEditor(userWithBoardRoles)) {
+		if (
+			boardDoAuthorizable.rootDo instanceof ColumnBoard &&
+			!boardDoAuthorizable.rootDo.isVisible &&
+			!this.isBoardEditor(userWithBoardRoles)
+		) {
 			return false;
 		}
 

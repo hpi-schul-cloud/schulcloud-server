@@ -23,6 +23,7 @@ export enum FileRecordParentType {
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
+	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
 }
 
@@ -132,6 +133,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._parentId.toHexString();
 	}
 
+	@Index()
 	@Property({ fieldName: 'creator', nullable: true })
 	_creatorId?: ObjectId;
 

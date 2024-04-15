@@ -1,15 +1,16 @@
 import { Entity, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
 	BoardExternalReferenceType,
 } from '@shared/domain/domainobject/board/types';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNode, BoardNodeProps } from './boardnode.entity';
-import { BoardDoBuilder } from './types';
-import { BoardNodeType } from './types/board-node-type';
 import { LearnroomElement } from '../../interface';
+import { BoardNode } from './boardnode.entity';
+import { type RootBoardNodeProps } from './root-board-node.entity';
+import { BoardDoBuilder, BoardNodeType } from './types';
 
+// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })
 export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	constructor(props: ColumnBoardNodeProps) {
@@ -58,7 +59,6 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	}
 }
 
-export interface ColumnBoardNodeProps extends BoardNodeProps {
-	context: BoardExternalReference;
+export interface ColumnBoardNodeProps extends RootBoardNodeProps {
 	isVisible: boolean;
 }
