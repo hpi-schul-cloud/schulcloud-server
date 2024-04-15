@@ -23,7 +23,7 @@ import {
 	ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
-import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service/tool-configuration-status.service';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -32,7 +32,7 @@ describe('ToolLaunchService', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
-	let toolVersionService: DeepMocked<ToolVersionService>;
+	let toolVersionService: DeepMocked<ToolConfigurationStatusService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -59,8 +59,8 @@ describe('ToolLaunchService', () => {
 					useValue: createMock<OAuth2ToolLaunchStrategy>(),
 				},
 				{
-					provide: ToolVersionService,
-					useValue: createMock<ToolVersionService>(),
+					provide: ToolConfigurationStatusService,
+					useValue: createMock<ToolConfigurationStatusService>(),
 				},
 			],
 		}).compile();
@@ -69,7 +69,7 @@ describe('ToolLaunchService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
-		toolVersionService = module.get(ToolVersionService);
+		toolVersionService = module.get(ToolConfigurationStatusService);
 	});
 
 	afterAll(async () => {
