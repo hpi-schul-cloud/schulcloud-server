@@ -16,6 +16,7 @@ import {
 	DeletionErrorLoggableException,
 	StatusModel,
 } from '@modules/deletion';
+import { BadRequest } from '@feathersjs/errors';
 import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
@@ -58,6 +59,7 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 
 			return result;
 		}
+
 		try {
 			const deletedUserFormRocketChatService = await this.rocketChatService.deleteUser(rocketChatUser.username);
 
@@ -85,7 +87,22 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 			);
 
 			return result;
-		} catch {
+		} catch (error) {
+			if (error instanceof BadRequest && error.type === 'error-invalid-user') {
+				const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
+
+				const result = this.buildResultAndLog(
+					rocketChatUserDeleted,
+					0,
+					userId,
+					'Successfully deleted user from rocket chat',
+					StatusModel.SUCCESS,
+					rocketChatUser
+				);
+
+				return result;
+			}
+
 			this.logger.warning(
 				new DataDeletionDomainOperationLoggable(
 					'Failed to delete user data from RocketChatUser collection / RocketChat service',
@@ -125,7 +142,7 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 					DomainOperationReportBuilder.build(
 						OperationType.DELETE,
 						rocketChatServiceUserDeleted,
-						rocketChatUser ? [rocketChatUser.username] : []
+						rocketChatUser && rocketChatServiceUserDeleted !== 0 ? [rocketChatUser.username] : []
 					),
 				]),
 			]
