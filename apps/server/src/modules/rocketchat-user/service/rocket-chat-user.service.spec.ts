@@ -234,7 +234,7 @@ describe(RocketChatUserService.name, () => {
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [rocketChatUser.id])],
 					[
 						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-							DomainOperationReportBuilder.build(OperationType.DELETE, 0, [rocketChatUser.username]),
+							DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
 						]),
 					]
 				);

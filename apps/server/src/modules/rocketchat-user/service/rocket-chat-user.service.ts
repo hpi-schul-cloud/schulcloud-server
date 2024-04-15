@@ -16,7 +16,6 @@ import {
 	DeletionErrorLoggableException,
 	StatusModel,
 } from '@modules/deletion';
-import { BadRequest } from '@feathersjs/errors';
 import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
@@ -88,9 +87,9 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 
 			return result;
 		} catch (error) {
-			if (error instanceof BadRequest && error.type === 'error-invalid-user') {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (error.errorType === 'error-invalid-user' && error.response.success === false) {
 				const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
-
 				const result = this.buildResultAndLog(
 					rocketChatUserDeleted,
 					0,
