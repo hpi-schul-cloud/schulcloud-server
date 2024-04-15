@@ -25,7 +25,7 @@ export class CollaborativeTextEditorService {
 		const { parentId } = params;
 
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroup(parentId);
-		const padId = await this.collaborativeTextEditorAdapter.getOrCreatePad(groupId, parentId);
+		const padId = await this.collaborativeTextEditorAdapter.getOrCreateEtherpad(groupId, parentId);
 		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthor(userId, userName);
 		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSession(
 			groupId,

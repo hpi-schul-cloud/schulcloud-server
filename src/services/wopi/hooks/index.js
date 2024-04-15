@@ -1,6 +1,7 @@
 /* eslint-disable no-multi-spaces */
 
 const { authenticate } = require('@feathersjs/authentication');
+const { isProvider, iff } = require('feathers-hooks-common');
 const { NotFound, BadRequest, Conflict } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
 const { mapPayload } = require('../../../hooks');
@@ -92,6 +93,14 @@ const setLockResponseHeader = (hook) => {
 	return hook;
 };
 
+const setContentDispositionHeader = (context) => {
+	// Setting this header should prevent HTML files from being openend in the browser, because that could be exploited by sending a direct link to a malicious file.
+	// Since this endpoint is not intended to be used by a browser, we can safely set the header for all responses.
+	context.http.headers = { 'Content-Disposition': 'attachment' };
+
+	return context;
+};
+
 exports.before = {
 	all: [wopiAuthentication, mapPayload],
 	find: [],
@@ -104,7 +113,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
+	find: [iff(isProvider('rest'), setContentDispositionHeader)],
 	get: [],
 	create: [setLockResponseHeader],
 	update: [],

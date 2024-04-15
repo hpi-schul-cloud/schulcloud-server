@@ -92,7 +92,7 @@ export class EtherpadClientAdapter {
 		return groupId;
 	}
 
-	async getOrCreatePad(groupId: GroupId, parentId: EntityId): Promise<PadId> {
+	async getOrCreateEtherpad(groupId: GroupId, parentId: EntityId): Promise<PadId> {
 		let padId: PadId | undefined;
 
 		padId = await this.getPad(groupId, parentId);
