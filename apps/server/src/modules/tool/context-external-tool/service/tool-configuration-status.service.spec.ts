@@ -13,18 +13,18 @@ import {
 	ToolParameterValueMissingLoggableException,
 } from '../../common/domain';
 import { CommonToolValidationService } from '../../common/service';
-import { ToolVersionService } from './tool-version-service';
+import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
-describe(ToolVersionService.name, () => {
+describe(ToolConfigurationStatusService.name, () => {
 	let module: TestingModule;
-	let service: ToolVersionService;
+	let service: ToolConfigurationStatusService;
 
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ToolVersionService,
+				ToolConfigurationStatusService,
 				{
 					provide: CommonToolValidationService,
 					useValue: createMock<CommonToolValidationService>(),
@@ -32,7 +32,7 @@ describe(ToolVersionService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(ToolVersionService);
+		service = module.get(ToolConfigurationStatusService);
 		commonToolValidationService = module.get(CommonToolValidationService);
 	});
 

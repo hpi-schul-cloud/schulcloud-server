@@ -10,7 +10,7 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../domain';
 
 @Injectable()
-export class ToolVersionService {
+export class ToolConfigurationStatusService {
 	constructor(private readonly commonToolValidationService: CommonToolValidationService) {}
 
 	public determineToolConfigurationStatus(
