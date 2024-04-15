@@ -5,7 +5,6 @@ import { cleanupCollections } from '@shared/testing';
 import { RocketChatUserMapper } from './mapper';
 import { RocketChatUserEntity } from '../entity';
 import { RocketChatUserRepo } from './rocket-chat-user.repo';
-import { RocketChatUser } from '../domain';
 import { rocketChatUserEntityFactory } from '../entity/testing';
 
 describe(RocketChatUserRepo.name, () => {
@@ -75,10 +74,28 @@ describe(RocketChatUserRepo.name, () => {
 			it('should find the rocketChatUser', async () => {
 				const { entity, expectedRocketChatUser } = await setup();
 
-				const result: RocketChatUser[] = await repo.findByUserId(entity.userId.toHexString());
+				const result = await repo.findByUserId(entity.userId.toHexString());
 
 				// Verify explicit fields.
-				expect(result[0]).toEqual(expect.objectContaining(expectedRocketChatUser));
+				expect(result).toEqual(expect.objectContaining(expectedRocketChatUser));
+			});
+		});
+
+		describe('when rocketChatUser does not exist', () => {
+			const setup = () => {
+				const userId = new ObjectId();
+
+				return {
+					userId,
+				};
+			};
+
+			it('should return null', async () => {
+				const { userId } = setup();
+
+				const result = await repo.findByUserId(userId.toHexString());
+
+				expect(result).toBeNull();
 			});
 		});
 	});
