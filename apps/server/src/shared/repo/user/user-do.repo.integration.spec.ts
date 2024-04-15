@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable/multiple-users-found.loggable-exception';
+import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
@@ -581,33 +581,6 @@ describe('UserRepo', () => {
 		});
 
 		describe('when user was found', () => {
-			const setup = async () => {
-				const role: Role = roleFactory.build();
-
-				const user: User = userFactory.buildWithId({ roles: [role] });
-
-				await em.persistAndFlush([user, role]);
-				em.clear();
-
-				return { user, role };
-			};
-
-			it('should return user with role', async () => {
-				const { user, role } = await setup();
-
-				const result: UserDO | null = await repo.findByIdOrNull(user.id, true);
-
-				expect(result?.id).toEqual(user.id);
-				expect(result?.roles).toEqual([
-					{
-						id: role.id,
-						name: role.name,
-					},
-				]);
-			});
-		});
-
-		describe('when multiple users were found', () => {
 			const setup = async () => {
 				const role: Role = roleFactory.build();
 

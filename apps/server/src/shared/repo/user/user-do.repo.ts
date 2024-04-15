@@ -1,5 +1,5 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
-import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable/multiple-users-found.loggable-exception';
+import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';

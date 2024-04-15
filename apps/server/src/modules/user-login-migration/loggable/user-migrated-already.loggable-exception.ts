@@ -6,7 +6,7 @@ export class MultipleUsersFoundInMigrationLoggableException extends BusinessErro
 	constructor(private readonly externalUserId: string) {
 		super(
 			{
-				type: 'USER_HAS_ALREADY_MIGRATED',
+				type: 'USER_LOGIN_MIGRATION_USER_HAS_ALREADY_MIGRATED',
 				title: 'User has already migrated',
 				defaultMessage: 'User with externalId has already migrated',
 			},

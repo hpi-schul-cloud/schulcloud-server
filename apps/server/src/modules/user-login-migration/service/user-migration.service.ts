@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
-import { MultipleUsersFoundInMigrationLoggableException } from '../loggable/user-migrated-already.loggable-exception';
+import {
+	UserMigrationDatabaseOperationFailedLoggableException,
+	MultipleUsersFoundInMigrationLoggableException,
+} from '../loggable';
 
 @Injectable()
 export class UserMigrationService {
