@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -7,7 +8,6 @@ import {
 	ColumnBoard,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -38,7 +38,7 @@ export class ColumnBoardService {
 		return titleMap;
 	}
 
-	async create(context: BoardExternalReference, layout: BoardLayout, title = ''): Promise<ColumnBoard> {
+	async create(context: BoardExternalReference, layout: BoardLayout, title: string): Promise<ColumnBoard> {
 		const columnBoard = new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title,

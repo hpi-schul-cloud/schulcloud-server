@@ -29,12 +29,8 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 	}
 
 	get layout(): BoardLayout {
-		return this.props.layout ?? BoardLayout.COLUMNS;
+		return this.props.layout;
 	}
-
-	/* 	set layout(layout: BoardLayout) {
-		this.props.layout = layout;
-	} */
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed = domainObject instanceof Column;

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
 import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
-import { IsEnum, IsMongoId, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import { IsEnum, IsMongoId, MaxLength, MinLength } from 'class-validator';
 
 export class CreateBoardBodyParams {
 	@ApiProperty({
@@ -31,12 +31,10 @@ export class CreateBoardBodyParams {
 
 	@ApiProperty({
 		description: 'The layout of the board',
-		required: false,
 		default: BoardLayout.COLUMNS,
 		enum: BoardLayout,
 		enumName: 'BoardLayout',
 	})
-	@ValidateIf((o: CreateBoardBodyParams) => o.layout !== undefined)
 	@IsEnum(BoardLayout, {})
-	layout?: BoardLayout;
+	layout!: BoardLayout;
 }

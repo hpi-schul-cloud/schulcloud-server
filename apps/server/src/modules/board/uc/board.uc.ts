@@ -1,6 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardExternalReference, BoardLayout, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
@@ -41,8 +41,7 @@ export class BoardUc extends BaseUc {
 
 		const context = { type: params.parentType, id: params.parentId };
 
-		const boardLayout = params.layout ?? BoardLayout.COLUMNS;
-		const board = await this.columnBoardService.create(context, boardLayout, params.title);
+		const board = await this.columnBoardService.create(context, params.layout, params.title);
 
 		return board;
 	}

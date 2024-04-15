@@ -4,7 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { CreateBoardBodyParams } from '../dto';
 
 const baseRouteName = '/boards';
 
@@ -50,10 +51,11 @@ describe(`create board (api)`, () => {
 				const { loggedInClient, course } = await setup();
 				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, {
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
 					title,
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
+					layout: BoardLayout.COLUMNS,
 				});
 
 				const boardId = (response.body as { id: string }).id;
@@ -65,33 +67,12 @@ describe(`create board (api)`, () => {
 			});
 
 			describe('Board layout', () => {
-				describe('When layout is omitted', () => {
-					it('should create a column board', async () => {
-						const { loggedInClient, course } = await setup();
-						const title = 'new board';
-
-						const response = await loggedInClient.post(undefined, {
-							title,
-							parentId: course.id,
-							parentType: BoardExternalReferenceType.Course,
-						});
-
-						const boardId = (response.body as { id: string }).id;
-						expect(response.status).toEqual(201);
-						expect(boardId).toBeDefined();
-
-						const dbResult = await em.findOneOrFail(ColumnBoardNode, boardId);
-						expect(dbResult.layout).toBeUndefined();
-					});
-				});
-
 				describe(`When layout is set to "${BoardLayout.COLUMNS}"`, () => {
 					it('should create a column board', async () => {
 						const { loggedInClient, course } = await setup();
-						const title = 'new board';
 
-						const response = await loggedInClient.post(undefined, {
-							title,
+						const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+							title: 'new board',
 							parentId: course.id,
 							parentType: BoardExternalReferenceType.Course,
 							layout: BoardLayout.COLUMNS,
@@ -102,17 +83,16 @@ describe(`create board (api)`, () => {
 						expect(boardId).toBeDefined();
 
 						const dbResult = await em.findOneOrFail(ColumnBoardNode, boardId);
-						expect(dbResult.layout).toBeUndefined();
+						expect(dbResult.layout).toEqual(BoardLayout.COLUMNS);
 					});
 				});
 
 				describe(`When layout is set to "${BoardLayout.LIST}"`, () => {
 					it('should create a list board', async () => {
 						const { loggedInClient, course } = await setup();
-						const title = 'new board';
 
-						const response = await loggedInClient.post(undefined, {
-							title,
+						const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+							title: 'new board',
 							parentId: course.id,
 							parentType: BoardExternalReferenceType.Course,
 							layout: BoardLayout.LIST,
@@ -125,6 +105,36 @@ describe(`create board (api)`, () => {
 						const dbResult = await em.findOneOrFail(ColumnBoardNode, boardId);
 						expect(dbResult.layout).toEqual(BoardLayout.LIST);
 					});
+				});
+			});
+
+			describe('When layout is omitted', () => {
+				it('should return status 400', async () => {
+					const { loggedInClient, course } = await setup();
+
+					const response = await loggedInClient.post(undefined, <Omit<CreateBoardBodyParams, 'layout'>>{
+						title: 'new board',
+						parentId: course.id,
+						parentType: BoardExternalReferenceType.Course,
+						layout: undefined,
+					});
+
+					expect(response.status).toEqual(400);
+				});
+			});
+
+			describe('When layout is invalid', () => {
+				it('should return status 400', async () => {
+					const { loggedInClient, course } = await setup();
+
+					const response = await loggedInClient.post(undefined, <Omit<CreateBoardBodyParams, 'layout'>>{
+						title: 'new board',
+						parentId: course.id,
+						parentType: BoardExternalReferenceType.Course,
+						layout: 'invalid',
+					});
+
+					expect(response.status).toEqual(400);
 				});
 			});
 		});
@@ -144,12 +154,12 @@ describe(`create board (api)`, () => {
 
 			it('should return status 403', async () => {
 				const { loggedInClient, course } = await setup();
-				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, {
-					title,
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+					title: 'new board',
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
+					layout: BoardLayout.COLUMNS,
 				});
 
 				expect(response.status).toEqual(403);
@@ -171,12 +181,12 @@ describe(`create board (api)`, () => {
 
 			it('should return status 403', async () => {
 				const { loggedInClient, course } = await setup();
-				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, {
-					title,
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+					title: 'new board',
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
+					layout: BoardLayout.COLUMNS,
 				});
 
 				expect(response.status).toEqual(403);
@@ -200,10 +210,9 @@ describe(`create board (api)`, () => {
 
 			it('should return status 400', async () => {
 				const { loggedInClient, course } = await setup();
-				const title = '';
 
-				const response = await loggedInClient.post(undefined, {
-					title,
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+					title: '',
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
 				});
@@ -227,10 +236,9 @@ describe(`create board (api)`, () => {
 
 			it('should return status 400', async () => {
 				const { loggedInClient, course } = await setup();
-				const title = 'a'.repeat(101);
 
-				const response = await loggedInClient.post(undefined, {
-					title,
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+					title: 'a'.repeat(101),
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
 				});
@@ -255,7 +263,7 @@ describe(`create board (api)`, () => {
 				const { loggedInClient } = await setup();
 				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, {
+				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
 					title,
 					parentId: '123',
 					parentType: BoardExternalReferenceType.Course,
@@ -280,39 +288,12 @@ describe(`create board (api)`, () => {
 
 			it('should return status 400', async () => {
 				const { loggedInClient, course } = await setup();
-				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, {
-					title,
+				const response = await loggedInClient.post(undefined, <Omit<CreateBoardBodyParams, 'parentType'>>{
+					title: 'new board',
 					parentId: course.id,
 					parentType: 'invalid',
-				});
-
-				expect(response.status).toEqual(400);
-			});
-		});
-
-		describe('When layout is invalid', () => {
-			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-				const course = courseFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherUser, course, teacherAccount]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(teacherAccount);
-
-				return { loggedInClient, course };
-			};
-			it('should return status 400', async () => {
-				const { loggedInClient, course } = await setup();
-				const title = 'new board';
-
-				const response = await loggedInClient.post(undefined, {
-					title,
-					parentId: course.id,
-					parentType: BoardExternalReferenceType.Course,
-					layout: 'invalid',
+					layout: BoardLayout.COLUMNS,
 				});
 
 				expect(response.status).toEqual(400);

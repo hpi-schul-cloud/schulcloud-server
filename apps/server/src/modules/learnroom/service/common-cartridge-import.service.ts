@@ -38,7 +38,7 @@ export class CommonCartridgeImportService {
 				id: course.id,
 			},
 			BoardLayout.COLUMNS,
-			parser.manifest.getTitle()
+			parser.manifest.getTitle() || ''
 		);
 
 		await this.createColumns(parser, columnBoard);

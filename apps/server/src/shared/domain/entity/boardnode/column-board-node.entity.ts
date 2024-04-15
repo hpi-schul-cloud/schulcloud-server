@@ -43,7 +43,7 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	}
 
 	@Property({ nullable: true })
-	layout?: BoardLayout;
+	layout: BoardLayout;
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
 		const domainObject = builder.buildColumnBoard(this);
