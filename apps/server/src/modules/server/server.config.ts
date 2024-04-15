@@ -5,6 +5,7 @@ import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
 import type { MediaBoardConfig } from '@modules/board/media-board.config';
+import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
 import { DeletionConfig } from '@modules/deletion';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import { SynchronizationConfig } from '@modules/idp-console';
@@ -22,7 +23,6 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { CollaborativeTextEditorConfig } from '../collaborative-text-editor/collaborative-text-editor.config';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
 
