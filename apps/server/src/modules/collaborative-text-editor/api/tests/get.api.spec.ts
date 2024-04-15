@@ -109,7 +109,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(studentAccount);
 
 				const editorId = 'editorId';
-				etherpadClientAdapter.getOrCreatePad.mockResolvedValueOnce(editorId);
+				etherpadClientAdapter.getOrCreateEtherpad.mockResolvedValueOnce(editorId);
 				const otherSessionIds = ['otherSessionId1', 'otherSessionId2'];
 				etherpadClientAdapter.listSessionsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 				const sessionId = 'sessionId';
