@@ -58,7 +58,7 @@ export class EtherpadClientAdapter {
 		return sessionId;
 	}
 
-	async hasSessionsOfAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
+	private async hasSessionsOfAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
 		const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
 		const sessions = this.handleResponse<InlineResponse2006>(response, {});
 
