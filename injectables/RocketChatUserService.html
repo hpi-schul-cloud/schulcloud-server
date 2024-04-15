@@ -143,6 +143,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildResultAndLog" >buildResultAndLog</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteUserData" >deleteUserData</a>
@@ -259,6 +263,135 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildResultAndLog"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>buildResultAndLog</b></span>
+                        <a href="#buildResultAndLog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildResultAndLog(rocketChatUserDeleted: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, rocketChatServiceUserDeleted: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, status: <a href="../undefineds/StatusModel.html" target="_self">StatusModel</a>, rocketChatUser?: <a href="../classes/RocketChatUser.html" target="_self">RocketChatUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/rocketchat-user/service/rocket-chat-user.service.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>rocketChatUserDeleted</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>rocketChatServiceUserDeleted</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>message</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>status</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#StatusModel" target="_self" >StatusModel</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>rocketChatUser</td>
+                                            <td>
+                                                            <code><a href="../classes/RocketChatUser.html" target="_self" >RocketChatUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >DomainDeletionReport</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -389,7 +522,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -512,8 +645,8 @@ export class RocketChatUserService implements DeletionService, IEventHandler&lt;
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findByUserId(userId: EntityId): Promise&lt;RocketChatUser[]&gt; {
-		const user: RocketChatUser[] &#x3D; await this.rocketChatUserRepo.findByUserId(userId);
+	public async findByUserId(userId: EntityId): Promise&lt;RocketChatUser | null&gt; {
+		const user: RocketChatUser | null &#x3D; await this.rocketChatUserRepo.findByUserId(userId);
 
 		return user;
 	}
@@ -529,64 +662,97 @@ export class RocketChatUserService implements DeletionService, IEventHandler&lt;
 		);
 		const rocketChatUser &#x3D; await this.rocketChatUserRepo.findByUserId(userId);
 
-		if (rocketChatUser.length &gt; 0) {
-			try {
-				const [, rocketChatUserDeleted] &#x3D; await Promise.all([
-					this.rocketChatService.deleteUser(rocketChatUser[0].username),
-					this.rocketChatUserRepo.deleteByUserId(rocketChatUser[0].userId),
-				]);
+		if (rocketChatUser &#x3D;&#x3D;&#x3D; null) {
+			const result &#x3D; this.buildResultAndLog(0, 0, userId, &#x27;RocketChat user already deleted&#x27;, StatusModel.FINISHED);
 
-				const result &#x3D; DomainDeletionReportBuilder.build(
-					DomainName.ROCKETCHATUSER,
-					[DomainOperationReportBuilder.build(OperationType.DELETE, rocketChatUserDeleted, [rocketChatUser[0].id])],
-					[
-						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-							DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser[0].username]),
-						]),
-					]
-				);
+			return result;
+		}
 
-				this.logger.info(
-					new DataDeletionDomainOperationLoggable(
-						&#x27;Successfully deleted user from rocket chat&#x27;,
-						DomainName.ROCKETCHATUSER,
-						userId,
-						StatusModel.FINISHED,
-						0,
-						rocketChatUserDeleted
-					)
+		try {
+			await this.rocketChatService.deleteUser(rocketChatUser.username);
+			const rocketChatUserDeleted &#x3D; await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
+			const result &#x3D; this.buildResultAndLog(
+				rocketChatUserDeleted,
+				1,
+				userId,
+				&#x27;Successfully deleted user from rocket chat&#x27;,
+				StatusModel.SUCCESS,
+				rocketChatUser
+			);
+
+			return result;
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (error.errorType &#x3D;&#x3D;&#x3D; &#x27;error-invalid-user&#x27; &amp;&amp; error.response.success &#x3D;&#x3D;&#x3D; false) {
+				const rocketChatUserDeleted &#x3D; await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
+				const result &#x3D; this.buildResultAndLog(
+					rocketChatUserDeleted,
+					0,
+					userId,
+					&#x27;Successfully deleted user from rocket chat&#x27;,
+					StatusModel.SUCCESS,
+					rocketChatUser
 				);
 
 				return result;
-			} catch {
-				throw new DeletionErrorLoggableException(
-					&#x60;Failed to delete user data for userId &#x27;${userId}&#x27; from RocketChatUser collection / RocketChat service&#x60;
-				);
 			}
-		} else {
-			const result &#x3D; DomainDeletionReportBuilder.build(
-				DomainName.ROCKETCHATUSER,
-				[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])],
-				[
-					DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
-					]),
-				]
-			);
 
-			this.logger.info(
+			this.logger.warning(
 				new DataDeletionDomainOperationLoggable(
-					&#x27;RocketChat user already deleted&#x27;,
+					&#x27;Failed to delete user data from RocketChatUser collection / RocketChat service&#x27;,
 					DomainName.ROCKETCHATUSER,
 					userId,
-					StatusModel.FINISHED,
+					StatusModel.FAILED,
 					0,
 					0
 				)
 			);
 
-			return result;
+			throw new DeletionErrorLoggableException(
+				&#x60;Failed to delete user data for userId &#x27;${userId}&#x27; from RocketChatUser collection / RocketChat service&#x60;
+			);
 		}
+	}
+
+	private buildResultAndLog(
+		rocketChatUserDeleted: number,
+		rocketChatServiceUserDeleted: number,
+		userId: string,
+		message: string,
+		status: StatusModel,
+		rocketChatUser?: RocketChatUser
+	): DomainDeletionReport {
+		const result &#x3D; DomainDeletionReportBuilder.build(
+			DomainName.ROCKETCHATUSER,
+			[
+				DomainOperationReportBuilder.build(
+					OperationType.DELETE,
+					rocketChatUserDeleted,
+					rocketChatUser ? [rocketChatUser.id] : []
+				),
+			],
+			[
+				DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
+					DomainOperationReportBuilder.build(
+						OperationType.DELETE,
+						rocketChatServiceUserDeleted,
+						rocketChatUser &amp;&amp; rocketChatServiceUserDeleted !&#x3D;&#x3D; 0 ? [rocketChatUser.username] : []
+					),
+				]),
+			]
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				message,
+				DomainName.ROCKETCHATUSER,
+				userId,
+				status,
+				0,
+				rocketChatUserDeleted
+			)
+		);
+		return result;
 	}
 }
 </code></pre>

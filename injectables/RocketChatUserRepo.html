@@ -252,8 +252,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/rocketchat-user/repo/rocket-chat-user.repo.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/rocketchat-user/repo/rocket-chat-user.repo.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -358,7 +358,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -416,14 +416,16 @@ export class RocketChatUserRepo {
 		return RocketChatUserEntity;
 	}
 
-	async findByUserId(userId: EntityId): Promise&lt;RocketChatUser[]&gt; {
-		const entities: RocketChatUserEntity[] &#x3D; await this.em.find(RocketChatUserEntity, {
+	async findByUserId(userId: EntityId): Promise&lt;RocketChatUser | null&gt; {
+		const entity: RocketChatUserEntity | null &#x3D; await this.em.findOne(RocketChatUserEntity, {
 			userId: new ObjectId(userId),
 		});
 
-		const mapped: RocketChatUser[] &#x3D; RocketChatUserMapper.mapToDOs(entities);
+		if (!entity) {
+			return null;
+		}
 
-		return mapped;
+		return RocketChatUserMapper.mapToDO(entity);
 	}
 
 	async deleteByUserId(userId: EntityId): Promise&lt;number&gt; {
