@@ -7,7 +7,11 @@ export class RocketChatModule {
 	static forRoot(options: RocketChatOptions): DynamicModule {
 		return {
 			module: RocketChatModule,
-			imports: [HttpModule],
+			imports: [
+				HttpModule.register({
+					timeout: options.rocketchatClientTimeoutInMs,
+				}),
+			],
 			providers: [
 				RocketChatService,
 				{
