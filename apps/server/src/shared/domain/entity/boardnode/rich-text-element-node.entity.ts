@@ -5,7 +5,7 @@ import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 @Entity({ discriminatorValue: BoardNodeType.RICH_TEXT_ELEMENT })
-export class RichTextElementNode extends BoardNode {
+export class RichTextElementNode extends BoardNode implements RichTextElementNodeProps {
 	@Property()
 	text: string;
 
