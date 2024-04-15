@@ -27,9 +27,6 @@ export class ConfigResponse {
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 
 	@ApiProperty()
-	FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED: boolean;
-
-	@ApiProperty()
 	CTL_TOOLS_RELOAD_TIME_MS: number;
 
 	@ApiProperty()
@@ -256,7 +253,6 @@ export class ConfigResponse {
 		this.FEATURE_LTI_TOOLS_TAB_ENABLED = config.ltiToolsTabEnabled;
 		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
 		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
-		this.FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED = config.contextConfigurationEnabled;
 		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
 		this.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED = config.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED;
 		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.ctlToolsCopyEnabled;
