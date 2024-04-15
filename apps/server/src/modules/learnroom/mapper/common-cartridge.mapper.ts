@@ -123,7 +123,7 @@ export class CommonCartridgeMapper {
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(element.id),
-			title: 'content',
+			title: element.text.slice(0, 50).concat('...'),
 			html: `<p>${element.text}</p>`,
 			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 		};

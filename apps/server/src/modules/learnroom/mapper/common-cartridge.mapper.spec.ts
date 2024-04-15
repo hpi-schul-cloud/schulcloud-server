@@ -425,7 +425,7 @@ describe('CommonCartridgeMapper', () => {
 				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: expect.any(String),
-					title: 'content',
+					title: richTextElement.text.slice(0, 50).concat('...'),
 					html: `<p>${richTextElement.text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
