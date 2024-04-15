@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService } from '@src/modules/board';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
 import { CollaborativeTextEditorService } from '../service/collaborative-text-editor.service';
-import { GetCollaborativeTextEditorForParentParams } from './dto/get-collaborative-text-editor-for-parent.params';
+import {
+	CollaborativeTextEditorParentType,
+	GetCollaborativeTextEditorForParentParams,
+} from './dto/get-collaborative-text-editor-for-parent.params';
 
 @Injectable()
 export class CollaborativeTextEditorUc {
@@ -19,17 +23,8 @@ export class CollaborativeTextEditorUc {
 		userId: string,
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
-		const [user, contentElement] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			await this.contentElementService.findById(params.parentId),
-		]);
-		const contentElementDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(contentElement);
-
-		this.authorizationService.checkPermission(
-			user,
-			contentElementDoAuthorizable,
-			AuthorizationContextBuilder.read([Permission.COURSE_VIEW])
-		);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		await this.authorizeByParentType(params, user);
 
 		const userName = `${user.firstName} ${user.lastName}`;
 		const textEditor = await this.collaborativeTextEditorService.createCollaborativeTextEditor(
@@ -39,5 +34,24 @@ export class CollaborativeTextEditorUc {
 		);
 
 		return textEditor;
+	}
+
+	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User) {
+		if (params.parentType === CollaborativeTextEditorParentType.BOARD_CONTENT_ELEMENT) {
+			await this.authorizeForContentElement(params, user);
+		} else {
+			throw new InternalServerErrorException('Parent type not supported');
+		}
+	}
+
+	private async authorizeForContentElement(params: GetCollaborativeTextEditorForParentParams, user: User) {
+		const contentElement = await this.contentElementService.findById(params.parentId);
+		const contentElementDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(contentElement);
+
+		this.authorizationService.checkPermission(
+			user,
+			contentElementDoAuthorizable,
+			AuthorizationContextBuilder.read([Permission.COURSE_VIEW])
+		);
 	}
 }

@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId } from 'class-validator';
+import { IsEnum, IsMongoId } from 'class-validator';
+
+export enum CollaborativeTextEditorParentType {
+	BOARD_CONTENT_ELEMENT = 'content-element',
+}
 
 export class GetCollaborativeTextEditorForParentParams {
 	@ApiProperty({
@@ -8,4 +12,14 @@ export class GetCollaborativeTextEditorForParentParams {
 	})
 	@IsMongoId()
 	parentId!: string;
+
+	@IsEnum(CollaborativeTextEditorParentType)
+	@ApiProperty({
+		description: 'Parent type of the collaborative text editor.',
+		enum: CollaborativeTextEditorParentType,
+		enumName: 'CollaborativeTextEditorParentType',
+		required: true,
+		nullable: false,
+	})
+	parentType!: CollaborativeTextEditorParentType;
 }
