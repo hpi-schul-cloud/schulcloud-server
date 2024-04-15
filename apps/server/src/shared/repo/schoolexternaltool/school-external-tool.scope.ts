@@ -18,8 +18,10 @@ export class SchoolExternalToolScope extends Scope<SchoolExternalToolEntity> {
 	}
 
 	byIsDeactivated(isDeactivated?: boolean): this {
-		if (isDeactivated !== undefined) {
+		if (isDeactivated) {
 			this.addQuery({ status: { isDeactivated } });
+		} else if (isDeactivated === false) {
+			this.addQuery({ $or: [{ status: { isDeactivated } }, { status: undefined }] });
 		}
 		return this;
 	}

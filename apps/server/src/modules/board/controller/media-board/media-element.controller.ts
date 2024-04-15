@@ -58,7 +58,7 @@ export class MediaElementController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element.' })
-	@ApiCreatedResponse()
+	@ApiCreatedResponse({ type: MediaExternalToolElementResponse })
 	@ApiBadRequestResponse({ type: ApiValidationError })
 	@ApiForbiddenResponse({ type: ForbiddenException })
 	@Post()

@@ -228,12 +228,13 @@ describe('SchoolExternalToolRepo', () => {
 
 			describe('when deactivated is set to false', () => {
 				it('should return all active school external tools', async () => {
-					const { schoolExternalTool1 } = await setup();
+					const { schoolExternalTool1, schoolExternalTool2 } = await setup();
 
 					const result: SchoolExternalTool[] = await repo.find({ isDeactivated: false });
 
-					expect(result).toHaveLength(1);
+					expect(result).toHaveLength(2);
 					expect(result[0].id).toEqual(schoolExternalTool1.id);
+					expect(result[1].id).toEqual(schoolExternalTool2.id);
 				});
 			});
 
