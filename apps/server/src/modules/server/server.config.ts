@@ -23,6 +23,10 @@ import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { CollaborativeTextEditorConfig } from '../collaborative-text-editor/collaborative-text-editor.config';
+import { DeletionConfig } from '@modules/deletion';
+import type { MediaBoardConfig } from '@modules/board/media-board.config';
+import { ProvisioningConfig } from '@modules/provisioning';
+import { SynchronizationConfig } from '@modules/idp-console';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
 
