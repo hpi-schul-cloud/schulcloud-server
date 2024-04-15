@@ -1,6 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
 import { UserService } from '@modules/user';
@@ -41,11 +41,12 @@ export class UserImportService {
 	}
 
 	public async matchUsers(importUsers: ImportUser[]): Promise<ImportUser[]> {
-		const importUserMap: Map<string, ImportUser> = new Map();
+		const importUserMap: Map<string, number> = new Map();
 
 		importUsers.forEach((importUser) => {
 			const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
-			importUserMap.set(key, importUser);
+			const count = importUserMap.get(key) || 0;
+			importUserMap.set(key, count + 1);
 		});
 
 		const matchedImportUsers: ImportUser[] = await Promise.all(
@@ -57,9 +58,8 @@ export class UserImportService {
 				);
 
 				const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
-				const nameCount = importUserMap.has(key) ? 1 : 0;
 
-				if (user.length === 1 && nameCount === 1) {
+				if (user.length === 1 && importUserMap.get(key) === 1) {
 					importUser.user = user[0];
 					importUser.matchedBy = MatchCreator.AUTO;
 				}
@@ -69,5 +69,9 @@ export class UserImportService {
 		);
 
 		return matchedImportUsers;
+	}
+
+	public async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
+		await this.userImportRepo.deleteImportUsersBySchool(school);
 	}
 }

@@ -23,7 +23,7 @@ export class ExternalToolValidationService {
 		this.externalToolLogoService.validateLogoSize(externalTool);
 	}
 
-	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
+	async validateUpdate(toolId: string, externalTool: ExternalTool): Promise<void> {
 		if (toolId !== externalTool.id) {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}

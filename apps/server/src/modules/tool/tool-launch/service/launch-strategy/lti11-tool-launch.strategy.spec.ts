@@ -24,6 +24,7 @@ import {
 	AutoContextNameStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
+	AutoMediumIdStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
@@ -68,6 +69,10 @@ describe('Lti11ToolLaunchStrategy', () => {
 				{
 					provide: AutoContextNameStrategy,
 					useValue: createMock<AutoContextNameStrategy>(),
+				},
+				{
+					provide: AutoMediumIdStrategy,
+					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 			],
 		}).compile();

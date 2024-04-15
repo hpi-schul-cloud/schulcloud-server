@@ -7,7 +7,15 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import { columnBoardFactory, courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import {
+	columnBoardFactory,
+	columnFactory,
+	cardFactory,
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	taskFactory,
+} from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
@@ -63,7 +71,9 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const columnBoard = columnBoardFactory.build();
+		const card = cardFactory.build();
+		const column = columnFactory.build({ children: [card] });
+		const columnBoard = columnBoardFactory.build({ children: [column] });
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -82,7 +92,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card };
 	};
 
 	beforeAll(async () => {
@@ -173,6 +183,20 @@ describe('CommonCartridgeExportService', () => {
 
 				expect(manifest).toContain(createXmlString('title', columnBoard.title));
 			});
+
+			it('should add column', async () => {
+				const { archive, column } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', column.title));
+			});
+
+			it('should add card', async () => {
+				const { archive, card } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', card.title));
+			});
 		});
 
 		describe('when using version 1.3', () => {
@@ -221,6 +245,20 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', columnBoard.title));
+			});
+
+			it('should add column', async () => {
+				const { archive, column } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', column.title));
+			});
+
+			it('should add card', async () => {
+				const { archive, card } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', card.title));
 			});
 		});
 

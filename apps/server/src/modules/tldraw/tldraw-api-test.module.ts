@@ -5,12 +5,12 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger, LoggerModule } from '@src/core/logger';
+import { TldrawRedisFactory, TldrawRedisService } from './redis';
 import { config } from './config';
 import { TldrawController } from './controller';
 import { MetricsService } from './metrics';
 import { TldrawRepo } from './repo';
 import { TldrawService } from './service';
-import { TldrawRedisFactory } from './redis';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
@@ -18,7 +18,7 @@ const imports = [
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	HttpModule,
 ];
-const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory];
+const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory, TldrawRedisService];
 @Module({
 	imports,
 	providers,

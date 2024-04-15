@@ -637,7 +637,7 @@
 		},
 		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
-			"default": "scan_file",
+			"default": "scan_file_v2",
 			"description": "rabbitmq routing key"
 		},
 		"DOCUMENT_BASE_DIR": {
@@ -1181,7 +1181,7 @@
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
-    },
+		},
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1336,22 +1336,27 @@
 			"properties": {
 				"ENABLED": {
 					"type": "boolean",
+					"default": true,
 					"description": "Flag to turn on/off the Admin API."
 				},
 				"PORT": {
 					"type": "number",
+					"default": 4030,
 					"description": "Port of the exposed Admin API server."
 				},
 				"ALLOWED_API_KEYS": {
 					"type": "string",
-					"description": "Allowed Admin API keys (for accessing the Admin API)."
+					"default": "",
+					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
+				},
+				"MODIFICATION_THRESHOLD_MS": {
+					"type": "number",
+					"default": 60000,
+					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
+
 			},
-			"default": {
-				"ENABLED": true,
-				"PORT": 4030,
-				"ALLOWED_API_KEYS": ""
-			}
+			"default": {}
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
 			"type": "boolean",
@@ -1408,11 +1413,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables groups of type class in courses"
-		},
-		"FEATURE_NEST_SYSTEMS_API_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Uses the v3 api over the v1 api for systems"
 		},
 		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
 			"type": "boolean",
@@ -1622,13 +1622,18 @@
 		},
 		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables the synchronization of courses with linked groups during provisioning."
 		},
 		"SYNCHRONIZATION_CHUNK": {
 			"type": "number",
 			"default": 10000,
 			"description": "Size of chunk for synchronization"
+		},
+		"FEATURE_MEDIA_SHELF_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the media shelf feature"
 		}
 	},
 	"required": []

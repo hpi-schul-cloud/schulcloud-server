@@ -62,6 +62,7 @@ export class GroupUcMapper {
 			type: group.type,
 			externalSource: group.externalSource,
 			users: resolvedGroupUsers,
+			organizationId: group.organizationId,
 		});
 
 		return mapped;
