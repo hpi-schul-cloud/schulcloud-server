@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';
-import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
+import { RocketChatError, RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import {
 	DomainDeletionReportBuilder,
 	DomainName,
@@ -220,18 +220,30 @@ describe(RocketChatUserService.name, () => {
 			});
 		});
 
-		describe('when rocketChatUser exists and failed to delete this user', () => {
+		describe('when rocketChatUser exists and there is no user in rocketChatService', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
 				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
-				rocketChatService.deleteUser.mockResolvedValueOnce({ success: false });
+				rocketChatService.deleteUser.mockRejectedValueOnce(
+					new RocketChatError({
+						response: {
+							statusText: '',
+							statusCode: 400,
+							data: {
+								errorType: 'error-invalid-user',
+								error: 'error-invalid-user',
+								success: false,
+							},
+						},
+					})
+				);
 
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
-					[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [rocketChatUser.id])],
+					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser.id])],
 					[
 						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
 							DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
@@ -241,9 +253,18 @@ describe(RocketChatUserService.name, () => {
 
 				return {
 					expectedResult,
+					rocketChatUser,
 					userId,
 				};
 			};
+
+			it('should call rocketChatUserRepo.deleteByUserId with userId', async () => {
+				const { rocketChatUser, userId } = setup();
+
+				await service.deleteUserData(userId);
+
+				expect(rocketChatUserRepo.deleteByUserId).toBeCalledWith(rocketChatUser.userId);
+			});
 
 			it('should return domainOperation object with information about deleted user', async () => {
 				const { userId, expectedResult } = setup();
