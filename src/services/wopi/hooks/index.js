@@ -92,10 +92,10 @@ const setLockResponseHeader = (hook) => {
 	return hook;
 };
 
-const setContentDispositionHeader = async (context) => {
+const setContentDispositionHeader = (context) => {
 	// Setting this header should prevent HTML files from being openend in the browser, because that could be exploited by sending a direct link to a malicious file.
 	// Since this endpoint is not intended to be used by a browser, we can safely set the header for all responses.
-	context.http.headers = { 'Content-Disposition': `attachment` };
+	context.http.headers = { 'Content-Disposition': 'attachment' };
 
 	return context;
 };
