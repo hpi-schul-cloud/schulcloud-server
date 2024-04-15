@@ -102,6 +102,22 @@ describe('GlobalErrorFilter', () => {
 	});
 
 	describe('exec', () => {
+		describe('when random non error object is passed', () => {
+			const setup = () => {
+				const rndObject = { abc: '123' };
+
+				return { rndObject };
+			};
+
+			it('should call logger with error', () => {
+				const { rndObject } = setup();
+
+				domainErrorHandler.exec(rndObject);
+
+				expect(logger.error).toBeCalledWith(expect.any(ErrorLoggable));
+			});
+		});
+
 		describe('when error implements Loggable', () => {
 			const setup = () => {
 				const error = new SampleLoggableException('test');

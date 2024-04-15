@@ -10,6 +10,7 @@ import { ErrorResponse } from '../dto';
 import { ErrorUtils } from '../utils';
 import { GlobalErrorFilter } from './global-error.filter';
 import { DomainErrorHandler } from '../domain';
+import { WsException } from '@nestjs/websockets';
 
 class SampleBusinessError extends BusinessError {
 	constructor() {
@@ -345,6 +346,50 @@ describe('GlobalErrorFilter', () => {
 					const result = service.catch(error, argumentsHost);
 
 					expect(result).toEqual({ message: undefined, error });
+				});
+			});
+		});
+
+		describe('given context is ws', () => {
+			const mockRmqArgumentHost = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('ws');
+
+				return argumentsHost;
+			};
+
+			describe('when error is unknown error', () => {
+				const setup = () => {
+					const argumentsHost = mockRmqArgumentHost();
+					const error = new Error('test');
+
+					return { error, argumentsHost };
+				};
+
+				it('should return an RpcMessage with the error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual(new WsException(error));
+				});
+			});
+
+			describe('when error is a LoggableError', () => {
+				const setup = () => {
+					const argumentsHost = mockRmqArgumentHost();
+					const causeError = new Error('Cause error');
+					const error = new SampleLoggableExceptionWithCause('test', causeError);
+
+					return { error, argumentsHost };
+				};
+
+				it('should return appropriate error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual(new WsException(error));
 				});
 			});
 		});
