@@ -21,7 +21,7 @@ describe(MultipleUsersFoundInMigrationLoggableException.name, () => {
 			expect(message).toEqual({
 				type: 'USER_LOGIN_MIGRATION_USER_HAS_ALREADY_MIGRATED',
 				message: 'User with externalId has already migrated',
-				stack: expect.any(String),
+				stack: exception.stack,
 				data: {
 					externalUserId,
 				},

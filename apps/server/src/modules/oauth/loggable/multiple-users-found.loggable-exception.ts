@@ -6,7 +6,7 @@ export class MultipleUsersFoundLoggableException extends BusinessError implement
 	constructor(private readonly externalUserId: string) {
 		super(
 			{
-				type: 'MULTIPLE_USERS_FOUND_LOGGABLE_EXCEPTION',
+				type: 'MULTIPLE_USERS_FOUND',
 				title: 'Multiple users found',
 				defaultMessage: 'Multiple users found with this externalId',
 			},
