@@ -78,6 +78,7 @@ const serverModules = [
 		adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+		rocketchatClientTimeoutInMs: Configuration.get('ROCKET_CHAT_CLIENT_TIMEOUT_MS') as number,
 	}),
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
