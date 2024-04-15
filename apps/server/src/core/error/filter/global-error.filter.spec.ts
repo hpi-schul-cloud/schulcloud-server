@@ -351,7 +351,7 @@ describe('GlobalErrorFilter', () => {
 		});
 
 		describe('given context is ws', () => {
-			const mockRmqArgumentHost = () => {
+			const mockWsArgumentHost = () => {
 				const argumentsHost = createMock<ArgumentsHost>();
 				argumentsHost.getType.mockReturnValueOnce('ws');
 
@@ -360,7 +360,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is unknown error', () => {
 				const setup = () => {
-					const argumentsHost = mockRmqArgumentHost();
+					const argumentsHost = mockWsArgumentHost();
 					const error = new Error('test');
 
 					return { error, argumentsHost };
@@ -377,7 +377,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a LoggableError', () => {
 				const setup = () => {
-					const argumentsHost = mockRmqArgumentHost();
+					const argumentsHost = mockWsArgumentHost();
 					const causeError = new Error('Cause error');
 					const error = new SampleLoggableExceptionWithCause('test', causeError);
 
