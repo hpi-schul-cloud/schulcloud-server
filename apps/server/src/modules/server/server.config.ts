@@ -10,16 +10,18 @@ import type { LessonConfig } from '@modules/lesson';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
-import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { ProvisioningConfig } from '../provisioning';
-import { SynchronizationConfig } from '../synchronization/synchronization.config';
+import { DeletionConfig } from '@modules/deletion';
+import type { MediaBoardConfig } from '@modules/board/media-board.config';
+import { ProvisioningConfig } from '@modules/provisioning';
+import { SynchronizationConfig } from '@modules/idp-console';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
 
@@ -49,10 +51,12 @@ export interface ServerConfig
 		LessonConfig,
 		IVideoConferenceSettings,
 		BoardConfig,
+		MediaBoardConfig,
 		SharingConfig,
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SynchronizationConfig,
+		DeletionConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -166,6 +170,7 @@ const config: ServerConfig = {
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
+	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),
@@ -212,6 +217,7 @@ const config: ServerConfig = {
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,
 	...UserImportConfiguration.userImportFeatures,
+	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

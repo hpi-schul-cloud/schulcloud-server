@@ -7,3 +7,6 @@ export * from './link-element-node.factory';
 export * from './rich-text-element-node.factory';
 export * from './submission-container-element-node.factory';
 export * from './submission-item-node.factory';
+export { mediaBoardNodeFactory } from './media-board-node.factory';
+export { mediaLineNodeFactory } from './media-line-node.factory';
+export { mediaExternalToolElementNodeFactory } from './media-external-tool-element-node.factory';

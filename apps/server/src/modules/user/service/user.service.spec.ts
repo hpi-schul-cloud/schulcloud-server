@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountDto, AccountService } from '@modules/account';
+import { AccountService, Account } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
 import { NotFoundException } from '@nestjs/common';
@@ -26,6 +26,7 @@ import {
 	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { CalendarService } from '@src/infra/calendar';
 import { UserService } from './user.service';
 import { UserQuery } from './user-query.type';
 import { UserDto } from '../uc/dto/user.dto';
@@ -40,6 +41,7 @@ describe('UserService', () => {
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
+	let calendarService: DeepMocked<CalendarService>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
@@ -84,6 +86,10 @@ describe('UserService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: CalendarService,
+					useValue: createMock<CalendarService>(),
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -95,6 +101,7 @@ describe('UserService', () => {
 		accountService = module.get(AccountService);
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
+		calendarService = module.get(CalendarService);
 
 		await setupEntities();
 	});
@@ -257,7 +264,7 @@ describe('UserService', () => {
 					permissions: [Permission.DASHBOARD_VIEW],
 				});
 				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
-				const account: AccountDto = new AccountDto({
+				const account: Account = new Account({
 					id: 'accountId',
 					systemId,
 					username: 'username',
@@ -517,6 +524,42 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('removeCalendarEvents', () => {
+		describe('when calendarService.deleteUserData return DomainDeletionReport', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userId = user.id;
+				const deletedEventId = new ObjectId().toHexString();
+
+				const results = [
+					DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [deletedEventId]),
+					]),
+				];
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [deletedEventId]),
+				]);
+
+				calendarService.deleteUserData.mockResolvedValue(results[0]);
+
+				return {
+					expectedResult,
+					userId,
+					user,
+				};
+			};
+
+			it('should return domainOperation object with information about deleted calendarEvents', async () => {
+				const { userId, expectedResult } = setup();
+
+				const result = await service.removeCalendarEvents(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
 	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
@@ -569,13 +612,19 @@ describe('UserService', () => {
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
 				]);
 
+				const calendarEventsDeleted = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
+				]);
+
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.USER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id])],
-					[registrationPinDeleted]
+					[registrationPinDeleted, calendarEventsDeleted]
 				);
 
 				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
+				jest.spyOn(service, 'removeCalendarEvents').mockResolvedValueOnce(calendarEventsDeleted);
+
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
@@ -852,6 +901,44 @@ describe('UserService', () => {
 				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
 
 				expect(result).toEqual(foundUsers);
+			});
+		});
+	});
+	describe('findUnsynchronizedUserIds', () => {
+		const setup = () => {
+			const currentDate = new Date();
+			const dateA = new Date(currentDate.getTime() - 120 * 60000);
+			const dateB = new Date(currentDate.getTime() - 3600 * 60000);
+			const unsyncedForMinutes = 60;
+			const userA = userFactory.buildWithId({ lastSyncedAt: dateA });
+			const userB = userFactory.buildWithId({ lastSyncedAt: dateB });
+
+			const foundUsers = [userA.id, userB.id];
+
+			return {
+				foundUsers,
+				unsyncedForMinutes,
+			};
+		};
+
+		describe('when findUnsynchronizedUserIds is called', () => {
+			it('should call findUnsynchronizedUserIds and retrun array with found users', async () => {
+				const { unsyncedForMinutes, foundUsers } = setup();
+
+				userRepo.findUnsynchronizedUserIds.mockResolvedValueOnce(foundUsers);
+
+				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
+
+				expect(result).toEqual(foundUsers);
+			});
+
+			it('should call findUnsynchronizedUserIds and return empty array', async () => {
+				const { unsyncedForMinutes } = setup();
+
+				userRepo.findUnsynchronizedUserIds.mockResolvedValueOnce([]);
+				const result = await service.findUnsynchronizedUserIds(unsyncedForMinutes);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});
