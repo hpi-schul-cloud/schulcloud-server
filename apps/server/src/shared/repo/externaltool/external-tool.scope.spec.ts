@@ -1,5 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolScope } from '@shared/repo/externaltool/external-tool.scope';
-import { ObjectId } from 'mongodb';
 
 describe('ExternalToolScope', () => {
 	let scope: ExternalToolScope;
