@@ -15,6 +15,7 @@ import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import {
 	BoardNode,
 	CardNode,
+	CollaborativeTextEditorElementNode,
 	ColumnBoardNode,
 	ColumnNode,
 	DrawingElementNode,
@@ -28,7 +29,6 @@ import {
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from './boardnode';
-import { CollaborativeTextEditorElementNode } from './boardnode/collaborative-text-editor-element-node.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';

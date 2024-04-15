@@ -5,6 +5,7 @@ import type {
 	AnyBoardDo,
 	BoardCompositeVisitor,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -21,6 +22,7 @@ import type {
 import {
 	BoardNode,
 	CardNode,
+	CollaborativeTextEditorElementNode,
 	ColumnBoardNode,
 	ColumnNode,
 	DrawingElementNode,
@@ -36,8 +38,6 @@ import {
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
-import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
-import { CollaborativeTextEditorElementNode } from '@shared/domain/entity/boardnode/collaborative-text-editor-element-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {

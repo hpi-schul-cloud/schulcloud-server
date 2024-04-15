@@ -8,6 +8,7 @@ import type {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -21,7 +22,6 @@ import type {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
 import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()

@@ -2,6 +2,7 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { DecodeHtmlEntities } from '@shared/controller';
 import {
 	AnyContentElementResponse,
+	CollaborativeTextEditorElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
@@ -9,7 +10,6 @@ import {
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
 } from '../element';
-import { CollaborativeTextEditorElementResponse } from '../element/collaborative-text-editor-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 

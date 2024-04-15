@@ -8,6 +8,7 @@ import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -20,7 +21,6 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
