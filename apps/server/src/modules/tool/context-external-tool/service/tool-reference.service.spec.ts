@@ -13,7 +13,7 @@ import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolReferenceService } from './tool-reference.service';
-import { ToolVersionService } from './tool-version-service';
+import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -22,7 +22,7 @@ describe('ToolReferenceService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let toolVersionService: DeepMocked<ToolVersionService>;
+	let toolVersionService: DeepMocked<ToolConfigurationStatusService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
@@ -42,8 +42,8 @@ describe('ToolReferenceService', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: ToolVersionService,
-					useValue: createMock<ToolVersionService>(),
+					provide: ToolConfigurationStatusService,
+					useValue: createMock<ToolConfigurationStatusService>(),
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -56,7 +56,7 @@ describe('ToolReferenceService', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		toolVersionService = module.get(ToolVersionService);
+		toolVersionService = module.get(ToolConfigurationStatusService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 	});
 

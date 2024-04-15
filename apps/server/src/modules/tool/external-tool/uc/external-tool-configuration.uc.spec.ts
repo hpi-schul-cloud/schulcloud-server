@@ -285,9 +285,6 @@ describe('ExternalToolConfigurationUc', () => {
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([usedContextExternalTool]);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				externalToolConfigurationService.filterForAvailableSchoolExternalTools.mockReturnValue([
-					usedSchoolExternalTool,
-				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
@@ -330,28 +327,6 @@ describe('ExternalToolConfigurationUc', () => {
 				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', usedTool);
 			});
 
-			it('should call filterForAvailableSchoolExternalTools', async () => {
-				const { schoolExternalTools, usedContextExternalTool } = setup();
-
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
-
-				expect(externalToolConfigurationService.filterForAvailableSchoolExternalTools).toHaveBeenCalledWith(
-					schoolExternalTools,
-					[usedContextExternalTool]
-				);
-			});
-
-			it('should call filterForAvailableTools', async () => {
-				const { externalTools, usedSchoolExternalTool } = setup();
-
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
-
-				expect(externalToolConfigurationService.filterForAvailableExternalTools).toHaveBeenCalledWith(
-					externalTools.data,
-					[usedSchoolExternalTool]
-				);
-			});
-
 			it('should filter for restricted contexts', async () => {
 				const { usedTool, usedSchoolExternalTool } = setup();
 
@@ -391,9 +366,6 @@ describe('ExternalToolConfigurationUc', () => {
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([unusedSchoolExternalTool]);
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
 
-				externalToolConfigurationService.filterForAvailableSchoolExternalTools.mockReturnValue([
-					unusedSchoolExternalTool,
-				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([]);
 				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([]);
 
@@ -431,9 +403,6 @@ describe('ExternalToolConfigurationUc', () => {
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([usedSchoolExternalTool]);
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([usedContextExternalTool]);
 
-				externalToolConfigurationService.filterForAvailableSchoolExternalTools.mockReturnValue([
-					usedSchoolExternalTool,
-				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);

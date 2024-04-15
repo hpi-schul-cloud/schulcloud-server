@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import {
-	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
@@ -13,9 +12,8 @@ import {
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
-import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
@@ -24,8 +22,6 @@ describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolConfigurationService;
 	let commonToolService: DeepMocked<CommonToolService>;
-
-	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -47,7 +43,6 @@ describe('ExternalToolConfigurationService', () => {
 		}).compile();
 
 		service = module.get(ExternalToolConfigurationService);
-		toolFeatures = module.get(ToolFeatures);
 		commonToolService = module.get(CommonToolService);
 	});
 
@@ -108,68 +103,6 @@ describe('ExternalToolConfigurationService', () => {
 				const result: ExternalTool[] = service.filterForAvailableTools(externalToolsPage, toolIdsInUse);
 
 				expect(result.some((tool) => tool.id !== 'deactivatedToolId')).toBe(true);
-			});
-		});
-	});
-
-	describe('filterForAvailableSchoolExternalTools', () => {
-		describe('when context configuration is enabled', () => {
-			const setup = () => {
-				toolFeatures.contextConfigurationEnabled = true;
-				const usedSchoolExternalToolId = 'usedSchoolExternalToolId';
-				const schoolExternalTools: SchoolExternalTool[] = [
-					schoolExternalToolFactory.buildWithId(undefined, usedSchoolExternalToolId),
-					schoolExternalToolFactory.buildWithId(undefined, 'unusedSchoolExternalToolId'),
-				];
-				const contextExternalToolsInUse: ContextExternalTool[] = [
-					contextExternalToolFactory.withSchoolExternalToolRef(usedSchoolExternalToolId).buildWithId(),
-					contextExternalToolFactory.buildWithId(undefined, 'unusedContextExternalToolId'),
-				];
-
-				return { schoolExternalTools, contextExternalToolsInUse };
-			};
-
-			it('should include all school external tools', () => {
-				const { schoolExternalTools, contextExternalToolsInUse } = setup();
-
-				const result: SchoolExternalTool[] = service.filterForAvailableSchoolExternalTools(
-					schoolExternalTools,
-					contextExternalToolsInUse
-				);
-
-				expect(result).toEqual(schoolExternalTools);
-			});
-		});
-
-		describe('when context configuration is disabled', () => {
-			const setup = () => {
-				toolFeatures.contextConfigurationEnabled = false;
-				const usedSchoolExternalToolId = 'usedSchoolExternalToolId';
-				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
-					undefined,
-					'unusedSchoolExternalToolId'
-				);
-				const schoolExternalTools: SchoolExternalTool[] = [
-					schoolExternalToolFactory.buildWithId(undefined, usedSchoolExternalToolId),
-					unusedSchoolExternalTool,
-				];
-				const contextExternalToolsInUse: ContextExternalTool[] = [
-					contextExternalToolFactory.withSchoolExternalToolRef(usedSchoolExternalToolId).buildWithId(),
-					contextExternalToolFactory.buildWithId(undefined, 'unusedContextExternalToolId'),
-				];
-
-				return { schoolExternalTools, contextExternalToolsInUse, unusedSchoolExternalTool };
-			};
-
-			it('should filter out school external tools in use', () => {
-				const { schoolExternalTools, contextExternalToolsInUse, unusedSchoolExternalTool } = setup();
-
-				const result: SchoolExternalTool[] = service.filterForAvailableSchoolExternalTools(
-					schoolExternalTools,
-					contextExternalToolsInUse
-				);
-
-				expect(result).toEqual([unusedSchoolExternalTool]);
 			});
 		});
 	});
