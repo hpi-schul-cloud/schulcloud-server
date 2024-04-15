@@ -208,9 +208,7 @@ const config: ServerConfig = {
 		: undefined,
 	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
-	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
-		? (Configuration.get('ETHERPAD__PAD_URI') as string)
-		: undefined,
+	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
 	ETHERPAD_COOKIE__EXPIRES_SECONDS: Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS') as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,

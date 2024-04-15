@@ -64,9 +64,6 @@ export class CollaborativeTextEditorService {
 
 	private buildPath(editorId: string): string {
 		const basePath = this.configService.get<string>('ETHERPAD__PAD_URI');
-
-		if (!basePath) throw new InternalServerErrorException('ETHERPAD__PAD_URI is not defined');
-
 		const url = `${basePath}/${editorId}`;
 
 		return url;
