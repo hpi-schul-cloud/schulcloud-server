@@ -104,6 +104,7 @@ describe(MediaAvailableLineService.name, () => {
 
 				expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({
 					schoolId: user.school?.id,
+					isDeactivated: false,
 				});
 			});
 
