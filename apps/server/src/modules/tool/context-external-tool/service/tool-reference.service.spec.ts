@@ -8,7 +8,8 @@ import {
 	toolConfigurationStatusFactory,
 } from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolReferenceService } from './tool-reference.service';
@@ -74,9 +75,9 @@ describe('ToolReferenceService', () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id as string,
-				});
+				}) as SchoolExternalToolWithId;
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId(undefined, contextExternalToolId);
 				const logoUrl = 'logoUrl';
 

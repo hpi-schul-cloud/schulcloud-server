@@ -173,7 +173,7 @@ describe('ExternalToolRepo', () => {
 				baseUrl: 'baseUrl',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, ...expected } = domainObject;
+			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
@@ -189,7 +189,7 @@ describe('ExternalToolRepo', () => {
 				skipConsent: true,
 			});
 			const { domainObject } = setupDO(config);
-			const { id, ...expected } = domainObject;
+			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
@@ -208,7 +208,7 @@ describe('ExternalToolRepo', () => {
 				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, ...expected } = domainObject;
+			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 

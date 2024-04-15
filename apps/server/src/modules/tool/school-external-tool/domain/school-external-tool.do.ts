@@ -47,4 +47,5 @@ export class SchoolExternalTool extends BaseDO implements ToolVersion {
 	}
 }
 
+// TODO: N21-1885: Remove this type and alls its usages
 export type SchoolExternalToolWithId = SchoolExternalTool & { id: string };
