@@ -2,20 +2,19 @@ import { INestApplication } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@modules/server';
 import request from 'supertest';
 import { of } from 'rxjs';
 import { axiosResponseFactory } from '@shared/testing';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { alertTestConfig, createComponent, createIncident } from '../../testing';
+import { serverConfig, ServerTestModule } from '../../../server';
+import { createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
 import { ComponentDto, ComponentResponse, IncidentsResponse, MetaDto } from '../../adapter/dto';
+import { SchulcloudTheme } from '../../../server/types/schulcloud-theme.enum';
 
 describe('Alert Controller api', () => {
 	const alertPath = '/alert';
 	const incidentsPath = '/api/v1/incidents';
-	const componentsPath = './api/v1/components/';
+	const componentsPath = '/api/v1/components/';
 	const incident1 = createIncident(1, 1, 2);
 	const incident2 = createIncident(2, 2, 4);
 	const incident3 = createIncident(3, 3, 0);
@@ -27,15 +26,16 @@ describe('Alert Controller api', () => {
 	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
+		const config = serverConfig();
+		config.ALERT_STATUS_URL = 'test';
+		config.SC_THEME = SchulcloudTheme.DEFAULT;
+
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule, ConfigModule.forRoot(createConfigModuleOptions(alertTestConfig))],
-			providers: [
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
-				},
-			],
-		}).compile();
+			imports: [ServerTestModule],
+		})
+			.overrideProvider(HttpService)
+			.useValue(createMock<HttpService>())
+			.compile();
 		app = module.createNestApplication();
 		await app.init();
 		httpService = module.get(HttpService);
@@ -78,8 +78,7 @@ describe('Alert Controller api', () => {
 						let component: ComponentDto;
 						if (componentId === '1') {
 							component = component1;
-						}
-						if (componentId === '1') {
+						} else if (componentId === '2') {
 							component = component2;
 						} else {
 							component = component3;
@@ -93,12 +92,12 @@ describe('Alert Controller api', () => {
 				});
 			};
 
-			it('should return filtered alert list', async () => {
+			it('should return filtered alert list by status and instance', async () => {
 				setup();
 				const response = await request(app.getHttpServer()).get(alertPath).expect(200);
 
 				const { data } = response.body as AlertResponse;
-				expect(data.length).toBe(2);
+				expect(data.length).toBe(1);
 			});
 		});
 	});

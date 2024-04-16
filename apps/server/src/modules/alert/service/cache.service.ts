@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AlertConfig } from '../config';
 import { StatusAdapter } from '../adapter';
 import { Message } from '../controller/dto';
+import { ServerConfig } from '../../server';
 
 @Injectable()
 export class CacheService {
@@ -17,22 +17,23 @@ export class CacheService {
 	private instance: string;
 
 	constructor(
-		private readonly configService: ConfigService<AlertConfig, true>,
+		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly statusAdapter: StatusAdapter
 	) {
+		this.instance = configService.get<string>('SC_THEME');
+		this.time = 1;
+
 		if (configService.get('ALERT_STATUS_URL')) {
 			this.addMessageProvider(statusAdapter, true);
 		}
-		this.instance = configService.get<string>('INSTANCE');
-		this.time = 1;
 	}
 
-	public updateMessages() {
+	public async updateMessages() {
 		let success = false;
 		let newMessages: Message[] = [];
 		this.lastUpdatedTimestamp = Date.now();
 
-		this.messageProviders.map(async (provider) => {
+		const promises = this.messageProviders.map(async (provider) => {
 			const data = await provider.getMessage(this.instance);
 			if (!data.success) {
 				success = false;
@@ -42,14 +43,16 @@ export class CacheService {
 			success = true;
 		});
 
+		await Promise.all(promises);
+
 		if (success) {
 			this.messages = newMessages;
 		}
 	}
 
-	public getMessages() {
+	public async getMessages() {
 		if (this.lastUpdatedTimestamp < Date.now() - 1000 * 60 * this.time) {
-			this.updateMessages();
+			await this.updateMessages();
 		}
 
 		return this.messages || [];

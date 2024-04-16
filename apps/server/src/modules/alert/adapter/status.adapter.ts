@@ -4,10 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import { AxiosResponse } from 'axios';
 import { ErrorUtils } from '@src/core/error/utils';
 import { ConfigService } from '@nestjs/config';
-import { Importance, Instance } from './enum';
+import { Importance } from './enum';
 import { ComponentResponse, IncidentDto, IncidentsResponse, MessagesDto } from './dto';
-import { AlertConfig } from '../config';
 import { MessageMapper } from '../controller/mapper';
+import { ServerConfig } from '../../server';
 
 @Injectable()
 export class StatusAdapter {
@@ -15,7 +15,7 @@ export class StatusAdapter {
 
 	constructor(
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<AlertConfig, true>
+		private readonly configService: ConfigService<ServerConfig, true>
 	) {
 		this.url = configService.get('ALERT_STATUS_URL');
 	}
@@ -52,14 +52,16 @@ export class StatusAdapter {
 		const statusEnum = { fixed: 4, danger: 2 };
 
 		const filteredData = rawData.data.filter((element) => element.status !== statusEnum.fixed);
-		filteredData.map(async (element) => {
-			const isInstance = await this.getInstance(instance, element.component_id);
-			if (isInstance !== Importance.ALL_INSTANCES && isInstance !== Importance.INGORE) {
+		const promises = filteredData.map(async (element) => {
+			const importance = await this.getImportance(instance, element.component_id);
+			if (importance !== Importance.ALL_INSTANCES && importance !== Importance.INGORE) {
 				instanceSpecific.push(element);
-			} else if (isInstance !== Importance.INGORE) {
+			} else if (importance !== Importance.INGORE) {
 				noneSpecific.push(element);
 			}
 		});
+
+		await Promise.all(promises);
 
 		instanceSpecific.sort(this.compareIncidents);
 		noneSpecific.sort(this.compareIncidents);
@@ -67,7 +69,7 @@ export class StatusAdapter {
 		return instanceSpecific.concat(noneSpecific);
 	}
 
-	private async getInstance(instance: string, componentId: number): Promise<Importance> {
+	private async getImportance(instance: string, componentId: number): Promise<Importance> {
 		if (componentId !== 0) {
 			return this.getImportanceForComponent(instance, componentId);
 		}
@@ -77,7 +79,8 @@ export class StatusAdapter {
 	private async getImportanceForComponent(instance: string, componentId: number): Promise<Importance> {
 		try {
 			const response = await this.getComponent(componentId);
-			if (Instance[instance] && response.data.group_id === Instance[instance]) {
+			const instanceNumber = this.getInstanceNumber(instance);
+			if (instanceNumber === response.data.group_id) {
 				return Importance.CURRENT_INSTANCE;
 			}
 			return Importance.INGORE;
@@ -125,4 +128,28 @@ export class StatusAdapter {
 
 		return 0;
 	};
+
+	private getInstanceNumber(instance: string) {
+		if (instance.toLowerCase() === 'default') {
+			return 1;
+		}
+
+		if (instance.toLowerCase() === 'brb') {
+			return 2;
+		}
+
+		if (instance.toLowerCase() === 'open') {
+			return 3;
+		}
+
+		if (instance.toLowerCase() === 'n21') {
+			return 6;
+		}
+
+		if (instance.toLowerCase() === 'thr') {
+			return 7;
+		}
+
+		return 0;
+	}
 }

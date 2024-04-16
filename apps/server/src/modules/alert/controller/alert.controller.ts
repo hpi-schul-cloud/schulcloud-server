@@ -11,8 +11,8 @@ export class AlertController {
 	@ApiOperation({ summary: 'Get allerts' })
 	@ApiResponse({ status: 201, type: AlertResponse })
 	@Get()
-	public find() {
-		const messages = this.alertUc.find();
+	public async find() {
+		const messages = await this.alertUc.find();
 
 		return new AlertResponse(messages);
 	}
