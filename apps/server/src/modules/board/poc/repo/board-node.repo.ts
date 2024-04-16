@@ -1,14 +1,11 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { type FilterQuery, Utils } from '@mikro-orm/core';
-import { BoardNodeType } from '@shared/domain/entity';
-import type { BoardExternalReference } from '@shared/domain/domainobject';
+import { Utils } from '@mikro-orm/core';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
 import { joinPath } from '../domain/path-utils';
 import { AnyBoardNode, AnyBoardNodeProps } from '../domain';
-import type { ContextExternalTool } from '../../../tool/context-external-tool/domain';
 
 @Injectable()
 export class BoardNodeRepo {
@@ -24,20 +21,6 @@ export class BoardNodeRepo {
 		return boardNode;
 	}
 
-	/* TODO replace class with type instead */
-	public async findByClassAndId<S, T extends AnyBoardNode>(
-		doClass: { new (props: S): T },
-		id: EntityId,
-		depth?: number
-	): Promise<T> {
-		const domainObject = await this.findById(id, depth);
-		if (!(domainObject instanceof doClass)) {
-			throw new NotFoundException(`There is no '${doClass.name}' with this id`);
-		}
-
-		return domainObject;
-	}
-
 	// TODO: handle depth?
 	public async findByIds(ids: EntityId[]): Promise<AnyBoardNode[]> {
 		const props: AnyBoardNodeProps[] = await this.findMany(ids);
@@ -51,46 +34,6 @@ export class BoardNodeRepo {
 		});
 
 		return domainObjects;
-	}
-
-	public async getTitlesByIds(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
-		const ids = Utils.asArray(id);
-		const boardNodeEntities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
-
-		const titlesMap = boardNodeEntities.reduce((map, node) => {
-			map[node.id] = node.title || '';
-			return map;
-		}, {} as Record<EntityId, string>);
-
-		return titlesMap;
-	}
-
-	public async findByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
-		const boardNodeEntities: BoardNodeEntity[] = await this.em.find(BoardNodeEntity, {
-			_contextId: new ObjectId(reference.id),
-			_contextType: reference.type,
-		} as FilterQuery<BoardNodeEntity>);
-
-		const ids: EntityId[] = boardNodeEntities.map((node) => node.id);
-
-		return ids;
-	}
-
-	public async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]) {
-		const toolIds: EntityId[] = contextExternalTools
-			.map((tool: ContextExternalTool): EntityId | undefined => tool.id)
-			.filter((id: EntityId | undefined): id is EntityId => !!id);
-
-		const boardNodeEntities = await this.em.find(BoardNodeEntity, {
-			type: BoardNodeType.EXTERNAL_TOOL,
-			contextExternalToolId: { $in: toolIds },
-		} as unknown as FilterQuery<BoardNodeEntity>);
-
-		const boardIds: EntityId[] = boardNodeEntities.map((node): EntityId => node.ancestorIds[0]);
-		const boardCount: number = new Set(boardIds).size;
-
-		return boardCount;
 	}
 
 	public persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
