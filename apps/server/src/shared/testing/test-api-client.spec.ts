@@ -120,7 +120,7 @@ describe(TestApiClient.name, () => {
 				const loggedInClient = await testApiClient.login(account);
 
 				// eslint-disable-next-line @typescript-eslint/dot-notation
-				expect(loggedInClient['formattedJwt']).toEqual('Bearer 123');
+				expect(loggedInClient['authHeader']).toEqual('Bearer 123');
 			});
 
 			it('should fork the client', async () => {
