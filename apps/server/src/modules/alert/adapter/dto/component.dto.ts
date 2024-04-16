@@ -11,7 +11,7 @@ export class ComponentDto {
 		updated_at: Date,
 		deleted_at: Date,
 		enabled: boolean,
-		status_name: string,
+		status_name: string
 	) {
 		this.id = id;
 		this.name = name;
