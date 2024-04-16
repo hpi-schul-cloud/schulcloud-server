@@ -6,7 +6,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { UserMigrationDatabaseOperationFailedLoggableException } from '../loggable';
+import {
+	UserMigrationDatabaseOperationFailedLoggableException,
+	UserLoginMigrationUserAlreadyMigratedLoggableException,
+} from '../loggable';
 import { UserMigrationService } from './user-migration.service';
 
 describe(UserMigrationService.name, () => {
@@ -92,6 +95,7 @@ describe(UserMigrationService.name, () => {
 				});
 
 				userService.findById.mockResolvedValueOnce({ ...user });
+				userService.findByExternalId.mockResolvedValue(null);
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
 
 				return {
@@ -231,6 +235,59 @@ describe(UserMigrationService.name, () => {
 				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(
 					new UserMigrationDatabaseOperationFailedLoggableException(userId, 'migration', error)
 				);
+			});
+		});
+
+		describe('when user is already migrated', () => {
+			const setup = () => {
+				const targetSystemId = new ObjectId().toHexString();
+
+				const role = roleFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const targetExternalId = 'newUserExternalId';
+				const sourceExternalId = 'currentUserExternalId';
+				const user: UserDO = userDoFactory.buildWithId({
+					id: userId,
+					createdAt: mockDate,
+					updatedAt: mockDate,
+					email: 'emailMock',
+					firstName: 'firstNameMock',
+					lastName: 'lastNameMock',
+					schoolId: 'schoolMock',
+					roles: [role],
+					externalId: sourceExternalId,
+				});
+
+				const accountId = new ObjectId().toHexString();
+				const sourceSystemId = new ObjectId().toHexString();
+				const accountDto: Account = new Account({
+					id: accountId,
+					updatedAt: new Date(),
+					createdAt: new Date(),
+					userId,
+					username: '',
+					systemId: sourceSystemId,
+				});
+				const err = new UserLoginMigrationUserAlreadyMigratedLoggableException(targetExternalId);
+
+				userService.findByExternalId.mockResolvedValue(user);
+
+				return {
+					user,
+					userId,
+					targetExternalId,
+					sourceExternalId,
+					accountDto,
+					sourceSystemId,
+					targetSystemId,
+					err,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { userId, targetExternalId, targetSystemId, err } = setup();
+
+				await expect(service.migrateUser(userId, targetExternalId, targetSystemId)).rejects.toThrow(err);
 			});
 		});
 	});
