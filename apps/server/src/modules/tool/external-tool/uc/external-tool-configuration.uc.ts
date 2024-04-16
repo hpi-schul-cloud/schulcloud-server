@@ -101,17 +101,8 @@ export class ExternalToolConfigurationUc {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.ensureContextPermissions(user, contextExternalToolsInUse, context);
 
-		const availableSchoolExternalTools: SchoolExternalTool[] =
-			this.externalToolConfigurationService.filterForAvailableSchoolExternalTools(
-				schoolExternalTools,
-				contextExternalToolsInUse
-			);
-
 		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
-			this.externalToolConfigurationService.filterForAvailableExternalTools(
-				externalTools.data,
-				availableSchoolExternalTools
-			);
+			this.externalToolConfigurationService.filterForAvailableExternalTools(externalTools.data, schoolExternalTools);
 
 		availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
 			availableToolsForContext,
