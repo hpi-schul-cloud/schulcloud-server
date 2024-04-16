@@ -1,13 +1,19 @@
 import { UseGuards } from '@nestjs/common';
-import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import {
+	OnGatewayConnection,
+	OnGatewayInit,
+	SubscribeMessage,
+	WebSocketGateway,
+	WsException,
+} from '@nestjs/websockets';
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import cookie from 'cookie';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Socket } from 'socket.io';
-// import { Authenticate } from '@src/modules/authentication';
-// import { ColumnUc } from '../uc';
-// @Authenticate('jwt')
+import { ColumnUc } from '../uc';
+import { MoveCardMessageParams } from './dto/move-card.message.param';
+import { Socket } from './types';
+
 @WebSocketGateway({
 	path: '/collaboration',
 	cors: {
@@ -23,8 +29,9 @@ import { Socket } from 'socket.io';
 export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	// TODO: use loggables instead of legacy logger
 	constructor(
-		private readonly logger: LegacyLogger /* private readonly boardUc: BoardUc,
-		private readonly columnUc: ColumnUc */
+		private readonly logger: LegacyLogger,
+		/* private readonly boardUc: BoardUc, */
+		private readonly columnUc: ColumnUc
 	) {}
 
 	public async handleConnection(client: Socket): Promise<void> {
@@ -74,6 +81,12 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 			return jwt.decode(cookies.jwt, { json: true });
 		}
 		return null;
+	}
+
+	private getCurrentUser(client: Socket) {
+		const { user } = client.handshake;
+		if (!user) throw new WsException('Not Authenticated.');
+		return user;
 	}
 
 	public afterInit(): void {
@@ -135,13 +148,11 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('move-card-request')
-	handleMoveCard(client: Socket, data: Record<string, unknown>) {
+	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		/* // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const { user } = client.handshake as unknown as { user: ICurrentUser };
-		const mapped = data as unknown as { cardId: string; newIndex: number; toColumnId: string };
-		await this.columnUc.moveCard(user.userId, mapped.cardId, mapped.toColumnId, mapped.newIndex); */
+		const { userId } = this.getCurrentUser(client);
+		await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 		client.broadcast.emit('move-card-success', data);
 	}
 
