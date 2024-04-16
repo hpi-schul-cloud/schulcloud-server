@@ -26,3 +26,15 @@ Node {
     deletHandler.delete(this); // remove from Unit of Work
   }
 }
+
+Domain Objects
+
+- Card
+  - title?
+  - height
+
+ColumnBoard
+  - title
+  - context
+  - visibility
+
