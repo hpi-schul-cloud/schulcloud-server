@@ -9,6 +9,7 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
+	IdenticalUserLoginMigrationSystemLoggableException,
 } from '../loggable';
 
 @Injectable()
@@ -114,6 +115,8 @@ export class UserLoginMigrationService {
 
 		if (!sanisSystem) {
 			throw new InternalServerErrorException('Cannot find SANIS system');
+		} else if (school.systems?.includes(sanisSystem.id as string)) {
+			throw new IdenticalUserLoginMigrationSystemLoggableException(school.id, sanisSystem.id);
 		}
 
 		const systemIds: EntityId[] =
