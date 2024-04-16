@@ -14,6 +14,7 @@ import {
 	InlineResponse2006,
 	SessionApi,
 } from './generated-etherpad-api-client';
+import { ErrorType } from './interface';
 
 describe(EtherpadClientAdapter.name, () => {
 	let module: TestingModule;
@@ -402,6 +403,65 @@ describe(EtherpadClientAdapter.name, () => {
 				await service.getOrCreateEtherpad(groupId, parentId);
 
 				expect(groupApi.createGroupPadUsingGET).not.toBeCalled();
+			});
+		});
+	});
+
+	describe('handleResponse', () => {
+		const setup = (code = 0) => {
+			const parentId = 'parentId';
+			const response = createMock<AxiosResponse<InlineResponse200>>({
+				data: {
+					code,
+					data: { groupID: 'groupId' },
+				},
+			});
+
+			groupApi.createGroupIfNotExistsForUsingGET.mockResolvedValue(response);
+			return parentId;
+		};
+
+		describe('wehn status code is 0', () => {
+			it('should return data', async () => {
+				const parentId = setup();
+
+				const result = await service.getOrCreateGroup(parentId);
+
+				expect(result).toEqual('groupId');
+			});
+		});
+
+		describe('when status code is 1', () => {
+			it('should throw an error', async () => {
+				const parentId = setup(1);
+
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(ErrorType.ETHERPAD_SERVER_BAD_REQUEST);
+			});
+		});
+
+		describe('when status code is 2', () => {
+			it('should throw an error', async () => {
+				const parentId = setup(2);
+
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR);
+			});
+		});
+
+		describe('when status code is 3', () => {
+			it('should throw an error', async () => {
+				const parentId = setup(3);
+
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(
+					ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND
+				);
+			});
+		});
+
+		describe('when status code is 4', () => {
+			it('should throw an error', async () => {
+				const parentId = setup(4);
+
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY);
 			});
 		});
 	});
