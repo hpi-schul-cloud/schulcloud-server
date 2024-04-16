@@ -1,13 +1,4 @@
-import { BoardNodeType } from '@shared/domain/entity';
-import {
-	AnyBoardNode,
-	AnyBoardNodeProps,
-	Card,
-	CardProps,
-	joinPath,
-	RichTextElement,
-	RichTextElementProps,
-} from '../domain';
+import { AnyBoardNode, AnyBoardNodeProps, Card, joinPath } from '../domain';
 
 // TODO handle different types of props and Domain Objects
 // discriminator: props.type
@@ -25,17 +16,7 @@ export class TreeBuilder {
 	build(props: AnyBoardNodeProps): AnyBoardNode {
 		props.children = this.getChildren(props).map((childProps) => this.build(childProps));
 
-		let boardNode: AnyBoardNode;
-		switch (props.type) {
-			case BoardNodeType.CARD:
-				boardNode = new Card(props as CardProps);
-				break;
-			case BoardNodeType.RICH_TEXT_ELEMENT:
-				boardNode = new RichTextElement(props as RichTextElementProps);
-				break;
-			default:
-				throw new Error(`Unknown BoardNodeType: ${props.type}`);
-		}
+		const boardNode = new Card(props);
 
 		return boardNode;
 	}

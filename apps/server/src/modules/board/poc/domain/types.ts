@@ -1,8 +1,8 @@
 import { BoardNodeType } from '@shared/domain/entity';
-import { EntityId, InputFormat } from '@shared/domain/types';
-import type { Card, RichTextElement } from '.';
+import { EntityId } from '@shared/domain/types';
+import type { Card } from './card.do';
 
-export type AnyBoardNode = Card | RichTextElement; // union type. add more types
+export type AnyBoardNode = Card; // union type. add more types
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -20,10 +20,4 @@ export interface CardProps extends BoardNodeProps {
 	height: number;
 }
 
-export interface RichTextElementProps extends BoardNodeProps {
-	text: string;
-	inputFormat: InputFormat;
-}
-
-export type AnyBoardNodeProps = CardProps | RichTextElementProps;
-export type AllBoardNodeProps = CardProps & RichTextElementProps;
+export type AnyBoardNodeProps = CardProps; // union (or intersection?) type. add more types

@@ -1,10 +1,9 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
-import { InputFormat } from '@shared/domain/types';
-import { AnyBoardNode, AllBoardNodeProps } from '../../domain';
+import { AnyBoardNode, AnyBoardNodeProps } from '../../domain';
 
 @Entity({ tableName: 'boardnodes' })
-export class BoardNodeEntity extends BaseEntityWithTimestamps implements Partial<AllBoardNodeProps> {
+export class BoardNodeEntity extends BaseEntityWithTimestamps implements AnyBoardNodeProps {
 	@Index()
 	@Property({ nullable: false })
 	path = ','; // TODO find better way to provide defaults!
@@ -17,22 +16,14 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements Partial
 
 	@Index()
 	@Enum(() => BoardNodeType)
-	type: BoardNodeType = BoardNodeType.CARD;
-
-	@Property({ persist: false })
-	children: AnyBoardNode[] = [];
+	type!: BoardNodeType;
 
 	@Property({ nullable: true })
 	title?: string;
 
-	/* Card props */
-	@Property({ nullable: true })
-	height?: number;
+	@Property({ persist: false })
+	children: AnyBoardNode[] = [];
 
-	/* RichTextElement props */
-	@Property({ nullable: true })
-	text?: string;
-
-	@Property({ nullable: true })
-	inputFormat?: InputFormat;
+	@Property()
+	height!: number;
 }
