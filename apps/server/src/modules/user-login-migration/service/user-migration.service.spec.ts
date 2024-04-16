@@ -270,7 +270,7 @@ describe(UserMigrationService.name, () => {
 				});
 				const err = new UserLoginMigrationUserAlreadyMigratedLoggableException(targetExternalId);
 
-				userService.findByExternalId.mockRejectedValueOnce(err);
+				userService.findByExternalId.mockResolvedValue(user);
 
 				return {
 					user,
