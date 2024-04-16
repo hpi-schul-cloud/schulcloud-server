@@ -33,13 +33,14 @@ export class CommonCartridgeResourceFactory {
 	}
 
 	private createWebLinkResource(content: string): CommonCartridgeWebLinkResourceProps | undefined {
-		if (!this.isValidXml(content)) {
+		const document = this.tryCreateDocument(content);
+
+		if (!document) {
 			return undefined;
 		}
 
-		const resource = new JSDOM(content, { contentType: 'text/xml' }).window.document;
-		const title = resource.querySelector('webLink > title')?.textContent || '';
-		const url = resource.querySelector('webLink > url')?.getAttribute('href') || '';
+		const title = document.querySelector('webLink > title')?.textContent || '';
+		const url = document.querySelector('webLink > url')?.getAttribute('href') || '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
@@ -48,15 +49,13 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private isValidXml(content: string): boolean {
+	private tryCreateDocument(content: string): Document | undefined {
 		try {
-			const validateXml = () => new JSDOM(content, { contentType: 'text/xml' });
+			const parser = new JSDOM(content, { contentType: 'text/xml' }).window.document;
 
-			validateXml();
-
-			return true;
+			return parser;
 		} catch (error) {
-			return false;
+			return undefined;
 		}
 	}
 }
