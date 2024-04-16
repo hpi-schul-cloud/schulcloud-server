@@ -1,6 +1,5 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
 import {
@@ -38,10 +37,6 @@ describe(EtherpadClientAdapter.name, () => {
 				{
 					provide: AuthorApi,
 					useValue: createMock<AuthorApi>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

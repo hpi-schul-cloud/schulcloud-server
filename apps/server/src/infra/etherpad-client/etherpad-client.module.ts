@@ -1,5 +1,4 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
 import { AuthorApi, GroupApi, SessionApi } from './generated-etherpad-api-client/api';
 import { Configuration, ConfigurationParameters } from './generated-etherpad-api-client/configuration';
@@ -42,7 +41,6 @@ export class EtherpadClientModule {
 
 		return {
 			module: EtherpadClientModule,
-			imports: [LoggerModule],
 			providers,
 			exports: [EtherpadClientAdapter],
 		};

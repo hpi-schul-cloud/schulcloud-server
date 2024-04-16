@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import {
 	InlineResponse200,
@@ -20,19 +20,26 @@ export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
-		private readonly authorApi: AuthorApi,
-		private logger: Logger
-	) {
-		this.logger.setContext(EtherpadClientAdapter.name);
-	}
+		private readonly authorApi: AuthorApi
+	) {}
 
 	async getOrCreateAuthor(userId: EntityId, username: string): Promise<AuthorId> {
-		const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
+		const response = await this.tryCreateAuthor(userId, username);
 		const user = this.handleResponse<InlineResponse2003>(response, { userId });
 
 		const authorId = EtherpadResponseMapper.mapToAuthorResponse(user);
 
 		return authorId;
+	}
+
+	private async tryCreateAuthor(userId: string, username: string) {
+		try {
+			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
+
+			return response;
+		} catch (error) {
+			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { userId }, error);
+		}
 	}
 
 	async getOrCreateSession(
@@ -42,15 +49,12 @@ export class EtherpadClientAdapter {
 		sessionCookieExpire: Date
 	): Promise<SessionId> {
 		const foundedSession = await this.hasSessionsOfAuthor(groupId, authorId);
+
 		if (foundedSession) {
 			return foundedSession;
 		}
 
-		const response = await this.sessionApi.createSessionUsingGET(
-			groupId,
-			authorId,
-			sessionCookieExpire.getTime().toString()
-		);
+		const response = await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
 		const session = this.handleResponse<InlineResponse2004>(response, { parentId });
 
 		const sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
@@ -58,9 +62,23 @@ export class EtherpadClientAdapter {
 		return sessionId;
 	}
 
+	private async tryCreateSession(groupId: string, authorId: string, sessionCookieExpire: Date) {
+		try {
+			const response = await this.sessionApi.createSessionUsingGET(
+				groupId,
+				authorId,
+				sessionCookieExpire.getTime().toString()
+			);
+
+			return response;
+		} catch (error) {
+			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { authorId }, error);
+		}
+	}
+
 	private async hasSessionsOfAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
-		const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
-		const sessions = this.handleResponse<InlineResponse2006>(response, {});
+		const response = await this.tryListSessionsOfAuthor(authorId);
+		const sessions = this.handleResponse<InlineResponse2006>(response, { groupId, authorId });
 
 		if (sessions) {
 			for (const [key, value] of Object.entries(sessions)) {
@@ -75,21 +93,41 @@ export class EtherpadClientAdapter {
 	}
 
 	async listSessionsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
-		const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
-		const sessions = this.handleResponse<InlineResponse2006>(response, {});
+		const response = await this.tryListSessionsOfAuthor(authorId);
+		const sessions = this.handleResponse<InlineResponse2006>(response, { authorId });
 
 		const sessionIds = Object.keys(sessions as object);
 
 		return sessionIds;
 	}
 
+	private async tryListSessionsOfAuthor(authorId: string) {
+		try {
+			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
+
+			return response;
+		} catch (error) {
+			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { authorId }, error);
+		}
+	}
+
 	async getOrCreateGroup(parentId: EntityId): Promise<GroupId> {
-		const groupResponse = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
+		const groupResponse = await this.tryGetOrCreateGroup(parentId);
 		const group = this.handleResponse<InlineResponse200>(groupResponse, { parentId });
 
 		const groupId = EtherpadResponseMapper.mapToGroupResponse(group);
 
 		return groupId;
+	}
+
+	private async tryGetOrCreateGroup(parentId: string) {
+		try {
+			const response = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
+
+			return response;
+		} catch (error) {
+			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { parentId }, error);
+		}
 	}
 
 	async getOrCreateEtherpad(groupId: GroupId, parentId: EntityId): Promise<PadId> {
@@ -108,7 +146,7 @@ export class EtherpadClientAdapter {
 	}
 
 	private async getPad(groupId: GroupId, parentId: EntityId): Promise<PadId | undefined> {
-		const padsResponse = await this.groupApi.listPadsUsingGET(groupId);
+		const padsResponse = await this.tryListPads(groupId);
 		const pads = this.handleResponse<InlineResponse2002>(padsResponse, { parentId });
 
 		const pad = pads?.padIDs?.find((padId: string) => padId.includes(`${groupId}$${parentId}`));
@@ -116,23 +154,34 @@ export class EtherpadClientAdapter {
 		return pad;
 	}
 
+	private async tryListPads(groupId: string) {
+		try {
+			const response = await this.groupApi.listPadsUsingGET(groupId);
+
+			return response;
+		} catch (error) {
+			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { groupId }, error);
+		}
+	}
+
 	private handleResponse<T extends EtherpadResponse>(axiosResponse: AxiosResponse<T>, payload: EtherpadParams) {
 		const response = axiosResponse.data;
+
 		switch (response.code) {
 			case 1:
-				throw new EtherpadServerError(ErrorType.ETHERPAD_SERVER_BAD_REQUEST, payload, response as unknown as Error);
+				throw this.handleError(ErrorType.ETHERPAD_SERVER_BAD_REQUEST, payload, response);
 			case 2:
-				throw new EtherpadServerError(ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR, payload, response as unknown as Error);
+				throw this.handleError(ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR, payload, response);
 			case 3:
-				throw new EtherpadServerError(
-					ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND,
-					payload,
-					response as unknown as Error
-				);
+				throw this.handleError(ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND, payload, response);
 			case 4:
-				throw new EtherpadServerError(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY, payload, response as unknown as Error);
+				throw this.handleError(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY, payload, response);
 			default:
 				return response.data as T['data'];
 		}
+	}
+
+	private handleError(type: ErrorType, payload: EtherpadParams, response: unknown): EtherpadServerError {
+		return new EtherpadServerError(type, payload, ErrorUtils.createHttpExceptionOptions(response));
 	}
 }

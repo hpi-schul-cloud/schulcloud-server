@@ -8,6 +8,10 @@ export type PadId = string;
 export interface EtherpadParams {
 	userId?: EntityId;
 	parentId?: EntityId;
+	groupId?: GroupId;
+	authorId?: AuthorId;
+	sessionId?: SessionId;
+	padId?: PadId;
 }
 
 export interface EtherpadResponse {

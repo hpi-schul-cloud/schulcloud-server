@@ -1,4 +1,4 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import { HttpExceptionOptions, InternalServerErrorException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 import { ErrorType, EtherpadParams } from '../interface';
 
@@ -6,9 +6,9 @@ export class EtherpadServerError extends InternalServerErrorException implements
 	constructor(
 		private readonly type: ErrorType,
 		private readonly payload: EtherpadParams,
-		private readonly error?: Error
+		private readonly exceptionOptions: HttpExceptionOptions
 	) {
-		super(type);
+		super(type, exceptionOptions);
 	}
 
 	getLogMessage(): ErrorLogMessage {
@@ -17,7 +17,6 @@ export class EtherpadServerError extends InternalServerErrorException implements
 		const message: ErrorLogMessage = {
 			type: this.type,
 			stack: this.stack,
-			error: this.error,
 			data: {
 				userId,
 				parentId,
