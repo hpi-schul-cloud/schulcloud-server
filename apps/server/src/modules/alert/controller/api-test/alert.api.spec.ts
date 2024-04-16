@@ -8,11 +8,20 @@ import { of } from 'rxjs';
 import { axiosResponseFactory } from '@shared/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { alertTestConfig } from '../../config';
+import { alertTestConfig, createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
+import { ComponentDto, ComponentResponse, IncidentsResponse, MetaDto } from '../../adapter/dto';
 
 describe('Alert Controller api', () => {
 	const alertPath = '/alert';
+	const incidentsPath = '/api/v1/incidents';
+	const componentsPath = './api/v1/components/';
+	const incident1 = createIncident(1, 1, 2);
+	const incident2 = createIncident(2, 2, 4);
+	const incident3 = createIncident(3, 3, 0);
+	const component1 = createComponent(1, 1);
+	const component2 = createComponent(2, 2);
+	const component3 = createComponent(3, 3);
 
 	let app: INestApplication;
 	let httpService: DeepMocked<HttpService>;
@@ -51,6 +60,45 @@ describe('Alert Controller api', () => {
 
 				const { data } = response.body as AlertResponse;
 				expect(data.length).toBe(0);
+			});
+		});
+
+		describe('when incidents available', () => {
+			const setup = () => {
+				jest.spyOn(httpService, 'get').mockImplementation((url) => {
+					if (url === incidentsPath) {
+						const incidents = [incident1, incident2, incident3];
+						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
+						const response = axiosResponseFactory.build({ data: incidentResponse });
+						return of(response);
+					}
+
+					if (url.startsWith(componentsPath)) {
+						const componentId = url.at(-1);
+						let component: ComponentDto;
+						if (componentId === '1') {
+							component = component1;
+						}
+						if (componentId === '1') {
+							component = component2;
+						} else {
+							component = component3;
+						}
+						const componentResponse = new ComponentResponse(component);
+						const response = axiosResponseFactory.build({ data: componentResponse });
+						return of(response);
+					}
+					const response = axiosResponseFactory.build({ data: [] });
+					return of(response);
+				});
+			};
+
+			it('should return filtered alert list', async () => {
+				setup();
+				const response = await request(app.getHttpServer()).get(alertPath).expect(200);
+
+				const { data } = response.body as AlertResponse;
+				expect(data.length).toBe(2);
 			});
 		});
 	});
