@@ -405,6 +405,33 @@ describe(EtherpadClientAdapter.name, () => {
 				expect(groupApi.createGroupPadUsingGET).not.toBeCalled();
 			});
 		});
+
+		describe('when createGroupPadUsingGET response is empty', () => {
+			const setup = () => {
+				const groupId = 'groupId';
+				const parentId = 'parentId';
+				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
+					data: {
+						data: { padIDs: [] },
+					},
+				});
+				const response = createMock<AxiosResponse<InlineResponse2001>>({
+					data: {
+						data: {},
+					},
+				});
+
+				groupApi.listPadsUsingGET.mockResolvedValue(listPadsResponse);
+				groupApi.createGroupPadUsingGET.mockResolvedValue(response);
+				return { groupId, parentId };
+			};
+
+			it('should throw an error', async () => {
+				const { groupId, parentId } = setup();
+
+				await expect(service.getOrCreateEtherpad(groupId, parentId)).rejects.toThrowError('Pad could not be created');
+			});
+		});
 	});
 
 	describe('handleResponse', () => {
