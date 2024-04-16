@@ -47,17 +47,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 	});
 
 	describe('getCollaborativeTextEditorForParent', () => {
-		describe('when no user is logged in', () => {
-			it('should return 401', async () => {
-				const someId = new ObjectId().toHexString();
-
-				const response = await testApiClient.get(`parentId/${someId}}`);
-
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when id in params is not a mongo id', () => {
+		describe('when request is invalid', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -69,17 +59,48 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				return { loggedInClient };
 			};
 
-			it('should return 400', async () => {
-				const { loggedInClient } = await setup();
+			describe('when no user is logged in', () => {
+				it('should return 401', async () => {
+					const someId = new ObjectId().toHexString();
 
-				const response = await loggedInClient.get(`content-element/123`);
+					const response = await testApiClient.get(`content-element/${someId}}`);
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				expect(response.body).toEqual(
-					expect.objectContaining({
-						validationErrors: [{ errors: ['parentId must be a mongodb id'], field: ['parentId'] }],
-					})
-				);
+					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when id in params is not a mongo id', () => {
+				it('should return 400', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get(`content-element/123`);
+
+					expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+					expect(response.body).toEqual(
+						expect.objectContaining({
+							validationErrors: [{ errors: ['parentId must be a mongodb id'], field: ['parentId'] }],
+						})
+					);
+				});
+			});
+
+			describe('when parentType in params is not correct', () => {
+				it('should return 400', async () => {
+					const { loggedInClient } = await setup();
+
+					const someId = new ObjectId().toHexString();
+
+					const response = await loggedInClient.get(`other-element/${someId}`);
+
+					expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+					expect(response.body).toEqual(
+						expect.objectContaining({
+							validationErrors: [
+								{ errors: ['parentType must be one of the following values: content-element'], field: ['parentType'] },
+							],
+						})
+					);
+				});
 			});
 		});
 
