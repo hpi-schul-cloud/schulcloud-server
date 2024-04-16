@@ -73,7 +73,7 @@ describe(`board lookup (api)`, () => {
 				expect(response.status).toEqual(200);
 			});
 
-			it('should return the right board', async () => {
+			it('should return the correct board', async () => {
 				const { loggedInClient, columnBoardNode, columnNode } = await setup();
 
 				const response = await loggedInClient.get(columnBoardNode.id);
