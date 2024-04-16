@@ -2,14 +2,13 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.modul
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestXApiKeyClient } from '@shared/testing';
-import { Request } from 'express';
+import { TestApiClient } from '@shared/testing';
 
 const baseRouteName = '/deletionExecutions';
 
 describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
-	let testXApiKeyClient: TestXApiKeyClient;
+	let testApiClient: TestApiClient;
 	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
@@ -28,7 +27,7 @@ describe(`deletionExecution (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName, API_KEY);
+		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -38,8 +37,7 @@ describe(`deletionExecution (api)`, () => {
 	describe('executeDeletions', () => {
 		describe('when execute deletionRequests with default limit', () => {
 			it('should return status 204', async () => {
-				const response = await testXApiKeyClient.post('');
-
+				const response = await testApiClient.post('');
 				expect(response.status).toEqual(204);
 			});
 		});

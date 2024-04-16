@@ -29,22 +29,31 @@ export class TestApiClient {
 
 	private readonly authHeader: string;
 
+	private readonly kindOfAuth: string;
+
 	constructor(app: INestApplication, baseRoute: string, authValue?: string, useAsApiKey = false) {
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
 		this.authHeader = useAsApiKey ? `${authValue || ''}` : `${testReqestConst.prefix} ${authValue || ''}`;
+		this.kindOfAuth = useAsApiKey ? 'X-API-KEY' : 'authorization';
 	}
 
 	public get(subPath?: string): supertest.Test {
 		const path = this.getPath(subPath);
-		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set('authorization', this.authHeader);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.get(path)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
 
 	public delete(subPath?: string): supertest.Test {
 		const path = this.getPath(subPath);
-		const testRequestInstance = supertest(this.app.getHttpServer()).delete(path).set('authorization', this.authHeader);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.delete(path)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
@@ -53,7 +62,7 @@ export class TestApiClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.put(path)
-			.set('authorization', this.authHeader)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
@@ -63,7 +72,7 @@ export class TestApiClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.patch(path)
-			.set('authorization', this.authHeader)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
@@ -73,7 +82,8 @@ export class TestApiClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)
-			.set('authorization', this.authHeader)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json)
 			.send(data);
 
 		return testRequestInstance;
@@ -88,7 +98,7 @@ export class TestApiClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)
-			.set('authorization', this.authHeader)
+			.set(this.kindOfAuth, this.authHeader)
 			.attach(fieldName, data, fileName);
 
 		return testRequestInstance;

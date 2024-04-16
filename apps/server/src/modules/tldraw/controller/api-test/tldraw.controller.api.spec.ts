@@ -1,6 +1,6 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseFactory, TestXApiKeyClient, UserAndAccountTestFactory } from '@shared/testing';
+import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@modules/server';
 import { Logger } from '@src/core/logger';
@@ -15,7 +15,7 @@ const baseRouteName = '/tldraw-document';
 describe('tldraw controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testXApiKeyClient: TestXApiKeyClient;
+	let testApiClient: TestApiClient;
 	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
@@ -37,7 +37,7 @@ describe('tldraw controller (api)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName, API_KEY);
+		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -61,7 +61,7 @@ describe('tldraw controller (api)', () => {
 		it('should return status 200 for delete', async () => {
 			const { drawingItemData } = await setup();
 
-			const response = await testXApiKeyClient.delete(`${drawingItemData.docName}`);
+			const response = await testApiClient.delete(`${drawingItemData.docName}`);
 
 			expect(response.status).toEqual(204);
 		});
