@@ -779,6 +779,7 @@
 			"description": "Etherpad feature enabled"
 		},
 		"ETHERPAD_API_KEY": {
+			"default": "",
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
 		},
@@ -1359,7 +1360,6 @@
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
-
 			},
 			"default": {}
 		},
