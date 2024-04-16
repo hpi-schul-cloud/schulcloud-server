@@ -144,4 +144,25 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('move-column-success', data);
 	}
+
+	@SubscribeMessage('update-board-title-request')
+	handleChangeBoardTitle(client: Socket, data: Record<string, unknown>) {
+		this.logger.log(`Message received from client id: ${client.id}`);
+		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		client.broadcast.emit('update-board-title-success', data);
+	}
+
+	@SubscribeMessage('update-column-title-request')
+	handleChangeColumnTitle(client: Socket, data: Record<string, unknown>) {
+		this.logger.log(`Message received from client id: ${client.id}`);
+		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		client.broadcast.emit('update-column-title-success', data);
+	}
+
+	@SubscribeMessage('update-board-visibility-request')
+	handleBoardVisibility(client: Socket, data: Record<string, unknown>) {
+		this.logger.log(`Message received from client id: ${client.id}`);
+		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		client.broadcast.emit('update-board-visibility-success', data);
+	}
 }
