@@ -21,7 +21,7 @@ export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV130>
 	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV130>;
 
-type CommonCartridgeResourcePropsInternal =
+export type CommonCartridgeResourcePropsInternal =
 	| CommonCartridgeManifestResourcePropsV110
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110
