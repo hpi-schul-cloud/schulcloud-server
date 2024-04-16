@@ -21,7 +21,6 @@ import { AuthenticationModule } from '../authentication';
 		ConsoleWriterModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
-			allowGlobalContext: true, // TODO: remove!!!!
 			type: 'mongo',
 			clientUrl: DB_URL, // TODO: check if this needs to be different
 			password: DB_PASSWORD,
