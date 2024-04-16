@@ -145,6 +145,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#checkForExternalIdDuplicatesAndThrow" >checkForExternalIdDuplicatesAndThrow</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#doMigration" >doMigration</a>
                             </li>
                             <li>
@@ -179,7 +184,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -250,6 +255,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkForExternalIdDuplicatesAndThrow"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkForExternalIdDuplicatesAndThrow</b></span>
+                        <a href="#checkForExternalIdDuplicatesAndThrow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkForExternalIdDuplicatesAndThrow(externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetSystemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalUserId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>targetSystemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="doMigration"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -269,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -374,8 +461,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -468,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-migration.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -551,7 +638,10 @@ import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { UserMigrationDatabaseOperationFailedLoggableException } from &#x27;../loggable&#x27;;
+import {
+	UserMigrationDatabaseOperationFailedLoggableException,
+	UserLoginMigrationUserAlreadyMigratedLoggableException,
+} from &#x27;../loggable&#x27;;
 
 @Injectable()
 export class UserMigrationService {
@@ -562,6 +652,8 @@ export class UserMigrationService {
 	) {}
 
 	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise&lt;void&gt; {
+		await this.checkForExternalIdDuplicatesAndThrow(externalUserId, targetSystemId);
+
 		const userDO: UserDO &#x3D; await this.userService.findById(currentUserId);
 		const account: Account &#x3D; await this.accountService.findByUserIdOrFail(currentUserId);
 
@@ -598,6 +690,13 @@ export class UserMigrationService {
 			await this.accountService.save(accountCopy);
 		} catch (error: unknown) {
 			this.logger.warning(new UserMigrationDatabaseOperationFailedLoggableException(currentUserId, &#x27;rollback&#x27;, error));
+		}
+	}
+
+	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId) {
+		const existingUser: UserDO | null &#x3D; await this.userService.findByExternalId(externalUserId, targetSystemId);
+		if (existingUser) {
+			throw new UserLoginMigrationUserAlreadyMigratedLoggableException(externalUserId);
 		}
 	}
 }

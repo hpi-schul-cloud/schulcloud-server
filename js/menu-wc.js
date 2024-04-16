@@ -5372,6 +5372,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MoveElementPositionParams.html" data-type="entity-link" >MoveElementPositionParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/MultipleUsersFoundLoggableException.html" data-type="entity-link" >MultipleUsersFoundLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/News.html" data-type="entity-link" >News</a>
                             </li>
                             <li class="link">
@@ -6582,6 +6585,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationStartLoggable.html" data-type="entity-link" >UserLoginMigrationStartLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserLoginMigrationUserAlreadyMigratedLoggableException.html" data-type="entity-link" >UserLoginMigrationUserAlreadyMigratedLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserMapper.html" data-type="entity-link" >UserMapper</a>
