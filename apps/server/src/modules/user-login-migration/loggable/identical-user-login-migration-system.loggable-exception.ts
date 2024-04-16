@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain/types';
 
 export class IdenticalUserLoginMigrationSystemLoggableException extends ValidationError implements Loggable {
 	constructor(private readonly schoolId: string | undefined, private readonly targetSystemId: EntityId | undefined) {
-		super(`identical_user_login_migration_system: The target system and current schools login system are the same!`);
+		super('identical_user_login_migration_system: The target system and current schools login system are the same!');
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
