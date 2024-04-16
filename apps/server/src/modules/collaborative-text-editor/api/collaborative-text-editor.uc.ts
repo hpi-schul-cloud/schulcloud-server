@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
@@ -39,8 +39,6 @@ export class CollaborativeTextEditorUc {
 	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User) {
 		if (params.parentType === CollaborativeTextEditorParentType.BOARD_CONTENT_ELEMENT) {
 			await this.authorizeForContentElement(params, user);
-		} else {
-			throw new InternalServerErrorException('Parent type not supported');
 		}
 	}
 

@@ -1,4 +1,3 @@
-export { boardDoAuthorizableFactory } from './board-do-authorizable.factory';
 export * from './card.do.factory';
 export * from './collaborative-text-editor-element.do.factory';
 export * from './column-board.do.factory';
@@ -7,9 +6,11 @@ export * from './drawing-element.do.factory';
 export * from './external-tool-element.do.factory';
 export * from './file-element.do.factory';
 export * from './link-element.do.factory';
-export { mediaBoardFactory } from './media-board.do.factory';
-export { mediaExternalToolElementFactory } from './media-external-tool-element.do.factory';
-export { mediaLineFactory } from './media-line.do.factory';
 export * from './rich-text-element.do.factory';
 export * from './submission-container-element.do.factory';
 export * from './submission-item.do.factory';
+
+export { boardDoAuthorizableFactory } from './board-do-authorizable.factory';
+export { mediaBoardFactory } from './media-board.do.factory';
+export { mediaExternalToolElementFactory } from './media-external-tool-element.do.factory';
+export { mediaLineFactory } from './media-line.do.factory';
