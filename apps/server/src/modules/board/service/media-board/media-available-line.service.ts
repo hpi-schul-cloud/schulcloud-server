@@ -73,11 +73,13 @@ export class MediaAvailableLineService {
 	}
 
 	private restrictsToMediaBoardElementContext(tool: ExternalTool): boolean {
-		const restrictsToMediaBoard = tool.restrictToContexts
-			? tool.restrictToContexts.includes(ToolContextType.MEDIA_BOARD)
-			: false;
+		if (!tool.restrictToContexts || tool.restrictToContexts.length === 0) {
+			return false;
+		}
 
-		return restrictsToMediaBoard;
+		const restrictsToMediaBoard = tool.restrictToContexts.includes(ToolContextType.MEDIA_BOARD);
+
+		return !restrictsToMediaBoard;
 	}
 
 	private isContextExternalToolUsedBySchoolExternalTool(
