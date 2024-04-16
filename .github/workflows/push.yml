@@ -189,7 +189,7 @@ jobs:
     needs:
       - build_and_push
       - branch_meta
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@BC-6654-update-mongodb
+    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
     with:
       ref: ${{ needs.branch_meta.outputs.branch }}
 
