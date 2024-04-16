@@ -5,3 +5,4 @@ export { IdTokenInvalidLoggableException } from './id-token-invalid-loggable-exc
 export { OauthConfigMissingLoggableException } from './oauth-config-missing-loggable-exception';
 export { IdTokenExtractionFailureLoggableException } from './id-token-extraction-failure-loggable-exception';
 export { IdTokenUserNotFoundLoggableException } from './id-token-user-not-found-loggable-exception';
+export { MultipleUsersFoundLoggableException } from './multiple-users-found.loggable-exception';
