@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	SanisGroupRole,
 	SanisGroupType,
@@ -104,6 +105,7 @@ describe('SanisResponseMapper', () => {
 
 		describe('when group type class is given', () => {
 			const setup = () => {
+				Configuration.set('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED', true);
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
 				const group: SanisGruppenResponse = personenkontext.gruppen![0];
