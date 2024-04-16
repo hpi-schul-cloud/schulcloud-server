@@ -9,8 +9,8 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
-} from './generated-etherpad-api-client';
-import { AuthorApi, GroupApi, SessionApi } from './generated-etherpad-api-client/api';
+} from './etherpad-api-client';
+import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
 import { EtherpadServerError } from './loggable';
 import { EtherpadResponseMapper } from './mappers';

@@ -5,7 +5,7 @@ import {
 	InlineResponse2003Data,
 	InlineResponse2004Data,
 	InlineResponse200Data,
-} from '../generated-etherpad-api-client';
+} from '../etherpad-api-client';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from '../interface';
 import { EtherpadServerError } from '../loggable';
 

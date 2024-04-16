@@ -1,7 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { EtherpadClientAdapter } from './etherpad-client.adapter';
 import {
 	AuthorApi,
 	GroupApi,
@@ -12,7 +11,8 @@ import {
 	InlineResponse2004,
 	InlineResponse2006,
 	SessionApi,
-} from './generated-etherpad-api-client';
+} from './etherpad-api-client';
+import { EtherpadClientAdapter } from './etherpad-client.adapter';
 import { ErrorType } from './interface';
 
 describe(EtherpadClientAdapter.name, () => {
