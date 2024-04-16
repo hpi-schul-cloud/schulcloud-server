@@ -15,6 +15,7 @@ import {
 	lessonFactory,
 	setupEntities,
 	taskFactory,
+	richTextElementFactory,
 } from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
@@ -76,7 +77,8 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		const card = cardFactory.build();
+		const textCardElement = richTextElementFactory.build();
+		const card = cardFactory.build({ children: [textCardElement] });
 		const column = columnFactory.build({ children: [card] });
 		const columnBoard = columnBoardFactory.build({ children: [column] });
 
@@ -98,7 +100,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card, textCardElement };
 	};
 
 	beforeAll(async () => {
@@ -265,6 +267,13 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', card.title));
+			});
+
+			it('should add content element of cards', async () => {
+				const { archive, textCardElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(`<resource identifier="i${textCardElement.id}"`);
 			});
 		});
 

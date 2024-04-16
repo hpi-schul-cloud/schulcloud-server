@@ -36,8 +36,8 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findByUserId(userId: EntityId): Promise<RocketChatUser[]> {
-		const user: RocketChatUser[] = await this.rocketChatUserRepo.findByUserId(userId);
+	public async findByUserId(userId: EntityId): Promise<RocketChatUser | null> {
+		const user: RocketChatUser | null = await this.rocketChatUserRepo.findByUserId(userId);
 
 		return user;
 	}
@@ -53,63 +53,96 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		);
 		const rocketChatUser = await this.rocketChatUserRepo.findByUserId(userId);
 
-		if (rocketChatUser.length > 0) {
-			try {
-				const [, rocketChatUserDeleted] = await Promise.all([
-					this.rocketChatService.deleteUser(rocketChatUser[0].username),
-					this.rocketChatUserRepo.deleteByUserId(rocketChatUser[0].userId),
-				]);
+		if (rocketChatUser === null) {
+			const result = this.buildResultAndLog(0, 0, userId, 'RocketChat user already deleted', StatusModel.FINISHED);
 
-				const result = DomainDeletionReportBuilder.build(
-					DomainName.ROCKETCHATUSER,
-					[DomainOperationReportBuilder.build(OperationType.DELETE, rocketChatUserDeleted, [rocketChatUser[0].id])],
-					[
-						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-							DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser[0].username]),
-						]),
-					]
-				);
+			return result;
+		}
 
-				this.logger.info(
-					new DataDeletionDomainOperationLoggable(
-						'Successfully deleted user from rocket chat',
-						DomainName.ROCKETCHATUSER,
-						userId,
-						StatusModel.FINISHED,
-						0,
-						rocketChatUserDeleted
-					)
+		try {
+			await this.rocketChatService.deleteUser(rocketChatUser.username);
+			const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
+			const result = this.buildResultAndLog(
+				rocketChatUserDeleted,
+				1,
+				userId,
+				'Successfully deleted user from rocket chat',
+				StatusModel.SUCCESS,
+				rocketChatUser
+			);
+
+			return result;
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (error.errorType === 'error-invalid-user' && error.response.success === false) {
+				const rocketChatUserDeleted = await this.rocketChatUserRepo.deleteByUserId(rocketChatUser.userId);
+				const result = this.buildResultAndLog(
+					rocketChatUserDeleted,
+					0,
+					userId,
+					'Successfully deleted user from rocket chat',
+					StatusModel.SUCCESS,
+					rocketChatUser
 				);
 
 				return result;
-			} catch {
-				throw new DeletionErrorLoggableException(
-					`Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`
-				);
 			}
-		} else {
-			const result = DomainDeletionReportBuilder.build(
-				DomainName.ROCKETCHATUSER,
-				[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])],
-				[
-					DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
-					]),
-				]
-			);
 
-			this.logger.info(
+			this.logger.warning(
 				new DataDeletionDomainOperationLoggable(
-					'RocketChat user already deleted',
+					'Failed to delete user data from RocketChatUser collection / RocketChat service',
 					DomainName.ROCKETCHATUSER,
 					userId,
-					StatusModel.FINISHED,
+					StatusModel.FAILED,
 					0,
 					0
 				)
 			);
 
-			return result;
+			throw new DeletionErrorLoggableException(
+				`Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`
+			);
 		}
+	}
+
+	private buildResultAndLog(
+		rocketChatUserDeleted: number,
+		rocketChatServiceUserDeleted: number,
+		userId: string,
+		message: string,
+		status: StatusModel,
+		rocketChatUser?: RocketChatUser
+	): DomainDeletionReport {
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.ROCKETCHATUSER,
+			[
+				DomainOperationReportBuilder.build(
+					OperationType.DELETE,
+					rocketChatUserDeleted,
+					rocketChatUser ? [rocketChatUser.id] : []
+				),
+			],
+			[
+				DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
+					DomainOperationReportBuilder.build(
+						OperationType.DELETE,
+						rocketChatServiceUserDeleted,
+						rocketChatUser && rocketChatServiceUserDeleted !== 0 ? [rocketChatUser.username] : []
+					),
+				]),
+			]
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				message,
+				DomainName.ROCKETCHATUSER,
+				userId,
+				status,
+				0,
+				rocketChatUserDeleted
+			)
+		);
+		return result;
 	}
 }

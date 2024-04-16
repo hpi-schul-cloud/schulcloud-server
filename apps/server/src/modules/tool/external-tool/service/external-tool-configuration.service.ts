@@ -1,21 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
+import { CommonToolService } from '../../common/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc/dto';
-import { CommonToolService } from '../../common/service';
 
 @Injectable()
 export class ExternalToolConfigurationService {
-	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
-		private readonly commonToolService: CommonToolService
-	) {}
+	constructor(private readonly commonToolService: CommonToolService) {}
 
 	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
 		const visibleTools: ExternalTool[] = externalTools.data.filter((tool: ExternalTool): boolean => !tool.isHidden);
@@ -24,28 +19,6 @@ export class ExternalToolConfigurationService {
 			.filter((tool: ExternalTool): boolean => !!tool.id && !toolIdsInUse.includes(tool.id))
 			.filter((tool) => !tool.isDeactivated);
 		return availableTools;
-	}
-
-	public filterForAvailableSchoolExternalTools(
-		schoolExternalTools: SchoolExternalTool[],
-		contextExternalToolsInUse: ContextExternalTool[]
-	): SchoolExternalTool[] {
-		const availableSchoolExternalTools: SchoolExternalTool[] = schoolExternalTools.filter(
-			(schoolExternalTool: SchoolExternalTool): boolean => {
-				if (this.toolFeatures.contextConfigurationEnabled) {
-					return true;
-				}
-
-				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
-					(contextExternalTool: ContextExternalTool) =>
-						contextExternalTool.schoolToolRef.schoolToolId === schoolExternalTool.id
-				);
-
-				return !hasContextExternalTool;
-			}
-		);
-
-		return availableSchoolExternalTools;
 	}
 
 	public filterForAvailableExternalTools(

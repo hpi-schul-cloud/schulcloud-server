@@ -6,7 +6,7 @@ import {
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Column, Card } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column, Card, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -136,10 +136,16 @@ export class CommonCartridgeExportService {
 
 	private addCardToOrganization(card: Card, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
 		const { id } = card;
-		organizationBuilder.addSubOrganization({
+		const cardOrganization = organizationBuilder.addSubOrganization({
 			title: card.title,
 			identifier: createIdentifier(id),
 		});
+
+		card.children
+			.filter((child) => child instanceof RichTextElement)
+			.forEach((child) =>
+				cardOrganization.addResource(this.commonCartridgeMapper.mapRichTextElementToResource(child as RichTextElement))
+			);
 	}
 
 	private addComponentToOrganization(
