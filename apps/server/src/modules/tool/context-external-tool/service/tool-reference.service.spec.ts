@@ -138,6 +138,7 @@ describe('ToolReferenceService', () => {
 						isOutdatedOnScopeContext: false,
 					}),
 					contextToolId: contextExternalToolId,
+					description: externalTool.description,
 				});
 			});
 		});
