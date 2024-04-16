@@ -91,7 +91,7 @@ describe('CollaborativeTextEditorService', () => {
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				configService.get.mockReturnValueOnce(url);
 				etherpadClientAdapter.getOrCreateGroup.mockResolvedValueOnce(groupId);
-				etherpadClientAdapter.getOrCreatePad.mockResolvedValueOnce(padId);
+				etherpadClientAdapter.getOrCreateEtherpad.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthor.mockResolvedValueOnce(authorId);
 				etherpadClientAdapter.getOrCreateSession.mockResolvedValueOnce(sessionId);
 				etherpadClientAdapter.listSessionsOfAuthor.mockResolvedValueOnce(authorsSessionIds);
@@ -133,7 +133,7 @@ describe('CollaborativeTextEditorService', () => {
 				await service.createCollaborativeTextEditor(userId, userName, params);
 
 				expect(etherpadClientAdapter.getOrCreateGroup).toHaveBeenCalledWith(params.parentId);
-				expect(etherpadClientAdapter.getOrCreatePad).toHaveBeenCalledWith(groupId, params.parentId);
+				expect(etherpadClientAdapter.getOrCreateEtherpad).toHaveBeenCalledWith(groupId, params.parentId);
 				expect(etherpadClientAdapter.getOrCreateAuthor).toHaveBeenCalledWith(userId, userName);
 				expect(etherpadClientAdapter.getOrCreateSession).toHaveBeenCalledWith(
 					groupId,
@@ -166,14 +166,14 @@ describe('CollaborativeTextEditorService', () => {
 			});
 		});
 
-		describe('WHEN etherpadClientAdapter.getOrCreatePad throws an error', () => {
+		describe('WHEN etherpadClientAdapter.getOrCreateEtherpad throws an error', () => {
 			const setup = () => {
 				const { userId, userName, params, dateMock, cookieExpiresSeconds, groupId } = buildParameter();
 				const error = new Error('error');
 
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroup.mockResolvedValueOnce(groupId);
-				etherpadClientAdapter.getOrCreatePad.mockRejectedValueOnce(error);
+				etherpadClientAdapter.getOrCreateEtherpad.mockRejectedValueOnce(error);
 
 				jest.useFakeTimers();
 				jest.setSystemTime(dateMock);
@@ -195,7 +195,7 @@ describe('CollaborativeTextEditorService', () => {
 
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroup.mockResolvedValueOnce(groupId);
-				etherpadClientAdapter.getOrCreatePad.mockResolvedValueOnce(padId);
+				etherpadClientAdapter.getOrCreateEtherpad.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthor.mockRejectedValueOnce(error);
 
 				jest.useFakeTimers();
@@ -218,7 +218,7 @@ describe('CollaborativeTextEditorService', () => {
 
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroup.mockResolvedValueOnce(groupId);
-				etherpadClientAdapter.getOrCreatePad.mockResolvedValueOnce(padId);
+				etherpadClientAdapter.getOrCreateEtherpad.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthor.mockResolvedValueOnce(authorId);
 				etherpadClientAdapter.getOrCreateSession.mockRejectedValueOnce(error);
 
@@ -243,7 +243,7 @@ describe('CollaborativeTextEditorService', () => {
 
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroup.mockResolvedValueOnce(groupId);
-				etherpadClientAdapter.getOrCreatePad.mockResolvedValueOnce(padId);
+				etherpadClientAdapter.getOrCreateEtherpad.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthor.mockResolvedValueOnce(authorId);
 				etherpadClientAdapter.getOrCreateSession.mockResolvedValueOnce(sessionId);
 				etherpadClientAdapter.listSessionsOfAuthor.mockRejectedValueOnce(error);
