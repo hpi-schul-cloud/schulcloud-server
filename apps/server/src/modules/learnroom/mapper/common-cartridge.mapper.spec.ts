@@ -16,6 +16,8 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { RichTextElement, RichTextElementProps } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
 
@@ -393,6 +395,39 @@ describe('CommonCartridgeMapper', () => {
 				expect(fileBuilderProps).toStrictEqual<CommonCartridgeFileBuilderProps>({
 					version: CommonCartridgeVersion.V_1_1_0,
 					identifier: createIdentifier(course.id),
+				});
+			});
+		});
+	});
+
+	describe('mapRichTextElementToResource', () => {
+		describe('when mapping rich text element', () => {
+			const setup = () => {
+				const richTextElementProps: RichTextElementProps = {
+					text: faker.lorem.paragraph(),
+					inputFormat: InputFormat.RICH_TEXT_CK5,
+					id: faker.string.uuid(),
+					createdAt: faker.date.recent(),
+					updatedAt: faker.date.recent(),
+				};
+				const richTextElement = new RichTextElement(richTextElementProps);
+
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return { richTextElement };
+			};
+
+			it('should map to web content', () => {
+				const { richTextElement } = setup();
+
+				const resourceProps = sut.mapRichTextElementToResource(richTextElement);
+
+				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
+					type: CommonCartridgeResourceType.WEB_CONTENT,
+					identifier: expect.any(String),
+					title: richTextElement.text.slice(0, 50).concat('...'),
+					html: `<p>${richTextElement.text}</p>`,
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
 			});
 		});
