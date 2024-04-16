@@ -6,7 +6,7 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe('CoursePermissionService', () => {
+describe.only('CoursePermissionService', () => {
 	let app;
 	let coursePermissionService;
 	let nestServices;
@@ -106,7 +106,7 @@ describe('CoursePermissionService', () => {
 
 	before(async () => {
 		app = await appPromise();
-		coursePermissionService = app.service('/courses/:scopeId/userPermissions');
+		coursePermissionService = app.service('/coursesUserPermissions/:scopeId');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 
