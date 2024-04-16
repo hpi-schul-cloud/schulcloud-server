@@ -4,6 +4,7 @@ import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums
 import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
+	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
 } from './common-cartridge-import.types';
 
@@ -20,6 +21,8 @@ export class CommonCartridgeResourceFactory {
 		switch (organization.resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content);
+			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
+				return this.createWebContentResource(content);
 			default:
 				return undefined;
 		}
@@ -46,6 +49,23 @@ export class CommonCartridgeResourceFactory {
 			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
 			title,
 			url,
+		};
+	}
+
+	private createWebContentResource(content: string): CommonCartridgeWebContentResourceProps | undefined {
+		const document = this.tryCreateDocument(content);
+
+		if (!document) {
+			return undefined;
+		}
+
+		const title = document.querySelector('webContent > title')?.textContent || '';
+		const html = document.querySelector('webContent > html')?.textContent || '';
+
+		return {
+			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+			title,
+			html,
 		};
 	}
 
