@@ -1639,6 +1639,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
+		},
+		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the provisioning of other groupusers"
 		}
 	},
 	"required": []

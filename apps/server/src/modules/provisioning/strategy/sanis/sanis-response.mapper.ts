@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	SanisGruppenResponse,
 	SanisResponse,
@@ -120,12 +121,14 @@ export class SanisResponseMapper {
 		}
 
 		let otherUsers: ExternalGroupUserDto[] | undefined;
-		if (group.sonstige_gruppenzugehoerige) {
-			otherUsers = group.sonstige_gruppenzugehoerige
-				.map((relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null =>
-					this.mapToExternalGroupUser(relation)
-				)
-				.filter((otherUser: ExternalGroupUserDto | null): otherUser is ExternalGroupUserDto => otherUser !== null);
+		if (Configuration.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED')) {
+			if (group.sonstige_gruppenzugehoerige) {
+				otherUsers = group.sonstige_gruppenzugehoerige
+					.map((relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null =>
+						this.mapToExternalGroupUser(relation)
+					)
+					.filter((otherUser: ExternalGroupUserDto | null): otherUser is ExternalGroupUserDto => otherUser !== null);
+			}
 		}
 
 		return new ExternalGroupDto({
