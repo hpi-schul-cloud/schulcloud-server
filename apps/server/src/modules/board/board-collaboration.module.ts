@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { defaultMikroOrmOptions } from '@modules/server';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
@@ -9,9 +9,9 @@ import { ConsoleWriterModule } from '@src/infra/console';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { AuthorizationModule } from '../authorization';
 import { config } from './board-collaboration.config';
+import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
-import { SocketGateway } from './gateway/socket.gateway';
-import { ColumnUc } from './uc';
+import { AuthenticationModule } from '../authentication';
 
 @Module({
 	imports: [
@@ -28,9 +28,11 @@ import { ColumnUc } from './uc';
 			entities: ALL_ENTITIES,
 		}),
 		BoardModule,
-		forwardRef(() => AuthorizationModule),
+		AuthorizationModule,
+		AuthenticationModule,
+		BoardWsApiModule,
 	],
-	providers: [SocketGateway, ColumnUc],
+	providers: [],
 	exports: [],
 })
 export class BoardCollaborationModule {}
