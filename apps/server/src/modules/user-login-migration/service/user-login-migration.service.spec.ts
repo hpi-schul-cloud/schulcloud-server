@@ -371,7 +371,7 @@ describe(UserLoginMigrationService.name, () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw an IdenticalUserLoginMigrationSystemLoggableException', async () => {
 				const { schoolId, targetSystemId } = setup();
 
 				const func = async () => service.startMigration(schoolId);
