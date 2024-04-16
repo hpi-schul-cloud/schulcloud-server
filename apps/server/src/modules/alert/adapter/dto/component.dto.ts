@@ -11,9 +11,7 @@ export class ComponentDto {
 		updated_at: Date,
 		deleted_at: Date,
 		enabled: boolean,
-		meta: any[],
 		status_name: string,
-		tags: any[]
 	) {
 		this.id = id;
 		this.name = name;
@@ -26,9 +24,7 @@ export class ComponentDto {
 		this.updated_at = updated_at;
 		this.deleted_at = deleted_at;
 		this.enabled = enabled;
-		this.meta = meta;
 		this.status_name = status_name;
-		this.tags = tags;
 	}
 
 	id: number;
@@ -53,9 +49,5 @@ export class ComponentDto {
 
 	enabled: boolean;
 
-	meta: any[];
-
 	status_name: string;
-
-	tags: any[];
 }

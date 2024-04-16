@@ -14,8 +14,6 @@ export class IncidentDto {
 		user_id: number,
 		notifications: boolean,
 		is_resolved: boolean,
-		meta: any[],
-		updates: any[],
 		human_status: string,
 		latest_update_id: number,
 		latest_status: number,
@@ -38,8 +36,6 @@ export class IncidentDto {
 		this.user_id = user_id;
 		this.notifications = notifications;
 		this.is_resolved = is_resolved;
-		this.meta = meta;
-		this.updates = updates;
 		this.human_status = human_status;
 		this.latest_update_id = latest_update_id;
 		this.latest_status = latest_status;
@@ -76,10 +72,6 @@ export class IncidentDto {
 	notifications: boolean;
 
 	is_resolved: boolean;
-
-	meta: any[];
-
-	updates: any[];
 
 	human_status: string;
 

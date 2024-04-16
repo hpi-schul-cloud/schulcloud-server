@@ -53,10 +53,10 @@ export class StatusAdapter {
 
 		const filteredData = rawData.data.filter((element) => element.status !== statusEnum.fixed);
 		filteredData.map(async (element) => {
-			const isinstance = await this.getInstance(instance, element.component_id);
-			if (isinstance !== Importance.ALL_INSTANCES && isinstance !== Importance.INGORE) {
+			const isInstance = await this.getInstance(instance, element.component_id);
+			if (isInstance !== Importance.ALL_INSTANCES && isInstance !== Importance.INGORE) {
 				instanceSpecific.push(element);
-			} else if (isinstance !== Importance.INGORE) {
+			} else if (isInstance !== Importance.INGORE) {
 				noneSpecific.push(element);
 			}
 		});
