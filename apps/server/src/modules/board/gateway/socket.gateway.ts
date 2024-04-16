@@ -1,9 +1,10 @@
-import { WebSocketGateway, SubscribeMessage, OnGatewayConnection, OnGatewayInit } from '@nestjs/websockets';
+import { UseGuards } from '@nestjs/common';
+import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { LegacyLogger } from '@src/core/logger';
-import { Socket } from 'socket.io';
+import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import cookie from 'cookie';
-import { Request } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Socket } from 'socket.io';
 // import { Authenticate } from '@src/modules/authentication';
 // import { ColumnUc } from '../uc';
 // @Authenticate('jwt')
@@ -18,13 +19,15 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 		// transports: ['websocket'],
 	},
 })
+@UseGuards(WsJwtAuthGuard)
 export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	// TODO: use loggables instead of legacy logger
 	constructor(
-		private readonly logger: LegacyLogger // private readonly boardUc: BoardUc // private readonly columnUc: ColumnUc
+		private readonly logger: LegacyLogger /* private readonly boardUc: BoardUc,
+		private readonly columnUc: ColumnUc */
 	) {}
 
-	public async handleConnection(client: Socket, request: Request): Promise<void> {
+	public async handleConnection(client: Socket): Promise<void> {
 		this.logger.log('New connection');
 		await this.authorizeConnection(client);
 
@@ -135,6 +138,10 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	handleMoveCard(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		/* // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const { user } = client.handshake as unknown as { user: ICurrentUser };
+		const mapped = data as unknown as { cardId: string; newIndex: number; toColumnId: string };
+		await this.columnUc.moveCard(user.userId, mapped.cardId, mapped.toColumnId, mapped.newIndex); */
 		client.broadcast.emit('move-card-success', data);
 	}
 
