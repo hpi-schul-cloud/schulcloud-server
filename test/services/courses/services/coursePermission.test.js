@@ -6,7 +6,7 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe.only('CoursePermissionService', () => {
+describe('CoursePermissionService', () => {
 	let app;
 	let coursePermissionService;
 	let nestServices;
