@@ -25,7 +25,7 @@ describe('Alert Controller api', () => {
 	let app: INestApplication;
 	let httpService: DeepMocked<HttpService>;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		const config = serverConfig();
 		config.ALERT_STATUS_URL = 'test';
 		config.SC_THEME = SchulcloudTheme.DEFAULT;
@@ -39,6 +39,7 @@ describe('Alert Controller api', () => {
 		app = module.createNestApplication();
 		await app.init();
 		httpService = module.get(HttpService);
+		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {
