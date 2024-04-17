@@ -237,7 +237,7 @@
 		"rimraf": "^3.0.2",
 		"rss-parser": "^3.13.0",
 		"rxjs": "^7.3.1",
-		"sanitize-html": "^2.1.0",
+		"sanitize-html": "^2.12.1",
 		"serve-favicon": "^2.3.2",
 		"service": "^0.1.4",
 		"socketio-file-upload": "^0.7.0",
