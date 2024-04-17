@@ -136,13 +136,23 @@ export class EtherpadClientAdapter {
 		padId = await this.getPad(groupId, parentId);
 
 		if (!padId) {
-			const padResponse = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
+			const padResponse = await this.tryCreateEtherpad(groupId, parentId);
 			const pad = this.handleResponse<InlineResponse2001>(padResponse, { parentId });
 
 			padId = EtherpadResponseMapper.mapToPadResponse(pad);
 		}
 
 		return padId;
+	}
+
+	private async tryCreateEtherpad(groupId: string, parentId: string) {
+		try {
+			const response = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
+
+			return response;
+		} catch (error) {
+			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { groupId }, error);
+		}
 	}
 
 	private async getPad(groupId: GroupId, parentId: EntityId): Promise<PadId | undefined> {
