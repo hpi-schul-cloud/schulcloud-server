@@ -48,15 +48,25 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
 			);
 		});
+		it('should remove attributes without values', () => {
+			const plainString = {
+				contentCk5: '<a name></a><a link></a>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentCk5).toEqual('<a></a><a></a>');
+		});
 	});
 
 	describe('when sanitizing rich text ck4 formatting', () => {
 		it('should remove all html but rich text ck4 tags', () => {
 			const plainString = {
-				contentCk4: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style><a href></a>',
+				contentCk4:
+					'<h1><b>html text</b></h1><a name="some name">name</a><a href="some-link"></a><scriPT>alert("foobar");</sCript><stYle></style>',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.contentCk4).toEqual('<h1><b>html text</b></h1><a href></a>');
+			expect(instance.contentCk4).toEqual(
+				'<h1><b>html text</b></h1><a name="some name">name</a><a href="some-link"></a>'
+			);
 		});
 	});
 
