@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Utils } from '@mikro-orm/core';
+import { RequiredEntityData, Utils } from '@mikro-orm/core';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
 import { joinPath } from '../domain/path-utils';
@@ -12,7 +12,7 @@ export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
-		const props = await this.em.findOneOrFail(BoardNodeEntity, { id });
+		const props: AnyBoardNodeProps = (await this.em.findOneOrFail(BoardNodeEntity, { id })) as AnyBoardNodeProps;
 		const descendants = await this.findDescendants(props, depth);
 
 		const builder = new TreeBuilder(descendants);
@@ -27,14 +27,16 @@ export class BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
 		boardNodes.forEach((bn) => {
-			let props = this.getProps(bn);
+			const props = this.getProps(bn);
 
 			if (!(props instanceof BoardNodeEntity)) {
-				props = this.em.create(BoardNodeEntity, props);
-				this.setProps(bn, props);
+				const entity = this.em.create(BoardNodeEntity, props as RequiredEntityData<BoardNodeEntity>);
+				this.setProps(bn, entity as AnyBoardNodeProps);
+				this.em.persist(entity);
+			} else {
+				// for the unlikely case that the props are not managed yet
+				this.em.persist(props);
 			}
-
-			this.em.persist(props);
 		});
 
 		return this;
@@ -67,7 +69,7 @@ export class BoardNodeRepo {
 			level: levelQuery,
 		});
 
-		return descendants;
+		return descendants as AnyBoardNodeProps[];
 	}
 
 	private getProps(boardNode: AnyBoardNode): AnyBoardNodeProps {

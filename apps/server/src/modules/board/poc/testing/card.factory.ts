@@ -11,7 +11,7 @@ export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence
 		type: BoardNodeType.CARD,
 		path: ROOT_PATH,
 		level: 0,
-		title: `board node #${sequence}`,
+		title: `card #${sequence}`,
 		position: 0,
 		children: [],
 		createdAt: new Date(),

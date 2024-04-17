@@ -1,7 +1,5 @@
-import { AnyBoardNode, AnyBoardNodeProps, Card, joinPath } from '../domain';
-
-// TODO handle different types of props and Domain Objects
-// discriminator: props.type
+import { AnyBoardNode, AnyBoardNodeProps, Card, ColumnBoard, joinPath } from '../domain';
+import { isCardProps, isColumnBoardProps } from './type-guards';
 
 export class TreeBuilder {
 	private childrenMap: Record<string, AnyBoardNodeProps[]> = {};
@@ -16,7 +14,15 @@ export class TreeBuilder {
 	build(props: AnyBoardNodeProps): AnyBoardNode {
 		props.children = this.getChildren(props).map((childProps) => this.build(childProps));
 
-		const boardNode = new Card(props);
+		let boardNode: AnyBoardNode;
+
+		if (isColumnBoardProps(props)) {
+			boardNode = new ColumnBoard(props);
+		} else if (isCardProps(props)) {
+			boardNode = new Card(props);
+		} else {
+			throw Error(`Invalid board node type: '${(props as { type: string }).type}'`);
+		}
 
 		return boardNode;
 	}

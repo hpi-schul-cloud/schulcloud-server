@@ -10,8 +10,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	get children(): readonly AnyBoardNode[] {
-		// return this.props.children; // should we clone the array?
-		return [...this.props.children] as const;
+		return this.props.children;
 	}
 
 	get parentId(): EntityId | undefined {
@@ -23,7 +22,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return this.ancestorIds.length > 0;
 	}
 
-	get ancestorIds(): EntityId[] {
+	get ancestorIds(): readonly EntityId[] {
 		const parentIds = this.props.path.split(PATH_SEPARATOR).filter((id) => id !== '');
 		return parentIds;
 	}
@@ -77,20 +76,3 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		});
 	}
 }
-
-// const entity1 = em.findOneOrFail(id);
-// const entity2 = em.findOneOrFail(id);
-
-// entity1 === entity2;
-
-// node1 = repo.findById(id);
-// node2 = repo.findById(id);
-
-// node1 !== node2;
-
-// const entity = em.findOneOrFail(id);
-// if (!entity.nodeRef) {
-// 	const node = new Card();
-// 	entity.nodeRef = node;
-// }
-// return entity.nodeRef;

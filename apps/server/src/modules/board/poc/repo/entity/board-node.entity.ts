@@ -1,12 +1,13 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
-import { AnyBoardNode, AnyBoardNodeProps } from '../../domain';
+import { AnyBoardNode, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityProps } from '../types';
 
 @Entity({ tableName: 'boardnodes' })
-export class BoardNodeEntity extends BaseEntityWithTimestamps implements AnyBoardNodeProps {
+export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNodeEntityProps {
 	@Index()
 	@Property({ nullable: false })
-	path = ','; // TODO find better way to provide defaults!
+	path = ROOT_PATH;
 
 	@Property({ nullable: false, type: 'integer' })
 	level = 0;
@@ -18,12 +19,15 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements AnyBoar
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
 
-	@Property({ nullable: true })
-	title?: string;
-
 	@Property({ persist: false })
 	children: AnyBoardNode[] = [];
 
-	@Property()
-	height!: number;
+	@Property({ type: 'boolean', nullable: true })
+	isVisible: boolean | undefined;
+
+	@Property({ nullable: true })
+	title: string | undefined;
+
+	@Property({ type: 'integer', nullable: true })
+	height: number | undefined;
 }
