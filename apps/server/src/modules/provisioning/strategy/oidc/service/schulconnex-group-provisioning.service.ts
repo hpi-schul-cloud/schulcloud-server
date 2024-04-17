@@ -7,17 +7,19 @@ import {
 } from '@modules/legacy-school';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../../config';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
 @Injectable()
 export class SchulconnexGroupProvisioningService {
 	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
 		private readonly userService: UserService,
 		private readonly schoolService: LegacySchoolService,
 		private readonly roleService: RoleService,
@@ -115,6 +117,8 @@ export class SchulconnexGroupProvisioningService {
 			const otherUsers: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
 
 			group.users = otherUsers;
+		} else if (this.provisioningFeatures.schulconnexOtherGroupusersEnabled) {
+			group.users = [];
 		}
 
 		const self: GroupUser | null = await this.getGroupUser(externalGroup.user, systemId);
