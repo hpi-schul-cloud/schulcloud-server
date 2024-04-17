@@ -5,7 +5,6 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
@@ -13,6 +12,7 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
+	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
@@ -340,12 +340,12 @@ describe(UserLoginMigrationService.name, () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw a MoinSchuleSystemNotFoundLoggableException', async () => {
 				const { schoolId } = setup();
 
 				const func = async () => service.startMigration(schoolId);
 
-				await expect(func).rejects.toThrow(new InternalServerErrorException('Cannot find SANIS system'));
+				await expect(func).rejects.toThrow(new MoinSchuleSystemNotFoundLoggableException());
 			});
 		});
 
