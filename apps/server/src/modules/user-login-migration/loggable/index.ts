@@ -11,4 +11,5 @@ export * from './user-migration-database-operation-failed.loggable-exception';
 export * from './school-migration-database-operation-failed.loggable-exception';
 export * from './invalid-user-login-migration.loggable-exception';
 export * from './identical-user-login-migration-system.loggable-exception';
+export * from './moin-schule-system-not-found.loggable-exception';
 export * from './debug';
