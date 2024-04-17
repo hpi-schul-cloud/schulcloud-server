@@ -2,4 +2,4 @@ export { EtherpadConfigurationMissingLoggable } from './etherpad-configuration-m
 export {
 	EtherpadCookiesConfigurationMissingLoggable,
 	MissingCookie,
-} from './etherpad-cookies-cinfiguration-missing.loggable';
+} from './etherpad-cookies-configuration-missing.loggable';
