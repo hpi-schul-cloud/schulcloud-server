@@ -10,4 +10,5 @@ export type SchoolExternalToolQueryInput = {
 export type SchoolExternalToolQuery = {
 	schoolId?: string;
 	toolId?: string;
+	isDeactivated?: boolean;
 };

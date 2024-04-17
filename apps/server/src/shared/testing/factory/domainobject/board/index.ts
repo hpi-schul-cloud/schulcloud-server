@@ -12,3 +12,5 @@ export { mediaBoardFactory } from './media-board.do.factory';
 export { mediaLineFactory } from './media-line.do.factory';
 export { mediaExternalToolElementFactory } from './media-external-tool-element.do.factory';
 export { boardDoAuthorizableFactory } from './board-do-authorizable.factory';
+export { mediaAvailableLineElementFactory } from './media-available-line-element.do.factory';
+export { mediaAvailableLineFactory } from './media-available-line.do.factory';
