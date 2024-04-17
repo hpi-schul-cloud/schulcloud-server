@@ -60,7 +60,7 @@ export class CommonCartridgeResourceFactory {
 		}
 
 		const title = document.querySelector('webContent > title')?.textContent || '';
-		const html = document.querySelector('webContent > html')?.textContent || '';
+		const html = document.querySelector('webContent > html')?.getAttribute('href') || '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
