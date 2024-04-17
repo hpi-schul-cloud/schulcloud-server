@@ -1,7 +1,7 @@
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
-	CommonCartridgeFileBuilderProps,
+	// CommonCartridgeFileBuilderProps,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
@@ -111,7 +111,10 @@ export class CommonCartridgeMapper {
 		}
 	}
 
-	public mapCourseToManifest(version: CommonCartridgeVersion, course: Course): CommonCartridgeFileBuilderProps {
+	public mapCourseToManifest(
+		version: CommonCartridgeVersion,
+		course: Course
+	): { version: CommonCartridgeVersion; identifier: string } {
 		return {
 			version,
 			identifier: createIdentifier(course.id),

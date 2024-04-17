@@ -1,7 +1,7 @@
-export {
-	CommonCartridgeFileBuilder,
-	CommonCartridgeFileBuilderProps,
-} from './export/builders/common-cartridge-file-builder';
+// export {
+// 	CommonCartridgeFileBuilder,
+// 	CommonCartridgeFileBuilderProps,
+// } from './export/builders/common-cartridge-file-builder';
 export {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,
