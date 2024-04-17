@@ -1,3 +1,4 @@
+import { ErrorUtils } from '@src/core/error/utils';
 import { ErrorType } from '../interface';
 import { EtherpadServerError } from './etherpad-server-error-exception';
 
@@ -10,8 +11,9 @@ describe('EtherpadServerErrorException', () => {
 				parentId: 'parentId',
 			};
 			const error = new Error('error');
+			const httpExceptionOptions = ErrorUtils.createHttpExceptionOptions(error);
 
-			const exception = new EtherpadServerError(type, payload, error);
+			const exception = new EtherpadServerError(type, payload, httpExceptionOptions);
 			const result = exception.getLogMessage();
 
 			expect(result).toStrictEqual({
@@ -21,7 +23,6 @@ describe('EtherpadServerErrorException', () => {
 					userId: 'userId',
 					parentId: 'parentId',
 				},
-				error,
 			});
 		});
 	});
