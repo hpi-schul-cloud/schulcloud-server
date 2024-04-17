@@ -163,6 +163,15 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMediaAvailableLine" >getMediaAvailableLine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
@@ -221,8 +230,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -284,6 +293,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getMediaAvailableLine"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMediaAvailableLine</b></span>
+                        <a href="#getMediaAvailableLine"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMediaAvailableLine(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Get the media available line for the board.&#x27;})<br />@ApiOkResponse({type: MediaAvailableLineResponse})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@Get(&#x27;:boardId/media-available-line&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;MediaAvailableLineResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getMediaBoardForUser"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -315,8 +417,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -378,17 +480,20 @@ import {
 	ApiTags,
 } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import type { MediaBoard, MediaLine } from &#x27;@shared/domain/domainobject&#x27;;
-import { MediaBoardUc } from &#x27;../../uc&#x27;;
+import { MediaAvailableLine, MediaBoard, MediaLine } from &#x27;@shared/domain/domainobject&#x27;;
+import { MediaAvailableLineUc, MediaBoardUc } from &#x27;../../uc&#x27;;
 import { BoardUrlParams } from &#x27;../dto&#x27;;
-import { MediaBoardResponse, MediaLineResponse } from &#x27;./dto&#x27;;
-import { MediaBoardResponseMapper, MediaLineResponseMapper } from &#x27;./mapper&#x27;;
+import { MediaAvailableLineResponse, MediaBoardResponse, MediaLineResponse } from &#x27;./dto&#x27;;
+import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Media Board&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;media-boards&#x27;)
 export class MediaBoardController {
-	constructor(private readonly mediaBoardUc: MediaBoardUc) {}
+	constructor(
+		private readonly mediaBoardUc: MediaBoardUc,
+		private readonly mediaAvailableLineUc: MediaAvailableLineUc
+	) {}
 
 	@ApiOperation({ summary: &#x27;Get the media shelf of the user.&#x27; })
 	@ApiOkResponse({ type: MediaBoardResponse })
@@ -416,6 +521,24 @@ export class MediaBoardController {
 		const line: MediaLine &#x3D; await this.mediaBoardUc.createLine(currentUser.userId, urlParams.boardId);
 
 		const response: MediaLineResponse &#x3D; MediaLineResponseMapper.mapToResponse(line);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: &#x27;Get the media available line for the board.&#x27; })
+	@ApiOkResponse({ type: MediaAvailableLineResponse })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@Get(&#x27;:boardId/media-available-line&#x27;)
+	public async getMediaAvailableLine(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;MediaAvailableLineResponse&gt; {
+		const mediaAvailableLine: MediaAvailableLine &#x3D; await this.mediaAvailableLineUc.getMediaAvailableLine(
+			currentUser.userId,
+			urlParams.boardId
+		);
+
+		const response: MediaAvailableLineResponse &#x3D; MediaAvailableLineResponseMapper.mapToResponse(mediaAvailableLine);
 
 		return response;
 	}

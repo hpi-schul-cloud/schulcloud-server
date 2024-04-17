@@ -257,13 +257,13 @@
 } from &#x27;@shared/domain/domainobject&#x27;;
 import { TimestampsResponse } from &#x27;../../dto&#x27;;
 import { type MediaExternalToolElementResponse, MediaLineResponse } from &#x27;../dto&#x27;;
-import { MediaElementResponseMapper } from &#x27;./media-element-response.mapper&#x27;;
+import { MediaExternalToolElementResponseMapper } from &#x27;./media-external-tool-element-response.mapper&#x27;;
 
 export class MediaLineResponseMapper {
 	static mapToResponse(line: MediaLine): MediaLineResponse {
 		const elements: MediaExternalToolElementResponse[] &#x3D; line.children
 			.filter((element: AnyBoardDo): element is MediaExternalToolElement &#x3D;&gt; isMediaExternalToolElement(element))
-			.map((element: MediaExternalToolElement) &#x3D;&gt; MediaElementResponseMapper.mapToResponse(element));
+			.map((element: MediaExternalToolElement) &#x3D;&gt; MediaExternalToolElementResponseMapper.mapToResponse(element));
 
 		const lineResponse: MediaLineResponse &#x3D; new MediaLineResponse({
 			id: line.id,

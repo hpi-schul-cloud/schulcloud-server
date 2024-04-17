@@ -412,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +493,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -574,8 +574,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-configuration.service.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -625,19 +625,9 @@ export class ExternalToolConfigurationService {
 		availableSchoolExternalTools: SchoolExternalTool[]
 	): ContextExternalToolTemplateInfo[] {
 		const toolsWithSchoolTool: (ContextExternalToolTemplateInfo | null)[] &#x3D; availableSchoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool) &#x3D;&gt; {
-				const externalTool: ExternalTool | undefined &#x3D; externalTools.find(
-					(tool: ExternalTool) &#x3D;&gt; schoolExternalTool.toolId &#x3D;&#x3D;&#x3D; tool.id
-				);
-
-				if (!externalTool) {
-					return null;
-				}
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
+			(schoolExternalTool) &#x3D;&gt; {
+				const externalTool &#x3D; externalTools.find((tool) &#x3D;&gt; schoolExternalTool.toolId &#x3D;&#x3D;&#x3D; tool.id);
+				return externalTool ? { externalTool, schoolExternalTool } : null;
 			}
 		);
 

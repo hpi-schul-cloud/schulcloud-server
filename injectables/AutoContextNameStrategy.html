@@ -476,7 +476,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ColumnBoardService, ContentElementService } from &#x27;@modules/board&#x27;;
 import { CourseService } from &#x27;@modules/learnroom&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard, MediaBoard } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
@@ -526,7 +526,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 	private async getBoardValue(elementId: EntityId): Promise&lt;string | undefined&gt; {
 		const element: AnyContentElementDo &#x3D; await this.contentElementService.findById(elementId);
 
-		const board: ColumnBoard &#x3D; await this.columnBoardService.findByDescendant(element);
+		const board: ColumnBoard | MediaBoard &#x3D; await this.columnBoardService.findByDescendant(element);
 
 		if (board.context.type &#x3D;&#x3D;&#x3D; BoardExternalReferenceType.Course) {
 			const courseName: string &#x3D; await this.getCourseValue(board.context.id);

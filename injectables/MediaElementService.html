@@ -145,6 +145,16 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#checkElementExists" >checkElementExists</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createContextExternalToolForMediaBoard" >createContextExternalToolForMediaBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#createExternalToolElement" >createExternalToolElement</a>
                             </li>
                             <li>
@@ -180,12 +190,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -226,6 +236,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>contextExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContextExternalToolService.html" target="_self" >ContextExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -244,6 +266,182 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkElementExists"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkElementExists</b></span>
+                        <a href="#checkElementExists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkElementExists(mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>, schoolExternalTool: <a href="../undefineds/SchoolExternalToolWithId.html" target="_self">SchoolExternalToolWithId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mediaBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalTool</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolWithId" target="_self" >SchoolExternalToolWithId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createContextExternalToolForMediaBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createContextExternalToolForMediaBoard</b></span>
+                        <a href="#createContextExternalToolForMediaBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createContextExternalToolForMediaBoard(user: <a href="../interfaces/User.html" target="_self">User</a>, schoolExternalTool: <a href="../undefineds/SchoolExternalToolWithId.html" target="_self">SchoolExternalToolWithId</a>, mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalTool</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolWithId" target="_self" >SchoolExternalToolWithId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mediaBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ContextExternalToolWithId" target="_self" >Promise&lt;ContextExternalToolWithId&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="createExternalToolElement"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -256,15 +454,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createExternalToolElement(parent: <a href="../classes/MediaLine.html" target="_self">MediaLine</a>, contextExternalTool: <a href="../undefineds/ContextExternalToolWithId.html" target="_self">ContextExternalToolWithId</a>)</code>
+                    <code>createExternalToolElement(parent: <a href="../classes/MediaLine.html" target="_self">MediaLine</a>, position: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, contextExternalTool: <a href="../undefineds/ContextExternalToolWithId.html" target="_self">ContextExternalToolWithId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -288,6 +486,18 @@
                                                 <td>parent</td>
                                             <td>
                                                             <code><a href="../classes/MediaLine.html" target="_self" >MediaLine</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>position</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                             </td>
 
                                             <td>
@@ -345,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -415,8 +625,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -485,8 +695,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-element.service.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -563,22 +773,31 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import type { ContextExternalToolWithId } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { ToolContextType } from &#x27;@modules/tool/common/enum&#x27;;
+import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool&#x27;;
+import { ContextExternalTool, ContextExternalToolWithId, ContextRef } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { SchoolExternalToolRefDO, SchoolExternalToolWithId } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import {
 	AnyBoardDo,
 	type AnyMediaContentElementDo,
 	isAnyMediaContentElement,
+	MediaBoard,
 	MediaExternalToolElement,
 	MediaLine,
 } from &#x27;@shared/domain/domainobject&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BoardDoRepo } from &#x27;../../repo&#x27;;
 import { BoardDoService } from &#x27;../board-do.service&#x27;;
 
 @Injectable()
 export class MediaElementService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+	constructor(
+		private readonly boardDoRepo: BoardDoRepo,
+		private readonly boardDoService: BoardDoService,
+		private readonly contextExternalToolService: ContextExternalToolService
+	) {}
 
 	public async findById(elementId: EntityId): Promise&lt;AnyMediaContentElementDo&gt; {
 		const element: AnyBoardDo &#x3D; await this.boardDoRepo.findById(elementId);
@@ -590,8 +809,42 @@ export class MediaElementService {
 		return element;
 	}
 
+	public async checkElementExists(
+		mediaBoard: MediaBoard,
+		schoolExternalTool: SchoolExternalToolWithId
+	): Promise&lt;boolean&gt; {
+		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolService.findContextExternalTools({
+			schoolToolRef: { schoolToolId: schoolExternalTool.id },
+		});
+
+		const exists &#x3D; mediaBoard
+			.getChildrenOfType(MediaExternalToolElement)
+			.some((element) &#x3D;&gt; contextExternalTools.some((tool) &#x3D;&gt; tool.id &#x3D;&#x3D;&#x3D; element.contextExternalToolId));
+
+		return exists;
+	}
+
+	public async createContextExternalToolForMediaBoard(
+		user: User,
+		schoolExternalTool: SchoolExternalToolWithId,
+		mediaBoard: MediaBoard
+	): Promise&lt;ContextExternalToolWithId&gt; {
+		const contextExternalTool: ContextExternalToolWithId &#x3D;
+			await this.contextExternalToolService.saveContextExternalTool(
+				new ContextExternalTool({
+					schoolToolRef: new SchoolExternalToolRefDO({ schoolId: user.school.id, schoolToolId: schoolExternalTool.id }),
+					contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
+					toolVersion: 0,
+					parameters: [],
+				})
+			);
+
+		return contextExternalTool;
+	}
+
 	public async createExternalToolElement(
 		parent: MediaLine,
+		position: number,
 		contextExternalTool: ContextExternalToolWithId
 	): Promise&lt;MediaExternalToolElement&gt; {
 		const element: MediaExternalToolElement &#x3D; new MediaExternalToolElement({
@@ -602,7 +855,7 @@ export class MediaElementService {
 			contextExternalToolId: contextExternalTool.id,
 		});
 
-		parent.addChild(element);
+		parent.addChild(element, position);
 
 		await this.boardDoRepo.save(parent.children, parent);
 

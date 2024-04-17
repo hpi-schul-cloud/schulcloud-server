@@ -200,13 +200,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsMongoId()<br />@ApiProperty({required: true, nullable: false})<br />
+                            @IsMongoId()<br />@ApiProperty({required: true, nullable: false, description: &#x27;The id of the line where the element is moved to&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/move-element.body.params.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/move-element.body.params.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -238,13 +238,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsNumber()<br />@Min(0)<br />@ApiProperty({required: true, nullable: false})<br />
+                            @IsNumber()<br />@Min(0)<br />@ApiProperty({required: true, nullable: false, description: &#x27;The position where the element is moved to&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/move-element.body.params.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/move-element.body.params.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -271,6 +271,7 @@ export class MoveElementBodyParams {
 	@ApiProperty({
 		required: true,
 		nullable: false,
+		description: &#x27;The id of the line where the element is moved to&#x27;,
 	})
 	toLineId!: string;
 
@@ -279,6 +280,7 @@ export class MoveElementBodyParams {
 	@ApiProperty({
 		required: true,
 		nullable: false,
+		description: &#x27;The position where the element is moved to&#x27;,
 	})
 	toPosition!: number;
 }

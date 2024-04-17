@@ -609,7 +609,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:87</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:89</a></code>
 </div>
                         </td>
                     </tr>
@@ -682,7 +682,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:81</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:83</a></code>
 </div>
                         </td>
                     </tr>
@@ -1441,6 +1441,7 @@ export class ExternalToolRepo extends BaseDORepo&lt;ExternalTool, ExternalToolEn
 			.byName(query.name)
 			.byClientId(query.clientId)
 			.byHidden(query.isHidden)
+			.byIds(query.ids)
 			.allowEmptyQuery(true);
 
 		if (order._id &#x3D;&#x3D; null) {
@@ -1459,6 +1460,7 @@ export class ExternalToolRepo extends BaseDORepo&lt;ExternalTool, ExternalToolEn
 
 		const entityDos: ExternalTool[] &#x3D; entities.map((entity) &#x3D;&gt; this.mapEntityToDO(entity));
 		const page: Page&lt;ExternalTool&gt; &#x3D; new Page&lt;ExternalTool&gt;(entityDos, total);
+
 		return page;
 	}
 

@@ -1487,6 +1487,7 @@ class ExternalToolFactory extends DoBaseFactory&lt;ExternalTool, ExternalToolPro
 export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;external-tool-${sequence}&#x60;,
+		description: &#x27;description&#x27;,
 		url: &#x27;https://url.com/&#x27;,
 		config: basicToolConfigFactory.build(),
 		logoUrl: &#x27;https://logo.com/&#x27;,
@@ -1494,6 +1495,7 @@ export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool,
 		isDeactivated: false,
 		openNewTab: false,
 		version: 1,
+		createdAt: new Date(2020, 1, 1),
 	};
 });
 </code></pre>

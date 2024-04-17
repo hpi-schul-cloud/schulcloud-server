@@ -248,7 +248,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;The content of the media external tool element&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -284,7 +284,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;The id of the media external tool element&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -320,7 +320,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;The timestamps of the media external tool element&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -349,7 +349,7 @@
 import { TimestampsResponse } from &#x27;../../dto&#x27;;
 
 export class MediaExternalToolElementContent {
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;The id of the context external tool&#x27; })
 	contextExternalToolId: string;
 
 	constructor(props: MediaExternalToolElementContent) {
@@ -358,13 +358,13 @@ export class MediaExternalToolElementContent {
 }
 
 export class MediaExternalToolElementResponse {
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;The id of the media external tool element&#x27; })
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;The content of the media external tool element&#x27; })
 	content: MediaExternalToolElementContent;
 
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;The timestamps of the media external tool element&#x27; })
 	timestamps: TimestampsResponse;
 
 	constructor(props: MediaExternalToolElementResponse) {

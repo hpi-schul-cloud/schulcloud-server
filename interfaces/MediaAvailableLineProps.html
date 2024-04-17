@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content interface">
                    <div class="content-data">
 
 
@@ -100,9 +100,12 @@
 
 
 
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >MediaElementResponseMapper</li>
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  MediaAvailableLineProps</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,153 +129,95 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/controller/media-board/mapper/media-element-response.mapper.ts</code>
+            <code>apps/server/src/shared/domain/domainobject/board/media-board/media-available-line.do.ts</code>
         </p>
 
 
 
 
-
-
-            <section data-compodoc="block-index">
-    <h3 id="index">Index</h3>
-    <table class="table table-sm table-bordered index-table">
-        <tbody>
-
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapToResponse" >mapToResponse</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-
-
-
-
-
-        </tbody>
-    </table>
-</section>
-
-
-
-            <section data-compodoc="block-methods">
-    
-    <h3 id="methods">
-        Methods
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToResponse"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapToResponse</b></span>
-                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(element: <a href="../classes/MediaExternalToolElement.html" target="_self">MediaExternalToolElement</a>)</code>
-                </td>
-            </tr>
-
-
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/mapper/media-element-response.mapper.ts:6</a></div>
+                            <h6><b>Properties</b></h6>
                         </td>
                     </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>element</td>
-                                            <td>
-                                                            <code><a href="../classes/MediaExternalToolElement.html" target="_self" >MediaExternalToolElement</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/MediaExternalToolElementResponse.html" target="_self" >MediaExternalToolElementResponse</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#elements" 
+>
+                                            elements
+                                        </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 
 
 
+            <section data-compodoc="block-properties">
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="elements"></a>
+                                        <span class="name "><b>elements</b>
+                                            <a href="#elements">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>elements:     <code>MediaAvailableLineElement[]</code>
+</code>
+                                    </td>
+                                </tr>
 
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>MediaAvailableLineElement[]</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { MediaExternalToolElement } from &#x27;@shared/domain/domainobject&#x27;;
-import { TimestampsResponse } from &#x27;../../dto&#x27;;
-import { MediaExternalToolElementContent, MediaExternalToolElementResponse } from &#x27;../dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaAvailableLineElement } from &#x27;./media-available-line-element.do&#x27;;
 
-export class MediaElementResponseMapper {
-	static mapToResponse(element: MediaExternalToolElement): MediaExternalToolElementResponse {
-		const elementResponse: MediaExternalToolElementResponse &#x3D; new MediaExternalToolElementResponse({
-			id: element.id,
-			content: new MediaExternalToolElementContent({
-				contextExternalToolId: element.contextExternalToolId,
-			}),
-			timestamps: new TimestampsResponse({
-				lastUpdatedAt: element.updatedAt,
-				createdAt: element.createdAt,
-			}),
-		});
+export class MediaAvailableLine {
+	elements: MediaAvailableLineElement[];
 
-		return elementResponse;
+	constructor(props: MediaAvailableLineProps) {
+		this.elements &#x3D; props.elements;
 	}
+}
+
+export interface MediaAvailableLineProps {
+	elements: MediaAvailableLineElement[];
 }
 </code></pre>
     </div>
 </div>
-
 
 
 
@@ -306,8 +251,8 @@ export class MediaElementResponseMapper {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'MediaElementResponseMapper.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'MediaAvailableLineProps.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

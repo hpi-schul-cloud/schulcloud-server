@@ -180,6 +180,9 @@
                                 <a href="#addChild" >addChild</a>
                             </li>
                             <li>
+                                <a href="#getChildrenOfType" >getChildrenOfType</a>
+                            </li>
+                            <li>
                                 <a href="#hasChild" >hasChild</a>
                             </li>
                             <li>
@@ -294,8 +297,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -363,8 +366,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -480,6 +483,77 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getChildrenOfType"></a>
+                    <span class="name">
+                        <span ><b>getChildrenOfType</b></span>
+                        <a href="#getChildrenOfType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getChildrenOfType(type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:45</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>U</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>type</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>U[]</code>
 
                         </div>
                             <div class="io-description">
@@ -860,6 +934,20 @@ export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; extend
 		// TODO check by object identity instead of id
 		const exists &#x3D; this.children.some((obj) &#x3D;&gt; obj.id &#x3D;&#x3D;&#x3D; child.id);
 		return exists;
+	}
+
+	getChildrenOfType&lt;U extends AnyBoardDo&gt;(type: new (...args: U[]) &#x3D;&gt; U): U[] {
+		const childrenOfType: U[] &#x3D; [];
+		for (const child of this.children) {
+			if (child.children) {
+				childrenOfType.push(...child.getChildrenOfType(type));
+			}
+			if (child instanceof type) {
+				childrenOfType.push(child);
+			}
+		}
+
+		return childrenOfType;
 	}
 
 	abstract accept(visitor: BoardCompositeVisitor): void;

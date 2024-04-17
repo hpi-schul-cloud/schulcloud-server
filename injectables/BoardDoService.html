@@ -348,7 +348,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard | MediaBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -458,9 +458,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { AnyBoardDo, ColumnBoard, MediaBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
@@ -493,13 +493,13 @@ export class BoardDoService {
 	}
 
 	// TODO there is a similar method in board-do-authorizable.service.ts
-	async getRootBoardDo(boardDo: AnyBoardDo): Promise&lt;ColumnBoard&gt; {
+	async getRootBoardDo(boardDo: AnyBoardDo): Promise&lt;ColumnBoard | MediaBoard&gt; {
 		const ancestorIds: EntityId[] &#x3D; await this.boardDoRepo.getAncestorIds(boardDo);
 		const idHierarchy: EntityId[] &#x3D; [...ancestorIds, boardDo.id];
 		const rootId: EntityId &#x3D; idHierarchy[0];
 		const rootBoardDo: AnyBoardDo &#x3D; await this.boardDoRepo.findById(rootId, 1);
 
-		if (rootBoardDo instanceof ColumnBoard) {
+		if (rootBoardDo instanceof ColumnBoard || rootBoardDo instanceof MediaBoard) {
 			return rootBoardDo;
 		}
 

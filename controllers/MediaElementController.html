@@ -153,6 +153,27 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createElement" >createElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteElement" >deleteElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
@@ -176,6 +197,195 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(params: <a href="../classes/CreateMediaElementBodyParams.html" target="_self">CreateMediaElementBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Create a new element.&#x27;})<br />@ApiCreatedResponse({type: MediaExternalToolElementResponse})<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@Post()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-element.controller.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateMediaElementBodyParams.html" target="_self" >CreateMediaElementBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;MediaExternalToolElementResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteElement</b></span>
+                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteElement(urlParams: <a href="../classes/ElementUrlParams.html" target="_self">ElementUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Delete a single element.&#x27;})<br />@ApiNoContentResponse()<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@Delete(&#x27;:elementId&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-element.controller.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ElementUrlParams.html" target="_self" >ElementUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -213,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-element.controller.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-element.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -292,15 +502,18 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	ForbiddenException,
 	HttpCode,
 	HttpStatus,
 	NotFoundException,
 	Param,
+	Post,
 	Put,
 } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiBadRequestResponse,
+	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
@@ -308,8 +521,15 @@ import {
 	ApiTags,
 } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
+import { MediaExternalToolElement } from &#x27;@shared/domain/domainobject&#x27;;
 import { MediaElementUc } from &#x27;../../uc&#x27;;
-import { ElementUrlParams, MoveElementBodyParams } from &#x27;./dto&#x27;;
+import {
+	CreateMediaElementBodyParams,
+	ElementUrlParams,
+	MediaExternalToolElementResponse,
+	MoveElementBodyParams,
+} from &#x27;./dto&#x27;;
+import { MediaExternalToolElementResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Media Element&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -335,6 +555,40 @@ export class MediaElementController {
 			bodyParams.toLineId,
 			bodyParams.toPosition
 		);
+	}
+
+	@ApiOperation({ summary: &#x27;Create a new element.&#x27; })
+	@ApiCreatedResponse({ type: MediaExternalToolElementResponse })
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@Post()
+	public async createElement(
+		@Body() params: CreateMediaElementBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;MediaExternalToolElementResponse&gt; {
+		const element: MediaExternalToolElement &#x3D; await this.mediaElementUc.createElement(
+			currentUser.userId,
+			params.schoolExternalToolId,
+			params.lineId,
+			params.position
+		);
+
+		const response: MediaExternalToolElementResponse &#x3D; MediaExternalToolElementResponseMapper.mapToResponse(element);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: &#x27;Delete a single element.&#x27; })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Delete(&#x27;:elementId&#x27;)
+	public async deleteElement(
+		@Param() urlParams: ElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.mediaElementUc.deleteElement(currentUser.userId, urlParams.elementId);
 	}
 }
 </code></pre>

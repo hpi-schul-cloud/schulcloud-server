@@ -182,7 +182,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/media-board.response.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/media-board.response.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -248,7 +248,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;The id of the media board&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -284,13 +284,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: undefined})<br />
+                            @ApiProperty({type: undefined, description: &#x27;The lines of the media board&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/media-board.response.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/media-board.response.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -320,13 +320,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;The timestamps of the media board&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/media-board.response.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/media-board.response.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -350,15 +350,16 @@ import { TimestampsResponse } from &#x27;../../dto&#x27;;
 import { MediaLineResponse } from &#x27;./media-line.response&#x27;;
 
 export class MediaBoardResponse {
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;The id of the media board&#x27; })
 	id: string;
 
 	@ApiProperty({
 		type: [MediaLineResponse],
+		description: &#x27;The lines of the media board&#x27;,
 	})
 	lines: MediaLineResponse[];
 
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;The timestamps of the media board&#x27; })
 	timestamps: TimestampsResponse;
 
 	constructor(props: MediaBoardResponse) {

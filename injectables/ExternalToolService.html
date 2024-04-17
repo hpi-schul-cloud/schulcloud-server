@@ -148,28 +148,35 @@
                                 <a href="#addExternalOauth2DataToConfig" >addExternalOauth2DataToConfig</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#createExternalTool" >createExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteExternalTool" >deleteExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#findExternalToolByName" >findExternalToolByName</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#findExternalToolByOAuth2ConfigClientId" >findExternalToolByOAuth2ConfigClientId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findExternalTools" >findExternalTools</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateExternalTool" >updateExternalTool</a>
                             </li>
@@ -409,6 +416,7 @@
                 <td class="col-md-4">
                     <a name="createExternalTool"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>createExternalTool</b></span>
                         <a href="#createExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -478,6 +486,7 @@
                 <td class="col-md-4">
                     <a name="deleteExternalTool"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>deleteExternalTool</b></span>
                         <a href="#deleteExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -547,6 +556,7 @@
                 <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findById</b></span>
                         <a href="#findById"><span class="icon ion-ios-link"></span></a>
@@ -616,6 +626,7 @@
                 <td class="col-md-4">
                     <a name="findExternalToolByName"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>findExternalToolByName</b></span>
                         <a href="#findExternalToolByName"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -623,7 +634,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>findExternalToolByName(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findExternalToolByName(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -683,6 +695,7 @@
                 <td class="col-md-4">
                     <a name="findExternalToolByOAuth2ConfigClientId"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>findExternalToolByOAuth2ConfigClientId</b></span>
                         <a href="#findExternalToolByOAuth2ConfigClientId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -690,7 +703,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>findExternalToolByOAuth2ConfigClientId(clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findExternalToolByOAuth2ConfigClientId(clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -750,6 +764,7 @@
                 <td class="col-md-4">
                     <a name="findExternalTools"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findExternalTools</b></span>
                         <a href="#findExternalTools"><span class="icon ion-ios-link"></span></a>
@@ -831,6 +846,7 @@
                 <td class="col-md-4">
                     <a name="updateExternalTool"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>updateExternalTool</b></span>
                         <a href="#updateExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -1105,7 +1121,7 @@ export class ExternalToolService {
 		private readonly externalToolVersionService: ExternalToolVersionIncrementService
 	) {}
 
-	async createExternalTool(externalTool: ExternalTool): Promise&lt;ExternalTool&gt; {
+	public async createExternalTool(externalTool: ExternalTool): Promise&lt;ExternalTool&gt; {
 		if (ExternalTool.isLti11Config(externalTool.config) &amp;&amp; externalTool.config.secret) {
 			externalTool.config.secret &#x3D; this.encryptionService.encrypt(externalTool.config.secret);
 		} else if (ExternalTool.isOauth2Config(externalTool.config)) {
@@ -1121,7 +1137,7 @@ export class ExternalToolService {
 		return created;
 	}
 
-	async updateExternalTool(toUpdate: ExternalTool, loadedTool: ExternalTool): Promise&lt;ExternalTool&gt; {
+	public async updateExternalTool(toUpdate: ExternalTool, loadedTool: ExternalTool): Promise&lt;ExternalTool&gt; {
 		await this.updateOauth2ToolConfig(toUpdate);
 		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalTool &#x3D; await this.externalToolRepo.save(toUpdate);
@@ -1129,7 +1145,7 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
-	async findExternalTools(
+	public async findExternalTools(
 		query: ExternalToolSearchQuery,
 		options?: IFindOptions&lt;ExternalTool&gt;
 	): Promise&lt;Page&lt;ExternalTool&gt;&gt; {
@@ -1156,7 +1172,7 @@ export class ExternalToolService {
 		return tools;
 	}
 
-	async findById(id: EntityId): Promise&lt;ExternalTool&gt; {
+	public async findById(id: EntityId): Promise&lt;ExternalTool&gt; {
 		const tool: ExternalTool &#x3D; await this.externalToolRepo.findById(id);
 		if (ExternalTool.isOauth2Config(tool.config)) {
 			try {
@@ -1171,17 +1187,17 @@ export class ExternalToolService {
 		return tool;
 	}
 
-	findExternalToolByName(name: string): Promise&lt;ExternalTool | null&gt; {
+	public findExternalToolByName(name: string): Promise&lt;ExternalTool | null&gt; {
 		const externalTool: Promise&lt;ExternalTool | null&gt; &#x3D; this.externalToolRepo.findByName(name);
 		return externalTool;
 	}
 
-	findExternalToolByOAuth2ConfigClientId(clientId: string): Promise&lt;ExternalTool | null&gt; {
+	public findExternalToolByOAuth2ConfigClientId(clientId: string): Promise&lt;ExternalTool | null&gt; {
 		const externalTool: Promise&lt;ExternalTool | null&gt; &#x3D; this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
 		return externalTool;
 	}
 
-	async deleteExternalTool(toolId: EntityId): Promise&lt;void&gt; {
+	public async deleteExternalTool(toolId: EntityId): Promise&lt;void&gt; {
 		const schoolExternalTools: SchoolExternalTool[] &#x3D; await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 		const schoolExternalToolIds: string[] &#x3D; schoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalTool): string &#x3D;&gt;

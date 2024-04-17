@@ -144,7 +144,22 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkElementExistsAlreadyOnBoardAndThrow" >checkElementExistsAlreadyOnBoardAndThrow</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createElement" >createElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteElement" >deleteElement</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -169,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, mediaLineService: <a href="../injectables/MediaLineService.html" target="_self">MediaLineService</a>, mediaElementService: <a href="../injectables/MediaElementService.html" target="_self">MediaElementService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, mediaLineService: <a href="../injectables/MediaLineService.html" target="_self">MediaLineService</a>, mediaElementService: <a href="../injectables/MediaElementService.html" target="_self">MediaElementService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>, mediaBoardService: <a href="../injectables/MediaBoardService.html" target="_self">MediaBoardService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -251,6 +266,30 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>mediaBoardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaBoardService.html" target="_self" >MediaBoardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolExternalToolService.html" target="_self" >SchoolExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -265,6 +304,88 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkElementExistsAlreadyOnBoardAndThrow"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkElementExistsAlreadyOnBoardAndThrow</b></span>
+                        <a href="#checkElementExistsAlreadyOnBoardAndThrow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkElementExistsAlreadyOnBoardAndThrow(mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>, schoolExternalTool: <a href="../undefineds/SchoolExternalToolWithId.html" target="_self">SchoolExternalToolWithId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mediaBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalTool</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolWithId" target="_self" >SchoolExternalToolWithId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -287,8 +408,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -300,6 +421,194 @@
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, lineId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>lineId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>position</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;MediaExternalToolElement&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteElement</b></span>
+                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>elementId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -327,8 +636,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -417,14 +726,24 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { ContextExternalToolWithId } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { SchoolExternalToolService } from &#x27;@modules/tool/school-external-tool&#x27;;
+import { SchoolExternalToolWithId } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { FeatureDisabledLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { type AnyMediaContentElementDo, BoardDoAuthorizable, type MediaLine } from &#x27;@shared/domain/domainobject&#x27;;
-import type { User as UserEntity } from &#x27;@shared/domain/entity&#x27;;
+import {
+	type AnyMediaContentElementDo,
+	BoardDoAuthorizable,
+	MediaBoard,
+	MediaExternalToolElement,
+	type MediaLine,
+} from &#x27;@shared/domain/domainobject&#x27;;
+import { User as UserEntity } from &#x27;@shared/domain/entity&#x27;;
 import type { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { MediaBoardElementAlreadyExistsLoggableException } from &#x27;../../loggable&#x27;;
 import type { MediaBoardConfig } from &#x27;../../media-board.config&#x27;;
-import { BoardDoAuthorizableService, MediaElementService, MediaLineService } from &#x27;../../service&#x27;;
+import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from &#x27;../../service&#x27;;
 
 @Injectable()
 export class MediaElementUc {
@@ -433,7 +752,9 @@ export class MediaElementUc {
 		private readonly mediaLineService: MediaLineService,
 		private readonly mediaElementService: MediaElementService,
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly configService: ConfigService&lt;MediaBoardConfig, true&gt;
+		private readonly configService: ConfigService&lt;MediaBoardConfig, true&gt;,
+		private readonly mediaBoardService: MediaBoardService,
+		private readonly schoolExternalToolService: SchoolExternalToolService
 	) {}
 
 	public async moveElement(
@@ -461,6 +782,65 @@ export class MediaElementUc {
 		if (!this.configService.get(&#x27;FEATURE_MEDIA_SHELF_ENABLED&#x27;)) {
 			throw new FeatureDisabledLoggableException(&#x27;FEATURE_MEDIA_SHELF_ENABLED&#x27;);
 		}
+	}
+
+	public async createElement(
+		userId: EntityId,
+		schoolExternalToolId: EntityId,
+		lineId: EntityId,
+		position: number
+	): Promise&lt;MediaExternalToolElement&gt; {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine &#x3D; await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		const mediaBoard: MediaBoard &#x3D; await this.mediaBoardService.findByDescendant(line);
+
+		const schoolExternalTool: SchoolExternalToolWithId &#x3D; await this.schoolExternalToolService.findById(
+			schoolExternalToolId
+		);
+
+		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
+
+		const createdContexExternalTool: ContextExternalToolWithId &#x3D;
+			await this.mediaElementService.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
+
+		const createdElement: AnyMediaContentElementDo &#x3D; await this.mediaElementService.createExternalToolElement(
+			line,
+			position,
+			createdContexExternalTool
+		);
+
+		return createdElement;
+	}
+
+	private async checkElementExistsAlreadyOnBoardAndThrow(
+		mediaBoard: MediaBoard,
+		schoolExternalTool: SchoolExternalToolWithId
+	): Promise&lt;void&gt; {
+		const exists &#x3D; await this.mediaElementService.checkElementExists(mediaBoard, schoolExternalTool);
+
+		if (exists) {
+			throw new MediaBoardElementAlreadyExistsLoggableException(mediaBoard.id, schoolExternalTool.id);
+		}
+	}
+
+	public async deleteElement(userId: EntityId, elementId: EntityId): Promise&lt;void&gt; {
+		this.checkFeatureEnabled();
+
+		const element: AnyMediaContentElementDo &#x3D; await this.mediaElementService.findById(elementId);
+
+		const user: UserEntity &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(
+			element
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaElementService.delete(element);
 	}
 }
 </code></pre>

@@ -767,8 +767,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="142"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:142</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -1743,6 +1743,8 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 				return ContextExternalToolType.COURSE;
 			case ToolContextType.BOARD_ELEMENT:
 				return ContextExternalToolType.BOARD_ELEMENT;
+			case ToolContextType.MEDIA_BOARD:
+				return ContextExternalToolType.MEDIA_BOARD;
 			default:
 				throw new Error(&#x27;Unknown ToolContextType&#x27;);
 		}
@@ -1754,6 +1756,8 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 				return ToolContextType.COURSE;
 			case ContextExternalToolType.BOARD_ELEMENT:
 				return ToolContextType.BOARD_ELEMENT;
+			case ContextExternalToolType.MEDIA_BOARD:
+				return ToolContextType.MEDIA_BOARD;
 			default:
 				throw new Error(&#x27;Unknown ContextExternalToolType&#x27;);
 		}

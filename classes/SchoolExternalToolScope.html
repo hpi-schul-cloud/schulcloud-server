@@ -177,6 +177,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#byIsDeactivated" >byIsDeactivated</a>
+                            </li>
+                            <li>
                                 <a href="#bySchoolId" >bySchoolId</a>
                             </li>
                             <li>
@@ -324,6 +327,66 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="byIsDeactivated"></a>
+                    <span class="name">
+                        <span ><b>byIsDeactivated</b></span>
+                        <a href="#byIsDeactivated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byIsDeactivated(isDeactivated?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.scope.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>isDeactivated</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="bySchoolId"></a>
                     <span class="name">
                         <span ><b>bySchoolId</b></span>
@@ -333,7 +396,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>bySchoolId(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
+<code>bySchoolId(schoolId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -364,11 +427,11 @@
                                         <tr>
                                                 <td>schoolId</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -393,7 +456,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>byToolId(toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
+<code>byToolId(toolId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -424,11 +487,11 @@
                                         <tr>
                                                 <td>toolId</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -601,16 +664,25 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Scope } from &#x27;@shared/repo/scope&#x27;;
 
 export class SchoolExternalToolScope extends Scope&lt;SchoolExternalToolEntity&gt; {
-	bySchoolId(schoolId: EntityId | undefined): this {
+	bySchoolId(schoolId?: EntityId): this {
 		if (schoolId !&#x3D;&#x3D; undefined) {
 			this.addQuery({ school: schoolId });
 		}
 		return this;
 	}
 
-	byToolId(toolId: EntityId | undefined): this {
+	byToolId(toolId?: EntityId): this {
 		if (toolId !&#x3D;&#x3D; undefined) {
 			this.addQuery({ tool: toolId });
+		}
+		return this;
+	}
+
+	byIsDeactivated(isDeactivated?: boolean): this {
+		if (isDeactivated) {
+			this.addQuery({ status: { isDeactivated } });
+		} else if (isDeactivated &#x3D;&#x3D;&#x3D; false) {
+			this.addQuery({ $or: [{ status: { isDeactivated } }, { status: undefined }] });
 		}
 		return this;
 	}

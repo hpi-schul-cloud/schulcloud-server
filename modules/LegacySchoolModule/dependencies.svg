@@ -24,10 +24,6 @@
 <title>cluster_LegacySchoolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2762,-268 2762,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_LegacySchoolModule_exports</title>
-<polygon fill="none" stroke="black" points="945,-208 945,-260 1839,-260 1839,-208 945,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_LegacySchoolModule_providers</title>
 <polygon fill="none" stroke="black" points="140,-78 140,-130 2754,-130 2754,-78 140,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_LegacySchoolModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 132,-130 132,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_LegacySchoolModule_exports</title>
+<polygon fill="none" stroke="black" points="945,-208 945,-260 1839,-260 1839,-208 945,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">

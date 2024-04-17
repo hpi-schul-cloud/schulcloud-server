@@ -670,7 +670,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:78</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:79</a></code>
 </div>
                         </td>
                     </tr>
@@ -743,7 +743,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:67</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:68</a></code>
 </div>
                         </td>
                     </tr>
@@ -1504,6 +1504,7 @@ export class SchoolExternalToolRepo extends BaseDORepo&lt;SchoolExternalTool, Sc
 
 		scope.bySchoolId(query.schoolId);
 		scope.byToolId(query.toolId);
+		scope.byIsDeactivated(query.isDeactivated);
 		scope.allowEmptyQuery(true);
 
 		return scope;

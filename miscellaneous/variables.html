@@ -710,6 +710,12 @@
                             <a href="#materialFactory" title="apps/server/src/shared/testing/factory/material.factory.ts" ><b>materialFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../material.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#mediaAvailableLineElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/media-available-line-element.do.factory.ts" ><b>mediaAvailableLineElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-available-line-element.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaAvailableLineFactory" title="apps/server/src/shared/testing/factory/domainobject/board/media-available-line.do.factory.ts" ><b>mediaAvailableLineFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-available-line.do.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#mediaBoardFactory" title="apps/server/src/shared/testing/factory/domainobject/board/media-board.do.factory.ts" ><b>mediaBoardFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-board.do.factory.ts)</a>
                         </li>
                         <li>
@@ -2538,6 +2544,7 @@
                         <i>Default value : </i><code>ExternalToolFactory.define(ExternalTool, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;external-tool-${sequence}&#x60;,
+		description: &#x27;description&#x27;,
 		url: &#x27;https://url.com/&#x27;,
 		config: basicToolConfigFactory.build(),
 		logoUrl: &#x27;https://logo.com/&#x27;,
@@ -2545,6 +2552,7 @@
 		isDeactivated: false,
 		openNewTab: false,
 		version: 1,
+		createdAt: new Date(2020, 1, 1),
 	};
 })</code>
                     </td>
@@ -10197,6 +10205,66 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/media-available-line-element.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaAvailableLineElementFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaAvailableLineElementFactory</b></span>
+                        <a href="#mediaAvailableLineElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	MediaAvailableLineElement,
+	MediaAvailableLineElementProps
+&gt;(MediaAvailableLineElement, () &#x3D;&gt; {
+	return {
+		name: &#x27;Element&#x27;,
+		description: &#x27;Element description&#x27;,
+		logoUrl: &#x27;https://logo.com&#x27;,
+		schoolExternalToolId: new ObjectId().toHexString(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/media-available-line.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaAvailableLineFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaAvailableLineFactory</b></span>
+                        <a href="#mediaAvailableLineFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>MediaAvailableLineFactory.define(MediaAvailableLine, () &#x3D;&gt; {
+	return {
+		elements: [],
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/domainobject/board/media-board.do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -10212,7 +10280,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;MediaBoard, MediaBoardProps&gt;(MediaBoard, () &#x3D;&gt; {
+                        <i>Default value : </i><code>MediaBoardFactory.define(MediaBoard, () &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
 		children: [],
@@ -10340,7 +10408,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;MediaLine, MediaLineProps&gt;(MediaLine, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>MediaLineFactory.define(MediaLine, ({ sequence }) &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
 		children: [],

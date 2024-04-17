@@ -285,6 +285,7 @@ export class ToolReferenceMapper {
 	): ToolReference {
 		const toolReference &#x3D; new ToolReference({
 			contextToolId: contextExternalTool.id ?? &#x27;&#x27;,
+			description: externalTool.description,
 			logoUrl: externalTool.logoUrl,
 			displayName: contextExternalTool.displayName ?? externalTool.name,
 			status,
