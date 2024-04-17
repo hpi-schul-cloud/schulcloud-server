@@ -1,4 +1,5 @@
 import AdmZip from 'adm-zip';
+import { JSDOM } from 'jsdom';
 import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
@@ -19,7 +20,7 @@ export class CommonCartridgeFileParser {
 
 	public constructor(file: Buffer, private readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
 		this.archive = new AdmZip(file);
-		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestFileAsString(), this.options);
+		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestAsDocument(), this.options);
 		this.resourceFactory = new CommonCartridgeResourceFactory(this.archive);
 	}
 
@@ -63,14 +64,15 @@ export class CommonCartridgeFileParser {
 		return resource;
 	}
 
-	private getManifestFileAsString(): string {
-		const manifest = CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
+	private getManifestAsDocument(): Document {
+		try {
+			const manifestString = CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
+			const manifestDocument = new JSDOM(manifestString as string, { contentType: 'text/xml' }).window.document;
 
-		if (manifest) {
-			return manifest;
+			return manifestDocument;
+		} catch (error) {
+			throw new CommonCartridgeManifestNotFoundException();
 		}
-
-		throw new CommonCartridgeManifestNotFoundException();
 	}
 
 	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
