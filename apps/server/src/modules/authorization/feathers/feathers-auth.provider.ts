@@ -29,7 +29,11 @@ export class FeathersAuthProvider {
 		targetModel: NewsTargetModel,
 		targetId: EntityId
 	): Promise<string[]> {
-		const service = this.feathersServiceProvider.getService(`${targetModel}/:scopeId/userPermissions/`);
+		let path = `${targetModel}/:scopeId/userPermissions/`;
+		if (targetModel === 'courses') {
+			path = `coursesUserPermissions/:scopeId`;
+		}
+		const service = this.feathersServiceProvider.getService(path);
 		const targetPermissions = (await service.get(userId, {
 			route: { scopeId: targetId },
 		})) as string[];
