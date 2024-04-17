@@ -16,11 +16,10 @@ describe('Alert Controller api', () => {
 	const incidentsPath = '/api/v1/incidents';
 	const componentsPath = '/api/v1/components/';
 	const incident1 = createIncident(1, 0, 2);
-	const incident2 = createIncident(2, 1, 4);
-	const incident3 = createIncident(3, 2, 0);
-	const component1 = createComponent(0, 1);
-	const component2 = createComponent(1, 2);
-	const component3 = createComponent(2, 3);
+	const incident2 = createIncident(2, 1, 0);
+	const incident3 = createIncident(3, 2, 4);
+	const component1 = createComponent(1, 1);
+	const component2 = createComponent(2, 2);
 
 	let app: INestApplication;
 	let httpService: DeepMocked<HttpService>;
@@ -77,12 +76,10 @@ describe('Alert Controller api', () => {
 					if (url.startsWith(componentsPath)) {
 						const componentId = url.at(-1);
 						let component: ComponentDto;
-						if (componentId === '0') {
+						if (componentId === '1') {
 							component = component1;
-						} else if (componentId === '1') {
-							component = component2;
 						} else {
-							component = component3;
+							component = component2;
 						}
 						const componentResponse = new ComponentResponse(component);
 						const response = axiosResponseFactory.build({ data: componentResponse });
