@@ -6,14 +6,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import {
-	AnyMediaBoardDo,
 	type AnyMediaContentElementDo,
 	BoardDoAuthorizable,
 	MediaBoard,
 	MediaExternalToolElement,
 	type MediaLine,
 } from '@shared/domain/domainobject';
-import { User, User as UserEntity } from '@shared/domain/entity';
+import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
@@ -41,7 +40,11 @@ export class MediaElementUc {
 
 		const targetLine: MediaLine = await this.mediaLineService.findById(targetLineId);
 
-		await this.checkUsersPermissions(userId, targetLine);
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
+			targetLine
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
 		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
 
@@ -64,9 +67,11 @@ export class MediaElementUc {
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
 
-		const user: User = await this.checkUsersPermissions(userId, line);
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
-		const mediaBoard: MediaBoard = await this.mediaBoardService.findByLine(line);
+		const mediaBoard: MediaBoard = await this.mediaBoardService.findByDescendant(line);
 
 		const schoolExternalTool: SchoolExternalToolWithId = await this.schoolExternalToolService.findById(
 			schoolExternalToolId
@@ -102,18 +107,12 @@ export class MediaElementUc {
 
 		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
 
-		await this.checkUsersPermissions(userId, element);
-
-		await this.mediaElementService.delete(element);
-	}
-
-	private async checkUsersPermissions<T extends AnyMediaBoardDo>(userId: EntityId, mediaBoard: T): Promise<User> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
+			element
 		);
 		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
-		return user;
+		await this.mediaElementService.delete(element);
 	}
 }

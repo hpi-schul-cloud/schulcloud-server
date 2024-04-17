@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReference, MediaBoard, type MediaLine } from '@shared/domain/domainobject';
+import { AnyBoardDo, BoardExternalReference, MediaBoard } from '@shared/domain/domainobject';
 import type { EntityId } from '@shared/domain/types';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
@@ -22,8 +22,8 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 		return ids;
 	}
 
-	public async findByLine(line: MediaLine): Promise<MediaBoard> {
-		const mediaBoard: MediaBoard = (await this.boardDoRepo.findParentOfId(line.id)) as MediaBoard;
+	public async findByDescendant(line: AnyBoardDo): Promise<MediaBoard> {
+		const mediaBoard: MediaBoard = await this.boardDoService.getRootBoardDo(line);
 
 		return mediaBoard;
 	}

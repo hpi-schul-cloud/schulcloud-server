@@ -1,4 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -6,7 +7,6 @@ import { BoardDoAuthorizable, MediaAvailableLine, type MediaBoard } from '@share
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 
@@ -49,7 +49,7 @@ export class MediaAvailableLineUc {
 		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
 			mediaBoard
 		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
 
 		return user;
 	}

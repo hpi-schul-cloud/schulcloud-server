@@ -170,13 +170,13 @@ describe(MediaBoardService.name, () => {
 		});
 	});
 
-	describe('findByLine', () => {
-		describe('when a board for the line exists', () => {
+	describe('findByDescendant', () => {
+		describe('when a board for a descendant exists', () => {
 			const setup = () => {
 				const board = mediaBoardFactory.build();
 				const line = mediaLineFactory.build();
 
-				boardDoRepo.findParentOfId.mockResolvedValueOnce(board);
+				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
 
 				return {
 					board,
@@ -187,7 +187,7 @@ describe(MediaBoardService.name, () => {
 			it('should return the board', async () => {
 				const { board, line } = setup();
 
-				const result = await service.findByLine(line);
+				const result = await service.findByDescendant(line);
 
 				expect(result).toEqual(board);
 			});
