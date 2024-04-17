@@ -1,3 +1,4 @@
+import { UseRequestContext, MikroORM } from '@mikro-orm/core';
 import { UseGuards } from '@nestjs/common';
 import {
 	OnGatewayConnection,
@@ -12,10 +13,10 @@ import cookie from 'cookie';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ColumnUc } from '../uc';
 import {
-	MoveCardMessageParams,
 	CreateCardMessageParams,
-	UpdateColumnTitleMessageParams,
 	DeleteColumnMessageParams,
+	MoveCardMessageParams,
+	UpdateColumnTitleMessageParams,
 } from './dto';
 import { Socket } from './types';
 
@@ -35,6 +36,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly logger: LegacyLogger,
+		private readonly orm: MikroORM,
 		/* private readonly boardUc: BoardUc, */
 		private readonly columnUc: ColumnUc
 	) {}
@@ -131,6 +133,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('create-card-request')
+	@UseRequestContext()
 	async handleCreateCard(client: Socket, data: CreateCardMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
@@ -147,6 +150,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('move-card-request')
+	@UseRequestContext()
 	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
@@ -156,6 +160,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('move-column-request')
+	@UseRequestContext()
 	handleMoveColumn(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
@@ -163,6 +168,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('update-board-title-request')
+	@UseRequestContext()
 	handleChangeBoardTitle(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
@@ -170,6 +176,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('update-column-title-request')
+	@UseRequestContext()
 	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
@@ -179,6 +186,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
+	@UseRequestContext()
 	handleBoardVisibility(client: Socket, data: Record<string, unknown>) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
@@ -186,6 +194,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('delete-column-request')
+	@UseRequestContext()
 	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
