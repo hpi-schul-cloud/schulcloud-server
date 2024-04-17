@@ -251,8 +251,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/authorization/feathers/feathers-auth.provider.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/authorization/feathers/feathers-auth.provider.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -320,8 +320,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/authorization/feathers/feathers-auth.provider.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/authorization/feathers/feathers-auth.provider.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -414,8 +414,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/authorization/feathers/feathers-auth.provider.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/authorization/feathers/feathers-auth.provider.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -672,7 +672,11 @@ export class FeathersAuthProvider {
 		targetModel: NewsTargetModel,
 		targetId: EntityId
 	): Promise&lt;string[]&gt; {
-		const service &#x3D; this.feathersServiceProvider.getService(&#x60;${targetModel}/:scopeId/userPermissions/&#x60;);
+		let path &#x3D; &#x60;${targetModel}/:scopeId/userPermissions/&#x60;;
+		if (targetModel &#x3D;&#x3D;&#x3D; &#x27;courses&#x27;) {
+			path &#x3D; &#x60;coursesUserPermissions/:scopeId&#x60;;
+		}
+		const service &#x3D; this.feathersServiceProvider.getService(path);
 		const targetPermissions &#x3D; (await service.get(userId, {
 			route: { scopeId: targetId },
 		})) as string[];
