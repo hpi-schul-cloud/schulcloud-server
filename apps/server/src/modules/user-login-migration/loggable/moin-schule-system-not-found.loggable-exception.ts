@@ -1,15 +1,23 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { ValidationError } from '@shared/common';
+import { BusinessError } from '@shared/common';
+import { HttpStatus } from '@nestjs/common';
 
-export class MoinSchuleSystemNotFoundLoggableException extends ValidationError implements Loggable {
+export class MoinSchuleSystemNotFoundLoggableException extends BusinessError implements Loggable {
 	constructor() {
-		super('moin_schule_system_not_found: Cannot find moin.schule system');
+		super(
+			{
+				type: 'MOIN_SCHULE_SYSTEM_NOT_FOUND',
+				title: 'moin.schule system not found',
+				defaultMessage: 'Cannot find moin.schule system',
+			},
+			HttpStatus.INTERNAL_SERVER_ERROR
+		);
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'MOIN_SCHULE_SYSTEM_NOT_FOUND',
-			message: 'Cannot find moin.schule system',
+			type: this.type,
+			message: this.message,
 			stack: this.stack,
 		};
 	}
