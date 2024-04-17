@@ -11,7 +11,12 @@ import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.gu
 import cookie from 'cookie';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ColumnUc } from '../uc';
-import { MoveCardMessageParams } from './dto/move-card.message.param';
+import {
+	MoveCardMessageParams,
+	CreateCardMessageParams,
+	UpdateColumnTitleMessageParams,
+	DeleteColumnMessageParams,
+} from './dto';
 import { Socket } from './types';
 
 @WebSocketGateway({
@@ -126,20 +131,14 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('create-card-request')
-	handleCreateCard(client: Socket, data: Record<string, unknown>) {
+	async handleCreateCard(client: Socket, data: CreateCardMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-
-		// const { requiredEmptyElements } = createCardBodyParams || {};
-		// const card = await this.columnUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);
-
-		// const response = CardResponseMapper.mapToResponse(card);
-
-		const cardId = `card${Math.floor(Math.random() * 1000)}`;
+		const { userId } = this.getCurrentUser(client);
+		const card = (await this.columnUc.createCard(userId, data.columnId)).getProps();
 		const responsePayload = {
 			...data,
-			cardId,
-			text: '',
+			newCard: card,
 		};
 		this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
 
@@ -171,9 +170,11 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	@SubscribeMessage('update-column-title-request')
-	handleChangeColumnTitle(client: Socket, data: Record<string, unknown>) {
+	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		const { userId } = this.getCurrentUser(client);
+		await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 		client.broadcast.emit('update-column-title-success', data);
 	}
 
@@ -182,5 +183,14 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('update-board-visibility-success', data);
+	}
+
+	@SubscribeMessage('delete-column-request')
+	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
+		this.logger.log(`Message received from client id: ${client.id}`);
+		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		const { userId } = this.getCurrentUser(client);
+		await this.columnUc.deleteColumn(userId, data.columnId);
+		client.broadcast.emit('delete-column-success', data);
 	}
 }
