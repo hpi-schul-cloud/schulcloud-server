@@ -7,6 +7,5 @@ export class EtherpadAuthorSessionsResponse extends EtherpadBaseResponse {
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
-	@Type(() => EtherpadSessionsArrayResponse)
 	data?: EtherpadSessionsArrayResponse;
 }

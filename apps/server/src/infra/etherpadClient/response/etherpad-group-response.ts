@@ -7,6 +7,5 @@ export class EtherpadGroupResponse extends EtherpadBaseResponse {
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
-	@Type(() => EtherpadGroupIdResponse)
 	data?: EtherpadGroupIdResponse;
 }
