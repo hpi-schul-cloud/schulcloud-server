@@ -335,9 +335,6 @@ export class SchulconnexCourseSyncService {
 					course.name &#x3D; newGroup.name;
 				}
 
-				course.startDate &#x3D; newGroup.validFrom;
-				course.untilDate &#x3D; newGroup.validUntil;
-
 				const students: GroupUser[] &#x3D; newGroup.users.filter(
 					(user: GroupUser): boolean &#x3D;&gt; user.roleId &#x3D;&#x3D;&#x3D; studentRole.id
 				);
