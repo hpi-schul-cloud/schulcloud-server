@@ -120,14 +120,10 @@ export class UserLoginMigrationService {
 			throw new IdenticalUserLoginMigrationSystemLoggableException(school.id, moinSchuleSystem.id);
 		}
 
-		const systemIds: EntityId[] =
-			school.systems?.filter((systemId: EntityId) => systemId !== (moinSchuleSystem.id as string)) || [];
-		const sourceSystemId = systemIds[0];
-
 		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			schoolId: school.id as string,
 			targetSystemId: moinSchuleSystem.id as string,
-			sourceSystemId,
+			sourceSystemId: school.systems?.[0],
 			startedAt: new Date(),
 		});
 
