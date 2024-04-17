@@ -42,6 +42,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		CqrsModule,
 	],
 	providers: [
+		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
 		BoardDoAuthorizableService,
 		BoardDoRepo,
 		BoardDoService,

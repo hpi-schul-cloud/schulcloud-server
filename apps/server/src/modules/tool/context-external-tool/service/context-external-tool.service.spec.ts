@@ -13,12 +13,12 @@ import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Permission } from '@shared/domain/interface';
 import { ToolContextType } from '../../common/enum';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ExternalToolService } from '../../external-tool';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
 import { CustomParameter } from '../../common/domain';
@@ -291,7 +291,7 @@ describe('ContextExternalToolService', () => {
 		describe('when contexts are not restricted', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -345,7 +345,7 @@ describe('ContextExternalToolService', () => {
 				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
 				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [ToolContextType.COURSE] });
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: { type: ToolContextType.COURSE },
 				});
@@ -376,7 +376,7 @@ describe('ContextExternalToolService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: { type: ToolContextType.COURSE },
 				});
@@ -414,7 +414,9 @@ describe('ContextExternalToolService', () => {
 				parameters: [protectedParam, unprotectedParam],
 			});
 
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+				toolId: externalTool.id,
+			}) as SchoolExternalToolWithId;
 
 			const unusedParam: CustomParameter = customParameterFactory.build();
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({

@@ -42,6 +42,20 @@ export abstract class BoardComposite<T extends BoardCompositeProps> extends Doma
 		return exists;
 	}
 
+	getChildrenOfType<U extends AnyBoardDo>(type: new (...args: U[]) => U): U[] {
+		const childrenOfType: U[] = [];
+		for (const child of this.children) {
+			if (child.children) {
+				childrenOfType.push(...child.getChildrenOfType(type));
+			}
+			if (child instanceof type) {
+				childrenOfType.push(child);
+			}
+		}
+
+		return childrenOfType;
+	}
+
 	abstract accept(visitor: BoardCompositeVisitor): void;
 
 	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void>;
