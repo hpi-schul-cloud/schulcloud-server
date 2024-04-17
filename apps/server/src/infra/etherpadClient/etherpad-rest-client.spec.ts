@@ -3,7 +3,11 @@ import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
-import { EthepadConfigurationMissingLoggable } from './loggable';
+import {
+	EtherpadConfigurationMissingLoggable,
+	EtherpadCookiesConfigurationMissingLoggable,
+	MissingCookie,
+} from './loggable';
 import {
 	EtherpadAuthorIdResponse,
 	EtherpadAuthorPadsResponse,
@@ -49,8 +53,8 @@ describe(EtherpadRestClient.name, () => {
 			const setup = () => {
 				const badOptions: EtherpadRestClientOptions = {
 					apiUri: '',
-					cookieExpirationInSeconds: 7200,
-					cookieReleaseThreshold: 7200,
+					cookieExpirationInSeconds: undefined,
+					cookieReleaseThreshold: undefined,
 					apiKey: '',
 				};
 				return {
@@ -64,7 +68,13 @@ describe(EtherpadRestClient.name, () => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const badOptionsClient = new EtherpadRestClient(badOptions, httpService, logger);
 
-				expect(logger.debug).toHaveBeenCalledWith(new EthepadConfigurationMissingLoggable());
+				expect(logger.debug).toHaveBeenCalledWith(new EtherpadConfigurationMissingLoggable());
+				expect(logger.debug).toHaveBeenCalledWith(
+					new EtherpadCookiesConfigurationMissingLoggable(28800, MissingCookie.cookieExpiration)
+				);
+				expect(logger.debug).toHaveBeenCalledWith(
+					new EtherpadCookiesConfigurationMissingLoggable(7200, MissingCookie.cookieReleaseThreshold)
+				);
 			});
 		});
 	});

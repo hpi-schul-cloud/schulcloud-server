@@ -1,9 +1,9 @@
 export interface EtherpadRestClientOptions {
 	apiUri: string;
 
-	cookieExpirationInSeconds: number;
+	cookieExpirationInSeconds?: number;
 
-	cookieReleaseThreshold: number;
+	cookieReleaseThreshold?: number;
 
 	apiKey: string;
 }
