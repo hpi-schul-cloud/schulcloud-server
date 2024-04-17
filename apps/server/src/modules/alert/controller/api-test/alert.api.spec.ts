@@ -15,12 +15,12 @@ describe('Alert Controller api', () => {
 	const alertPath = '/alert';
 	const incidentsPath = '/api/v1/incidents';
 	const componentsPath = '/api/v1/components/';
-	const incident1 = createIncident(1, 1, 2);
-	const incident2 = createIncident(2, 2, 4);
-	const incident3 = createIncident(3, 3, 0);
-	const component1 = createComponent(1, 1);
-	const component2 = createComponent(2, 2);
-	const component3 = createComponent(3, 3);
+	const incident1 = createIncident(1, 0, 2);
+	const incident2 = createIncident(2, 1, 4);
+	const incident3 = createIncident(3, 2, 0);
+	const component1 = createComponent(0, 1);
+	const component2 = createComponent(1, 2);
+	const component3 = createComponent(2, 3);
 
 	let app: INestApplication;
 	let httpService: DeepMocked<HttpService>;
@@ -77,9 +77,9 @@ describe('Alert Controller api', () => {
 					if (url.startsWith(componentsPath)) {
 						const componentId = url.at(-1);
 						let component: ComponentDto;
-						if (componentId === '1') {
+						if (componentId === '0') {
 							component = component1;
-						} else if (componentId === '2') {
+						} else if (componentId === '1') {
 							component = component2;
 						} else {
 							component = component3;
@@ -98,7 +98,7 @@ describe('Alert Controller api', () => {
 				const response = await request(app.getHttpServer()).get(alertPath).expect(200);
 
 				const { data } = response.body as AlertResponse;
-				expect(data.length).toBe(1);
+				expect(data.length).toBe(2);
 			});
 		});
 	});
