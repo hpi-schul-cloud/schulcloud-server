@@ -6,7 +6,7 @@ export class EtherpadSessionsArrayResponse {
 	sessions?: Session[] | null;
 }
 
-class Session {
+export class Session {
 	id?: string;
 
 	authorID?: string;
@@ -14,4 +14,11 @@ class Session {
 	groupID?: string;
 
 	validUntil?: number;
+
+	constructor(id: string, authorID: string, groupID: string, validUntil: number) {
+		this.id = id;
+		this.authorID = authorID;
+		this.groupID = groupID;
+		this.validUntil = validUntil;
+	}
 }
