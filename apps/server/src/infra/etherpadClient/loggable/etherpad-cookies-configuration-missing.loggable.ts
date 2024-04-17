@@ -16,20 +16,15 @@ export class EtherpadCookiesConfigurationMissingLoggable implements Loggable {
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		switch (this.missingCookie) {
-			case MissingCookie.cookieExpiration:
-				return {
-					message: `EtherpadRestClient: Missing cookies expiration configuration. Setting cookie expiration to default value ${this.cookieValue}`,
-				};
-			case MissingCookie.cookieReleaseThreshold:
-				return {
-					message: `EtherpadRestClient: Missing cookies release threshold configuration. Setting cookie release threshold to default value ${this.cookieValue}`,
-				};
-
-			default:
-				return {
-					message: `EtherpadRestClient: Missing cookie default value was not set properly}`,
-				};
+		let message = '';
+		if (this.missingCookie === MissingCookie.cookieExpiration) {
+			message = `EtherpadRestClient: Missing cookies expiration configuration. Setting cookie expiration to default value ${this.cookieValue}`;
 		}
+		if (this.missingCookie === MissingCookie.cookieReleaseThreshold) {
+			message = `EtherpadRestClient: Missing cookies release threshold configuration. Setting cookie release threshold to default value ${this.cookieValue}`;
+		}
+		return {
+			message,
+		};
 	}
 }
