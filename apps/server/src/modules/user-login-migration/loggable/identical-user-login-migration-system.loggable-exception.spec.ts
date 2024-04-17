@@ -25,7 +25,7 @@ describe(IdenticalUserLoginMigrationSystemLoggableException.name, () => {
 			expect(result).toEqual({
 				type: 'IDENTICAL_USER_LOGIN_MIGRATION_SYSTEM',
 				message:
-					'The migration cannot be started, because the target system and current schools login system are the same!',
+					'The migration cannot be started, because the target system and current schools login system are the same.',
 				stack: exception.stack,
 				data: {
 					schoolId,
