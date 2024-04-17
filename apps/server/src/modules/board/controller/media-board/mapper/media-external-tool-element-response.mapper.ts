@@ -2,7 +2,7 @@ import type { MediaExternalToolElement } from '@shared/domain/domainobject';
 import { TimestampsResponse } from '../../dto';
 import { MediaExternalToolElementContent, MediaExternalToolElementResponse } from '../dto';
 
-export class MediaElementResponseMapper {
+export class MediaExternalToolElementResponseMapper {
 	static mapToResponse(element: MediaExternalToolElement): MediaExternalToolElementResponse {
 		const elementResponse: MediaExternalToolElementResponse = new MediaExternalToolElementResponse({
 			id: element.id,

@@ -82,6 +82,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = basicConfigParams;
 				externalToolCreateParams.isDeactivated = true;
+				externalToolCreateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -111,6 +112,7 @@ describe('ExternalToolRequestMapper', () => {
 					version: 1,
 					config: basicToolConfigDO,
 					isDeactivated: true,
+					createdAt: undefined,
 				});
 
 				return {
@@ -171,6 +173,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = lti11ConfigParams;
 				externalToolCreateParams.isDeactivated = false;
+				externalToolCreateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -195,6 +198,7 @@ describe('ExternalToolRequestMapper', () => {
 					version: 1,
 					config: lti11ToolConfigDO,
 					isDeactivated: false,
+					createdAt: undefined,
 				});
 
 				return {
@@ -259,6 +263,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = oauth2ConfigParams;
 				externalToolCreateParams.isDeactivated = false;
+				externalToolCreateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -283,6 +288,7 @@ describe('ExternalToolRequestMapper', () => {
 					version: 1,
 					config: oauth2ToolConfigDO,
 					isDeactivated: false,
+					createdAt: undefined,
 				});
 
 				return {
@@ -331,6 +337,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = basicConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
+				externalToolUpdateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -361,6 +368,7 @@ describe('ExternalToolRequestMapper', () => {
 						version: 1,
 						config: basicToolConfigDO,
 						isDeactivated: false,
+						createdAt: undefined,
 					},
 					externalToolUpdateParams.id
 				);
@@ -424,6 +432,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = lti11ConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
+				externalToolUpdateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -449,6 +458,7 @@ describe('ExternalToolRequestMapper', () => {
 						version: 1,
 						config: lti11ToolConfigDO,
 						isDeactivated: false,
+						createdAt: undefined,
 					},
 					externalToolUpdateParams.id
 				);
@@ -516,6 +526,7 @@ describe('ExternalToolRequestMapper', () => {
 				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = oauth2ConfigParams;
 				externalToolUpdateParams.isDeactivated = false;
+				externalToolUpdateParams.description = 'description';
 
 				const customParameterDO: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
@@ -541,6 +552,7 @@ describe('ExternalToolRequestMapper', () => {
 						version: 1,
 						config: oauth2ToolConfigDO,
 						isDeactivated: false,
+						createdAt: undefined,
 					},
 					externalToolUpdateParams.id
 				);

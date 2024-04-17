@@ -16,9 +16,9 @@ import { EntityId } from '@shared/domain/types';
 import { contextExternalToolFactory, schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool } from '../domain';
+import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { ContextExternalTool, ContextExternalToolWithId } from '../domain';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
@@ -83,11 +83,11 @@ describe('ContextExternalToolUc', () => {
 				const user: User = userFactory.buildWithId();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -97,7 +97,7 @@ describe('ContextExternalToolUc', () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
-				});
+				}) as ContextExternalToolWithId;
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
@@ -160,11 +160,11 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = new ObjectId().toHexString();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -174,7 +174,7 @@ describe('ContextExternalToolUc', () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
-				});
+				}) as ContextExternalToolWithId;
 
 				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
@@ -207,9 +207,9 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -252,9 +252,9 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -296,9 +296,9 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -342,11 +342,11 @@ describe('ContextExternalToolUc', () => {
 				const user: User = userFactory.buildWithId();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -356,7 +356,7 @@ describe('ContextExternalToolUc', () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
-				});
+				}) as ContextExternalToolWithId;
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
@@ -365,7 +365,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					user,
 					schoolId,
 				};
@@ -418,9 +418,9 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -470,9 +470,9 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -516,9 +516,9 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 				const schoolId: EntityId = new ObjectId().toHexString();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
