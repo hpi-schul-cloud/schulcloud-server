@@ -7,7 +7,7 @@ import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -208,14 +208,14 @@ describe('FeathersRosterService', () => {
 				const externalToolId: string = externalTool.id as string;
 
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
-				});
-				const otherSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				}) as SchoolExternalToolWithId;
+				const otherSchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: otherExternalTool.id,
 					schoolId: school.id,
-				});
+				}) as SchoolExternalToolWithId;
 				const pseudonym: Pseudonym = pseudonymFactory.build();
 				const user: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
@@ -226,7 +226,7 @@ describe('FeathersRosterService', () => {
 				const courses: Course[] = [courseA, courseB, courseC];
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
 							id: courseA.id,
@@ -235,7 +235,7 @@ describe('FeathersRosterService', () => {
 					});
 
 				const otherContextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(otherSchoolExternalTool.id as string, otherSchoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(otherSchoolExternalTool.id, otherSchoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
 							id: courseA.id,
