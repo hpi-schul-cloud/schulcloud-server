@@ -66,6 +66,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
@@ -77,6 +78,7 @@ describe(CommonToolMetadataService.name, () => {
 				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildListWithId(2);
 
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([schoolExternalTool]);
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
@@ -92,6 +94,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
+						mediaBoard: 2,
 					},
 				});
 			});
@@ -101,6 +104,7 @@ describe(CommonToolMetadataService.name, () => {
 	describe('getMetadataForSchoolExternalTool', () => {
 		describe('when the tool has no usages', () => {
 			const setup = () => {
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(0);
@@ -117,6 +121,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
+						mediaBoard: 0,
 					},
 				});
 			});
@@ -126,6 +131,7 @@ describe(CommonToolMetadataService.name, () => {
 			const setup = () => {
 				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildListWithId(2);
 
+				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
@@ -142,6 +148,7 @@ describe(CommonToolMetadataService.name, () => {
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
+						mediaBoard: 2,
 					},
 				});
 			});

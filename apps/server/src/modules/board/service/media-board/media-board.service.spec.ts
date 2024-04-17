@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { mediaBoardFactory } from '@shared/testing';
+import { mediaBoardFactory, mediaLineFactory } from '@shared/testing';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 import { MediaBoardService } from './media-board.service';
@@ -166,6 +166,30 @@ describe(MediaBoardService.name, () => {
 					type: BoardExternalReferenceType.User,
 					id: userId,
 				});
+			});
+		});
+	});
+
+	describe('findByDescendant', () => {
+		describe('when a board for a descendant exists', () => {
+			const setup = () => {
+				const board = mediaBoardFactory.build();
+				const line = mediaLineFactory.build();
+
+				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
+
+				return {
+					board,
+					line,
+				};
+			};
+
+			it('should return the board', async () => {
+				const { board, line } = setup();
+
+				const result = await service.findByDescendant(line);
+
+				expect(result).toEqual(board);
 			});
 		});
 	});
