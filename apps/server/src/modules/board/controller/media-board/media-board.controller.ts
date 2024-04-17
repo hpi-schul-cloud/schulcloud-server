@@ -10,17 +10,20 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import type { MediaBoard, MediaLine } from '@shared/domain/domainobject';
-import { MediaBoardUc } from '../../uc';
+import { MediaAvailableLine, MediaBoard, MediaLine } from '@shared/domain/domainobject';
+import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';
-import { MediaBoardResponse, MediaLineResponse } from './dto';
-import { MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
+import { MediaAvailableLineResponse, MediaBoardResponse, MediaLineResponse } from './dto';
+import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 
 @ApiTags('Media Board')
 @Authenticate('jwt')
 @Controller('media-boards')
 export class MediaBoardController {
-	constructor(private readonly mediaBoardUc: MediaBoardUc) {}
+	constructor(
+		private readonly mediaBoardUc: MediaBoardUc,
+		private readonly mediaAvailableLineUc: MediaAvailableLineUc
+	) {}
 
 	@ApiOperation({ summary: 'Get the media shelf of the user.' })
 	@ApiOkResponse({ type: MediaBoardResponse })
@@ -48,6 +51,24 @@ export class MediaBoardController {
 		const line: MediaLine = await this.mediaBoardUc.createLine(currentUser.userId, urlParams.boardId);
 
 		const response: MediaLineResponse = MediaLineResponseMapper.mapToResponse(line);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Get the media available line for the board.' })
+	@ApiOkResponse({ type: MediaAvailableLineResponse })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@Get(':boardId/media-available-line')
+	public async getMediaAvailableLine(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<MediaAvailableLineResponse> {
+		const mediaAvailableLine: MediaAvailableLine = await this.mediaAvailableLineUc.getMediaAvailableLine(
+			currentUser.userId,
+			urlParams.boardId
+		);
+
+		const response: MediaAvailableLineResponse = MediaAvailableLineResponseMapper.mapToResponse(mediaAvailableLine);
 
 		return response;
 	}
