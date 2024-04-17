@@ -1,6 +1,7 @@
 import {
 	Controller,
 	Delete,
+	ExecutionContext,
 	Get,
 	Headers,
 	HttpStatus,
@@ -12,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthGuard } from '@nestjs/passport';
 import { accountFactory } from './factory';
 import { TestApiClient } from './test-api-client';
 
@@ -56,6 +58,24 @@ class TestErrorController {
 	}
 }
 
+@Controller('')
+class TestXApiKeyController {
+	@Delete(':id')
+	async delete(@Headers('X-API-KEY') authorization: string) {
+		return Promise.resolve({ method: 'delete', authorization });
+	}
+
+	@Post()
+	async post(@Headers('X-API-KEY') authorization: string) {
+		return Promise.resolve({ method: 'post', authorization });
+	}
+
+	@Get(':id')
+	async get(@Headers('X-API-KEY') authorization: string) {
+		return Promise.resolve({ method: 'get', authorization });
+	}
+}
+
 describe(TestApiClient.name, () => {
 	describe('when /authentication/local throw an error', () => {
 		let app: INestApplication;
@@ -88,7 +108,7 @@ describe(TestApiClient.name, () => {
 		});
 	});
 
-	describe('when test request instance exists', () => {
+	describe('when test request instance exists - jwt auth', () => {
 		let app: INestApplication;
 
 		beforeAll(async () => {
@@ -229,6 +249,74 @@ describe(TestApiClient.name, () => {
 				const result = await loggedInClient.patch(id);
 
 				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer 123' }));
+			});
+		});
+	});
+
+	describe('when test request instance exists - x-api-key auth', () => {
+		let app: INestApplication;
+		const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+
+		beforeAll(async () => {
+			const moduleFixture = await Test.createTestingModule({
+				controllers: [TestXApiKeyController],
+			})
+				.overrideGuard(AuthGuard('api-key'))
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						req.headers['X-API-KEY'] = API_KEY;
+						return true;
+					},
+				})
+				.compile();
+
+			app = moduleFixture.createNestApplication();
+
+			await app.init();
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
+		const setup = () => {
+			const testApiClient = new TestApiClient(app, '', API_KEY, true);
+			const id = new ObjectId().toHexString();
+
+			return { testApiClient, id };
+		};
+
+		describe('get', () => {
+			it('should resolve requests', async () => {
+				const { testApiClient, id } = setup();
+
+				const result = await testApiClient.get(id);
+
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'get' }));
+			});
+		});
+
+		describe('post', () => {
+			it('should resolve requests', async () => {
+				const { testApiClient } = setup();
+
+				const result = await testApiClient.post();
+
+				expect(result.statusCode).toEqual(HttpStatus.CREATED);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'post' }));
+			});
+		});
+
+		describe('delete', () => {
+			it('should resolve requests', async () => {
+				const { testApiClient, id } = setup();
+
+				const result = await testApiClient.delete(id);
+
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'delete' }));
 			});
 		});
 	});

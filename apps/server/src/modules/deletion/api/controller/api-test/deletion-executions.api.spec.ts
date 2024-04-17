@@ -19,8 +19,7 @@ describe(`deletionExecution (api)`, () => {
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
-					req.headers['X-API-KEY'] = API_KEY;
-					return true;
+					return req.headers['x-api-key'] === API_KEY;
 				},
 			})
 			.compile();
@@ -39,6 +38,19 @@ describe(`deletionExecution (api)`, () => {
 			it('should return status 204', async () => {
 				const response = await testApiClient.post('');
 				expect(response.status).toEqual(204);
+			});
+		});
+
+		describe('without token', () => {
+			it('should refuse with wrong token', async () => {
+				const client = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
+				const response = await client.post('');
+				expect(response.status).toEqual(403);
+			});
+			it('should refuse without token', async () => {
+				const client = new TestApiClient(app, baseRouteName, '', true);
+				const response = await client.post('');
+				expect(response.status).toEqual(403);
 			});
 		});
 	});
