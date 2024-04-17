@@ -6,10 +6,6 @@ export class MediaAvailableLine {
 	constructor(props: MediaAvailableLineProps) {
 		this.elements = props.elements;
 	}
-
-	addElement(element: MediaAvailableLineElement): void {
-		this.elements.push(element);
-	}
 }
 
 export interface MediaAvailableLineProps {
