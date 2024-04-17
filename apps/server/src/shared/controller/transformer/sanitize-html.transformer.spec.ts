@@ -58,7 +58,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 	});
 
 	describe('when sanitizing rich text ck4 formatting', () => {
-		it('should remove all html but rich text ck4 tags', () => {
+		it('should remove all html and js except Rich Text CK4 tags', () => {
 			const plainString = {
 				contentCk4:
 					'<h1><b>html text</b></h1><a name="some name">name</a><a href="some-link"></a><scriPT>alert("foobar");</sCript><stYle></style>',
