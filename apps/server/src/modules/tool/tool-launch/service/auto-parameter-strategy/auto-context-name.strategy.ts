@@ -1,7 +1,7 @@
 import { ColumnBoardService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard } from '@shared/domain/domainobject';
+import { AnyContentElementDo, BoardExternalReferenceType, ColumnBoard, MediaBoard } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
@@ -51,7 +51,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 	private async getBoardValue(elementId: EntityId): Promise<string | undefined> {
 		const element: AnyContentElementDo = await this.contentElementService.findById(elementId);
 
-		const board: ColumnBoard = await this.columnBoardService.findByDescendant(element);
+		const board: ColumnBoard | MediaBoard = await this.columnBoardService.findByDescendant(element);
 
 		if (board.context.type === BoardExternalReferenceType.Course) {
 			const courseName: string = await this.getCourseValue(board.context.id);

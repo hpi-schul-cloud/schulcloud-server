@@ -134,6 +134,8 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 				return ContextExternalToolType.COURSE;
 			case ToolContextType.BOARD_ELEMENT:
 				return ContextExternalToolType.BOARD_ELEMENT;
+			case ToolContextType.MEDIA_BOARD:
+				return ContextExternalToolType.MEDIA_BOARD;
 			default:
 				throw new Error('Unknown ToolContextType');
 		}
@@ -145,6 +147,8 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 				return ToolContextType.COURSE;
 			case ContextExternalToolType.BOARD_ELEMENT:
 				return ToolContextType.BOARD_ELEMENT;
+			case ContextExternalToolType.MEDIA_BOARD:
+				return ToolContextType.MEDIA_BOARD;
 			default:
 				throw new Error('Unknown ContextExternalToolType');
 		}
