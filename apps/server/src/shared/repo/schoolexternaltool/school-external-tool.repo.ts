@@ -59,6 +59,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<SchoolExternalTool, Schoo
 
 		scope.bySchoolId(query.schoolId);
 		scope.byToolId(query.toolId);
+		scope.byIsDeactivated(query.isDeactivated);
 		scope.allowEmptyQuery(true);
 
 		return scope;

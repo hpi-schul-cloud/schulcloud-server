@@ -6,6 +6,7 @@ export class MoveElementBodyParams {
 	@ApiProperty({
 		required: true,
 		nullable: false,
+		description: 'The id of the line where the element is moved to',
 	})
 	toLineId!: string;
 
@@ -14,6 +15,7 @@ export class MoveElementBodyParams {
 	@ApiProperty({
 		required: true,
 		nullable: false,
+		description: 'The position where the element is moved to',
 	})
 	toPosition!: number;
 }
