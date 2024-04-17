@@ -95,44 +95,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			it('should throw', () => {
 				const { file } = setup();
 
-				expect(() => sut.transform(file)).toThrow('Invalid or unsupported zip format. No END header found');
-			});
-		});
-
-		describe('when the file does not contain a manifest file', () => {
-			const setup = () => {
-				const buffer = new AdmZip().toBuffer();
-
-				configServiceMock.get.mockReturnValue(1000);
-
-				return {
-					file: { size: 1000, buffer } as unknown as Express.Multer.File,
-				};
-			};
-
-			it('should throw', () => {
-				const { file } = setup();
-
-				expect(() => sut.transform(file)).toThrow('No manifest file found');
-			});
-		});
-
-		describe('when the manifest file is not a valid XML file', () => {
-			const setup = () => {
-				const archive = new AdmZip();
-
-				archive.addFile('imsmanifest.xml', Buffer.from('<manifest>'));
-				configServiceMock.getOrThrow.mockReturnValue(1000);
-
-				return {
-					file: { size: 1000, buffer: archive.toBuffer() } as unknown as Express.Multer.File,
-				};
-			};
-
-			it('should throw', () => {
-				const { file } = setup();
-
-				expect(() => sut.transform(file)).toThrow('No valid manifest file found');
+				expect(() => sut.transform(file)).toThrow('File is not a zip archive');
 			});
 		});
 	});
