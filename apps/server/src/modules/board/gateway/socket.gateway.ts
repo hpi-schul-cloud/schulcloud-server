@@ -202,4 +202,11 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		await this.columnUc.deleteColumn(userId, data.columnId);
 		client.broadcast.emit('delete-column-success', data);
 	}
+
+	@SubscribeMessage('reload-board-request')
+	handleReloadBoard(client: Socket, data: DeleteColumnMessageParams) {
+		this.logger.log(`Message received from client id: ${client.id}`);
+		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		client.broadcast.emit('reload-board-success', data);
+	}
 }
