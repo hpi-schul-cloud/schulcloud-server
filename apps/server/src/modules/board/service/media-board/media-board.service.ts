@@ -22,8 +22,8 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 		return ids;
 	}
 
-	public async findByDescendant(line: AnyBoardDo): Promise<MediaBoard> {
-		const mediaBoard: MediaBoard = await this.boardDoService.getRootBoardDo(line);
+	public async findByDescendant(descendant: AnyBoardDo): Promise<MediaBoard> {
+		const mediaBoard: MediaBoard = await this.boardDoService.getRootBoardDo(descendant);
 
 		return mediaBoard;
 	}
