@@ -175,8 +175,7 @@ describe(MediaElementUc.name, () => {
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([mediaBoard.id]);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				mediaBoardService.findByLine.mockResolvedValueOnce(mediaBoard);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				mediaElementService.checkElementExists.mockResolvedValueOnce(false);
 				mediaElementService.createContextExternalToolForMediaBoard.mockResolvedValueOnce(contextExternalTool);
@@ -247,8 +246,7 @@ describe(MediaElementUc.name, () => {
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaBoardService.findIdsByExternalReference.mockResolvedValueOnce([mediaBoard.id]);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				mediaBoardService.findByLine.mockResolvedValueOnce(mediaBoard);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				mediaElementService.checkElementExists.mockResolvedValueOnce(true);
 

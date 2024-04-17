@@ -120,15 +120,12 @@ export class MediaAvailableLineService {
 	}
 
 	public createMediaAvailableLine(availableExternalTools: [ExternalTool, SchoolExternalTool][]): MediaAvailableLine {
-		const line: MediaAvailableLine = new MediaAvailableLine();
+		const lineElements: MediaAvailableLineElement[] = availableExternalTools.map(
+			([externalTool, schoolExternalTool]: [ExternalTool, SchoolExternalTool]) =>
+				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
+		);
 
-		availableExternalTools.forEach(([externalTool, schoolExternalTool]: [ExternalTool, SchoolExternalTool]) => {
-			const lineElement: MediaAvailableLineElement = this.createMediaAvailableLineElement(
-				externalTool,
-				schoolExternalTool
-			);
-			line.addElement(lineElement);
-		});
+		const line: MediaAvailableLine = new MediaAvailableLine({ elements: lineElements });
 
 		return line;
 	}

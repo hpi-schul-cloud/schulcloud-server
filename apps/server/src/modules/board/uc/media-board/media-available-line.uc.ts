@@ -25,27 +25,33 @@ export class MediaAvailableLineUc {
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findById(boardId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		const user: User = await this.checkUsersPermissions(userId, mediaBoard);
 
-		const schoolExternalTools: SchoolExternalTool[] =
+		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
 
 		const availableExternalTools: ExternalTool[] =
-			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalTools);
+			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);
 
 		const matchedTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
 			availableExternalTools,
-			schoolExternalTools
+			schoolExternalToolsForAvailableMediaLine
 		);
 
 		const mediaAvailableLine: MediaAvailableLine =
 			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
 
 		return mediaAvailableLine;
+	}
+
+	private async checkUsersPermissions(userId: EntityId, mediaBoard: MediaBoard): Promise<User> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
+			mediaBoard
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		return user;
 	}
 
 	private checkFeatureEnabled(): void {

@@ -65,7 +65,6 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 	],
 	exports: [
 		BoardDoAuthorizableService,
-		BoardDoService,
 		CardService,
 		ColumnBoardService,
 		ColumnService,
