@@ -14,10 +14,37 @@ class BoardObject extends BoardComposite<BoardCompositeProps> {
 	}
 }
 
+class SecondBoardObject extends BoardComposite<BoardCompositeProps> {
+	isAllowedAsChild(): boolean {
+		return true;
+	}
+
+	accept(): void {}
+
+	async acceptAsync(): Promise<void> {
+		await Promise.resolve();
+	}
+}
+
 const buildBoardObject = (): AnyBoardDo =>
 	new BoardObject({
 		id: new ObjectId().toHexString(),
 		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	}) as unknown as AnyBoardDo;
+
+const buildSecondBoardObject = (): AnyBoardDo =>
+	new SecondBoardObject({
+		id: new ObjectId().toHexString(),
+		children: [
+			new SecondBoardObject({
+				id: new ObjectId().toHexString(),
+				children: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			}) as unknown as AnyBoardDo,
+		],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	}) as unknown as AnyBoardDo;
@@ -28,6 +55,7 @@ describe(`${BoardComposite.name}`, () => {
 		parent.addChild(buildBoardObject());
 		parent.addChild(buildBoardObject());
 		parent.addChild(buildBoardObject());
+		parent.addChild(buildSecondBoardObject());
 
 		return { parent, children: parent.children };
 	};
@@ -35,7 +63,7 @@ describe(`${BoardComposite.name}`, () => {
 	describe('removeChild', () => {
 		it('should remove the child', () => {
 			const { parent, children } = setup();
-			const expectedChildren = [children[0], children[2]];
+			const expectedChildren = [children[0], children[2], children[3]];
 
 			parent.removeChild(children[1]);
 
@@ -47,7 +75,7 @@ describe(`${BoardComposite.name}`, () => {
 		it('should add the child at the requested position', () => {
 			const { parent, children } = setup();
 			const extraChild = buildBoardObject();
-			const expectedChildren = [children[0], extraChild, children[1], children[2]];
+			const expectedChildren = [children[0], extraChild, children[1], children[2], children[3]];
 
 			parent.addChild(extraChild, 1);
 
@@ -113,6 +141,19 @@ describe(`${BoardComposite.name}`, () => {
 
 				expect(() => parent.addChild(children[0])).toThrow();
 			});
+		});
+	});
+
+	describe('getChildrenOfType', () => {
+		it('should return the children of the given type', () => {
+			const { parent, children } = setup();
+			const expectedChildren = [children[3].children[0], children[3]];
+
+			const result = parent.getChildrenOfType(
+				SecondBoardObject as unknown as new (...args: AnyBoardDo[]) => AnyBoardDo
+			);
+
+			expect(result).toEqual(expectedChildren);
 		});
 	});
 });

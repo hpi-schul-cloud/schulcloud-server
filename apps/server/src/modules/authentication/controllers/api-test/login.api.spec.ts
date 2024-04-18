@@ -304,9 +304,9 @@ describe('Login Controller (api)', () => {
 
 	describe('loginOauth2', () => {
 		describe('when a valid code is provided', () => {
-			const setup = async () => {
+			const setup = async (inputExternalId: string) => {
 				const schoolExternalId = 'schoolExternalId';
-				const userExternalId = 'userExternalId';
+				const userExternalId = inputExternalId;
 
 				const system = systemEntityFactory.withOauthConfig().buildWithId({});
 				const school = schoolEntityFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
@@ -351,7 +351,7 @@ describe('Login Controller (api)', () => {
 			};
 
 			it('should return oauth login response', async () => {
-				const { system, idToken } = await setup();
+				const { system, idToken } = await setup('userExternalId');
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`${basePath}/oauth2`)
@@ -370,7 +370,7 @@ describe('Login Controller (api)', () => {
 			});
 
 			it('should return a valid jwt as access token', async () => {
-				const { system } = await setup();
+				const { system } = await setup('newUserExternalId');
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`${basePath}/oauth2`)

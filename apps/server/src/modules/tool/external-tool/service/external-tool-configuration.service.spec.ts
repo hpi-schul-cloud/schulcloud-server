@@ -296,7 +296,7 @@ describe('ExternalToolConfigurationService', () => {
 			it('should return ToolContextTypes', () => {
 				const types: ToolContextType[] = service.getToolContextTypes();
 
-				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD]);
 			});
 		});
 	});

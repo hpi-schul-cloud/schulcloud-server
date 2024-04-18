@@ -5,6 +5,9 @@ export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })
 	contextToolId: string;
 
+	@ApiPropertyOptional({ description: 'The description of the tool' })
+	description?: string;
+
 	@ApiPropertyOptional({
 		nullable: false,
 		required: false,
@@ -28,6 +31,7 @@ export class ToolReferenceResponse {
 
 	constructor(toolReferenceResponse: ToolReferenceResponse) {
 		this.contextToolId = toolReferenceResponse.contextToolId;
+		this.description = toolReferenceResponse.description;
 		this.logoUrl = toolReferenceResponse.logoUrl;
 		this.displayName = toolReferenceResponse.displayName;
 		this.openInNewTab = toolReferenceResponse.openInNewTab;
