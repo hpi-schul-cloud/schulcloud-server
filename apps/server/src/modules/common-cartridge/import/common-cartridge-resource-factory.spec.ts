@@ -162,15 +162,44 @@ describe('CommonCartridgeResourceFactory', () => {
 				return { organizationProps };
 			};
 
-			it('should create a web content resource', () => {
-				const { organizationProps } = setup();
+			describe('when web content is provided', () => {
+				it('should create a web content resource', () => {
+					const { organizationProps } = setup();
 
-				const result = sut.create(organizationProps);
+					const result = sut.create(organizationProps);
 
-				expect(result).toStrictEqual({
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					title: 'Title',
-					html: 'Content',
+					expect(result).toStrictEqual({
+						type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+						title: 'Title',
+						html: 'Content',
+					});
+				});
+			});
+
+			describe('when web content is not provided', () => {
+				it('should return an empty value', () => {
+					const { organizationProps } = setup();
+					const emptyWebContent = `<html></html>`;
+					admZipMock.readAsText.mockReturnValue(emptyWebContent);
+
+					const result = sut.create(organizationProps);
+
+					expect(result).toStrictEqual({
+						type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+						title: '',
+						html: '',
+					});
+				});
+			});
+
+			describe('when web content is not valid HTML', () => {
+				it('should return undefined', () => {
+					const { organizationProps } = setup();
+					admZipMock.readAsText.mockReturnValue('');
+
+					const result = sut.create(organizationProps);
+
+					expect(result).toBeUndefined();
 				});
 			});
 		});
