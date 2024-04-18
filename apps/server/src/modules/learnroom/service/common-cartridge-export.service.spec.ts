@@ -8,14 +8,15 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
 import {
+	cardFactory,
 	columnBoardFactory,
 	columnFactory,
-	cardFactory,
 	courseFactory,
 	lessonFactory,
+	linkElementFactory,
+	richTextElementFactory,
 	setupEntities,
 	taskFactory,
-	richTextElementFactory,
 } from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
@@ -78,7 +79,8 @@ describe('CommonCartridgeExportService', () => {
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
 		const textCardElement = richTextElementFactory.build();
-		const card = cardFactory.build({ children: [textCardElement] });
+		const linkElement = linkElementFactory.build();
+		const card = cardFactory.build({ children: [textCardElement, linkElement] });
 		const column = columnFactory.build({ children: [card] });
 		const columnBoard = columnBoardFactory.build({ children: [column] });
 
@@ -100,7 +102,7 @@ describe('CommonCartridgeExportService', () => {
 		);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card, textCardElement };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard, column, card, textCardElement, linkElement };
 	};
 
 	beforeAll(async () => {
@@ -205,6 +207,20 @@ describe('CommonCartridgeExportService', () => {
 
 				expect(manifest).toContain(createXmlString('title', card.title));
 			});
+
+			it('should add content element of cards', async () => {
+				const { archive, textCardElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(`<resource identifier="i${textCardElement.id}"`);
+			});
+
+			it('should add link element of card', async () => {
+				const { archive, linkElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(`<resource identifier="i${linkElement.id}"`);
+			});
 		});
 
 		describe('when using version 1.3', () => {
@@ -274,6 +290,13 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(`<resource identifier="i${textCardElement.id}"`);
+			});
+
+			it('should add link element of card', async () => {
+				const { archive, linkElement } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(`<resource identifier="i${linkElement.id}"`);
 			});
 		});
 
