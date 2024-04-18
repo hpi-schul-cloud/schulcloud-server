@@ -2,7 +2,16 @@ import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Card, Column } from '@shared/domain/domainobject';
+import {
+	AnyBoardDo,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	isCard,
+	isColumn,
+	isLinkElement,
+	isRichTextElement,
+} from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -111,7 +120,7 @@ export class CommonCartridgeExportService {
 			});
 
 			columnBoard.children
-				.filter((child) => child instanceof Column)
+				.filter((child) => isColumn(child))
 				.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
 		}
 	}
@@ -124,16 +133,31 @@ export class CommonCartridgeExportService {
 		});
 
 		column.children
-			.filter((child) => child instanceof Card)
+			.filter((child) => isCard(child))
 			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
 	}
 
 	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
-		const { id } = card;
-		columnOrganization.createChild({
+		const cardOrganization = columnOrganization.createChild({
 			title: card.title,
-			identifier: createIdentifier(id),
+			identifier: createIdentifier(card.id),
 		});
+
+		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization));
+	}
+
+	private addCardElementToOrganization(element: AnyBoardDo, cardOrganization: CommonCartridgeOrganizationNode): void {
+		if (isRichTextElement(element)) {
+			const resource = this.commonCartridgeMapper.mapRichTextElementToResource(element);
+
+			cardOrganization.addResource(resource);
+		}
+
+		if (isLinkElement(element)) {
+			const resource = this.commonCartridgeMapper.mapLinkElementToResource(element);
+
+			cardOrganization.addResource(resource);
+		}
 	}
 
 	private addComponentToOrganization(

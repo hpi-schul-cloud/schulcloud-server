@@ -28,19 +28,26 @@ export class ToolPermissionHelper {
 	): Promise<void> {
 		this.authorizationService.checkPermission(user, contextExternalTool, context);
 
-		if (contextExternalTool.contextRef.type === ToolContextType.COURSE) {
-			// loading of ressources should be part of the UC -> unnessasary awaits
-			const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
-
-			this.authorizationService.checkPermission(user, course, context);
-		} else if (contextExternalTool.contextRef.type === ToolContextType.BOARD_ELEMENT) {
-			const boardElement = await this.boardElementService.findById(contextExternalTool.contextRef.id);
-
-			const board: BoardDoAuthorizable = await this.boardService.getBoardAuthorizable(boardElement);
-
-			this.authorizationService.checkPermission(user, board, context);
-		} else {
-			throw new ForbiddenLoggableException(user.id, AuthorizableReferenceType.ContextExternalToolEntity, context);
+		switch (contextExternalTool.contextRef.type) {
+			case ToolContextType.COURSE: {
+				const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
+				this.authorizationService.checkPermission(user, course, context);
+				break;
+			}
+			case ToolContextType.BOARD_ELEMENT: {
+				const boardElement = await this.boardElementService.findById(contextExternalTool.contextRef.id);
+				const board: BoardDoAuthorizable = await this.boardService.getBoardAuthorizable(boardElement);
+				this.authorizationService.checkPermission(user, board, context);
+				break;
+			}
+			case ToolContextType.MEDIA_BOARD: {
+				const board: BoardDoAuthorizable = await this.boardService.findById(contextExternalTool.contextRef.id);
+				this.authorizationService.checkPermission(user, board, context);
+				break;
+			}
+			default: {
+				throw new ForbiddenLoggableException(user.id, AuthorizableReferenceType.ContextExternalToolEntity, context);
+			}
 		}
 	}
 }

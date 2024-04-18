@@ -8,7 +8,7 @@ import {
 	type MediaBoard,
 	type MediaLine,
 } from '@shared/domain/domainobject';
-import type { User as UserEntity } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
@@ -26,7 +26,7 @@ export class MediaBoardUc {
 	public async getMediaBoardForUser(userId: EntityId): Promise<MediaBoard> {
 		this.checkFeatureEnabled();
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.read([]));
 
 		const boardIds: EntityId[] = await this.mediaBoardService.findIdsByExternalReference({
@@ -52,7 +52,7 @@ export class MediaBoardUc {
 
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
 		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 

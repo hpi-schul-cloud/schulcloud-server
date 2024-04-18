@@ -53,6 +53,7 @@ export class ExternalToolRepoMapper {
 			version: entity.version,
 			restrictToContexts: entity.restrictToContexts,
 			medium: this.mapExternalToolMediumEntityToDO(entity.medium),
+			createdAt: entity.createdAt,
 		});
 	}
 
