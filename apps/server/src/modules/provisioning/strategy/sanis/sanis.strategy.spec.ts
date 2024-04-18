@@ -3,7 +3,6 @@ import {
 	SanisGruppenResponse,
 	SanisResponse,
 	SanisResponseValidationGroups,
-	SanisRole,
 	schulconnexResponseFactory,
 } from '@infra/schulconnex-client';
 import { GroupService } from '@modules/group';
@@ -15,7 +14,6 @@ import { ValidationErrorLoggableException } from '@shared/common/loggable-except
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { axiosResponseFactory } from '@shared/testing';
-import { UUID } from 'bson';
 import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
