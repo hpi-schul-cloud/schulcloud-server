@@ -41,6 +41,7 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { EtherpadClientModule } from '@src/infra/etherpadClient';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -61,6 +62,12 @@ const serverModules = [
 		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
 		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
 		personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
+	}),
+	EtherpadClientModule.register({
+		apiUri: Configuration.get('ETHERPAD_URI') as string,
+		apiKey: Configuration.get('ETHERPAD_API_KEY') as string,
+		cookieExpirationInSeconds: Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS') as number,
+		cookieReleaseThreshold: Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD') as number,
 	}),
 	ImportUserModule,
 	UserImportConfigModule,
