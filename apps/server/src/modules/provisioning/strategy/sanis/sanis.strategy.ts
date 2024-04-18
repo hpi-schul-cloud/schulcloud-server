@@ -1,9 +1,4 @@
-import {
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisResponseValidationGroups,
-	SanisSonstigeGruppenzugehoerigeResponse,
-} from '@infra/schulconnex-client/response';
+import { SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
 import { GroupService } from '@modules/group';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -92,7 +87,6 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
 			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
 
-			// gruppen.gruppe.sonstige_gruppenzugh = []
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
 		}
 
