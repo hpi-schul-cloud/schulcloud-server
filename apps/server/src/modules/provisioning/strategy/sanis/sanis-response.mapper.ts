@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	SanisGruppenResponse,
 	SanisResponse,
@@ -9,9 +8,10 @@ import { SanisGroupRole } from '@infra/schulconnex-client/response/sanis-group-r
 import { SanisGroupType } from '@infra/schulconnex-client/response/sanis-group-type';
 import { SanisRole } from '@infra/schulconnex-client/response/sanis-role';
 import { GroupTypes } from '@modules/group';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 
@@ -37,7 +37,10 @@ const GroupTypeMapping: Partial<Record<SanisGroupType, GroupTypes>> = {
 export class SanisResponseMapper {
 	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
-	constructor(private readonly logger: Logger) {}
+	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		private readonly logger: Logger
+	) {}
 
 	mapToExternalSchoolDto(source: SanisResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string = source.personenkontexte[0].organisation.kennung.replace(
@@ -121,13 +124,15 @@ export class SanisResponseMapper {
 		}
 
 		let otherUsers: ExternalGroupUserDto[] | undefined;
-		if (Configuration.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED')) {
+		if (this.provisioningFeatures.schulconnexOtherGroupusersEnabled) {
 			if (group.sonstige_gruppenzugehoerige) {
 				otherUsers = group.sonstige_gruppenzugehoerige
 					.map((relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null =>
 						this.mapToExternalGroupUser(relation)
 					)
 					.filter((otherUser: ExternalGroupUserDto | null): otherUser is ExternalGroupUserDto => otherUser !== null);
+			} else {
+				otherUsers = [];
 			}
 		}
 
