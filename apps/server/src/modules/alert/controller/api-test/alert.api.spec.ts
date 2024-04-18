@@ -8,7 +8,7 @@ import { axiosResponseFactory } from '@shared/testing';
 import { serverConfig, ServerTestModule } from '../../../server';
 import { createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
-import { ComponentDto, ComponentResponse, IncidentsResponse, MetaDto } from '../../adapter/dto';
+import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
 import { SchulcloudTheme } from '../../../server/types/schulcloud-theme.enum';
 
 describe('Alert Controller api', () => {
@@ -68,7 +68,7 @@ describe('Alert Controller api', () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
 					if (url.match(incidentsPath)) {
 						const incidents = [incident1, incident2, incident3];
-						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
+						const incidentResponse = new IncidentsResponse(incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
