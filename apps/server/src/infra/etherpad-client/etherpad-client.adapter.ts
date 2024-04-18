@@ -9,6 +9,7 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
+	InlineResponse2006Data,
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
@@ -77,19 +78,29 @@ export class EtherpadClientAdapter {
 	}
 
 	private async hasSessionsOfAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
+		let sessionId: SessionId | undefined;
+
 		const response = await this.tryListSessionsOfAuthor(authorId);
 		const sessions = this.handleResponse<InlineResponse2006>(response, { groupId, authorId });
 
 		if (sessions) {
-			for (const [key, value] of Object.entries(sessions)) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				if (value.groupID === groupId && value.authorID === authorId) {
-					return key;
-				}
-			}
+			sessionId = this.getSessionId(sessions, groupId, authorId);
 		}
 
-		return undefined;
+		return sessionId;
+	}
+
+	private getSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string) {
+		const sessionEntries = Object.entries(sessions);
+		const sessionId = sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) => {
+			if (value.groupID === groupId && value.authorID === authorId) {
+				return key;
+			}
+
+			return undefined;
+		});
+
+		return sessionId[0];
 	}
 
 	async listSessionsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
