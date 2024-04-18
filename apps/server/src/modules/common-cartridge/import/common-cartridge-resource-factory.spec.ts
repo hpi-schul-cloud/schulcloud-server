@@ -25,6 +25,23 @@ describe('CommonCartridgeResourceFactory', () => {
 
 		return webLinkXml;
 	};
+	const setupWebContentHtml = () => {
+		let webContentHtml: string | undefined;
+
+		if (!webContentHtml) {
+			webContentHtml = `<html>
+				<head>
+					<title>Title</title>
+				</head>
+				<body>
+					<p>Content</p>
+				</body>
+			</html>`;
+
+			return webContentHtml;
+		}
+		return webContentHtml;
+	};
 	const setupOrganizationProps = () => {
 		const organizationProps: CommonCartridgeOrganizationProps = {
 			identifier: faker.string.uuid(),
@@ -130,6 +147,31 @@ describe('CommonCartridgeResourceFactory', () => {
 				const result = sut.create(organizationProps);
 
 				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when creating a web content resource', () => {
+			const setup = () => {
+				const webContentHtml = setupWebContentHtml();
+				const organizationProps = setupOrganizationProps();
+
+				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue(webContentHtml);
+
+				return { organizationProps };
+			};
+
+			it('should create a web content resource', () => {
+				const { organizationProps } = setup();
+
+				const result = sut.create(organizationProps);
+
+				expect(result).toStrictEqual({
+					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					title: 'Title',
+					html: 'Content',
+				});
 			});
 		});
 	});

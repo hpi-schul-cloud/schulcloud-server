@@ -59,7 +59,7 @@ export class CommonCartridgeResourceFactory {
 			return undefined;
 		}
 
-		const title = document.querySelector('webContent > title')?.textContent || '';
+		const title = document.querySelector('head > title')?.textContent || '';
 		const html = document.querySelector('body > p')?.textContent || '';
 
 		return {
