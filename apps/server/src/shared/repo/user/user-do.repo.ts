@@ -1,4 +1,5 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
@@ -81,6 +82,10 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 
 	async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
+
+		if (userEntitys.length > 1) {
+			throw new MultipleUsersFoundLoggableException(externalId);
+		}
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
 			return systems && !!systems.getItems().find((system): boolean => system.id === systemId);

@@ -57,6 +57,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 			.byName(query.name)
 			.byClientId(query.clientId)
 			.byHidden(query.isHidden)
+			.byIds(query.ids)
 			.allowEmptyQuery(true);
 
 		if (order._id == null) {
@@ -75,6 +76,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 
 		const entityDos: ExternalTool[] = entities.map((entity) => this.mapEntityToDO(entity));
 		const page: Page<ExternalTool> = new Page<ExternalTool>(entityDos, total);
+
 		return page;
 	}
 

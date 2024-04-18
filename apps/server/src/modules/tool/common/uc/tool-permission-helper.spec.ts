@@ -4,8 +4,8 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
+	AuthorizableReferenceType,
 } from '@modules/authorization';
-import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardDoAuthorizableService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { ForbiddenException } from '@nestjs/common';
@@ -19,8 +19,8 @@ import {
 	externalToolElementFactory,
 	setupEntities,
 	userFactory,
+	boardDoAuthorizableFactory,
 } from '@shared/testing';
-import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { ToolContextType } from '../enum';
 import { ToolPermissionHelper } from './tool-permission-helper';
@@ -144,7 +144,41 @@ describe('ToolPermissionHelper', () => {
 			});
 		});
 
-		describe('when the context external tool has an unkown context', () => {
+		describe('when a context external tool for context "media board" is given', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const board: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					contextRef: new ContextRef({
+						id: board.id,
+						type: ToolContextType.MEDIA_BOARD,
+					}),
+				});
+				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardDoAuthorizableService.findById.mockResolvedValueOnce(board);
+
+				return {
+					user,
+					board,
+					contextExternalTool,
+					context,
+				};
+			};
+
+			it('should check permission for context external tool', async () => {
+				const { user, board, contextExternalTool, context } = setup();
+
+				await helper.ensureContextPermissions(user, contextExternalTool, context);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(2);
+				expect(authorizationService.checkPermission).toHaveBeenNthCalledWith(1, user, contextExternalTool, context);
+				expect(authorizationService.checkPermission).toHaveBeenNthCalledWith(2, user, board, context);
+			});
+		});
+
+		describe('when the context external tool has an unknown context', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
