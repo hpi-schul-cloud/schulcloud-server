@@ -41,7 +41,7 @@ describe('FeathersAuthProvider', () => {
 									},
 								};
 							}
-							if (name === 'courses/:scopeId/userPermissions/') {
+							if (name === 'coursesUserPermissions/:scopeId') {
 								return {
 									get() {
 										return Promise.resolve(coursePermissions);

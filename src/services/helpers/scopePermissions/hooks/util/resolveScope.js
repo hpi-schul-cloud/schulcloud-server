@@ -4,6 +4,7 @@ const resolveScope = (context) => {
 		const arr = context.path.match(/^\/?(\w+)\//);
 		if (Array.isArray(arr) && arr.length >= 2) {
 			scopeName = arr[1];
+			if (scopeName === 'coursesUserPermissions') scopeName = 'courses';
 		} else {
 			scopeName = context.path;
 		}
