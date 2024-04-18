@@ -7,7 +7,7 @@ import { axiosResponseFactory } from '@shared/testing';
 import { of, throwError } from 'rxjs';
 import { AxiosError } from 'axios';
 import { StatusAdapter } from './status.adapter';
-import { ComponentDto, ComponentResponse, IncidentsResponse, MetaDto } from './dto';
+import { ComponentDto, ComponentResponse, IncidentsResponse } from './dto';
 import { createComponent, createIncident } from '../testing';
 
 describe('StatusAdapter', () => {
@@ -84,7 +84,7 @@ describe('StatusAdapter', () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
 					if (url.match(incidentsPath)) {
 						const incidents = [incident];
-						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
+						const incidentResponse = new IncidentsResponse(incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
@@ -111,7 +111,7 @@ describe('StatusAdapter', () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
 					if (url.match(incidentsPath)) {
 						const incidents = [incidentDefault, incidentBrb, incidentOpen, incidentN21, incidentThr];
-						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
+						const incidentResponse = new IncidentsResponse(incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
@@ -180,7 +180,7 @@ describe('StatusAdapter', () => {
 						fifthIncident.created_at = new Date('2024-01-01 10:00:00');
 						fifthIncident.name = '5';
 						const incidents = [fifthIncident, fourthIncident, thirdIncident, firstIncident, secondIncident];
-						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
+						const incidentResponse = new IncidentsResponse(incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
