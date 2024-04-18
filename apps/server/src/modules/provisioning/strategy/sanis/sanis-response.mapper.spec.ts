@@ -112,6 +112,10 @@ describe('SanisResponseMapper', () => {
 
 		describe('when group type class is given', () => {
 			const setup = () => {
+				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+					schulconnexOtherGroupusersEnabled: true,
+				});
+
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
 				const group: SanisGruppenResponse = personenkontext.gruppen![0];
@@ -126,10 +130,6 @@ describe('SanisResponseMapper', () => {
 			};
 
 			it('should map the sanis response to external group dtos', () => {
-				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
-					schulconnexOtherGroupusersEnabled: true,
-				});
-
 				const { sanisResponse, group, personenkontext, otherParticipant } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
@@ -257,6 +257,7 @@ describe('SanisResponseMapper', () => {
 				expect(result?.[0].otherUsers).toBeUndefined();
 			});
 		});
+
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is true', () => {
 			const setup = () => {
 				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
@@ -271,7 +272,7 @@ describe('SanisResponseMapper', () => {
 				};
 			};
 
-			it('should set other users to undefined', () => {
+			it('should set other users to an emtpy array', () => {
 				const { sanisResponse } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
