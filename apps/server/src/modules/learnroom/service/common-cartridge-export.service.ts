@@ -7,7 +7,7 @@ import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
 import { CommonCartridgeExportFactory } from '@src/modules/common-cartridge/export/builders/common-cartridge-export.factory';
-import { CommonCartridgeOrganizationNode as CommonCartridgeOrganizationBuilder } from '@src/modules/common-cartridge/export/builders/common-cartridge-organization-node';
+import { CommonCartridgeOrganizationNode } from '@src/modules/common-cartridge/export/builders/common-cartridge-organization-node';
 import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 import { CourseService } from './course.service';
@@ -105,24 +105,20 @@ export class CommonCartridgeExportService {
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard = await this.columnBoardService.findById(columnBoardId);
 
-			const organization = builder.createOrganization({
+			const columnBoardOrganization = builder.createOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
 			});
 
 			columnBoard.children
 				.filter((child) => child instanceof Column)
-				.forEach((column) => this.addColumnToOrganization(column as Column, builder, organization));
+				.forEach((column) => this.addColumnToOrganization(column as Column, columnBoardOrganization));
 		}
 	}
 
-	private addColumnToOrganization(
-		column: Column,
-		builder: CommonCartridgeExportFactory,
-		organizationBuilder: CommonCartridgeOrganizationBuilder
-	): void {
+	private addColumnToOrganization(column: Column, columnBoardOrganization: CommonCartridgeOrganizationNode): void {
 		const { id } = column;
-		const columnOrganization = organizationBuilder.createChild({
+		const columnOrganization = columnBoardOrganization.createChild({
 			title: column.title,
 			identifier: createIdentifier(id),
 		});
@@ -132,16 +128,16 @@ export class CommonCartridgeExportService {
 			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
 	}
 
-	private addCardToOrganization(card: Card, cardOrganization: CommonCartridgeOrganizationBuilder): void {
+	private addCardToOrganization(card: Card, columnOrganization: CommonCartridgeOrganizationNode): void {
 		const { id } = card;
-		cardOrganization.createChild({
+		columnOrganization.createChild({
 			title: card.title,
 			identifier: createIdentifier(id),
 		});
 	}
 
 	private addComponentToOrganization(
-		lessonOrganization: CommonCartridgeOrganizationBuilder,
+		lessonOrganization: CommonCartridgeOrganizationNode,
 		component: ComponentProperties
 	): void {
 		const resources = this.commonCartridgeMapper.mapContentToResources(component);
