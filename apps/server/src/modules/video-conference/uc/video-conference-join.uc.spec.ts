@@ -215,6 +215,52 @@ describe('VideoConferenceJoinUc', () => {
 						});
 					});
 				});
+
+				describe('and everybodyJoinsAsModerator is false', () => {
+					const setup = () => {
+						const user: UserDO = userDoFactory.buildWithId();
+						const currentUserId: string = user.id as string;
+
+						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+						const options: VideoConferenceOptions = {
+							everyAttendeeJoinsMuted: true,
+							everybodyJoinsAsModerator: false,
+							moderatorMustApproveJoinRequests: true,
+						};
+						const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+
+						const bbbJoinResponse: BBBResponse<BBBJoinResponse> = {
+							response: {
+								url: 'url',
+							},
+						} as BBBResponse<BBBJoinResponse>;
+
+						userService.findById.mockResolvedValue(user);
+						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
+							role: BBBRole.VIEWER,
+							isGuest: false,
+						});
+						videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
+						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
+						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
+
+						return { user, currentUserId, scope, options, bbbJoinResponse };
+					};
+
+					it('should call join with guest false', async () => {
+						const { currentUserId, scope, user } = setup();
+
+						await uc.join(currentUserId, scope);
+
+						expect(bbbService.join).toHaveBeenCalledWith({
+							fullName: `${user.firstName} ${user.lastName}`,
+							meetingID: scope.id,
+							role: BBBRole.VIEWER,
+							userID: currentUserId,
+							guest: false,
+						});
+					});
+				});
 			});
 		});
 
