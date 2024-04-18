@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import { CardProps } from './types';
+import { AnyBoardNode, CardProps } from './types';
 
 export class Card extends BoardNode<CardProps> {
 	get title(): string | undefined {
@@ -16,5 +16,13 @@ export class Card extends BoardNode<CardProps> {
 
 	set height(height: number) {
 		this.props.height = height;
+	}
+
+	isAllowedAsChild(boardNode: AnyBoardNode): boolean {
+		// TODO: relevant types are not defined yet
+		// const allowed =
+		// 	boardNode instanceof TextElement, FileElement...
+		// false just as placeholder
+		return false;
 	}
 }
