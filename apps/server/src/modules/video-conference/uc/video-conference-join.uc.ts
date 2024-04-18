@@ -27,9 +27,6 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
-		console.log('############################');
-		console.log(isGuest, role);
-
 		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
@@ -45,13 +42,6 @@ export class VideoConferenceJoinUc {
 
 		if (videoConference.options.everybodyJoinsAsModerator && !isGuest) {
 			joinBuilder.withRole(BBBRole.MODERATOR);
-		}
-
-		if (
-			videoConference.options.moderatorMustApproveJoinRequests &&
-			!videoConference.options.everybodyJoinsAsModerator
-		) {
-			joinBuilder.asGuest(true);
 		}
 
 		if (!videoConference.options.moderatorMustApproveJoinRequests && isGuest) {
