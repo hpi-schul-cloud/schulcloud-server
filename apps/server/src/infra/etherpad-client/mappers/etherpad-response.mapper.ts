@@ -1,17 +1,12 @@
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
-import {
-	InlineResponse2001,
-	InlineResponse2003Data,
-	InlineResponse2004Data,
-	InlineResponse200Data,
-} from '../etherpad-api-client';
+import { InlineResponse2003Data, InlineResponse2004Data, InlineResponse200Data } from '../etherpad-api-client';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from '../interface';
 import { EtherpadServerError } from '../loggable';
 
 export class EtherpadResponseMapper {
 	static mapToSessionResponse(session: InlineResponse2004Data | undefined): SessionId {
-		if (session && 'sessionID' in session && session.sessionID) {
+		if (session && session.sessionID) {
 			const sessionId = session.sessionID;
 
 			return sessionId;
@@ -21,7 +16,7 @@ export class EtherpadResponseMapper {
 	}
 
 	static mapToAuthorResponse(author: InlineResponse2003Data | undefined): AuthorId {
-		if (author && 'authorID' in author && author.authorID) {
+		if (author && author.authorID) {
 			const authorId = author.authorID;
 
 			return authorId;
@@ -31,7 +26,7 @@ export class EtherpadResponseMapper {
 	}
 
 	static mapToGroupResponse(group: InlineResponse200Data | undefined): GroupId {
-		if (group && 'groupID' in group && group.groupID) {
+		if (group && group.groupID) {
 			const groupId = group.groupID;
 
 			return groupId;
@@ -40,7 +35,7 @@ export class EtherpadResponseMapper {
 		throw new Error('Group could not be created');
 	}
 
-	static mapToPadResponse(pad: InlineResponse2001 | undefined): PadId {
+	static mapToPadResponse(pad: object | undefined): PadId {
 		// InlineResponse2001 has wrong type definition
 		if (pad && 'padID' in pad && pad.padID) {
 			const padId = pad.padID as string;
