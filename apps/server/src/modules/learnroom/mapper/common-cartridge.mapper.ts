@@ -1,9 +1,7 @@
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
-	// CommonCartridgeFileBuilderProps,
 	CommonCartridgeIntendedUseType,
-	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
@@ -13,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LinkElement, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
+import { CommonCartridgeOrganizationProps } from '@src/modules/common-cartridge/export/builders/common-cartridge-export.factory';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
@@ -28,21 +27,21 @@ export class CommonCartridgeMapper {
 		};
 	}
 
-	public mapLessonToOrganization(lesson: LessonEntity): CommonCartridgeOrganizationBuilderOptions {
+	public mapLessonToOrganization(lesson: LessonEntity): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(lesson.id),
 			title: lesson.name,
 		};
 	}
 
-	public mapContentToOrganization(content: ComponentProperties): CommonCartridgeOrganizationBuilderOptions {
+	public mapContentToOrganization(content: ComponentProperties): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(content._id),
 			title: content.title,
 		};
 	}
 
-	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationBuilderOptions {
+	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(),
 			title: task.name,
