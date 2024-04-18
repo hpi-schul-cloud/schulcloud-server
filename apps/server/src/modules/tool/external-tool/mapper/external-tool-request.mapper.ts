@@ -117,6 +117,7 @@ export class ExternalToolRequestMapper {
 			version,
 			restrictToContexts: externalToolCreateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
+			description: externalToolCreateParams.description,
 		};
 	}
 
