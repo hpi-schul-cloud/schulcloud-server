@@ -3,15 +3,16 @@ import { TimestampsResponse } from '../../dto';
 import { MediaLineResponse } from './media-line.response';
 
 export class MediaBoardResponse {
-	@ApiProperty()
+	@ApiProperty({ description: 'The id of the media board' })
 	id: string;
 
 	@ApiProperty({
 		type: [MediaLineResponse],
+		description: 'The lines of the media board',
 	})
 	lines: MediaLineResponse[];
 
-	@ApiProperty()
+	@ApiProperty({ description: 'The timestamps of the media board' })
 	timestamps: TimestampsResponse;
 
 	constructor(props: MediaBoardResponse) {

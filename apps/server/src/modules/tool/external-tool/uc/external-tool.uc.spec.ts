@@ -588,7 +588,7 @@ describe('ExternalToolUc', () => {
 
 				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
+					contextExternalToolCountPerContext: { course: 3, boardElement: 3, mediaBoard: 2 },
 				});
 
 				commonToolMetadataService.getMetadataForExternalTool.mockResolvedValue(externalToolMetadata);

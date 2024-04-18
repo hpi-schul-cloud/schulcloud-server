@@ -11,9 +11,9 @@ import {
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ExternalToolService } from '../../external-tool';
+import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import { ToolStatusOutdatedLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
@@ -23,7 +23,7 @@ import {
 	ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
-import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service/tool-configuration-status.service';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -32,7 +32,7 @@ describe('ToolLaunchService', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
-	let toolVersionService: DeepMocked<ToolVersionService>;
+	let toolVersionService: DeepMocked<ToolConfigurationStatusService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -59,8 +59,8 @@ describe('ToolLaunchService', () => {
 					useValue: createMock<OAuth2ToolLaunchStrategy>(),
 				},
 				{
-					provide: ToolVersionService,
-					useValue: createMock<ToolVersionService>(),
+					provide: ToolConfigurationStatusService,
+					useValue: createMock<ToolConfigurationStatusService>(),
 				},
 			],
 		}).compile();
@@ -69,7 +69,7 @@ describe('ToolLaunchService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
-		toolVersionService = module.get(ToolVersionService);
+		toolVersionService = module.get(ToolConfigurationStatusService);
 	});
 
 	afterAll(async () => {
@@ -83,9 +83,9 @@ describe('ToolLaunchService', () => {
 	describe('getLaunchData', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
 				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({
@@ -165,9 +165,9 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
 				const externalTool: ExternalTool = externalToolFactory.build();
 				externalTool.config.type = 'unknown' as ToolConfigType;
@@ -204,9 +204,9 @@ describe('ToolLaunchService', () => {
 
 		describe('when tool configuration status is not launchable', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
 				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({

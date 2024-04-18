@@ -34,6 +34,8 @@ export interface ExternalToolProps {
 	restrictToContexts?: ToolContextType[];
 
 	medium?: ExternalToolMedium;
+
+	createdAt?: Date;
 }
 
 export class ExternalTool extends BaseDO implements ToolVersion {
@@ -63,6 +65,8 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	medium?: ExternalToolMedium;
 
+	createdAt?: Date;
+
 	constructor(props: ExternalToolProps) {
 		super(props.id);
 
@@ -87,6 +91,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
 		this.medium = props.medium;
+		this.createdAt = props.createdAt;
 	}
 
 	getVersion(): number {
