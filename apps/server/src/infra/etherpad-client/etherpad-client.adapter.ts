@@ -49,16 +49,17 @@ export class EtherpadClientAdapter {
 		parentId: EntityId,
 		sessionCookieExpire: Date
 	): Promise<SessionId> {
-		const foundedSession = await this.hasSessionsOfAuthor(groupId, authorId);
+		let sessionId: SessionId | undefined;
+		sessionId = await this.getSessionIdByGroupAndAuthor(groupId, authorId);
 
-		if (foundedSession) {
-			return foundedSession;
+		if (sessionId) {
+			return sessionId;
 		}
 
 		const response = await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
 		const session = this.handleResponse<InlineResponse2004>(response, { parentId });
 
-		const sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
+		sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
 
 		return sessionId;
 	}
@@ -77,20 +78,20 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private async hasSessionsOfAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
+	private async getSessionIdByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
 		let sessionId: SessionId | undefined;
 
 		const response = await this.tryListSessionsOfAuthor(authorId);
 		const sessions = this.handleResponse<InlineResponse2006>(response, { groupId, authorId });
 
 		if (sessions) {
-			sessionId = this.getSessionId(sessions, groupId, authorId);
+			sessionId = this.findSessionId(sessions, groupId, authorId);
 		}
 
 		return sessionId;
 	}
 
-	private getSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string) {
+	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string) {
 		const sessionEntries = Object.entries(sessions);
 		const sessionId = sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) => {
 			if (value.groupID === groupId && value.authorID === authorId) {
