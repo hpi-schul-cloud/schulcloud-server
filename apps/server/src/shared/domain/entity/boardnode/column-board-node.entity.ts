@@ -42,7 +42,7 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 		};
 	}
 
-	@Property({ nullable: true })
+	@Property({ nullable: false })
 	layout: BoardLayout;
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {

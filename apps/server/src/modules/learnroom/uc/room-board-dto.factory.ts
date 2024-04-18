@@ -165,7 +165,7 @@ class DtoCreator {
 			createdAt: columnBoardNode.createdAt,
 			updatedAt: columnBoardNode.updatedAt,
 			published: columnBoardNode.isVisible,
-			layout: columnBoardNode.layout || 'columns',
+			layout: columnBoardNode.layout,
 		};
 
 		return { type, content };

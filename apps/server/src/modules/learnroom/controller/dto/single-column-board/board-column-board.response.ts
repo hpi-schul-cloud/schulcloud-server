@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { BoardLayout } from '@shared/domain/domainobject';
 
 export class BoardColumnBoardResponse {
 	constructor({ id, columnBoardId, title, published, createdAt, updatedAt, layout }: BoardColumnBoardResponse) {
@@ -32,5 +33,5 @@ export class BoardColumnBoardResponse {
 	columnBoardId: string;
 
 	@ApiProperty()
-	layout: string;
+	layout: BoardLayout;
 }
