@@ -12,17 +12,17 @@ import { EtherpadRestClientOptions } from './etherpad-rest-client-options';
 @Module({})
 export class EtherpadClientModule {
 	static register(options: EtherpadRestClientOptions): DynamicModule {
+		const providers = [
+			{
+				provide: EtherpadRestClient,
+				useFactory: (httpService: HttpService, logger: Logger) => new EtherpadRestClient(options, httpService, logger),
+				inject: [HttpService, Logger],
+			},
+		];
 		return {
 			imports: [HttpModule, LoggerModule],
 			module: EtherpadClientModule,
-			providers: [
-				{
-					provide: EtherpadRestClient,
-					useFactory: (httpService: HttpService, logger: Logger) =>
-						new EtherpadRestClient(options, httpService, logger),
-					inject: [HttpService, Logger],
-				},
-			],
+			providers,
 			exports: [EtherpadRestClient],
 		};
 	}
