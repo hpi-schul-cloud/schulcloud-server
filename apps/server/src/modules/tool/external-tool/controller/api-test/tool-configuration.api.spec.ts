@@ -1,9 +1,10 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoard, Course, SchoolEntity, User } from '@shared/domain/entity';
+import { Course, LegacyBoard, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
@@ -16,7 +17,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Response } from 'supertest';
-import { AccountEntity } from '@modules/account/entity/account.entity';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -729,6 +729,7 @@ describe('ToolConfigurationController (API)', () => {
 				const contextTypeList: ToolContextTypesListResponse = new ToolContextTypesListResponse([
 					ToolContextType.COURSE,
 					ToolContextType.BOARD_ELEMENT,
+					ToolContextType.MEDIA_BOARD,
 				]);
 
 				return { loggedInClient, contextTypeList };

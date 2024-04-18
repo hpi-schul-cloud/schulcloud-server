@@ -10,9 +10,7 @@ import {
 	ColumnController,
 	ElementController,
 } from './controller';
-import { BoardUc, CardUc, ColumnUc } from './uc';
-import { ElementUc } from './uc/element.uc';
-import { SubmissionItemUc } from './uc/submission-item.uc';
+import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
 
 @Module({
 	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
