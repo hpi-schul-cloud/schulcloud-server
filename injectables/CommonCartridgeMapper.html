@@ -168,6 +168,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#mapLinkElementToResource" >mapLinkElementToResource</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#mapRichTextElementToResource" >mapRichTextElementToResource</a>
                             </li>
                             <li>
@@ -266,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge.mapper.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge.mapper.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -674,6 +678,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mapLinkElementToResource"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>mapLinkElementToResource</b></span>
+                        <a href="#mapLinkElementToResource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapLinkElementToResource(element: <a href="../classes/LinkElement.html" target="_self">LinkElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge.mapper.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../classes/LinkElement.html" target="_self" >LinkElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeResourceProps" target="_self" >CommonCartridgeResourceProps</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapRichTextElementToResource"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -908,8 +981,8 @@
 } from &#x27;@modules/common-cartridge&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { LinkElement, RichTextElement } from &#x27;@shared/domain/domainobject&#x27;;
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from &#x27;@shared/domain/entity&#x27;;
-import { RichTextElement } from &#x27;@shared/domain/domainobject&#x27;;
 import { LearnroomConfig } from &#x27;../learnroom.config&#x27;;
 
 @Injectable()
@@ -1023,6 +1096,15 @@ export class CommonCartridgeMapper {
 			identifier: createIdentifier(element.id),
 			html: &#x60;&lt;p&gt;${element.text}&lt;/p&gt;&#x60;,
 			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+		};
+	}
+
+	public mapLinkElementToResource(element: LinkElement): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.WEB_LINK,
+			identifier: createIdentifier(element.id),
+			title: element.title,
+			url: element.url,
 		};
 	}
 
