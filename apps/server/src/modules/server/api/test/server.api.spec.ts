@@ -93,6 +93,7 @@ describe('Server Controller (API)', () => {
 				'TLDRAW__ASSETS_MAX_SIZE',
 				'FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED',
 				'FEATURE_MEDIA_SHELF_ENABLED',
+				'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

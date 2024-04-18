@@ -82,7 +82,7 @@ describe('ExternalToolLogoService', () => {
 			it('should return undefined', () => {
 				const { externalTool, logoUrlTemplate } = setup();
 
-				const logoUrl = service.buildLogoUrl(logoUrlTemplate, externalTool);
+				const logoUrl = service.buildLogoUrl(externalTool);
 
 				expect(logoUrl).toBeUndefined();
 			});
@@ -107,7 +107,7 @@ describe('ExternalToolLogoService', () => {
 			it('should return an internal logoUrl', () => {
 				const { externalTool, logoUrlTemplate, expected } = setup();
 
-				const logoUrl = service.buildLogoUrl(logoUrlTemplate, externalTool);
+				const logoUrl = service.buildLogoUrl(externalTool);
 
 				expect(logoUrl).toEqual(expected);
 			});

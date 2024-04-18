@@ -7,7 +7,7 @@ export interface GroupValidPeriodEntityProps {
 }
 
 @Embeddable()
-export class GroupValidPeriodEntity {
+export class GroupValidPeriodEmbeddable {
 	@Property()
 	from: Date;
 

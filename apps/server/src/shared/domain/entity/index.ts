@@ -23,5 +23,5 @@ export * from './team.entity';
 export * from './user-login-migration.entity';
 export * from './user.entity';
 export * from './video-conference.entity';
-export * from './external-source.entity';
+export * from './external-source.embeddable';
 export * from './consent';
