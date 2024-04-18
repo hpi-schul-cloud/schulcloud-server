@@ -3,12 +3,11 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType, Card, Column } from '@shared/domain/domainobject';
+import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
-import {
-	CommonCartridgeExportFactory,
-	CommonCartridgeOrganizationNode as CommonCartridgeOrganizationBuilder,
-} from '@src/modules/common-cartridge/export/builders/common-cartridge-export.factory';
+import { CommonCartridgeExportFactory } from '@src/modules/common-cartridge/export/builders/common-cartridge-export.factory';
+import { CommonCartridgeOrganizationNode as CommonCartridgeOrganizationBuilder } from '@src/modules/common-cartridge/export/builders/common-cartridge-organization-node';
 import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 import { CourseService } from './course.service';
@@ -27,9 +26,7 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		exportedTopics: string[],
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		exportedTasks: string[]
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
@@ -37,72 +34,67 @@ export class CommonCartridgeExportService {
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		// await this.addLessons(builder, courseId, version, exportedTopics);
-		// await this.addTasks(builder, courseId, userId, version, exportedTasks);
+		await this.addLessons(builder, courseId, version, exportedTopics);
+		await this.addTasks(builder, courseId, userId, version, exportedTasks);
 		await this.addColumnBoards(builder, courseId);
 
 		return builder.build();
 	}
 
-	// private async addLessons(
-	// 	builder: CommonCartridgeExportFactory,
-	// 	courseId: EntityId,
-	// 	version: CommonCartridgeVersion,
-	// 	topics: string[]
-	// ): Promise<void> {
-	// 	const [lessons] = await this.lessonService.findByCourseIds([courseId]);
+	private async addLessons(
+		builder: CommonCartridgeExportFactory,
+		courseId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[]
+	): Promise<void> {
+		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
-	// 	lessons.forEach((lesson) => {
-	// 		if (!topics.includes(lesson.id)) {
-	// 			return;
-	// 		}
+		lessons.forEach((lesson) => {
+			if (!topics.includes(lesson.id)) {
+				return;
+			}
 
-	// 		const organizationBuilder = builder.addOrganization(
-	// 			{
-	// 				type: CommonCartridgeElementType.ORGANIZATION,
-	// 				identifier: createIdentifier(lesson.id),
-	// 				title: lesson.name,
-	// 				items: [],
-	// 			},
-	// 			null
-	// 		);
+			const lessonOrganization = builder.createOrganization({
+				identifier: createIdentifier(lesson.id),
+				title: lesson.name,
+			});
 
-	// 		lesson.contents.forEach((content) => {
-	// 			this.addComponentToOrganization(organizationBuilder, content);
-	// 		});
+			lesson.contents.forEach((content) => {
+				this.addComponentToOrganization(lessonOrganization, content);
+			});
 
-	// 		lesson.getLessonLinkedTasks().forEach((task) => {
-	// 			organizationBuilder.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
-	// 		});
-	// 	});
-	// }
+			lesson.getLessonLinkedTasks().forEach((task) => {
+				lessonOrganization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
+			});
+		});
+	}
 
-	// private async addTasks(
-	// 	builder: CommonCartridgeExportFactory,
-	// 	courseId: EntityId,
-	// 	userId: EntityId,
-	// 	version: CommonCartridgeVersion,
-	// 	exportedTasks: string[]
-	// ): Promise<void> {
-	// 	const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+	private async addTasks(
+		builder: CommonCartridgeExportFactory,
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		exportedTasks: string[]
+	): Promise<void> {
+		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 
-	// 	if (tasks.length === 0) {
-	// 		return;
-	// 	}
+		if (tasks.length === 0) {
+			return;
+		}
 
-	// 	const organization = builder.addOrganization({
-	// 		title: '',
-	// 		identifier: createIdentifier(),
-	// 	});
+		const tasksOrganization = builder.createOrganization({
+			title: 'Aufgaben',
+			identifier: createIdentifier(),
+		});
 
-	// 	tasks.forEach((task) => {
-	// 		if (!exportedTasks.includes(task.id)) {
-	// 			return;
-	// 		}
+		tasks.forEach((task) => {
+			if (!exportedTasks.includes(task.id)) {
+				return;
+			}
 
-	// 		organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
-	// 	});
-	// }
+			tasksOrganization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
+		});
+	}
 
 	private async addColumnBoards(builder: CommonCartridgeExportFactory, courseId: EntityId): Promise<void> {
 		const columnBoardIds = await this.columnBoardService.findIdsByExternalReference({
@@ -113,13 +105,10 @@ export class CommonCartridgeExportService {
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard = await this.columnBoardService.findById(columnBoardId);
 
-			const organization = builder.addOrganization(
-				{
-					title: columnBoard.title,
-					identifier: createIdentifier(columnBoard.id),
-				},
-				null
-			);
+			const organization = builder.createOrganization({
+				title: columnBoard.title,
+				identifier: createIdentifier(columnBoard.id),
+			});
 
 			columnBoard.children
 				.filter((child) => child instanceof Column)
@@ -133,50 +122,40 @@ export class CommonCartridgeExportService {
 		organizationBuilder: CommonCartridgeOrganizationBuilder
 	): void {
 		const { id } = column;
-		const columnOrganization = builder.addOrganization(
-			{
-				title: column.title,
-				identifier: createIdentifier(id),
-			},
-			organizationBuilder
-		);
+		const columnOrganization = organizationBuilder.createChild({
+			title: column.title,
+			identifier: createIdentifier(id),
+		});
 
 		column.children
 			.filter((child) => child instanceof Card)
-			.forEach((card) => this.addCardToOrganization(card as Card, builder, columnOrganization));
+			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
 	}
 
-	private addCardToOrganization(
-		card: Card,
-		builder: CommonCartridgeExportFactory,
-		organizationBuilder: CommonCartridgeOrganizationBuilder
-	): void {
+	private addCardToOrganization(card: Card, cardOrganization: CommonCartridgeOrganizationBuilder): void {
 		const { id } = card;
-		builder.addOrganization(
-			{
-				title: card.title,
-				identifier: createIdentifier(id),
-			},
-			organizationBuilder
-		);
+		cardOrganization.createChild({
+			title: card.title,
+			identifier: createIdentifier(id),
+		});
 	}
 
-	// private addComponentToOrganization(
-	// 	organizationBuilder: CommonCartridgeOrganizationBuilder,
-	// 	component: ComponentProperties
-	// ): void {
-	// 	const resources = this.commonCartridgeMapper.mapContentToResources(component);
+	private addComponentToOrganization(
+		lessonOrganization: CommonCartridgeOrganizationBuilder,
+		component: ComponentProperties
+	): void {
+		const resources = this.commonCartridgeMapper.mapContentToResources(component);
 
-	// 	if (Array.isArray(resources)) {
-	// 		const subOrganizationBuilder = organizationBuilder.addSubOrganization(
-	// 			this.commonCartridgeMapper.mapContentToOrganization(component)
-	// 		);
+		if (Array.isArray(resources)) {
+			const componentOrganization = lessonOrganization.createChild(
+				this.commonCartridgeMapper.mapContentToOrganization(component)
+			);
 
-	// 		resources.forEach((resource) => {
-	// 			subOrganizationBuilder.addResource(resource);
-	// 		});
-	// 	} else {
-	// 		organizationBuilder.addResource(resources);
-	// 	}
-	// }
+			resources.forEach((resource) => {
+				componentOrganization.addResource(resource);
+			});
+		} else {
+			lessonOrganization.addResource(resources);
+		}
+	}
 }

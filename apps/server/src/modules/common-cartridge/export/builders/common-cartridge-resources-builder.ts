@@ -1,31 +1,16 @@
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces';
-import {
-	CommonCartridgeResourceFactory,
-	CommonCartridgeResourceProps,
-	CommonCartridgeResourcePropsInternal,
-} from '../resources/common-cartridge-resource-factory';
-
-type CommonCartridgeResourcesBuilderProps = {
-	version: CommonCartridgeVersion;
-};
+import { CommonCartridgeResourceNode } from './common-cartridge-resource-node';
 
 export class CommonCartridgeResourcesBuilder {
-	private readonly resources: CommonCartridgeResourceProps[] = [];
+	private readonly resourceNodes: CommonCartridgeResourceNode[] = [];
 
-	constructor(private readonly props: CommonCartridgeResourcesBuilderProps) {}
-
-	addResource(resource: CommonCartridgeResourceProps): void {
-		this.resources.push(resource);
+	addResource(resourceNode: CommonCartridgeResourceNode): void {
+		this.resourceNodes.push(resourceNode);
 	}
 
 	build(): CommonCartridgeResource[] {
-		return this.resources.map((resource) =>
-			CommonCartridgeResourceFactory.createResource({
-				// TODO: Fix this cast
-				version: this.props.version,
-				...resource,
-			} as CommonCartridgeResourcePropsInternal)
-		);
+		const resources = this.resourceNodes.map((resource) => resource.build());
+
+		return resources;
 	}
 }
