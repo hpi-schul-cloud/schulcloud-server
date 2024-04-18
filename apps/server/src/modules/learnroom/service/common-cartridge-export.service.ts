@@ -6,7 +6,16 @@ import {
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, Column, Card, RichTextElement } from '@shared/domain/domainobject';
+import {
+	AnyBoardDo,
+	BoardExternalReferenceType,
+	Card,
+	Column,
+	isCard,
+	isColumn,
+	isLinkElement,
+	isRichTextElement,
+} from '@shared/domain/domainobject';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -110,7 +119,7 @@ export class CommonCartridgeExportService {
 			});
 
 			columnBoard.children
-				.filter((child) => child instanceof Column)
+				.filter((child) => isColumn(child))
 				.forEach((column) => this.addColumnToOrganization(column as Column, organization));
 		}
 	}
@@ -123,7 +132,7 @@ export class CommonCartridgeExportService {
 		});
 
 		column.children
-			.filter((child) => child instanceof Card)
+			.filter((child) => isCard(child))
 			.forEach((card) => this.addCardToOrganization(card as Card, columnOrganization));
 	}
 
@@ -134,11 +143,24 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(id),
 		});
 
-		card.children
-			.filter((child) => child instanceof RichTextElement)
-			.forEach((child) =>
-				cardOrganization.addResource(this.commonCartridgeMapper.mapRichTextElementToResource(child as RichTextElement))
-			);
+		card.children.forEach((child) => this.addCardElementToOrganization(child, cardOrganization));
+	}
+
+	private addCardElementToOrganization(
+		element: AnyBoardDo,
+		organizationBuilder: CommonCartridgeOrganizationBuilder
+	): void {
+		if (isRichTextElement(element)) {
+			const resource = this.commonCartridgeMapper.mapRichTextElementToResource(element);
+
+			organizationBuilder.addResource(resource);
+		}
+
+		if (isLinkElement(element)) {
+			const resource = this.commonCartridgeMapper.mapLinkElementToResource(element);
+
+			organizationBuilder.addResource(resource);
+		}
 	}
 
 	private addComponentToOrganization(
