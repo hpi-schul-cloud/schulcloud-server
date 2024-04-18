@@ -66,14 +66,14 @@ describe('Alert Controller api', () => {
 		describe('when incidents available', () => {
 			const setup = () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
-					if (url === incidentsPath) {
+					if (url.match(incidentsPath)) {
 						const incidents = [incident1, incident2, incident3];
 						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
 
-					if (url.startsWith(componentsPath)) {
+					if (url.match(componentsPath)) {
 						const componentId = url.at(-1);
 						let component: ComponentDto;
 						if (componentId === '1') {

@@ -90,7 +90,7 @@ export class StatusAdapter {
 	}
 
 	private async getComponent(componentId: number): Promise<ComponentResponse> {
-		return firstValueFrom(this.httpService.get(`/api/v1/components/${componentId}`))
+		return firstValueFrom(this.httpService.get(`${this.url}/api/v1/components/${componentId}`))
 			.then((response: AxiosResponse<ComponentResponse>) => response.data)
 			.catch((error) => {
 				throw new InternalServerErrorException(
@@ -101,7 +101,7 @@ export class StatusAdapter {
 	}
 
 	private async getIncidents(): Promise<IncidentsResponse> {
-		return firstValueFrom(this.httpService.get('/api/v1/incidents', { params: { sort: 'id' } }))
+		return firstValueFrom(this.httpService.get(`${this.url}/api/v1/incidents`, { params: { sort: 'id' } }))
 			.then((response: AxiosResponse<IncidentsResponse>) => response.data)
 			.catch((error) => {
 				throw new InternalServerErrorException(

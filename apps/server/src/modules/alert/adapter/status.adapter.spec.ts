@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfig } from '@modules/server';
 import { axiosResponseFactory } from '@shared/testing';
 import { of, throwError } from 'rxjs';
+import { AxiosError } from 'axios';
 import { StatusAdapter } from './status.adapter';
 import { ComponentDto, ComponentResponse, IncidentsResponse, MetaDto } from './dto';
 import { createComponent, createIncident } from '../testing';
@@ -81,15 +82,15 @@ describe('StatusAdapter', () => {
 		describe('when get components failed', () => {
 			const setup = () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
-					if (url === incidentsPath) {
+					if (url.match(incidentsPath)) {
 						const incidents = [incident];
 						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
 
-					if (url.startsWith(componentsPath)) {
-						throwError(() => 'error');
+					if (url.match(componentsPath)) {
+						return throwError(() => new AxiosError());
 					}
 					const response = axiosResponseFactory.build({ data: [] });
 					return of(response);
@@ -108,14 +109,14 @@ describe('StatusAdapter', () => {
 		describe('when incidents for different instances provided', () => {
 			const setup = () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
-					if (url === incidentsPath) {
+					if (url.match(incidentsPath)) {
 						const incidents = [incidentDefault, incidentBrb, incidentOpen, incidentN21, incidentThr];
 						const incidentResponse = new IncidentsResponse({} as MetaDto, incidents);
 						const response = axiosResponseFactory.build({ data: incidentResponse });
 						return of(response);
 					}
 
-					if (url.startsWith(componentsPath)) {
+					if (url.match(componentsPath)) {
 						const componentId = url.at(-1);
 						let component: ComponentDto;
 						if (componentId === '1') {
@@ -157,7 +158,7 @@ describe('StatusAdapter', () => {
 		describe('when many incidents provided', () => {
 			const setup = () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
-					if (url === incidentsPath) {
+					if (url.match(incidentsPath)) {
 						const firstIncident = createIncident(1, 0, 1);
 						firstIncident.updated_at = new Date('2024-01-01 10:00:00');
 						firstIncident.created_at = new Date('2024-01-01 10:00:00');

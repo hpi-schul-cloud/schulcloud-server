@@ -2,7 +2,7 @@ import { IncidentDto } from '../../adapter/dto';
 import { Message, MessageOrigin, MessageStatus } from '../dto';
 
 export class MessageMapper {
-	static mapToMessage(incident: IncidentDto, url: string) {
+	static mapToMessage(incident: IncidentDto, url: string): Message {
 		return new Message(
 			incident.name || '',
 			incident.message || '',

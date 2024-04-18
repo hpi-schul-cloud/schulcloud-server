@@ -6,7 +6,7 @@ import { ServerConfig } from '../../server';
 
 @Injectable()
 export class CacheService {
-	private time: number;
+	private readonly time: number;
 
 	private lastUpdatedTimestamp = 0;
 
@@ -14,7 +14,7 @@ export class CacheService {
 
 	private messageProviders: StatusAdapter[] = [];
 
-	private instance: string;
+	private readonly instance: string;
 
 	constructor(
 		private readonly configService: ConfigService<ServerConfig, true>,
