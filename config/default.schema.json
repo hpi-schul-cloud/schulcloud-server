@@ -542,7 +542,7 @@
 		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
-			"default": "https://status.dbildungscloud.dev/",
+			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
