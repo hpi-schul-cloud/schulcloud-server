@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { BoardExternalReferenceType, CardProps, ContentElementType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, CardProps } from '@shared/domain/domainobject';
 import {
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -79,11 +79,7 @@ describe('SocketGateway', () => {
 			await em.persistAndFlush([columnBoardNode, columnNode]);
 			em.clear();
 
-			const createCardBodyParams = {
-				requiredEmptyElements: [ContentElementType.RICH_TEXT, ContentElementType.FILE, ContentElementType.LINK],
-			};
-
-			return { user, columnBoardNode, columnNode, createCardBodyParams };
+			return { user, columnBoardNode, columnNode };
 		};
 
 		it('should answer with new card', async () => {
