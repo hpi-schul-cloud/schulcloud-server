@@ -314,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="149"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:149</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:156</a></div>
                         </td>
                     </tr>
 
@@ -395,8 +395,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="146"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:146</a></div>
                         </td>
                     </tr>
 
@@ -470,15 +470,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addColumnBoards(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>addColumnBoards(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, exportedColumnBoards: string[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -514,6 +514,18 @@
                                                 <td>courseId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>exportedColumnBoards</td>
+                                            <td>
+                                                        <code>string[]</code>
                                             </td>
 
                                             <td>
@@ -558,8 +570,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -639,8 +651,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:166</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:173</a></div>
                         </td>
                     </tr>
 
@@ -721,8 +733,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -827,8 +839,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -938,7 +950,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, exportedTopics: string[], exportedTasks: string[])</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, exportedTopics: string[], exportedTasks: string[], exportedColumnBoards: string[])</code>
                 </td>
             </tr>
 
@@ -1026,6 +1038,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>exportedColumnBoards</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1086,7 +1110,8 @@ export class CommonCartridgeExportService {
 		userId: EntityId,
 		version: CommonCartridgeVersion,
 		exportedTopics: string[],
-		exportedTasks: string[]
+		exportedTasks: string[],
+		exportedColumnBoards: string[]
 	): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);
 		const builder &#x3D; new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
@@ -1095,7 +1120,7 @@ export class CommonCartridgeExportService {
 
 		await this.addLessons(builder, courseId, version, exportedTopics);
 		await this.addTasks(builder, courseId, userId, version, exportedTasks);
-		await this.addColumnBoards(builder, courseId);
+		await this.addColumnBoards(builder, courseId, exportedColumnBoards);
 
 		return builder.build();
 	}
@@ -1152,11 +1177,17 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	private async addColumnBoards(builder: CommonCartridgeFileBuilder, courseId: EntityId): Promise&lt;void&gt; {
-		const columnBoardIds &#x3D; await this.columnBoardService.findIdsByExternalReference({
-			type: BoardExternalReferenceType.Course,
-			id: courseId,
-		});
+	private async addColumnBoards(
+		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
+		exportedColumnBoards: string[]
+	): Promise&lt;void&gt; {
+		const columnBoardIds &#x3D; (
+			await this.columnBoardService.findIdsByExternalReference({
+				type: BoardExternalReferenceType.Course,
+				id: courseId,
+			})
+		).filter((id) &#x3D;&gt; exportedColumnBoards.includes(id));
 
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard &#x3D; await this.columnBoardService.findById(columnBoardId);
