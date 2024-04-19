@@ -12,12 +12,15 @@ import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 describe('SanisResponseMapper', () => {
 	let module: TestingModule;
 	let mapper: SanisResponseMapper;
+
+	let provisioningFeatures: IProvisioningFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,10 +30,15 @@ describe('SanisResponseMapper', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: ProvisioningFeatures,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		mapper = module.get(SanisResponseMapper);
+		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
 	const setupSanisResponse = () => {
@@ -104,6 +112,10 @@ describe('SanisResponseMapper', () => {
 
 		describe('when group type class is given', () => {
 			const setup = () => {
+				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+					schulconnexOtherGroupusersEnabled: true,
+				});
+
 				const { sanisResponse } = setupSanisResponse();
 				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
 				const group: SanisGruppenResponse = personenkontext.gruppen![0];
@@ -224,8 +236,11 @@ describe('SanisResponseMapper', () => {
 			});
 		});
 
-		describe('when no other participants are provided', () => {
+		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is false', () => {
 			const setup = () => {
+				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+					schulconnexOtherGroupusersEnabled: false,
+				});
 				const { sanisResponse } = setupSanisResponse();
 				sanisResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
@@ -240,6 +255,29 @@ describe('SanisResponseMapper', () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
 				expect(result?.[0].otherUsers).toBeUndefined();
+			});
+		});
+
+		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is true', () => {
+			const setup = () => {
+				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+					schulconnexOtherGroupusersEnabled: true,
+				});
+
+				const { sanisResponse } = setupSanisResponse();
+				sanisResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
+
+				return {
+					sanisResponse,
+				};
+			};
+
+			it('should set other users to an emtpy array', () => {
+				const { sanisResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+
+				expect(result?.[0].otherUsers).toStrictEqual([]);
 			});
 		});
 
