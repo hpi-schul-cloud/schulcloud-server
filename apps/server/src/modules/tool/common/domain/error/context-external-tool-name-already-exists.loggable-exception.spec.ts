@@ -1,4 +1,4 @@
-import { ContextExternalToolNameAlreadyExistsLoggableException } from '@modules/tool/common/domain';
+import { ContextExternalToolNameAlreadyExistsLoggableException } from './context-external-tool-name-already-exists.loggable-exception';
 
 describe(ContextExternalToolNameAlreadyExistsLoggableException.name, () => {
 	describe('getLogMessage', () => {
