@@ -11,11 +11,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LinkElement, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
-import { CommonCartridgeOrganizationProps } from '@src/modules/common-cartridge/export/builders/common-cartridge-export.factory';
+import { CommonCartridgeOrganizationProps } from '@src/modules/common-cartridge/export/builders/common-cartridge-file-builder';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
-export class CommonCartridgeMapper {
+export class CommonCartridgeExportMapper {
 	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
 	public mapCourseToMetadata(course: Course): CommonCartridgeElementProps {

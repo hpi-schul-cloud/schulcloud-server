@@ -1,7 +1,7 @@
 import { CommonCartridgeResource } from '../interfaces';
 import { CommonCartridgeResourceNode } from './common-cartridge-resource-node';
 
-export class CommonCartridgeResourcesBuilder {
+export class CommonCartridgeResourceCollectionBuilder {
 	private readonly resourceNodes: CommonCartridgeResourceNode[] = [];
 
 	addResource(resourceNode: CommonCartridgeResourceNode): void {

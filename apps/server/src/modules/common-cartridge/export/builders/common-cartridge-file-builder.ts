@@ -14,28 +14,29 @@ import {
 	CommonCartridgeOrganizationNode,
 	CommonCartridgeOrganizationNodeProps,
 } from './common-cartridge-organization-node';
-import { CommonCartridgeResourcesBuilder } from './common-cartridge-resources-builder';
+import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
-export type CommonCartridgeExportFactoryProps = {
+export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 };
 
 export type CommonCartridgeOrganizationProps = Omit<CommonCartridgeOrganizationNodeProps, 'version' | 'type'>;
 
-export class CommonCartridgeExportFactory {
-	private readonly resourcesBuilder: CommonCartridgeResourcesBuilder = new CommonCartridgeResourcesBuilder();
+export class CommonCartridgeFileBuilder {
+	private readonly resourcesBuilder: CommonCartridgeResourceCollectionBuilder =
+		new CommonCartridgeResourceCollectionBuilder();
 
 	private readonly organizationsRoot: CommonCartridgeOrganizationNode[] = [];
 
 	private metadataElement: CommonCartridgeElement | null = null;
 
-	constructor(private readonly props: CommonCartridgeExportFactoryProps) {}
+	constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
 
-	public addMetadata(props: CommonCartridgeElementProps): void {
+	public addMetadata(metadataProps: CommonCartridgeElementProps): void {
 		this.metadataElement = CommonCartridgeElementFactory.createElement({
 			version: this.props.version,
-			...props,
+			...metadataProps,
 		});
 	}
 
@@ -53,7 +54,7 @@ export class CommonCartridgeExportFactory {
 
 	public build(): Buffer {
 		if (!this.metadataElement) {
-			throw new Error('Metadata is required');
+			throw new Error('Metadata is required'); // TODO add loggable
 		}
 
 		const archive = new AdmZip();

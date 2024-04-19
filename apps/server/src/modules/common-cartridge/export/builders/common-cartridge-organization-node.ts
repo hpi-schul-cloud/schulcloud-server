@@ -4,9 +4,9 @@ import { CommonCartridgeOrganizationElementPropsV110 } from '../elements/v1.1.0'
 import { CommonCartridgeOrganizationElementPropsV130 } from '../elements/v1.3.0';
 import { CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
-import type { CommonCartridgeOrganizationProps } from './common-cartridge-export.factory';
+import type { CommonCartridgeOrganizationProps } from './common-cartridge-file-builder';
+import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 import { CommonCartridgeResourceNode } from './common-cartridge-resource-node';
-import { CommonCartridgeResourcesBuilder } from './common-cartridge-resources-builder';
 
 export type CommonCartridgeOrganizationNodeProps = Omit<
 	CommonCartridgeOrganizationElementPropsV110 | CommonCartridgeOrganizationElementPropsV130,
@@ -20,7 +20,7 @@ export class CommonCartridgeOrganizationNode {
 
 	constructor(
 		private readonly props: CommonCartridgeOrganizationNodeProps,
-		private readonly resourcesBuilder: CommonCartridgeResourcesBuilder,
+		private readonly resourcesBuilder: CommonCartridgeResourceCollectionBuilder,
 		parent: CommonCartridgeOrganizationNode | null
 	) {
 		this.parent = parent;

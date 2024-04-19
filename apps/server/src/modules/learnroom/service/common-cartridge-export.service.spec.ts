@@ -20,7 +20,7 @@ import {
 } from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -104,7 +104,7 @@ describe('CommonCartridgeExportService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeExportService,
-				CommonCartridgeMapper,
+				CommonCartridgeExportMapper,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),

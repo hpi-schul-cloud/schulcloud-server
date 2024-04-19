@@ -25,25 +25,25 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeMapper', () => {
 	let module: TestingModule;
-	let sut: CommonCartridgeMapper;
+	let sut: CommonCartridgeExportMapper;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 
 	beforeAll(async () => {
 		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
-				CommonCartridgeMapper,
+				CommonCartridgeExportMapper,
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
 				},
 			],
 		}).compile();
-		sut = module.get(CommonCartridgeMapper);
+		sut = module.get(CommonCartridgeExportMapper);
 		configServiceMock = module.get(ConfigService);
 	});
 
