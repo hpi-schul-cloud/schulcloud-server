@@ -134,10 +134,7 @@ export class MediaAvailableLineService {
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool
 	): MediaAvailableLineElement {
-		const logoUrl: string | undefined = this.externalToolLogoService.buildLogoUrl(
-			'/v3/tools/external-tools/{id}/logo',
-			externalTool
-		);
+		const logoUrl: string | undefined = this.externalToolLogoService.buildLogoUrl(externalTool);
 
 		const element: MediaAvailableLineElement = new MediaAvailableLineElement({
 			schoolExternalToolId: schoolExternalTool.id ?? '',

@@ -4,8 +4,8 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { UserImportSchoolExternalIdMissingLoggableException } from '../../loggable';
-import { SchulconnexImportUserMapper } from '../../mapper';
+import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
+import { SchulconnexImportUserMapper } from '../mapper';
 
 @Injectable()
 export class SchulconnexFetchImportUsersService {

@@ -1,6 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
@@ -9,19 +12,15 @@ import {
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Permission } from '@shared/domain/interface';
-import { ToolContextType } from '../../common/enum';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolService } from './context-external-tool.service';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool';
-import { SchoolExternalToolService } from '../../school-external-tool';
-import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
-import { CommonToolService } from '../../common/service';
 import { CustomParameter } from '../../common/domain';
+import { ToolContextType } from '../../common/enum';
+import { CommonToolService } from '../../common/service';
+import { ExternalToolService } from '../../external-tool';
+import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { ContextExternalTool, ContextRef, RestrictedContextMismatchLoggableException } from '../domain';
+import { ContextExternalToolService } from './context-external-tool.service';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -397,7 +396,7 @@ describe('ContextExternalToolService', () => {
 				const { contextExternalTool, externalTool } = setup();
 
 				await expect(service.checkContextRestrictions(contextExternalTool)).rejects.toThrow(
-					new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type)
+					new RestrictedContextMismatchLoggableException(externalTool.name, contextExternalTool.contextRef.type)
 				);
 			});
 		});

@@ -8,7 +8,7 @@ export interface ExternalSourceEntityProps {
 }
 
 @Embeddable()
-export class ExternalSourceEntity {
+export class ExternalSourceEmbeddable {
 	@Property()
 	externalId: string;
 
