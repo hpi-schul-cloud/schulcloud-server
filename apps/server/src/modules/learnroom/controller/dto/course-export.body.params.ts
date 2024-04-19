@@ -15,4 +15,12 @@ export class CourseExportBodyParams {
 		type: [String],
 	})
 	public readonly tasks!: string[];
+
+	// AI next 6 lines
+	@IsArray()
+	@ApiProperty({
+		description: 'The list of ids of column boards which should be exported. If empty no column boards are exported.',
+		type: [String],
+	})
+	public readonly columnBoards!: string[];
 }
