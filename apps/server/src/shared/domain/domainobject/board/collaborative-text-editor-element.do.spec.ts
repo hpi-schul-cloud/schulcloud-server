@@ -47,16 +47,20 @@ describe(CollaborativeTextEditorElement.name, () => {
 	});
 
 	describe('isCollaborativeTextEditorElement', () => {
-		it('should return true', () => {
-			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+		describe('when element is collaborative text editor element', () => {
+			it('should return true', () => {
+				const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
 
-			expect(isCollaborativeTextEditorElement(collaborativeTextEditorElement)).toBe(true);
+				expect(isCollaborativeTextEditorElement(collaborativeTextEditorElement)).toBe(true);
+			});
 		});
 
-		it('should return false', () => {
-			const notCollaborativeTextEditorElement = {};
+		describe('when element is not collaborative text editor element', () => {
+			it('should return false', () => {
+				const notCollaborativeTextEditorElement = {};
 
-			expect(isCollaborativeTextEditorElement(notCollaborativeTextEditorElement)).toBe(false);
+				expect(isCollaborativeTextEditorElement(notCollaborativeTextEditorElement)).toBe(false);
+			});
 		});
 	});
 });
