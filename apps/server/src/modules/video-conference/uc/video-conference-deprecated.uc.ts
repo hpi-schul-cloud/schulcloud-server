@@ -156,6 +156,10 @@ export class VideoConferenceDeprecatedUc {
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
 
+		console.log('role', bbbRole);
+		console.log('isGuest', isGuest);
+		console.log('videoConference', vcDO.options);
+
 		if (isGuest) {
 			configBuilder.asGuest(true);
 		}

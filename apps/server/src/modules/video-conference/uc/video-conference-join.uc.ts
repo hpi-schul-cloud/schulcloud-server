@@ -43,6 +43,8 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
+		console.log('videoConference', videoConference.options);
+
 		if (videoConference.options.everybodyJoinsAsModerator && !isGuest) {
 			joinBuilder.withRole(BBBRole.MODERATOR);
 		}
