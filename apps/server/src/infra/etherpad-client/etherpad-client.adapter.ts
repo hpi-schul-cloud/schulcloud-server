@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import {
 	InlineResponse200,
@@ -13,7 +12,6 @@ import {
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
-import { EtherpadErrorLoggableException } from './loggable';
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -39,7 +37,11 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { userId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(
+				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
+				{ userId },
+				error
+			);
 		}
 	}
 
@@ -74,7 +76,11 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { authorId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(
+				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
+				{ authorId },
+				error
+			);
 		}
 	}
 
@@ -119,7 +125,11 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { authorId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(
+				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
+				{ authorId },
+				error
+			);
 		}
 	}
 
@@ -138,7 +148,11 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { parentId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(
+				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
+				{ parentId },
+				error
+			);
 		}
 	}
 
@@ -163,7 +177,11 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { groupId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(
+				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
+				{ groupId },
+				error
+			);
 		}
 	}
 
@@ -182,7 +200,11 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw this.handleError(ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR, { groupId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(
+				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
+				{ groupId },
+				error
+			);
 		}
 	}
 
@@ -191,19 +213,23 @@ export class EtherpadClientAdapter {
 
 		switch (response.code) {
 			case 1:
-				throw this.handleError(ErrorType.ETHERPAD_SERVER_BAD_REQUEST, payload, response);
+				throw EtherpadResponseMapper.mapResponseToException(ErrorType.ETHERPAD_SERVER_BAD_REQUEST, payload, response);
 			case 2:
-				throw this.handleError(ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR, payload, response);
+				throw EtherpadResponseMapper.mapResponseToException(
+					ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR,
+					payload,
+					response
+				);
 			case 3:
-				throw this.handleError(ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND, payload, response);
+				throw EtherpadResponseMapper.mapResponseToException(
+					ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND,
+					payload,
+					response
+				);
 			case 4:
-				throw this.handleError(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY, payload, response);
+				throw EtherpadResponseMapper.mapResponseToException(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY, payload, response);
 			default:
 				return response.data as T['data'];
 		}
-	}
-
-	private handleError(type: ErrorType, payload: EtherpadParams, response: unknown): EtherpadErrorLoggableException {
-		return new EtherpadErrorLoggableException(type, payload, ErrorUtils.createHttpExceptionOptions(response));
 	}
 }
