@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import { ColumnBoardProps } from './types';
+import { AnyBoardNode, ColumnBoardProps } from './types';
 
 export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 	get title(): string {
@@ -16,5 +16,12 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 
 	set isVisible(isVisible: boolean) {
 		this.props.isVisible = isVisible;
+	}
+
+	isAllowedAsChild(boardNode: AnyBoardNode): boolean {
+		// TODO: Column is not defined yet
+		// 	const allowed = boardNode instanceof Column;
+		// false as placeholders
+		return false;
 	}
 }
