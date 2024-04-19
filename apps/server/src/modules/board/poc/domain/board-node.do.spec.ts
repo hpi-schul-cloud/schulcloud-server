@@ -1,32 +1,10 @@
-import { BoardNodeType } from '@shared/domain/entity';
-import { BaseFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNode } from './board-node.do';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ROOT_PATH, joinPath } from './path-utils';
-import { AnyBoardNode, BoardNodeProps } from './types';
-
-class TestingBoardNode extends BoardNode<BoardNodeProps> {}
-
-const boardNodeFactory = BaseFactory.define<TestingBoardNode, BoardNodeProps>(TestingBoardNode, ({ sequence }) => {
-	return {
-		id: new ObjectId().toHexString(),
-		type: BoardNodeType.CARD, // made up
-		path: ROOT_PATH,
-		level: 0,
-		title: `board node #${sequence}`,
-		position: 0,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-});
-
-const buildBoardNode = (props?: BoardNodeProps) => boardNodeFactory.build(props) as unknown as AnyBoardNode;
 
 describe('BoardNode', () => {
 	describe('a new instance', () => {
 		const setup = () => {
-			const boardNode = buildBoardNode();
+			const boardNode = columnFactory.build();
 
 			return { boardNode };
 		};
@@ -55,8 +33,8 @@ describe('BoardNode', () => {
 
 	describe('when adding a child', () => {
 		const setup = () => {
-			const parent = buildBoardNode();
-			const child = buildBoardNode();
+			const parent = columnFactory.build();
+			const child = cardFactory.build();
 
 			return { parent, child };
 		};
@@ -92,12 +70,71 @@ describe('BoardNode', () => {
 
 			expect(child.path).toEqual(joinPath(parent.path, parent.id));
 		});
+
+		describe('when child already exists', () => {
+			const setupWithChild = () => {
+				const child = cardFactory.build();
+				const parent = columnFactory.build({ children: [child] });
+
+				return { parent, existingChild: child };
+			};
+
+			it('should thow an error', () => {
+				const { parent, existingChild } = setupWithChild();
+
+				expect(() => parent.addChild(existingChild)).toThrowError();
+			});
+		});
+
+		describe('when position is given', () => {
+			describe('when position is valid', () => {
+				it.todo('should insert at proper position');
+			});
+
+			describe('when position < 0', () => {
+				it.todo('should thow an error');
+			});
+
+			describe('when position > length', () => {
+				it.todo('should thow an error');
+			});
+		});
+
+		describe('when position omitted', () => {
+			it.todo('should append the child');
+		});
+	});
+
+	describe('constructor', () => {
+		const setup = () => {
+			const column = columnFactory.build();
+			const board = columnBoardFactory.build({ children: [column] });
+			return { board, column };
+		};
+
+		it('should add children', () => {
+			const { board, column } = setup();
+
+			expect(board.children).toEqual([column]);
+		});
+
+		it('should update path of children', () => {
+			const { board, column } = setup();
+
+			expect(column.ancestorIds).toEqual([board.id]);
+		});
+
+		it('should update level of children', () => {
+			const { board, column } = setup();
+
+			expect(column.level).toEqual(board.level + 1);
+		});
 	});
 
 	describe('when removing a child', () => {
 		const setup = () => {
-			const parent = buildBoardNode();
-			const child = buildBoardNode();
+			const parent = columnFactory.build();
+			const child = cardFactory.build();
 			parent.addChild(child);
 
 			return { parent, child };
@@ -134,5 +171,13 @@ describe('BoardNode', () => {
 
 			expect(child.path).toEqual(ROOT_PATH);
 		});
+	});
+
+	describe('hasChild', () => {
+		it.todo('should check by id');
+
+		// TODO unfortunately we're not able to check by object reference
+		// that requrires using the identity map which is not implemented yet
+		it.todo('should not be able to check by reference');
 	});
 });

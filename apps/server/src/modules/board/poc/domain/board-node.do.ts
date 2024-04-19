@@ -5,6 +5,11 @@ import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
 import { AnyBoardNode, BoardNodeProps } from './types';
 
 export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T> {
+	constructor(props: T) {
+		super(props);
+		props.children.forEach((child) => child.updatePath(this));
+	}
+
 	get level(): number {
 		return this.ancestorIds.length;
 	}
@@ -59,10 +64,8 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	private updatePath(parent: BoardNode<BoardNodeProps>): void {
-		if (this.parentId !== parent.id) {
-			this.props.path = joinPath(parent.path, parent.id);
-			this.props.level = parent.level + 1;
-		}
+		this.props.path = joinPath(parent.path, parent.id);
+		this.props.level = parent.level + 1;
 		this.props.children.forEach((child) => {
 			child.updatePath(this);
 		});
