@@ -5053,6 +5053,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/HydraRedirectDto.html" data-type="entity-link" >HydraRedirectDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/IdenticalUserLoginMigrationSystemLoggableException.html" data-type="entity-link" >IdenticalUserLoginMigrationSystemLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/IdentityManagementOauthService.html" data-type="entity-link" >IdentityManagementOauthService</a>
                             </li>
                             <li class="link">
@@ -5405,6 +5408,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/MissingYearsLoggableException.html" data-type="entity-link" >MissingYearsLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MoinSchuleSystemNotFoundLoggableException.html" data-type="entity-link" >MoinSchuleSystemNotFoundLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MongoPatterns.html" data-type="entity-link" >MongoPatterns</a>

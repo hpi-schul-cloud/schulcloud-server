@@ -217,7 +217,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -318,8 +318,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -388,8 +388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -458,8 +458,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="111"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:111</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -806,8 +806,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -876,8 +876,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -946,8 +946,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -1028,8 +1028,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -1085,13 +1085,15 @@
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { LegacySystemService, SystemDto } from &#x27;@modules/system&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
-import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId, SchoolFeature, SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
 import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
+	IdenticalUserLoginMigrationSystemLoggableException,
+	MoinSchuleSystemNotFoundLoggableException,
 } from &#x27;../loggable&#x27;;
 
 @Injectable()
@@ -1193,20 +1195,18 @@ export class UserLoginMigrationService {
 
 	private async createNewMigration(school: LegacySchoolDo): Promise&lt;UserLoginMigrationDO&gt; {
 		const oauthSystems: SystemDto[] &#x3D; await this.systemService.findByType(SystemTypeEnum.OAUTH);
-		const sanisSystem: SystemDto | undefined &#x3D; oauthSystems.find((system: SystemDto) &#x3D;&gt; system.alias &#x3D;&#x3D;&#x3D; &#x27;SANIS&#x27;);
+		const moinSchuleSystem: SystemDto | undefined &#x3D; oauthSystems.find((system: SystemDto) &#x3D;&gt; system.alias &#x3D;&#x3D;&#x3D; &#x27;SANIS&#x27;);
 
-		if (!sanisSystem) {
-			throw new InternalServerErrorException(&#x27;Cannot find SANIS system&#x27;);
+		if (!moinSchuleSystem) {
+			throw new MoinSchuleSystemNotFoundLoggableException();
+		} else if (school.systems?.includes(moinSchuleSystem.id as string)) {
+			throw new IdenticalUserLoginMigrationSystemLoggableException(school.id, moinSchuleSystem.id);
 		}
-
-		const systemIds: EntityId[] &#x3D;
-			school.systems?.filter((systemId: EntityId) &#x3D;&gt; systemId !&#x3D;&#x3D; (sanisSystem.id as string)) || [];
-		const sourceSystemId &#x3D; systemIds[0];
 
 		const userLoginMigrationDO: UserLoginMigrationDO &#x3D; new UserLoginMigrationDO({
 			schoolId: school.id as string,
-			targetSystemId: sanisSystem.id as string,
-			sourceSystemId,
+			targetSystemId: moinSchuleSystem.id as string,
+			sourceSystemId: school.systems?.[0],
 			startedAt: new Date(),
 		});
 
