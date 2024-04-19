@@ -12,7 +12,7 @@ import {
 	systemEntityFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { UserImportSchoolExternalIdMissingLoggableException } from '../../loggable';
+import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService } from './schulconnex-fetch-import-users.service';
 
 describe(SchulconnexFetchImportUsersService.name, () => {

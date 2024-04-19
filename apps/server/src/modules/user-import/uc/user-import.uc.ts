@@ -1,4 +1,4 @@
-import { AccountService, Account, AccountSave } from '@modules/account';
+import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -230,7 +230,7 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.isNbc();
+		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			useCentralLdap = false;
@@ -297,7 +297,7 @@ export class UserImportUc {
 
 		school.inMaintenanceSince = undefined;
 
-		const isMigrationRestartable: boolean = this.isNbc();
+		const isMigrationRestartable: boolean = this.userImportFeatures.useWithUserLoginMigration;
 		if (isMigrationRestartable) {
 			school.inUserMigration = undefined;
 		}
@@ -315,7 +315,7 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.isNbc();
+		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			await this.updateUserAndAccountWithUserLoginMigration(importUser);
@@ -393,9 +393,5 @@ export class UserImportUc {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
 		}
-	}
-
-	private isNbc(): boolean {
-		return this.userImportFeatures.instance === 'n21';
 	}
 }

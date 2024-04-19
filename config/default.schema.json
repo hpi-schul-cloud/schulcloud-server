@@ -1643,6 +1643,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
+		},
+		"FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard to use the user login migration process"
 		}
 	},
 	"required": []
