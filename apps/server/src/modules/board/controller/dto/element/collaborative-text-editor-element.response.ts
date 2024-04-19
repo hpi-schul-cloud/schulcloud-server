@@ -19,6 +19,7 @@ export class CollaborativeTextEditorElementResponse {
 	@ApiProperty()
 	timestamps: TimestampsResponse;
 
+	// This is required due to the nuxt-client content element handling, but otherwise not used.
 	@ApiProperty()
 	content: object;
 }
