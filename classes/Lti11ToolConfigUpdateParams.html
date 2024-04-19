@@ -350,7 +350,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(LtiMessageType)<br />@ApiProperty()<br />
+                            @IsEnum(LtiMessageType)<br />@ApiProperty({enum: LtiMessageType, enumName: &#x27;LtiMessageType&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -387,7 +387,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(LtiPrivacyPermission)<br />@ApiProperty()<br />
+                            @IsEnum(LtiPrivacyPermission)<br />@ApiProperty({enum: LtiPrivacyPermission, enumName: &#x27;LtiPrivacyPermission&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -463,7 +463,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(ToolConfigType)<br />@ApiProperty()<br />
+                            @IsEnum(ToolConfigType)<br />@ApiProperty({enum: ToolConfigType, enumName: &#x27;ToolConfigType&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -502,7 +502,7 @@ import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.para
 
 export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
-	@ApiProperty()
+	@ApiProperty({ enum: ToolConfigType, enumName: &#x27;ToolConfigType&#x27; })
 	type!: ToolConfigType;
 
 	@IsString()
@@ -519,11 +519,11 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 	secret?: string;
 
 	@IsEnum(LtiMessageType)
-	@ApiProperty()
+	@ApiProperty({ enum: LtiMessageType, enumName: &#x27;LtiMessageType&#x27; })
 	lti_message_type!: LtiMessageType;
 
 	@IsEnum(LtiPrivacyPermission)
-	@ApiProperty()
+	@ApiProperty({ enum: LtiPrivacyPermission, enumName: &#x27;LtiPrivacyPermission&#x27; })
 	privacy_permission!: LtiPrivacyPermission;
 
 	@IsLocale()

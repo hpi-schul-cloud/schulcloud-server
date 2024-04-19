@@ -381,7 +381,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({enum: LtiMessageType, enumName: &#x27;LtiMessageType&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -417,7 +417,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({enum: LtiPrivacyPermission, enumName: &#x27;LtiPrivacyPermission&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -453,7 +453,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({enum: ToolConfigType, enumName: &#x27;ToolConfigType&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -490,7 +490,7 @@ import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from &#x27;../..
 import { ExternalToolConfigResponse } from &#x27;./external-tool-config.response&#x27;;
 
 export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
-	@ApiProperty()
+	@ApiProperty({ enum: ToolConfigType, enumName: &#x27;ToolConfigType&#x27; })
 	type: ToolConfigType;
 
 	@ApiProperty()
@@ -499,10 +499,10 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
 	key: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: LtiMessageType, enumName: &#x27;LtiMessageType&#x27; })
 	lti_message_type: LtiMessageType;
 
-	@ApiProperty()
+	@ApiProperty({ enum: LtiPrivacyPermission, enumName: &#x27;LtiPrivacyPermission&#x27; })
 	privacy_permission: LtiPrivacyPermission;
 
 	@ApiProperty()
