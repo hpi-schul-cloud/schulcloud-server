@@ -284,7 +284,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/Column.html" target="_self">Column</a>, requiredEmptyElements?: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType[]</a>)</code>
+                    <code>create(parent: <a href="../classes/Column.html" target="_self">Column</a>, requiredEmptyElements?: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType[]</a>, props?: <a href="../undefineds/CardInitProps.html" target="_self">CardInitProps</a>)</code>
                 </td>
             </tr>
 
@@ -328,6 +328,18 @@
                                                 <td>requiredEmptyElements</td>
                                             <td>
                                                             <code><a href="../miscellaneous/enumerations.html#ContentElementType" target="_self" >ContentElementType[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CardInitProps" target="_self" >CardInitProps</a></code>
                                             </td>
 
                                             <td>
@@ -981,10 +993,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { Card, CardInitProps, Column, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
 import { ContentElementService } from &#x27;./content-element.service&#x27;;
@@ -1010,11 +1022,11 @@ export class CardService {
 		return cards as Card[];
 	}
 
-	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise&lt;Card&gt; {
+	async create(parent: Column, requiredEmptyElements?: ContentElementType[], props?: CardInitProps): Promise&lt;Card&gt; {
 		const card &#x3D; new Card({
 			id: new ObjectId().toHexString(),
-			title: &#x27;&#x27;,
-			height: 150,
+			title: props?.title || &#x27;&#x27;,
+			height: props?.height || 150,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

@@ -149,7 +149,17 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Readonly</span>
+                                <a href="#archive" >archive</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#manifestParser" >manifestParser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#resourceFactory" >resourceFactory</a>
                             </li>
                         </ul>
                     </td>
@@ -165,7 +175,35 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#getManifestFileAsString" >getManifestFileAsString</a>
+                                <a href="#checkOrganization" >checkOrganization</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getManifestAsDocument" >getManifestAsDocument</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getOrganizations" >getOrganizations</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getResource" >getResource</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getResourceAsString" >getResourceAsString</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getSchema" >getSchema</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getTitle" >getTitle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getVersion" >getVersion</a>
                             </li>
                         </ul>
                     </td>
@@ -175,20 +213,6 @@
 
 
 
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Accessors</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#manifest" >manifest</a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
         </tbody>
     </table>
 </section>
@@ -205,7 +229,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -263,6 +287,34 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="archive"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>archive</b></span>
+                        <a href="#archive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>AdmZip</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="manifestParser"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -280,7 +332,35 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resourceFactory"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>resourceFactory</b></span>
+                        <a href="#resourceFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/CommonCartridgeResourceFactory.html" target="_self" >CommonCartridgeResourceFactory</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -298,26 +378,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getManifestFileAsString"></a>
+                    <a name="checkOrganization"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>getManifestFileAsString</b></span>
-                        <a href="#getManifestFileAsString"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>checkOrganization</b></span>
+                        <a href="#checkOrganization"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getManifestFileAsString(archive: AdmZip)</code>
+                    <code>checkOrganization(organization: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -338,9 +418,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>archive</td>
+                                                <td>organization</td>
                                             <td>
-                                                        <code>AdmZip</code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
                                             </td>
 
                                             <td>
@@ -353,12 +433,345 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>string | never</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
                             <div class="io-description">
                                 
                             </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getManifestAsDocument"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getManifestAsDocument</b></span>
+                        <a href="#getManifestAsDocument"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getManifestAsDocument()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Document</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getOrganizations"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getOrganizations</b></span>
+                        <a href="#getOrganizations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getOrganizations()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps[]</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getResource"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getResource</b></span>
+                        <a href="#getResource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getResource(organization: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>organization</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/CommonCartridgeResource.html" target="_self" >CommonCartridgeResourceProps | undefined</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getResourceAsString"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getResourceAsString</b></span>
+                        <a href="#getResourceAsString"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getResourceAsString(organization: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>organization</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSchema"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getSchema</b></span>
+                        <a href="#getSchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchema()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string | undefined</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTitle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getTitle</b></span>
+                        <a href="#getTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTitle()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string | undefined</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getVersion"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getVersion</b></span>
+                        <a href="#getVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getVersion()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string | undefined</code>
+
+                        </div>
                 </td>
             </tr>
         </tbody>
@@ -369,64 +782,91 @@
 
 
 
-            <section data-compodoc="block-accessors">
-    <h3 id="accessors">
-        Accessors
-    </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="manifest"></a>
-                        <span class="name"><b>manifest</b><a href="#manifest"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>manifest()</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-file-parser.ts:15</a></div>
-                                </td>
-                            </tr>
-
-            </tbody>
-        </table>
-</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import AdmZip from &#x27;adm-zip&#x27;;
-import { DEFAULT_FILE_PARSER_OPTIONS } from &#x27;./common-cartridge-import.types&#x27;;
+import { JSDOM } from &#x27;jsdom&#x27;;
+import {
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceProps,
+	DEFAULT_FILE_PARSER_OPTIONS,
+} from &#x27;./common-cartridge-import.types&#x27;;
 import { CommonCartridgeManifestParser } from &#x27;./common-cartridge-manifest-parser&#x27;;
+import { CommonCartridgeResourceFactory } from &#x27;./common-cartridge-resource-factory&#x27;;
+import { CommonCartridgeImportUtils } from &#x27;./utils/common-cartridge-import-utils&#x27;;
 import { CommonCartridgeManifestNotFoundException } from &#x27;./utils/common-cartridge-manifest-not-found.exception&#x27;;
+import { CommonCartridgeResourceNotFoundException } from &#x27;./utils/common-cartridge-resource-not-found.exception&#x27;;
 
 export class CommonCartridgeFileParser {
 	private readonly manifestParser: CommonCartridgeManifestParser;
 
+	private readonly archive: AdmZip;
+
+	private readonly resourceFactory: CommonCartridgeResourceFactory;
+
 	public constructor(file: Buffer, private readonly options &#x3D; DEFAULT_FILE_PARSER_OPTIONS) {
-		const archive &#x3D; new AdmZip(file);
-
-		this.manifestParser &#x3D; new CommonCartridgeManifestParser(this.getManifestFileAsString(archive), this.options);
+		this.archive &#x3D; new AdmZip(file);
+		this.manifestParser &#x3D; new CommonCartridgeManifestParser(this.getManifestAsDocument(), this.options);
+		this.resourceFactory &#x3D; new CommonCartridgeResourceFactory(this.archive);
 	}
 
-	public get manifest(): CommonCartridgeManifestParser {
-		return this.manifestParser;
+	public getSchema(): string | undefined {
+		const schema &#x3D; this.manifestParser.getSchema();
+
+		return schema;
 	}
 
-	private getManifestFileAsString(archive: AdmZip): string | never {
-		// imsmanifest.xml is the standard name, but manifest.xml is also valid until v1.3
-		const manifest &#x3D; archive.getEntry(&#x27;imsmanifest.xml&#x27;) || archive.getEntry(&#x27;manifest.xml&#x27;);
+	public getVersion(): string | undefined {
+		const version &#x3D; this.manifestParser.getVersion();
 
-		if (manifest) {
-			return archive.readAsText(manifest);
+		return version;
+	}
+
+	public getTitle(): string | undefined {
+		const title &#x3D; this.manifestParser.getTitle();
+
+		return title;
+	}
+
+	public getOrganizations(): CommonCartridgeOrganizationProps[] {
+		const organizations &#x3D; this.manifestParser.getOrganizations();
+
+		return organizations;
+	}
+
+	public getResource(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
+		this.checkOrganization(organization);
+
+		const resource &#x3D; this.resourceFactory.create(organization);
+
+		return resource;
+	}
+
+	public getResourceAsString(organization: CommonCartridgeOrganizationProps): string {
+		this.checkOrganization(organization);
+
+		const resource &#x3D; this.archive.readAsText(organization.resourcePath);
+
+		return resource;
+	}
+
+	private getManifestAsDocument(): Document {
+		try {
+			const manifestString &#x3D; CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
+			const manifestDocument &#x3D; new JSDOM(manifestString as string, { contentType: &#x27;text/xml&#x27; }).window.document;
+
+			return manifestDocument;
+		} catch (error) {
+			throw new CommonCartridgeManifestNotFoundException();
 		}
+	}
 
-		throw new CommonCartridgeManifestNotFoundException();
+	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
+		if (!organization.isResource || !this.archive.getEntry(organization.resourcePath)) {
+			throw new CommonCartridgeResourceNotFoundException();
+		}
 	}
 }
 </code></pre>

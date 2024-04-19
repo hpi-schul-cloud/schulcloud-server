@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/common-cartridge/export/resources/common-cartridge-resource-factory.ts</code>
+            <code>apps/server/src/modules/common-cartridge/import/common-cartridge-resource-factory.ts</code>
         </p>
 
 
@@ -148,8 +148,20 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#createResource" >createResource</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#create" >create</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createWebLinkResource" >createWebLinkResource</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isValidOrganization" >isValidOrganization</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#tryCreateDocument" >tryCreateDocument</a>
                             </li>
                         </ul>
                     </td>
@@ -163,6 +175,54 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(archive: AdmZip)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-resource-factory.ts:10</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>archive</td>
+                                                  
+                                                        <td>
+                                                                    <code>AdmZip</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
             <section data-compodoc="block-methods">
@@ -174,26 +234,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createResource"></a>
+                    <a name="create"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>createResource</b></span>
-                        <a href="#createResource"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createResource(props: <a href="../undefineds/CommonCartridgeResourcePropsInternal.html" target="_self">CommonCartridgeResourcePropsInternal</a>)</code>
+                    <code>create(organization: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/resources/common-cartridge-resource-factory.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-resource-factory.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -214,9 +274,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>props</td>
+                                                <td>organization</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeResourcePropsInternal" target="_self" >CommonCartridgeResourcePropsInternal</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
                                             </td>
 
                                             <td>
@@ -229,7 +289,214 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/CommonCartridgeResource.html" target="_self" >CommonCartridgeResource</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/CommonCartridgeResource.html" target="_self" >CommonCartridgeResourceProps | undefined</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createWebLinkResource"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>createWebLinkResource</b></span>
+                        <a href="#createWebLinkResource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createWebLinkResource(content: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-resource-factory.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>content</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeWebLinkResourceProps" target="_self" >CommonCartridgeWebLinkResourceProps | undefined</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isValidOrganization"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isValidOrganization</b></span>
+                        <a href="#isValidOrganization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isValidOrganization(organization: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-resource-factory.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>organization</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tryCreateDocument"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>tryCreateDocument</b></span>
+                        <a href="#tryCreateDocument"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryCreateDocument(content: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-resource-factory.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>content</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Document | undefined</code>
 
                         </div>
                             <div class="io-description">
@@ -249,47 +516,64 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeVersion } from &#x27;../common-cartridge.enums&#x27;;
-import { CommonCartridgeResource } from &#x27;../interfaces&#x27;;
-import { OmitVersionAndFolder, createVersionNotSupportedError } from &#x27;../utils&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import AdmZip from &#x27;adm-zip&#x27;;
+import { JSDOM } from &#x27;jsdom&#x27;;
+import { CommonCartridgeResourceTypeV1P1 } from &#x27;./common-cartridge-import.enums&#x27;;
 import {
-	CommonCartridgeManifestResourcePropsV110,
-	CommonCartridgeResourceFactoryV110,
-	CommonCartridgeWebContentResourcePropsV110,
-	CommonCartridgeWebLinkResourcePropsV110,
-} from &#x27;./v1.1.0&#x27;;
-import {
-	CommonCartridgeManifestResourcePropsV130,
-	CommonCartridgeResourceFactoryV130,
-	CommonCartridgeWebContentResourcePropsV130,
-	CommonCartridgeWebLinkResourcePropsV130,
-} from &#x27;./v1.3.0&#x27;;
-
-export type CommonCartridgeResourceProps &#x3D;
-	| OmitVersionAndFolder&lt;CommonCartridgeWebContentResourcePropsV110&gt;
-	| OmitVersionAndFolder&lt;CommonCartridgeWebLinkResourcePropsV110&gt;
-	| OmitVersionAndFolder&lt;CommonCartridgeWebContentResourcePropsV130&gt;
-	| OmitVersionAndFolder&lt;CommonCartridgeWebLinkResourcePropsV130&gt;;
-
-type CommonCartridgeResourcePropsInternal &#x3D;
-	| CommonCartridgeManifestResourcePropsV110
-	| CommonCartridgeWebContentResourcePropsV110
-	| CommonCartridgeWebLinkResourcePropsV110
-	| CommonCartridgeManifestResourcePropsV130
-	| CommonCartridgeWebContentResourcePropsV130
-	| CommonCartridgeWebLinkResourcePropsV130;
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceProps,
+	CommonCartridgeWebLinkResourceProps,
+} from &#x27;./common-cartridge-import.types&#x27;;
 
 export class CommonCartridgeResourceFactory {
-	public static createResource(props: CommonCartridgeResourcePropsInternal): CommonCartridgeResource {
-		const { version } &#x3D; props;
+	constructor(private readonly archive: AdmZip) {}
 
-		switch (version) {
-			case CommonCartridgeVersion.V_1_1_0:
-				return CommonCartridgeResourceFactoryV110.createResource(props);
-			case CommonCartridgeVersion.V_1_3_0:
-				return CommonCartridgeResourceFactoryV130.createResource(props);
+	public create(organization: CommonCartridgeOrganizationProps): CommonCartridgeResourceProps | undefined {
+		if (!this.isValidOrganization(organization)) {
+			return undefined;
+		}
+
+		const content &#x3D; this.archive.readAsText(organization.resourcePath);
+
+		switch (organization.resourceType) {
+			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
+				return this.createWebLinkResource(content);
 			default:
-				throw createVersionNotSupportedError(version);
+				return undefined;
+		}
+	}
+
+	private isValidOrganization(organization: CommonCartridgeOrganizationProps): boolean {
+		const { isResource, isInlined, resourcePath } &#x3D; organization;
+		const isValidOrganization &#x3D; isResource &amp;&amp; !isInlined &amp;&amp; resourcePath !&#x3D;&#x3D; &#x27;&#x27;;
+
+		return isValidOrganization;
+	}
+
+	private createWebLinkResource(content: string): CommonCartridgeWebLinkResourceProps | undefined {
+		const document &#x3D; this.tryCreateDocument(content);
+
+		if (!document) {
+			return undefined;
+		}
+
+		const title &#x3D; document.querySelector(&#x27;webLink &gt; title&#x27;)?.textContent || &#x27;&#x27;;
+		const url &#x3D; document.querySelector(&#x27;webLink &gt; url&#x27;)?.getAttribute(&#x27;href&#x27;) || &#x27;&#x27;;
+
+		return {
+			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+			title,
+			url,
+		};
+	}
+
+	private tryCreateDocument(content: string): Document | undefined {
+		try {
+			const parser &#x3D; new JSDOM(content, { contentType: &#x27;text/xml&#x27; }).window.document;
+
+			return parser;
+		} catch (error) {
+			return undefined;
 		}
 	}
 }

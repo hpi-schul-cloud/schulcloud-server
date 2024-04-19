@@ -145,6 +145,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#createCard" >createCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#createColumn" >createColumn</a>
                             </li>
                             <li>
@@ -180,7 +185,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, mapper: <a href="../injectables/CommonCartridgeImportMapper.html" target="_self">CommonCartridgeImportMapper</a>)</code>
+<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, contentElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, mapper: <a href="../injectables/CommonCartridgeImportMapper.html" target="_self">CommonCartridgeImportMapper</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -251,6 +256,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>contentElementService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>mapper</td>
                                                   
                                                         <td>
@@ -280,27 +297,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createColumn"></a>
+                    <a name="createCard"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>createColumn</b></span>
-                        <a href="#createColumn"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createCard</b></span>
+                        <a href="#createCard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createColumn(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, columnProps: <a href="../undefineds/OrganizationProps.html" target="_self">OrganizationProps</a>, organizations: <a href="../undefineds/OrganizationProps.html" target="_self">OrganizationProps[]</a>)</code>
+                    <code>createCard(parser: <a href="../classes/CommonCartridgeFileParser.html" target="_self">CommonCartridgeFileParser</a>, column: <a href="../classes/Column.html" target="_self">Column</a>, cardProps: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -321,6 +338,112 @@
                                     </thead>
                                     <tbody>
                                         <tr>
+                                                <td>parser</td>
+                                            <td>
+                                                            <code><a href="../classes/CommonCartridgeFileParser.html" target="_self" >CommonCartridgeFileParser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>column</td>
+                                            <td>
+                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>cardProps</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createColumn"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createColumn</b></span>
+                        <a href="#createColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createColumn(parser: <a href="../classes/CommonCartridgeFileParser.html" target="_self">CommonCartridgeFileParser</a>, columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, columnProps: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps</a>, organizations: <a href="../undefineds/CommonCartridgeOrganizationProps.html" target="_self">CommonCartridgeOrganizationProps[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parser</td>
+                                            <td>
+                                                            <code><a href="../classes/CommonCartridgeFileParser.html" target="_self" >CommonCartridgeFileParser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
                                                 <td>columnBoard</td>
                                             <td>
                                                             <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
@@ -335,7 +458,7 @@
                                         <tr>
                                                 <td>columnProps</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps</a></code>
                                             </td>
 
                                             <td>
@@ -347,7 +470,7 @@
                                         <tr>
                                                 <td>organizations</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps[]</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationProps" target="_self" >CommonCartridgeOrganizationProps[]</a></code>
                                             </td>
 
                                             <td>
@@ -393,8 +516,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -475,8 +598,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -557,8 +680,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -623,13 +746,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReferenceType, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardExternalReferenceType, Column, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course, User } from &#x27;@shared/domain/entity&#x27;;
-import { CardService, ColumnBoardService, ColumnService } from &#x27;@src/modules/board&#x27;;
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from &#x27;@src/modules/board&#x27;;
 import {
 	CommonCartridgeFileParser,
+	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
-	OrganizationProps,
 } from &#x27;@src/modules/common-cartridge&#x27;;
 import { CommonCartridgeImportMapper } from &#x27;../mapper/common-cartridge-import.mapper&#x27;;
 import { CourseService } from &#x27;./course.service&#x27;;
@@ -641,6 +764,7 @@ export class CommonCartridgeImportService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly cardService: CardService,
+		private readonly contentElementService: ContentElementService,
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
@@ -649,7 +773,7 @@ export class CommonCartridgeImportService {
 			maxSearchDepth: 1,
 			pathSeparator: DEFAULT_FILE_PARSER_OPTIONS.pathSeparator,
 		});
-		const course &#x3D; new Course({ teachers: [user], school: user.school, name: parser.manifest.getTitle() });
+		const course &#x3D; new Course({ teachers: [user], school: user.school, name: parser.getTitle() });
 
 		await this.courseService.create(course);
 		await this.createColumnBoard(parser, course);
@@ -661,32 +785,53 @@ export class CommonCartridgeImportService {
 				type: BoardExternalReferenceType.Course,
 				id: course.id,
 			},
-			parser.manifest.getTitle()
+			parser.getTitle()
 		);
 
 		await this.createColumns(parser, columnBoard);
 	}
 
 	private async createColumns(parser: CommonCartridgeFileParser, columnBoard: ColumnBoard): Promise&lt;void&gt; {
-		const organizations &#x3D; parser.manifest.getOrganizations();
+		const organizations &#x3D; parser.getOrganizations();
 		const columns &#x3D; organizations.filter((organization) &#x3D;&gt; organization.pathDepth &#x3D;&#x3D;&#x3D; 0);
 
 		for await (const column of columns) {
-			await this.createColumn(columnBoard, column, organizations);
+			await this.createColumn(parser, columnBoard, column, organizations);
 		}
 	}
 
 	private async createColumn(
+		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: OrganizationProps,
-		organizations: OrganizationProps[]
+		columnProps: CommonCartridgeOrganizationProps,
+		organizations: CommonCartridgeOrganizationProps[]
 	): Promise&lt;void&gt; {
 		const column &#x3D; await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
-		const cardProps &#x3D; organizations
-			.filter((organization) &#x3D;&gt; organization.pathDepth &#x3D;&#x3D;&#x3D; 1 &amp;&amp; organization.path.startsWith(columnProps.identifier))
-			.map((organization) &#x3D;&gt; this.mapper.mapOrganizationToCard(organization));
+		const cards &#x3D; organizations.filter(
+			(organization) &#x3D;&gt;
+				organization.pathDepth &#x3D;&#x3D;&#x3D; 1 &amp;&amp; organization.path.startsWith(columnProps.identifier) &amp;&amp; organization.isResource
+		);
 
-		await this.cardService.createMany(column, cardProps);
+		for await (const card of cards) {
+			await this.createCard(parser, column, card);
+		}
+	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: Column,
+		cardProps: CommonCartridgeOrganizationProps
+	): Promise&lt;void&gt; {
+		const card &#x3D; await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps));
+		const resource &#x3D; parser.getResource(cardProps);
+		const contentElementType &#x3D; this.mapper.mapResourceTypeToContentElementType(resource?.type);
+
+		if (resource &amp;&amp; contentElementType) {
+			const contentElement &#x3D; await this.contentElementService.create(card, contentElementType);
+			const contentElementBody &#x3D; this.mapper.mapResourceToContentElementBody(resource);
+
+			await this.contentElementService.update(contentElement, contentElementBody);
+		}
 	}
 }
 </code></pre>
