@@ -1,12 +1,12 @@
-import { ToolContextType } from '../../common/enum';
-import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
+import { ToolContextType } from '../../../common/enum';
+import { RestrictedContextMismatchLoggableException } from './restricted-context-mismatch-loggabble';
 
 describe('RestrictedContextMismatchLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const externalToolName = 'name';
 			const context: ToolContextType = ToolContextType.COURSE;
-			const loggable = new RestrictedContextMismatchLoggable(externalToolName, context);
+			const loggable = new RestrictedContextMismatchLoggableException(externalToolName, context);
 
 			return { loggable, externalToolName, context };
 		};
