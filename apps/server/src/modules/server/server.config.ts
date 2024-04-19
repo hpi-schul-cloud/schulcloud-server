@@ -97,6 +97,7 @@ export interface ServerConfig
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
+	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
@@ -223,6 +224,9 @@ const config: ServerConfig = {
 	...VideoConferenceConfiguration.videoConference,
 	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
+	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
+		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
+	) as boolean,
 };
 
 export const serverConfig = () => config;

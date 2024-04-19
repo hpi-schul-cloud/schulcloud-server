@@ -1648,6 +1648,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the migration wizard to use the user login migration process"
+		},
+		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the provisioning of other groupusers"
 		}
 	},
 	"required": []
