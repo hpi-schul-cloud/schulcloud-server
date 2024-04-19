@@ -12,6 +12,13 @@ class ContextExternalToolFactory extends DoBaseFactory<ContextExternalTool, Cont
 		};
 		return this.params(params);
 	}
+
+	withContextRef(contextId: string, contextType: ToolContextType): this {
+		const params: DeepPartial<ContextExternalTool> = {
+			contextRef: { id: contextId, type: contextType },
+		};
+		return this.params(params);
+	}
 }
 
 export const contextExternalToolFactory = ContextExternalToolFactory.define(ContextExternalTool, ({ sequence }) => {
