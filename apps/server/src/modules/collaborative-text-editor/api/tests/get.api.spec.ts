@@ -154,7 +154,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				};
 			};
 
-			it('should redirect to editor and set cookie', async () => {
+			it('should return response and set cookie', async () => {
 				const {
 					loggedInClient,
 					collaborativeTextEditorElement,
