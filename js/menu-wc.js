@@ -6400,9 +6400,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TestHelper.html" data-type="entity-link" >TestHelper</a>
                             </li>
                             <li class="link">
-                                <a href="classes/TestXApiKeyClient.html" data-type="entity-link" >TestXApiKeyClient</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/TimestampsResponse.html" data-type="entity-link" >TimestampsResponse</a>
                             </li>
                             <li class="link">

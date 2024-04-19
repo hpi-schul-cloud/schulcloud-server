@@ -161,12 +161,17 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Readonly</span>
+                                <a href="#authHeader" >authHeader</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#baseRoute" >baseRoute</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Readonly</span>
-                                <a href="#formattedJwt" >formattedJwt</a>
+                                <a href="#kindOfAuth" >kindOfAuth</a>
                             </li>
                         </ul>
                     </td>
@@ -251,12 +256,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(app: INestApplication, baseRoute: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, jwt?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(app: INestApplication, baseRoute: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authValue?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, useAsApiKey)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:32</a></div>
                             </td>
                         </tr>
 
@@ -298,7 +303,7 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>jwt</td>
+                                                        <td>authValue</td>
                                                   
                                                         <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
@@ -306,6 +311,17 @@
                                                   
                                                     <td>
                                                             Yes
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>useAsApiKey</td>
+                                                  
+                                                        <td>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
                                                     </td>
                                                     
                                                 </tr>
@@ -355,6 +371,34 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="authHeader"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>authHeader</b></span>
+                        <a href="#authHeader"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="baseRoute"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -383,12 +427,12 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="formattedJwt"></a>
+                    <a name="kindOfAuth"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Readonly</span>
-                        <span ><b>formattedJwt</b></span>
-                        <a href="#formattedJwt"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>kindOfAuth</b></span>
+                        <a href="#kindOfAuth"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -400,7 +444,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -436,8 +480,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="133"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:133</a></div>
                         </td>
                     </tr>
 
@@ -509,8 +553,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:143</a></div>
                         </td>
                     </tr>
 
@@ -578,8 +622,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -647,8 +691,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -716,8 +760,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="157"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:157</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="165"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:165</a></div>
                         </td>
                     </tr>
 
@@ -785,8 +829,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -858,8 +902,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="151"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:151</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="159"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:159</a></div>
                         </td>
                     </tr>
 
@@ -923,8 +967,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -1005,8 +1049,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -1074,8 +1118,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -1163,8 +1207,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -1252,8 +1296,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -1357,8 +1401,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-api-client.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -1463,17 +1507,23 @@ export class TestApiClient {
 
 	private readonly baseRoute: string;
 
-	private readonly formattedJwt: string;
+	private readonly authHeader: string;
 
-	constructor(app: INestApplication, baseRoute: string, jwt?: string) {
+	private readonly kindOfAuth: string;
+
+	constructor(app: INestApplication, baseRoute: string, authValue?: string, useAsApiKey &#x3D; false) {
 		this.app &#x3D; app;
 		this.baseRoute &#x3D; this.checkAndAddPrefix(baseRoute);
-		this.formattedJwt &#x3D; &#x60;${testReqestConst.prefix} ${jwt || &#x27;&#x27;}&#x60;;
+		this.authHeader &#x3D; useAsApiKey ? &#x60;${authValue || &#x27;&#x27;}&#x60; : &#x60;${testReqestConst.prefix} ${authValue || &#x27;&#x27;}&#x60;;
+		this.kindOfAuth &#x3D; useAsApiKey ? &#x27;X-API-KEY&#x27; : &#x27;authorization&#x27;;
 	}
 
 	public get(subPath?: string): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
-		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).get(path).set(&#x27;authorization&#x27;, this.formattedJwt);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
+			.get(path)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
@@ -1482,7 +1532,8 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.delete(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt);
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
@@ -1491,7 +1542,7 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.put(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
@@ -1501,7 +1552,7 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.patch(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
@@ -1511,7 +1562,8 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.post(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json)
 			.send(data);
 
 		return testRequestInstance;
@@ -1526,7 +1578,7 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.post(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.attach(fieldName, data, fileName);
 
 		return testRequestInstance;
@@ -1545,7 +1597,7 @@ export class TestApiClient {
 
 		const jwtFromResponse &#x3D; this.getJwtFromResponse(response);
 
-		return new (this.constructor as new (app: INestApplication, baseRoute: string, jwt?: string) &#x3D;&gt; this)(
+		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue?: string) &#x3D;&gt; this)(
 			this.app,
 			this.baseRoute,
 			jwtFromResponse

@@ -231,17 +231,23 @@ export class TestApiClient {
 
 	private readonly baseRoute: string;
 
-	private readonly formattedJwt: string;
+	private readonly authHeader: string;
 
-	constructor(app: INestApplication, baseRoute: string, jwt?: string) {
+	private readonly kindOfAuth: string;
+
+	constructor(app: INestApplication, baseRoute: string, authValue?: string, useAsApiKey &#x3D; false) {
 		this.app &#x3D; app;
 		this.baseRoute &#x3D; this.checkAndAddPrefix(baseRoute);
-		this.formattedJwt &#x3D; &#x60;${testReqestConst.prefix} ${jwt || &#x27;&#x27;}&#x60;;
+		this.authHeader &#x3D; useAsApiKey ? &#x60;${authValue || &#x27;&#x27;}&#x60; : &#x60;${testReqestConst.prefix} ${authValue || &#x27;&#x27;}&#x60;;
+		this.kindOfAuth &#x3D; useAsApiKey ? &#x27;X-API-KEY&#x27; : &#x27;authorization&#x27;;
 	}
 
 	public get(subPath?: string): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
-		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).get(path).set(&#x27;authorization&#x27;, this.formattedJwt);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
+			.get(path)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
@@ -250,7 +256,8 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.delete(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt);
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json);
 
 		return testRequestInstance;
 	}
@@ -259,7 +266,7 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.put(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
@@ -269,7 +276,7 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.patch(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.send(data);
 
 		return testRequestInstance;
@@ -279,7 +286,8 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.post(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
+			.set(headerConst.accept, headerConst.json)
 			.send(data);
 
 		return testRequestInstance;
@@ -294,7 +302,7 @@ export class TestApiClient {
 		const path &#x3D; this.getPath(subPath);
 		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
 			.post(path)
-			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.set(this.kindOfAuth, this.authHeader)
 			.attach(fieldName, data, fileName);
 
 		return testRequestInstance;
@@ -313,7 +321,7 @@ export class TestApiClient {
 
 		const jwtFromResponse &#x3D; this.getJwtFromResponse(response);
 
-		return new (this.constructor as new (app: INestApplication, baseRoute: string, jwt?: string) &#x3D;&gt; this)(
+		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue?: string) &#x3D;&gt; this)(
 			this.app,
 			this.baseRoute,
 			jwtFromResponse
