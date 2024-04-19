@@ -109,10 +109,24 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const { userId, username } = setup();
 
-				const result = await service.getOrCreateAuthor(userId, username);
+				await expect(service.getOrCreateAuthor(userId, username)).rejects.toThrowError('Author could not be created');
+			});
+		});
 
-				expect(result).toThrowError('Author could not be created');
-				expect(result).toThrowError(EtherpadErrorLoggableException);
+		describe('when createAuthorIfNotExistsForUsingGET returns error', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const username = 'username';
+
+				authorApi.createAuthorIfNotExistsForUsingGET.mockRejectedValueOnce(new Error('error'));
+
+				return { userId, username };
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const { userId, username } = setup();
+
+				await expect(service.getOrCreateAuthor(userId, username)).rejects.toThrowError(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -231,10 +245,36 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
 
-				const result = await service.getOrCreateSession(groupId, authorId, parentId, sessionCookieExpire);
+				await expect(service.getOrCreateSession(groupId, authorId, parentId, sessionCookieExpire)).rejects.toThrowError(
+					'Session could not be created'
+				);
+			});
+		});
 
-				expect(result).toThrowError('Session could not be created');
-				expect(result).toThrowError(EtherpadErrorLoggableException);
+		describe('when createSessionUsingGET returns error', () => {
+			const setup = () => {
+				const groupId = 'groupId';
+				const authorId = 'authorId';
+				const parentId = 'parentId';
+				const sessionCookieExpire = new Date();
+				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+					data: {
+						data: {},
+					},
+				});
+
+				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
+
+				sessionApi.createSessionUsingGET.mockRejectedValueOnce(new Error('error'));
+				return { groupId, authorId, parentId, sessionCookieExpire };
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
+
+				await expect(service.getOrCreateSession(groupId, authorId, parentId, sessionCookieExpire)).rejects.toThrowError(
+					EtherpadErrorLoggableException
+				);
 			});
 		});
 	});
@@ -331,10 +371,23 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const parentId = setup();
 
-				const result = await service.getOrCreateGroup(parentId);
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError('Group could not be created');
+			});
+		});
 
-				expect(result).toThrowError('Group could not be created');
-				expect(result).toThrowError(EtherpadErrorLoggableException);
+		describe('when createGroupIfNotExistsForUsingGET returns an error', () => {
+			const setup = () => {
+				const parentId = 'parentId';
+
+				groupApi.createGroupIfNotExistsForUsingGET.mockRejectedValueOnce(new Error('error'));
+
+				return parentId;
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const parentId = setup();
+
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -432,10 +485,32 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const { groupId, parentId } = setup();
 
-				const result = await service.getOrCreateEtherpad(groupId, parentId);
+				await expect(service.getOrCreateEtherpad(groupId, parentId)).rejects.toThrowError('Pad could not be created');
+			});
+		});
 
-				expect(result).toThrowError('Pad could not be created');
-				expect(result).toThrowError(EtherpadErrorLoggableException);
+		describe('when createGroupPadUsingGET returns error', () => {
+			const setup = () => {
+				const groupId = 'groupId';
+				const parentId = 'parentId';
+				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
+					data: {
+						data: { padIDs: [] },
+					},
+				});
+
+				groupApi.listPadsUsingGET.mockResolvedValue(listPadsResponse);
+				groupApi.createGroupPadUsingGET.mockRejectedValueOnce(new Error('error'));
+
+				return { groupId, parentId };
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const { groupId, parentId } = setup();
+
+				await expect(service.getOrCreateEtherpad(groupId, parentId)).rejects.toThrowError(
+					EtherpadErrorLoggableException
+				);
 			});
 		});
 	});
