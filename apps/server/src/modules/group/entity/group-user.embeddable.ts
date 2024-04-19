@@ -9,7 +9,7 @@ export interface GroupUserEntityProps {
 }
 
 @Embeddable()
-export class GroupUserEntity {
+export class GroupUserEmbeddable {
 	@ManyToOne(() => User)
 	user: User;
 
