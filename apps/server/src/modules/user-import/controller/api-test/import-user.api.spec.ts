@@ -67,7 +67,7 @@ describe('ImportUser Controller (API)', () => {
 	const setConfig = (systemId?: string) => {
 		userImportFeatures.userMigrationEnabled = true;
 		userImportFeatures.userMigrationSystemId = systemId || new ObjectId().toString();
-		userImportFeatures.useWithUserLoginMigration = 'dbc';
+		userImportFeatures.useWithUserLoginMigration = false;
 	};
 
 	beforeAll(async () => {
