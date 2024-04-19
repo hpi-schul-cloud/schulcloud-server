@@ -18,7 +18,6 @@ data:
   #  LEAD_TIME: "4000"
   PORT: "{{ PORT_SERVER }}"
   TZ: "Europe/Berlin"
-  EXIT_ON_ERROR: "false"
 {% for name, data in configuration_all.items() %}
   {% if data.server is defined and data.server == true %}
     {% if data.config_name is defined and data.config_name in hostvars[inventory_hostname] %}
