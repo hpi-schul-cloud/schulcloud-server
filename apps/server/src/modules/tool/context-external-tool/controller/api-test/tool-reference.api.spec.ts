@@ -174,6 +174,7 @@ describe('ToolReferenceController (API)', () => {
 					data: [
 						{
 							contextToolId: contextExternalToolEntity.id,
+							description: externalToolEntity.description,
 							displayName: contextExternalToolEntity.displayName as string,
 							status: contextExternalToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
@@ -306,6 +307,7 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
+					description: externalToolEntity.description,
 					displayName: contextExternalToolEntity.displayName as string,
 					status: contextExternalToolConfigurationStatusResponseFactory.build({
 						isOutdatedOnScopeSchool: false,

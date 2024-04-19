@@ -6,6 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardLayout,
 	ColumnBoard,
+	MediaBoard,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoRepo } from '../repo';
@@ -27,7 +28,7 @@ export class ColumnBoardService {
 		return ids;
 	}
 
-	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard | MediaBoard> {
 		const rootboardDo = this.boardDoService.getRootBoardDo(boardDo);
 
 		return rootboardDo;

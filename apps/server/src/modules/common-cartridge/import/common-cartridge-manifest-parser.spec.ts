@@ -1,12 +1,14 @@
 import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
+import { JSDOM } from 'jsdom';
 import { DEFAULT_FILE_PARSER_OPTIONS } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 
 describe('CommonCartridgeManifestParser', () => {
 	const setupFile = async (loadFile: boolean) => {
 		if (!loadFile) {
-			const sut = new CommonCartridgeManifestParser('<manifest></manifest>', DEFAULT_FILE_PARSER_OPTIONS);
+			const { document } = new JSDOM('<manifest></manifest>', { contentType: 'text/xml' }).window;
+			const sut = new CommonCartridgeManifestParser(document, DEFAULT_FILE_PARSER_OPTIONS);
 
 			return { sut };
 		}
@@ -15,7 +17,8 @@ describe('CommonCartridgeManifestParser', () => {
 			'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
 		);
 		const archive = new AdmZip(buffer);
-		const sut = new CommonCartridgeManifestParser(archive.readAsText('imsmanifest.xml'), DEFAULT_FILE_PARSER_OPTIONS);
+		const { document } = new JSDOM(archive.readAsText('imsmanifest.xml'), { contentType: 'text/xml' }).window;
+		const sut = new CommonCartridgeManifestParser(document, DEFAULT_FILE_PARSER_OPTIONS);
 
 		return { sut };
 	};
