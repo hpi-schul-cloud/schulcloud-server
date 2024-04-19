@@ -71,16 +71,14 @@ describe('ExternalToolLogoService', () => {
 		describe('when externalTool has no logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const logoUrlTemplate = '/v3/tools/external-tools/{id}/logo';
 
 				return {
 					externalTool,
-					logoUrlTemplate,
 				};
 			};
 
 			it('should return undefined', () => {
-				const { externalTool, logoUrlTemplate } = setup();
+				const { externalTool } = setup();
 
 				const logoUrl = service.buildLogoUrl(externalTool);
 
@@ -91,7 +89,6 @@ describe('ExternalToolLogoService', () => {
 		describe('when externalTool has a logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
-				const logoUrlTemplate = '/v3/tools/external-tools/{id}/logo';
 
 				const baseUrl = toolFeatures.backEndUrl;
 				const id = externalTool.id as string;
@@ -99,13 +96,12 @@ describe('ExternalToolLogoService', () => {
 
 				return {
 					externalTool,
-					logoUrlTemplate,
 					expected,
 				};
 			};
 
 			it('should return an internal logoUrl', () => {
-				const { externalTool, logoUrlTemplate, expected } = setup();
+				const { externalTool, expected } = setup();
 
 				const logoUrl = service.buildLogoUrl(externalTool);
 
