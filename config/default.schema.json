@@ -805,10 +805,12 @@
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
-					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				}
+			},
+			"default": {
+				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {

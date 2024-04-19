@@ -87,5 +87,9 @@
 		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
 		"CLIENT_ID": "schulcloud",
 		"CLIENT_SECRET": "secret"
+	},
+	"ETHERPAD_URI": "http://localhost:9001/api/1/",
+	"ETHERPAD": {
+		"PAD_URI": "http://localhost:9001/p"
 	}
 }
