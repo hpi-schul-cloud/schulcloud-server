@@ -5,33 +5,30 @@ import { EtherpadErrorLoggableException } from '../loggable';
 
 export class EtherpadResponseMapper {
 	static mapToSessionResponse(session?: InlineResponse2004Data): SessionId {
-		if (session?.sessionID) {
-			const sessionId = session.sessionID;
-
-			return sessionId;
+		if (!session?.sessionID) {
+			throw new Error('Session could not be created');
 		}
+		const sessionId = session.sessionID;
 
-		throw new Error('Session could not be created');
+		return sessionId;
 	}
 
 	static mapToAuthorResponse(author?: InlineResponse2003Data): AuthorId {
-		if (author?.authorID) {
-			const authorId = author.authorID;
-
-			return authorId;
+		if (!author?.authorID) {
+			throw new Error('Author could not be created');
 		}
+		const authorId = author.authorID;
 
-		throw new Error('Author could not be created');
+		return authorId;
 	}
 
 	static mapToGroupResponse(group?: InlineResponse200Data): GroupId {
-		if (group?.groupID) {
-			const groupId = group.groupID;
-
-			return groupId;
+		if (!group?.groupID) {
+			throw new Error('Group could not be created');
 		}
+		const groupId = group.groupID;
 
-		throw new Error('Group could not be created');
+		return groupId;
 	}
 
 	static mapToPadResponse(pad?: object): PadId {
