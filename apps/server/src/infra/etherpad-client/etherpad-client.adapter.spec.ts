@@ -146,8 +146,11 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
-						// @ts-expect-error wrong type mapping
-						data: { 'session-id-1': { groupID: groupId, authorID: authorId } },
+						data: {
+							// @ts-expect-error wrong type mapping
+							'session-id-1': { groupID: groupId, authorID: authorId },
+							'session-id-2': { groupID: 'other-group-id', authorID: 'other-author-id' },
+						},
 					},
 				});
 
@@ -322,6 +325,22 @@ describe(EtherpadClientAdapter.name, () => {
 				const result = await service.listSessionsOfAuthor(authorId);
 
 				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when listSessionsOfAuthorUsingGET returns error', () => {
+			const setup = () => {
+				const authorId = 'authorId';
+
+				authorApi.listSessionsOfAuthorUsingGET.mockRejectedValueOnce(new Error('error'));
+
+				return authorId;
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const authorId = setup();
+
+				await expect(service.listSessionsOfAuthor(authorId)).rejects.toThrowError(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -501,6 +520,25 @@ describe(EtherpadClientAdapter.name, () => {
 
 				groupApi.listPadsUsingGET.mockResolvedValue(listPadsResponse);
 				groupApi.createGroupPadUsingGET.mockRejectedValueOnce(new Error('error'));
+
+				return { groupId, parentId };
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const { groupId, parentId } = setup();
+
+				await expect(service.getOrCreateEtherpad(groupId, parentId)).rejects.toThrowError(
+					EtherpadErrorLoggableException
+				);
+			});
+		});
+
+		describe('when listPadsUsingGET returns error', () => {
+			const setup = () => {
+				const groupId = 'groupId';
+				const parentId = 'parentId';
+
+				groupApi.listPadsUsingGET.mockRejectedValueOnce(new Error('error'));
 
 				return { groupId, parentId };
 			};
