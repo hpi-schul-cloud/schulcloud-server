@@ -39,6 +39,7 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
+	// TODO add depth parameter
 	async findByIds(ids: EntityId[]): Promise<AnyBoardDo[]> {
 		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
 
@@ -53,6 +54,7 @@ export class BoardDoRepo {
 		return domainObjects;
 	}
 
+	// TODO replace by service using findByIds(ids, depth = 1)
 	async getTitlesByIds(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
 		const ids = Utils.asArray(id);
 		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
@@ -77,6 +79,7 @@ export class BoardDoRepo {
 		return ids;
 	}
 
+	// TODO replace by findById => getParentId => findById
 	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
 		const boardNode = await this.boardNodeRepo.findById(childId);
 		const domainObject = boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
@@ -84,6 +87,7 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
+	// ???
 	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]) {
 		const toolIds: EntityId[] = contextExternalTools
 			.map((tool: ContextExternalTool): EntityId | undefined => tool.id)
@@ -99,22 +103,40 @@ export class BoardDoRepo {
 		return boardCount;
 	}
 
+	// TODO remove
 	async getAncestorIds(boardDo: AnyBoardDo): Promise<EntityId[]> {
 		const boardNode = await this.boardNodeRepo.findById(boardDo.id);
 		return boardNode.ancestorIds;
 	}
 
+	// TODO replace by persist + flush
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const saveVisitor = new RecursiveSaveVisitor(this.em, this.boardNodeRepo);
 		await saveVisitor.save(domainObject, parent);
 		await this.em.flush();
 	}
 
+	// TODO re-implement as recursive em.delete()
+	// TODO find out how to implement delete hooks
+	// suggestion:
+	// service.delete(column):
+	// 	- find parent board
+	// 	- board.removeChild(column)
+	// 	- repo.deleteRecursive(column)
+	//  - repo.flush
+	// 	- recurse column, execute hooks (TreeWalker?)
 	async delete(domainObject: AnyBoardDo): Promise<void> {
 		await domainObject.acceptAsync(this.deleteVisitor);
 		await this.em.flush();
 	}
 
+	// TODO re-implement as finByExternalReference
+	// suggestion
+	// service.deleteByExternalReference(reference):
+	// - board = repo.findByExternalReference
+	// - repo.deleteRecursive(board)
+	// - repo.flush
+	// - recurse board, execute hooks
 	async deleteByExternalReference(reference: BoardExternalReference): Promise<number> {
 		// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 		const boardNodes: BoardNode[] = await this.em.find(BoardNode, {
