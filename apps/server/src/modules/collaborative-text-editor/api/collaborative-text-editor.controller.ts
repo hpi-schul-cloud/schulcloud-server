@@ -14,7 +14,7 @@ import { CollaborativeTextEditorMapper } from './mapper/collaborative-text-edito
 export class CollaborativeTextEditorController {
 	constructor(private readonly collaborativeTextEditorUc: CollaborativeTextEditorUc) {}
 
-	@ApiOperation({ summary: 'Redirect to CollaborativeTextEditor' })
+	@ApiOperation({ summary: 'Get or create CollaborativeTextEditor for parent' })
 	@ApiResponse({ status: 200, type: CollaborativeTextEditorResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
