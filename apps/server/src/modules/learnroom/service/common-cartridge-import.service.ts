@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
-import { CardService, ColumnBoardService, ColumnService } from '@src/modules/board';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import {
 	CommonCartridgeFileParser,
+	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
-	OrganizationProps,
 } from '@src/modules/common-cartridge';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
@@ -17,6 +17,7 @@ export class CommonCartridgeImportService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly cardService: CardService,
+		private readonly contentElementService: ContentElementService,
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
@@ -25,7 +26,7 @@ export class CommonCartridgeImportService {
 			maxSearchDepth: 1,
 			pathSeparator: DEFAULT_FILE_PARSER_OPTIONS.pathSeparator,
 		});
-		const course = new Course({ teachers: [user], school: user.school, name: parser.manifest.getTitle() });
+		const course = new Course({ teachers: [user], school: user.school, name: parser.getTitle() });
 
 		await this.courseService.create(course);
 		await this.createColumnBoard(parser, course);
@@ -37,31 +38,52 @@ export class CommonCartridgeImportService {
 				type: BoardExternalReferenceType.Course,
 				id: course.id,
 			},
-			parser.manifest.getTitle()
+			parser.getTitle()
 		);
 
 		await this.createColumns(parser, columnBoard);
 	}
 
 	private async createColumns(parser: CommonCartridgeFileParser, columnBoard: ColumnBoard): Promise<void> {
-		const organizations = parser.manifest.getOrganizations();
+		const organizations = parser.getOrganizations();
 		const columns = organizations.filter((organization) => organization.pathDepth === 0);
 
 		for await (const column of columns) {
-			await this.createColumn(columnBoard, column, organizations);
+			await this.createColumn(parser, columnBoard, column, organizations);
 		}
 	}
 
 	private async createColumn(
+		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: OrganizationProps,
-		organizations: OrganizationProps[]
+		columnProps: CommonCartridgeOrganizationProps,
+		organizations: CommonCartridgeOrganizationProps[]
 	): Promise<void> {
 		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
-		const cardProps = organizations
-			.filter((organization) => organization.pathDepth === 1 && organization.path.startsWith(columnProps.identifier))
-			.map((organization) => this.mapper.mapOrganizationToCard(organization));
+		const cards = organizations.filter(
+			(organization) =>
+				organization.pathDepth === 1 && organization.path.startsWith(columnProps.identifier) && organization.isResource
+		);
 
-		await this.cardService.createMany(column, cardProps);
+		for await (const card of cards) {
+			await this.createCard(parser, column, card);
+		}
+	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: Column,
+		cardProps: CommonCartridgeOrganizationProps
+	): Promise<void> {
+		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps));
+		const resource = parser.getResource(cardProps);
+		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+
+		if (resource && contentElementType) {
+			const contentElement = await this.contentElementService.create(card, contentElementType);
+			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
+
+			await this.contentElementService.update(contentElement, contentElementBody);
+		}
 	}
 }
