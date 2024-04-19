@@ -1,4 +1,4 @@
-import {BusinessError, ValidationError} from '@shared/common';
+import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { HttpStatus } from '@nestjs/common';
 
