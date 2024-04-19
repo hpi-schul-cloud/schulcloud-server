@@ -1,4 +1,4 @@
-import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
+import { SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
 import { GroupService } from '@modules/group';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -71,9 +71,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			this.httpService.get(input.system.provisioningUrl, axiosConfig)
 		);
 
-		const fixedData: SanisResponse = this.removeEmptyObjectsFromResponse(axiosResponse.data);
-
-		const response: SanisResponse = plainToClass(SanisResponse, fixedData);
+		const response: SanisResponse = plainToClass(SanisResponse, axiosResponse.data);
 
 		await this.checkResponseValidation(response, [
 			SanisResponseValidationGroups.USER,
@@ -100,37 +98,6 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		});
 
 		return oauthData;
-	}
-
-	// This is a temporary fix to a problem with moin.schule and should be resolved after 12.12.23
-	private removeEmptyObjectsFromResponse(response: SanisResponse): SanisResponse {
-		const fixedResponse: SanisResponse = { ...response };
-
-		if (fixedResponse?.personenkontexte?.length && fixedResponse.personenkontexte[0].gruppen) {
-			const groups: SanisGruppenResponse[] = fixedResponse.personenkontexte[0].gruppen;
-
-			for (const group of groups) {
-				group.sonstige_gruppenzugehoerige = group.sonstige_gruppenzugehoerige?.filter(
-					(relation) => !this.isObjectEmpty(relation)
-				);
-
-				if (!group.sonstige_gruppenzugehoerige?.length) {
-					group.sonstige_gruppenzugehoerige = undefined;
-				}
-			}
-
-			fixedResponse.personenkontexte[0].gruppen = groups.filter((group) => !this.isObjectEmpty(group));
-
-			if (!fixedResponse.personenkontexte[0].gruppen.length) {
-				fixedResponse.personenkontexte[0].gruppen = undefined;
-			}
-		}
-
-		return fixedResponse;
-	}
-
-	private isObjectEmpty(obj: unknown): boolean {
-		return typeof obj === 'object' && !!obj && !Object.keys(obj).some((key) => obj[key] !== undefined);
 	}
 
 	private async checkResponseValidation(response: SanisResponse, groups: SanisResponseValidationGroups[]) {
