@@ -20,12 +20,12 @@ export class CollaborativeTextEditorController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get('/:parentType/:parentId')
-	async getCollaborativeTextEditorForParent(
+	async getOrCreateCollaborativeTextEditorForParent(
 		@Param() getCollaborativeTextEditorForParentParams: GetCollaborativeTextEditorForParentParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response
 	): Promise<CollaborativeTextEditorResponse> {
-		const textEditor = await this.collaborativeTextEditorUc.getCollaborativeTextEditorForParent(
+		const textEditor = await this.collaborativeTextEditorUc.getOrCreateCollaborativeTextEditorForParent(
 			currentUser.userId,
 			getCollaborativeTextEditorForParentParams
 		);

@@ -16,7 +16,7 @@ export class CollaborativeTextEditorService {
 		this.logger.setContext(CollaborativeTextEditorService.name);
 	}
 
-	async createCollaborativeTextEditor(
+	async getOrCreateCollaborativeTextEditor(
 		userId: string,
 		userName: string,
 		params: GetCollaborativeTextEditorForParentParams

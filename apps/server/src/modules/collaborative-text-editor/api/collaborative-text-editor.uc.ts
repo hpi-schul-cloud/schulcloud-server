@@ -19,7 +19,7 @@ export class CollaborativeTextEditorUc {
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService
 	) {}
 
-	async getCollaborativeTextEditorForParent(
+	async getOrCreateCollaborativeTextEditorForParent(
 		userId: string,
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
@@ -27,7 +27,7 @@ export class CollaborativeTextEditorUc {
 		await this.authorizeByParentType(params, user);
 
 		const userName = `${user.firstName} ${user.lastName}`;
-		const textEditor = await this.collaborativeTextEditorService.createCollaborativeTextEditor(
+		const textEditor = await this.collaborativeTextEditorService.getOrCreateCollaborativeTextEditor(
 			userId,
 			userName,
 			params

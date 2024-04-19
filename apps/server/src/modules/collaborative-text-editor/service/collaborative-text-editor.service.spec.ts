@@ -1,4 +1,4 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
@@ -118,7 +118,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should return collaborative text editor', async () => {
 				const { userId, padId, userName, params, url, sessionExpiryDate } = setup();
 
-				const result = await service.createCollaborativeTextEditor(userId, userName, params);
+				const result = await service.getOrCreateCollaborativeTextEditor(userId, userName, params);
 
 				expect(result).toEqual({
 					sessions: ['sessionId1', 'sessionId2'],
@@ -130,7 +130,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should call etherpadClientAdapter methods with correct parameter', async () => {
 				const { userId, userName, params, groupId, authorId, sessionExpiryDate } = setup();
 
-				await service.createCollaborativeTextEditor(userId, userName, params);
+				await service.getOrCreateCollaborativeTextEditor(userId, userName, params);
 
 				expect(etherpadClientAdapter.getOrCreateGroup).toHaveBeenCalledWith(params.parentId);
 				expect(etherpadClientAdapter.getOrCreateEtherpad).toHaveBeenCalledWith(groupId, params.parentId);
@@ -162,7 +162,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.createCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
 			});
 		});
 
@@ -184,7 +184,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.createCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
 			});
 		});
 
@@ -207,7 +207,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.createCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
 			});
 		});
 
@@ -231,7 +231,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.createCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
 			});
 		});
 
@@ -257,7 +257,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.createCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
 			});
 		});
 	});
