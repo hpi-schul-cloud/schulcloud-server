@@ -27,6 +27,8 @@ export class BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
 		boardNodes.forEach((bn) => {
+			bn.children.forEach((child) => this.persist(child));
+
 			const props = this.getProps(bn);
 
 			if (!(props instanceof BoardNodeEntity)) {
