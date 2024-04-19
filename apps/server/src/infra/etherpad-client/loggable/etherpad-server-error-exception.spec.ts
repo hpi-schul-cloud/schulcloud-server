@@ -1,11 +1,11 @@
 import { ErrorUtils } from '@src/core/error/utils';
-import { ErrorType } from '../interface';
-import { EtherpadServerError } from './etherpad-server-error-exception';
+import { EtherpadErrorType } from '../interface';
+import { EtherpadErrorLoggableException } from './etherpad-error-loggable-exception';
 
-describe('EtherpadServerErrorException', () => {
+describe('EtherpadErrorLoggableException', () => {
 	describe('getLogMessage', () => {
 		it('should return log message', () => {
-			const type = ErrorType.ETHERPAD_SERVER_BAD_REQUEST;
+			const type = EtherpadErrorType.BAD_REQUEST;
 			const payload = {
 				userId: 'userId',
 				parentId: 'parentId',
@@ -13,11 +13,11 @@ describe('EtherpadServerErrorException', () => {
 			const error = new Error('error');
 			const httpExceptionOptions = ErrorUtils.createHttpExceptionOptions(error);
 
-			const exception = new EtherpadServerError(type, payload, httpExceptionOptions);
+			const exception = new EtherpadErrorLoggableException(type, payload, httpExceptionOptions);
 			const result = exception.getLogMessage();
 
 			expect(result).toStrictEqual({
-				type: 'ETHERPAD_SERVER_BAD_REQUEST',
+				type: 'BAD_REQUEST',
 				stack: exception.stack,
 				data: {
 					userId: 'userId',
