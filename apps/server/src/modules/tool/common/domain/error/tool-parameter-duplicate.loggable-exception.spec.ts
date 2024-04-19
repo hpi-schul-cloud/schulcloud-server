@@ -2,8 +2,18 @@ import { ToolParameterDuplicateLoggableException } from './tool-parameter-duplic
 
 describe(ToolParameterDuplicateLoggableException.name, () => {
 	describe('getLogMessage', () => {
+		const setup = () => {
+			const exception: ToolParameterDuplicateLoggableException = new ToolParameterDuplicateLoggableException(
+				'parameter1'
+			);
+
+			return {
+				exception,
+			};
+		};
+
 		it('should return log message', () => {
-			const exception = new ToolParameterDuplicateLoggableException('parameter1');
+			const { exception } = setup();
 
 			const result = exception.getLogMessage();
 
