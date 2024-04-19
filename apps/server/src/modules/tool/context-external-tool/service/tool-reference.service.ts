@@ -40,10 +40,7 @@ export class ToolReferenceService {
 			contextExternalTool,
 			status
 		);
-		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(
-			'/v3/tools/external-tools/{id}/logo',
-			externalTool
-		);
+		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(externalTool);
 
 		return toolReference;
 	}
