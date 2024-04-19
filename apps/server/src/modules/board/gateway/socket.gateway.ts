@@ -41,9 +41,9 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		private readonly columnUc: ColumnUc
 	) {}
 
-	public async handleConnection(client: Socket): Promise<void> {
+	public handleConnection(/* client: Socket */): void {
 		this.logger.log('New connection');
-		await this.authorizeConnection(client);
+		/* await this.authorizeConnection(client); */
 
 		// if (!this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED')) {
 		// 	client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.FEATURE_DISABLED);
