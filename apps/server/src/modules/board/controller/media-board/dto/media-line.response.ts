@@ -4,19 +4,20 @@ import { TimestampsResponse } from '../../dto';
 import { MediaExternalToolElementResponse } from './media-external-tool-element.response';
 
 export class MediaLineResponse {
-	@ApiProperty()
+	@ApiProperty({ description: 'The id of the media line' })
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ description: 'The title of the media line' })
 	@DecodeHtmlEntities()
 	title: string;
 
 	@ApiProperty({
 		type: [MediaExternalToolElementResponse],
+		description: 'The elements of the media line',
 	})
 	elements: MediaExternalToolElementResponse[];
 
-	@ApiProperty()
+	@ApiProperty({ description: 'The timestamps of the media line' })
 	timestamps: TimestampsResponse;
 
 	constructor(props: MediaLineResponse) {

@@ -11,9 +11,9 @@ import {
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ExternalToolService } from '../../external-tool';
+import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import { ToolStatusOutdatedLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
@@ -83,9 +83,9 @@ describe('ToolLaunchService', () => {
 	describe('getLaunchData', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
 				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({
@@ -165,9 +165,9 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
 				const externalTool: ExternalTool = externalToolFactory.build();
 				externalTool.config.type = 'unknown' as ToolConfigType;
@@ -204,9 +204,9 @@ describe('ToolLaunchService', () => {
 
 		describe('when tool configuration status is not launchable', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
 				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({

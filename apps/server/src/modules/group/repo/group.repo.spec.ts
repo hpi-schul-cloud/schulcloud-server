@@ -17,7 +17,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityTypes, GroupUserEntity } from '../entity';
+import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { GroupRepo } from './group.repo';
 
 describe('GroupRepo', () => {
@@ -216,7 +216,7 @@ describe('GroupRepo', () => {
 			const setup = async () => {
 				const userEntity: User = userFactory.buildWithId();
 				const user: UserDO = userDoFactory.build({ id: userEntity.id });
-				const groupUserEntity: GroupUserEntity = new GroupUserEntity({
+				const groupUserEntity: GroupUserEmbeddable = new GroupUserEmbeddable({
 					user: userEntity,
 					role: roleFactory.buildWithId(),
 				});

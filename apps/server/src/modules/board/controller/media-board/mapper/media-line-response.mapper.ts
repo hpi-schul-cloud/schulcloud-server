@@ -6,13 +6,13 @@ import {
 } from '@shared/domain/domainobject';
 import { TimestampsResponse } from '../../dto';
 import { type MediaExternalToolElementResponse, MediaLineResponse } from '../dto';
-import { MediaElementResponseMapper } from './media-element-response.mapper';
+import { MediaExternalToolElementResponseMapper } from './media-external-tool-element-response.mapper';
 
 export class MediaLineResponseMapper {
 	static mapToResponse(line: MediaLine): MediaLineResponse {
 		const elements: MediaExternalToolElementResponse[] = line.children
 			.filter((element: AnyBoardDo): element is MediaExternalToolElement => isMediaExternalToolElement(element))
-			.map((element: MediaExternalToolElement) => MediaElementResponseMapper.mapToResponse(element));
+			.map((element: MediaExternalToolElement) => MediaExternalToolElementResponseMapper.mapToResponse(element));
 
 		const lineResponse: MediaLineResponse = new MediaLineResponse({
 			id: line.id,

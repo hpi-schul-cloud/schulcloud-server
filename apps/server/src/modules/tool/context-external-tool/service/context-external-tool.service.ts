@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { CustomParameter, CustomParameterEntry } from '../../common/domain';
+import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
-import { CommonToolService } from '../../common/service';
-import { CustomParameter, CustomParameterEntry } from '../../common/domain';
+import {
+	ContextExternalTool,
+	ContextExternalToolWithId,
+	ContextRef,
+	RestrictedContextMismatchLoggableException,
+} from '../domain';
+import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -38,10 +42,11 @@ export class ContextExternalToolService {
 		return tool;
 	}
 
-	public async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
+	// TODO: N21-1885 - Refactor to return ContextExternalToolWithId without cast
+	public async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalToolWithId> {
 		const savedContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(contextExternalTool);
 
-		return savedContextExternalTool;
+		return savedContextExternalTool as ContextExternalToolWithId;
 	}
 
 	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
@@ -74,7 +79,7 @@ export class ContextExternalToolService {
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
 		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
-			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
+			throw new RestrictedContextMismatchLoggableException(externalTool.name, contextExternalTool.contextRef.type);
 		}
 	}
 

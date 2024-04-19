@@ -20,7 +20,7 @@ export class ExternalToolDatasheetMapper {
 		const externalToolData: ExternalToolDatasheetTemplateData = new ExternalToolDatasheetTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `${firstName} ${lastname}`,
-			instance: ExternalToolDatasheetMapper.mapToInstanceName(),
+			instance: ExternalToolDatasheetMapper.getInstanceName(),
 			schoolName,
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
@@ -47,20 +47,10 @@ export class ExternalToolDatasheetMapper {
 		return externalToolData;
 	}
 
-	private static mapToInstanceName(): string {
-		const instance: string = Configuration.get('SC_THEME') as string;
-		switch (instance) {
-			case 'n21':
-				return 'Niedersächsische Bildungscloud';
-			case 'brb':
-				return 'Schul-Cloud Brandenburg';
-			case 'thr':
-				return 'Thüringer Schulcloud';
-			case 'default':
-				return 'dBildungscloud';
-			default:
-				return 'unbekannt';
-		}
+	private static getInstanceName(): string {
+		const instanceName: string = Configuration.get('SC_TITLE') as string;
+
+		return instanceName;
 	}
 
 	private static mapToIsDeactivated(

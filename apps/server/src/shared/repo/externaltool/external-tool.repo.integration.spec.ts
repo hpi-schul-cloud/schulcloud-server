@@ -173,7 +173,7 @@ describe('ExternalToolRepo', () => {
 				baseUrl: 'baseUrl',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, ...expected } = domainObject;
+			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
@@ -189,7 +189,7 @@ describe('ExternalToolRepo', () => {
 				skipConsent: true,
 			});
 			const { domainObject } = setupDO(config);
-			const { id, ...expected } = domainObject;
+			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
@@ -208,7 +208,7 @@ describe('ExternalToolRepo', () => {
 				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, ...expected } = domainObject;
+			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
@@ -285,6 +285,21 @@ describe('ExternalToolRepo', () => {
 				expect(page.data[0].name).toEqual(ltiTools[0].name);
 				expect(page.data[1].name).toEqual(ltiTools[1].name);
 				expect(page.data[2].name).toEqual(ltiTools[2].name);
+			});
+		});
+
+		describe('when query is given', () => {
+			describe('by ids', () => {
+				it('should return external tools for given ids', async () => {
+					const { options, ltiTools } = await setupFind();
+					const query: ExternalToolSearchQuery = { ids: [ltiTools[0].id, ltiTools[1].id] };
+
+					const page: Page<ExternalTool> = await repo.find(query, options);
+
+					expect(page.data.length).toBe(2);
+					expect(page.data[0].name).toEqual(ltiTools[0].name);
+					expect(page.data[1].name).toEqual(ltiTools[1].name);
+				});
 			});
 		});
 	});
