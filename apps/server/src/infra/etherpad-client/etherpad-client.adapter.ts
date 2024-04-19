@@ -11,7 +11,7 @@ import {
 	InlineResponse2006Data,
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
-import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
+import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -37,11 +37,7 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(
-				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
-				{ userId },
-				error
-			);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { userId }, error);
 		}
 	}
 
@@ -76,11 +72,7 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(
-				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
-				{ authorId },
-				error
-			);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
 		}
 	}
 
@@ -125,11 +117,7 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(
-				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
-				{ authorId },
-				error
-			);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
 		}
 	}
 
@@ -148,11 +136,7 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(
-				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
-				{ parentId },
-				error
-			);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { parentId }, error);
 		}
 	}
 
@@ -177,11 +161,7 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(
-				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
-				{ groupId },
-				error
-			);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { groupId }, error);
 		}
 	}
 
@@ -200,11 +180,7 @@ export class EtherpadClientAdapter {
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(
-				ErrorType.ETHERPAD_SERVER_CONNECTION_ERROR,
-				{ groupId },
-				error
-			);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { groupId }, error);
 		}
 	}
 
@@ -213,21 +189,13 @@ export class EtherpadClientAdapter {
 
 		switch (response.code) {
 			case 1:
-				throw EtherpadResponseMapper.mapResponseToException(ErrorType.ETHERPAD_SERVER_BAD_REQUEST, payload, response);
+				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.BAD_REQUEST, payload, response);
 			case 2:
-				throw EtherpadResponseMapper.mapResponseToException(
-					ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR,
-					payload,
-					response
-				);
+				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.INTERNAL_ERROR, payload, response);
 			case 3:
-				throw EtherpadResponseMapper.mapResponseToException(
-					ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND,
-					payload,
-					response
-				);
+				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.FUNCTION_NOT_FOUND, payload, response);
 			case 4:
-				throw EtherpadResponseMapper.mapResponseToException(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY, payload, response);
+				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.WRONG_API_KEY, payload, response);
 			default:
 				return response.data as T['data'];
 		}

@@ -1,6 +1,6 @@
 import { ErrorUtils } from '@src/core/error/utils';
 import { InlineResponse2003Data, InlineResponse2004Data, InlineResponse200Data } from '../etherpad-api-client';
-import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from '../interface';
+import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from '../interface';
 import { EtherpadErrorLoggableException } from '../loggable';
 
 export class EtherpadResponseMapper {
@@ -43,7 +43,7 @@ export class EtherpadResponseMapper {
 	}
 
 	static mapResponseToException<T extends EtherpadResponse>(
-		type: ErrorType,
+		type: EtherpadErrorType,
 		payload: EtherpadParams,
 		response: T | Error
 	): EtherpadErrorLoggableException {

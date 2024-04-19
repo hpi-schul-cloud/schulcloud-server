@@ -1,2 +1,2 @@
-export * from './error-status.enum';
+export * from './etherpad-error-type.enum';
 export * from './payloads.interface';

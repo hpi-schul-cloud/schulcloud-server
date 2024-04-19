@@ -13,7 +13,7 @@ import {
 	SessionApi,
 } from './etherpad-api-client';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
-import { ErrorType } from './interface';
+import { EtherpadErrorType } from './interface';
 
 describe(EtherpadClientAdapter.name, () => {
 	let module: TestingModule;
@@ -457,7 +457,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const parentId = setup(1);
 
-				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(ErrorType.ETHERPAD_SERVER_BAD_REQUEST);
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(EtherpadErrorType.BAD_REQUEST);
 			});
 		});
 
@@ -465,7 +465,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const parentId = setup(2);
 
-				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(ErrorType.ETHERPAD_SERVER_INTERNAL_ERROR);
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(EtherpadErrorType.INTERNAL_ERROR);
 			});
 		});
 
@@ -473,9 +473,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const parentId = setup(3);
 
-				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(
-					ErrorType.ETHERPAD_SERVER_FUNCTION_NOT_FOUND
-				);
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(EtherpadErrorType.FUNCTION_NOT_FOUND);
 			});
 		});
 
@@ -483,7 +481,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const parentId = setup(4);
 
-				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(ErrorType.ETHERPAD_SERVER_WRONG_API_KEY);
+				await expect(service.getOrCreateGroup(parentId)).rejects.toThrowError(EtherpadErrorType.WRONG_API_KEY);
 			});
 		});
 	});
