@@ -6,9 +6,6 @@ import { EtherpadClientAdapter } from './etherpad-client.adapter';
 export interface EtherpadClientConfig extends ConfigurationParameters {
 	apiKey?: string;
 	basePath?: string;
-	cookieExpiresSeconds: number;
-	cookieReleaseThreshold: number;
-	padURI: string;
 }
 
 @Module({})
