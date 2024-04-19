@@ -63,6 +63,9 @@ export class VideoConferenceJoinUc {
 			);
 		}
 
+		const conf = joinBuilder.build();
+		console.log('conf', conf);
+
 		const url: string = await this.bbbService.join(joinBuilder.build());
 
 		const videoConferenceJoin: VideoConferenceJoin = new VideoConferenceJoin({

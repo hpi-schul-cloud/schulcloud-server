@@ -175,6 +175,9 @@ export class VideoConferenceDeprecatedUc {
 			);
 		}
 
+		const conf = configBuilder.build();
+		console.log('conf', conf);
+
 		const url: string = await this.bbbService.join(configBuilder.build());
 
 		return new VideoConferenceJoin({
