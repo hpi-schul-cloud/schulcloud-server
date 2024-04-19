@@ -287,14 +287,8 @@ describe(MediaAvailableLineService.name, () => {
 
 			service.createMediaAvailableLine(availableExternalTools);
 
-			expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(
-				'/v3/tools/external-tools/{id}/logo',
-				externalTool1
-			);
-			expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(
-				'/v3/tools/external-tools/{id}/logo',
-				externalTool2
-			);
+			expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool1);
+			expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool2);
 		});
 
 		it('should create a media available line with correct elements', () => {
