@@ -25,9 +25,9 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 
-describe('CommonCartridgeMapper', () => {
+describe('CommonCartridgeExportMapper', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeExportMapper;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;

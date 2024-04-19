@@ -18,8 +18,8 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
+import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
-import { CommonCartridgeExportMapper } from './mapper/common-cartridge.mapper';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,

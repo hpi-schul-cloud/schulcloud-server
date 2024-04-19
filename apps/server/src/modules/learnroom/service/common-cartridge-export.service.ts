@@ -18,7 +18,7 @@ import { ColumnBoardService } from '@src/modules/board';
 import { CommonCartridgeFileBuilder } from '@src/modules/common-cartridge/export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '@src/modules/common-cartridge/export/builders/common-cartridge-organization-node';
 import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
-import { CommonCartridgeExportMapper } from '../mapper/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 import { CourseService } from './course.service';
 
 @Injectable()

@@ -20,7 +20,7 @@ import {
 } from '@shared/testing';
 import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeExportMapper } from '../mapper/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from '../mapper/common-cartridge-export.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
