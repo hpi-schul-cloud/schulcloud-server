@@ -70,7 +70,8 @@ export class CourseController {
 			currentUser.userId,
 			queryParams.version,
 			bodyParams.topics,
-			bodyParams.tasks
+			bodyParams.tasks,
+			bodyParams.columnBoards
 		);
 
 		response.set({

@@ -38,7 +38,8 @@ export class CommonCartridgeExportService {
 		userId: EntityId,
 		version: CommonCartridgeVersion,
 		exportedTopics: string[],
-		exportedTasks: string[]
+		exportedTasks: string[],
+		exportedColumnBoards: string[]
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
@@ -47,7 +48,7 @@ export class CommonCartridgeExportService {
 
 		await this.addLessons(builder, courseId, version, exportedTopics);
 		await this.addTasks(builder, courseId, userId, version, exportedTasks);
-		await this.addColumnBoards(builder, courseId);
+		await this.addColumnBoards(builder, courseId, exportedColumnBoards);
 
 		return builder.build();
 	}
@@ -104,11 +105,17 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	private async addColumnBoards(builder: CommonCartridgeFileBuilder, courseId: EntityId): Promise<void> {
-		const columnBoardIds = await this.columnBoardService.findIdsByExternalReference({
-			type: BoardExternalReferenceType.Course,
-			id: courseId,
-		});
+	private async addColumnBoards(
+		builder: CommonCartridgeFileBuilder,
+		courseId: EntityId,
+		exportedColumnBoards: string[]
+	): Promise<void> {
+		const columnBoardIds = (
+			await this.columnBoardService.findIdsByExternalReference({
+				type: BoardExternalReferenceType.Course,
+				id: courseId,
+			})
+		).filter((id) => exportedColumnBoards.includes(id));
 
 		for await (const columnBoardId of columnBoardIds) {
 			const columnBoard = await this.columnBoardService.findById(columnBoardId);
