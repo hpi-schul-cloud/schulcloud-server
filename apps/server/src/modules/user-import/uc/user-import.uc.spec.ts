@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService, Account } from '@modules/account';
+import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -120,7 +120,7 @@ describe('[ImportUserModule]', () => {
 			Object.assign<IUserImportFeatures, IUserImportFeatures>(userImportFeatures, {
 				userMigrationEnabled: true,
 				userMigrationSystemId: new ObjectId().toHexString(),
-				instance: 'dbc',
+				useWithUserLoginMigration: false,
 			});
 		});
 
@@ -638,7 +638,7 @@ describe('[ImportUserModule]', () => {
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
-						userImportFeatures.instance = 'n21';
+						userImportFeatures.useWithUserLoginMigration = true;
 
 						return {
 							user,
@@ -847,7 +847,7 @@ describe('[ImportUserModule]', () => {
 							targetSystemId,
 						});
 
-						userImportFeatures.instance = 'n21';
+						userImportFeatures.useWithUserLoginMigration = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
@@ -892,7 +892,7 @@ describe('[ImportUserModule]', () => {
 							systems: [targetSystemId],
 						});
 
-						userImportFeatures.instance = 'n21';
+						userImportFeatures.useWithUserLoginMigration = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
@@ -925,7 +925,7 @@ describe('[ImportUserModule]', () => {
 							targetSystemId,
 						});
 
-						userImportFeatures.instance = 'n21';
+						userImportFeatures.useWithUserLoginMigration = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
@@ -1022,7 +1022,7 @@ describe('[ImportUserModule]', () => {
 
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						userImportFeatures.instance = 'n21';
+						userImportFeatures.useWithUserLoginMigration = true;
 
 						return {
 							user,
