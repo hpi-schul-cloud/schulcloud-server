@@ -34,9 +34,7 @@ export class VideoConferenceJoinUc {
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
 			role,
-		})
-			.withUserId(currentUserId)
-			.asGuest(isGuest);
+		}).withUserId(currentUserId);
 
 		const videoConference: VideoConferenceDO = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 			scope.id,
@@ -44,6 +42,10 @@ export class VideoConferenceJoinUc {
 		);
 
 		console.log('videoConference', videoConference.options);
+
+		if (isGuest) {
+			joinBuilder.asGuest(true);
+		}
 
 		if (videoConference.options.everybodyJoinsAsModerator && !isGuest) {
 			joinBuilder.withRole(BBBRole.MODERATOR);
