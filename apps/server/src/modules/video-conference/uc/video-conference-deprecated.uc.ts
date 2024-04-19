@@ -156,10 +156,6 @@ export class VideoConferenceDeprecatedUc {
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
 
-		console.log('role', bbbRole);
-		console.log('isGuest', isGuest);
-		console.log('videoConference', vcDO.options);
-
 		if (isGuest) {
 			configBuilder.asGuest(true);
 		}
@@ -174,9 +170,6 @@ export class VideoConferenceDeprecatedUc {
 				'Guests cannot join this conference, since the waiting room is not enabled.'
 			);
 		}
-
-		const conf = configBuilder.build();
-		console.log('conf', conf);
 
 		const url: string = await this.bbbService.join(configBuilder.build());
 

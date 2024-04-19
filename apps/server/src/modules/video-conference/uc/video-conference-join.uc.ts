@@ -27,9 +27,6 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
-		console.log('role', role);
-		console.log('isGuest', isGuest);
-
 		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
@@ -41,8 +38,6 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
-		console.log('videoConference', videoConference.options);
-
 		if (isGuest) {
 			joinBuilder.asGuest(true);
 		}
@@ -51,22 +46,12 @@ export class VideoConferenceJoinUc {
 			joinBuilder.withRole(BBBRole.MODERATOR);
 		}
 
-		// if (
-		// 	videoConference.options.moderatorMustApproveJoinRequests &&
-		// 	!videoConference.options.everybodyJoinsAsModerator
-		// ) {
-		// 	joinBuilder.asGuest(true);
-		// }
-
 		if (!videoConference.options.moderatorMustApproveJoinRequests && isGuest) {
 			throw new ForbiddenException(
 				ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE,
 				'Guests cannot join this conference, since the waiting room is not enabled.'
 			);
 		}
-
-		const conf = joinBuilder.build();
-		console.log('conf', conf);
 
 		const url: string = await this.bbbService.join(joinBuilder.build());
 

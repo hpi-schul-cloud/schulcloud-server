@@ -238,7 +238,7 @@ describe('VideoConferenceJoinUc', () => {
 						userService.findById.mockResolvedValue(user);
 						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
 							role: BBBRole.VIEWER,
-							isGuest: false,
+							isGuest: true,
 						});
 						videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
 						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
@@ -247,7 +247,7 @@ describe('VideoConferenceJoinUc', () => {
 						return { user, currentUserId, scope, options, bbbJoinResponse };
 					};
 
-					it('should call join with guest false', async () => {
+					it('should call join with guest true', async () => {
 						const { currentUserId, scope, user } = setup();
 
 						await uc.join(currentUserId, scope);
@@ -257,7 +257,7 @@ describe('VideoConferenceJoinUc', () => {
 							meetingID: scope.id,
 							role: BBBRole.VIEWER,
 							userID: currentUserId,
-							guest: false,
+							guest: true,
 						});
 					});
 				});
@@ -317,7 +317,7 @@ describe('VideoConferenceJoinUc', () => {
 				);
 			});
 
-			it('should call join with guest false', async () => {
+			it('should call join without guest property', async () => {
 				const { currentUserId, scope, user } = setup();
 
 				await uc.join(currentUserId, scope);
@@ -327,7 +327,6 @@ describe('VideoConferenceJoinUc', () => {
 					meetingID: scope.id,
 					role: BBBRole.MODERATOR,
 					userID: currentUserId,
-					guest: false,
 				});
 			});
 		});
