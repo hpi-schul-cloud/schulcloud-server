@@ -18,10 +18,10 @@ import {
 import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -169,10 +169,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
-					'/v3/tools/external-tools/{id}/logo',
-					externalToolsPage.data[1]
-				);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(externalToolsPage.data[1]);
 			});
 
 			it('should call filterForAvailableTools with ids of used tools', async () => {
@@ -324,7 +321,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', usedTool);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(usedTool);
 			});
 
 			it('should filter for restricted contexts', async () => {
