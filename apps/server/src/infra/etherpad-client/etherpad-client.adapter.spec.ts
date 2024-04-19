@@ -1,4 +1,4 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import {
@@ -60,7 +60,7 @@ describe(EtherpadClientAdapter.name, () => {
 	});
 
 	describe('getOrCreateAuthor', () => {
-		describe('when params are correctly', () => {
+		describe('when createAuthorIfNotExistsForUsingGET resolves succesful', () => {
 			const setup = () => {
 				const userId = 'userId';
 				const username = 'username';
