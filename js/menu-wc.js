@@ -4663,7 +4663,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalSource.html" data-type="entity-link" >ExternalSource</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ExternalSourceEntity.html" data-type="entity-link" >ExternalSourceEntity</a>
+                                <a href="classes/ExternalSourceEmbeddable.html" data-type="entity-link" >ExternalSourceEmbeddable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalSourceResponse.html" data-type="entity-link" >ExternalSourceResponse</a>
@@ -4984,13 +4984,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/GroupUser.html" data-type="entity-link" >GroupUser</a>
                             </li>
                             <li class="link">
-                                <a href="classes/GroupUserEntity.html" data-type="entity-link" >GroupUserEntity</a>
+                                <a href="classes/GroupUserEmbeddable.html" data-type="entity-link" >GroupUserEmbeddable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/GroupUserResponse.html" data-type="entity-link" >GroupUserResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/GroupValidPeriodEntity.html" data-type="entity-link" >GroupValidPeriodEntity</a>
+                                <a href="classes/GroupValidPeriodEmbeddable.html" data-type="entity-link" >GroupValidPeriodEmbeddable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/GuardAgainst.html" data-type="entity-link" >GuardAgainst</a>
@@ -5764,7 +5764,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ResponseInfo.html" data-type="entity-link" >ResponseInfo</a>
                             </li>
                             <li class="link">
-                                <a href="classes/RestrictedContextMismatchLoggable.html" data-type="entity-link" >RestrictedContextMismatchLoggable</a>
+                                <a href="classes/RestrictedContextMismatchLoggableException.html" data-type="entity-link" >RestrictedContextMismatchLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/RevokeConsentParams.html" data-type="entity-link" >RevokeConsentParams</a>

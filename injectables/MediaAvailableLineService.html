@@ -981,8 +981,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="149"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:149</a></div>
                         </td>
                     </tr>
 
@@ -1182,10 +1182,7 @@ export class MediaAvailableLineService {
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool
 	): MediaAvailableLineElement {
-		const logoUrl: string | undefined &#x3D; this.externalToolLogoService.buildLogoUrl(
-			&#x27;/v3/tools/external-tools/{id}/logo&#x27;,
-			externalTool
-		);
+		const logoUrl: string | undefined &#x3D; this.externalToolLogoService.buildLogoUrl(externalTool);
 
 		const element: MediaAvailableLineElement &#x3D; new MediaAvailableLineElement({
 			schoolExternalToolId: schoolExternalTool.id ?? &#x27;&#x27;,

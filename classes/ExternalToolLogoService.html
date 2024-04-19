@@ -286,7 +286,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildLogoUrl(template: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
+<code>buildLogoUrl(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -314,18 +314,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                                <td>template</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                         <tr>
                                                 <td>externalTool</td>
                                             <td>
@@ -374,8 +362,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -444,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -513,8 +501,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -582,8 +570,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="97"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:97</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -649,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -739,13 +727,12 @@ export class ExternalToolLogoService {
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	buildLogoUrl(template: string, externalTool: ExternalTool): string | undefined {
+	buildLogoUrl(externalTool: ExternalTool): string | undefined {
 		const { logo, id } &#x3D; externalTool;
 		const backendUrl &#x3D; this.toolFeatures.backEndUrl;
 
-		if (logo) {
-			const filledTemplate &#x3D; template.replace(/\{id\}/g, id || &#x27;&#x27;);
-			return &#x60;${backendUrl}${filledTemplate}&#x60;;
+		if (logo &amp;&amp; id) {
+			return &#x60;${backendUrl}/v3/tools/external-tools/${id}/logo&#x60;;
 		}
 
 		return undefined;

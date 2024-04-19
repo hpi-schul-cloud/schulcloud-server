@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >ExternalSourceEntity</li>
+  <li class="breadcrumb-item" >RestrictedContextMismatchLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,38 +126,45 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/external-source.entity.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/domain/error/restricted-context-mismatch-loggabble.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>UnprocessableEntityException</code>
+            </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
+                        <h6><b>Methods</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
-                                <a href="#externalId" >externalId</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#system" >system</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
                 </tr>
-
 
 
 
@@ -173,12 +180,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../interfaces/ExternalSourceEntityProps.html" target="_self">ExternalSourceEntityProps</a>)</code>
+<code>constructor(externalToolName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, context: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/entity/external-source.entity.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/domain/error/restricted-context-mismatch-loggabble.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -196,10 +203,22 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>props</td>
+                                                        <td>externalToolName</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/ExternalSourceEntityProps.html" target="_self" >ExternalSourceEntityProps</a></code>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>context</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -216,86 +235,50 @@
         </table>
 </section>
 
-            <section data-compodoc="block-properties">
+
+            <section data-compodoc="block-methods">
     
-    <h3 id="inputs">
-        Properties
+    <h3 id="methods">
+        Methods
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="externalId"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>externalId</b></span>
-                        <a href="#externalId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Property()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/entity/external-source.entity.ts:13</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="system"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>system</b></span>
-                        <a href="#system"><span class="icon ion-ios-link"></span></a>
-                    </span>
+<code>getLogMessage()</code>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity</a></code>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ManyToOne(undefined)<br />
-                        </code>
-                    </td>
-                </tr>
+
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/entity/external-source.entity.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/domain/error/restricted-context-mismatch-loggabble.ts:10</a></div>
                         </td>
                     </tr>
 
 
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+
+                        </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>
-
-
 
 
 
@@ -305,26 +288,27 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
-import { SystemEntity } from &#x27;./system.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { ToolContextType } from &#x27;../../../common/enum&#x27;;
 
-export interface ExternalSourceEntityProps {
-	externalId: string;
+export class RestrictedContextMismatchLoggableException extends UnprocessableEntityException implements Loggable {
+	constructor(private readonly externalToolName: string, private readonly context: ToolContextType) {
+		super();
+	}
 
-	system: SystemEntity;
-}
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		const message: LogMessage | ErrorLogMessage | ValidationErrorLogMessage &#x3D; {
+			type: &#x27;UNPROCESSABLE_ENTITY_EXCEPTION&#x27;,
+			message: &#x60;Could not create an instance of ${this.externalToolName} in context: ${this.context} because of the context restrictions of the tool.&#x60;,
+			stack: this.stack,
+			data: {
+				externalToolName: this.externalToolName,
+				context: this.context,
+			},
+		};
 
-@Embeddable()
-export class ExternalSourceEntity {
-	@Property()
-	externalId: string;
-
-	@ManyToOne(() &#x3D;&gt; SystemEntity)
-	system: SystemEntity;
-
-	constructor(props: ExternalSourceEntityProps) {
-		this.externalId &#x3D; props.externalId;
-		this.system &#x3D; props.system;
+		return message;
 	}
 }
 </code></pre>
@@ -365,7 +349,7 @@ export class ExternalSourceEntity {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'ExternalSourceEntity.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'RestrictedContextMismatchLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

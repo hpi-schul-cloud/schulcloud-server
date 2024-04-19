@@ -471,8 +471,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="333"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:333</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="334"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:334</a></div>
                         </td>
                     </tr>
 
@@ -538,8 +538,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="320"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:320</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="321"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:321</a></div>
                         </td>
                     </tr>
 
@@ -676,8 +676,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="316"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:316</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="317"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:317</a></div>
                         </td>
                     </tr>
 
@@ -1159,8 +1159,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="287"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:287</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="288"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:288</a></div>
                         </td>
                     </tr>
 
@@ -1226,8 +1226,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="307"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:307</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="308"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:308</a></div>
                         </td>
                     </tr>
 
@@ -1295,8 +1295,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="297"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:297</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="298"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:298</a></div>
                         </td>
                     </tr>
 
@@ -1808,9 +1808,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitExternalToolElementAsync(original: ExternalToolElement): Promise&lt;void&gt; {
-		let status: CopyStatusEnum &#x3D; CopyStatusEnum.SUCCESS;
-
-		const copy &#x3D; new ExternalToolElement({
+		const boardElementCopy: ExternalToolElement &#x3D; new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
 			children: [],
@@ -1818,29 +1816,32 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			updatedAt: new Date(),
 		});
 
+		let status: CopyStatusEnum;
 		if (this.toolFeatures.ctlToolsCopyEnabled &amp;&amp; original.contextExternalToolId) {
-			const tool: ContextExternalTool | null &#x3D; await this.contextExternalToolService.findById(
+			const linkedTool: ContextExternalTool | null &#x3D; await this.contextExternalToolService.findById(
 				original.contextExternalToolId
 			);
 
-			if (tool) {
-				const copiedTool: ContextExternalTool &#x3D; await this.contextExternalToolService.copyContextExternalTool(
-					tool,
-					copy.id
-				);
+			if (linkedTool) {
+				const contextExternalToolCopy: ContextExternalTool &#x3D;
+					await this.contextExternalToolService.copyContextExternalTool(linkedTool, boardElementCopy.id);
 
-				copy.contextExternalToolId &#x3D; copiedTool.id;
+				boardElementCopy.contextExternalToolId &#x3D; contextExternalToolCopy.id;
+
+				status &#x3D; CopyStatusEnum.SUCCESS;
 			} else {
 				status &#x3D; CopyStatusEnum.FAIL;
 			}
+		} else {
+			status &#x3D; CopyStatusEnum.SUCCESS;
 		}
 
 		this.resultMap.set(original.id, {
-			copyEntity: copy,
+			copyEntity: boardElementCopy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 			status,
 		});
-		this.copyMap.set(original.id, copy);
+		this.copyMap.set(original.id, boardElementCopy);
 
 		return Promise.resolve();
 	}

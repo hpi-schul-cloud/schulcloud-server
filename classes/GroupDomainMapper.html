@@ -355,7 +355,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapExternalSourceEntityToExternalSource(entity: <a href="../classes/ExternalSourceEntity.html" target="_self">ExternalSourceEntity</a>)</code>
+                    <code>mapExternalSourceEntityToExternalSource(entity: <a href="../classes/ExternalSourceEmbeddable.html" target="_self">ExternalSourceEmbeddable</a>)</code>
                 </td>
             </tr>
 
@@ -386,7 +386,7 @@
                                         <tr>
                                                 <td>entity</td>
                                             <td>
-                                                            <code><a href="../classes/ExternalSourceEntity.html" target="_self" >ExternalSourceEntity</a></code>
+                                                            <code><a href="../classes/ExternalSourceEmbeddable.html" target="_self" >ExternalSourceEmbeddable</a></code>
                                             </td>
 
                                             <td>
@@ -480,7 +480,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/ExternalSourceEntity.html" target="_self" >ExternalSourceEntity</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ExternalSourceEmbeddable.html" target="_self" >ExternalSourceEmbeddable</a></code>
 
                         </div>
                             <div class="io-description">
@@ -505,7 +505,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapGroupUserEntityToGroupUser(entity: <a href="../classes/GroupUserEntity.html" target="_self">GroupUserEntity</a>)</code>
+                    <code>mapGroupUserEntityToGroupUser(entity: <a href="../classes/GroupUserEmbeddable.html" target="_self">GroupUserEmbeddable</a>)</code>
                 </td>
             </tr>
 
@@ -536,7 +536,7 @@
                                         <tr>
                                                 <td>entity</td>
                                             <td>
-                                                            <code><a href="../classes/GroupUserEntity.html" target="_self" >GroupUserEntity</a></code>
+                                                            <code><a href="../classes/GroupUserEmbeddable.html" target="_self" >GroupUserEmbeddable</a></code>
                                             </td>
 
                                             <td>
@@ -630,7 +630,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/GroupUserEntity.html" target="_self" >GroupUserEntity</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/GroupUserEmbeddable.html" target="_self" >GroupUserEmbeddable</a></code>
 
                         </div>
                             <div class="io-description">
@@ -653,9 +653,9 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { ExternalSource } from &#x27;@shared/domain/domainobject&#x27;;
-import { ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { ExternalSourceEmbeddable, Role, SchoolEntity, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { Group, GroupProps, GroupTypes, GroupUser } from &#x27;../domain&#x27;;
-import { GroupEntity, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from &#x27;../entity&#x27;;
+import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from &#x27;../entity&#x27;;
 
 const GroupEntityTypesToGroupTypesMapping: Record&lt;GroupEntityTypes, GroupTypes&gt; &#x3D; {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
@@ -673,9 +673,9 @@ export class GroupDomainMapper {
 	static mapDoToEntityData(group: Group, em: EntityManager): EntityData&lt;GroupEntity&gt; {
 		const props: GroupProps &#x3D; group.getProps();
 
-		let validPeriod: GroupValidPeriodEntity | undefined;
+		let validPeriod: GroupValidPeriodEmbeddable | undefined;
 		if (props.validFrom &amp;&amp; props.validUntil) {
-			validPeriod &#x3D; new GroupValidPeriodEntity({
+			validPeriod &#x3D; new GroupValidPeriodEmbeddable({
 				from: props.validFrom,
 				until: props.validUntil,
 			});
@@ -688,7 +688,7 @@ export class GroupDomainMapper {
 				? this.mapExternalSourceToExternalSourceEntity(props.externalSource, em)
 				: undefined,
 			users: props.users.map(
-				(groupUser): GroupUserEntity &#x3D;&gt; GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
+				(groupUser): GroupUserEmbeddable &#x3D;&gt; GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
 			),
 			validPeriod,
 			organization: props.organizationId ? em.getReference(SchoolEntity, props.organizationId) : undefined,
@@ -717,8 +717,8 @@ export class GroupDomainMapper {
 	static mapExternalSourceToExternalSourceEntity(
 		externalSource: ExternalSource,
 		em: EntityManager
-	): ExternalSourceEntity {
-		const externalSourceEntity: ExternalSourceEntity &#x3D; new ExternalSourceEntity({
+	): ExternalSourceEmbeddable {
+		const externalSourceEntity: ExternalSourceEmbeddable &#x3D; new ExternalSourceEmbeddable({
 			externalId: externalSource.externalId,
 			system: em.getReference(SystemEntity, externalSource.systemId),
 		});
@@ -726,7 +726,7 @@ export class GroupDomainMapper {
 		return externalSourceEntity;
 	}
 
-	static mapExternalSourceEntityToExternalSource(entity: ExternalSourceEntity): ExternalSource {
+	static mapExternalSourceEntityToExternalSource(entity: ExternalSourceEmbeddable): ExternalSource {
 		const externalSource: ExternalSource &#x3D; new ExternalSource({
 			externalId: entity.externalId,
 			systemId: entity.system.id,
@@ -735,8 +735,8 @@ export class GroupDomainMapper {
 		return externalSource;
 	}
 
-	static mapGroupUserToGroupUserEntity(groupUser: GroupUser, em: EntityManager): GroupUserEntity {
-		const groupUserEntity: GroupUserEntity &#x3D; new GroupUserEntity({
+	static mapGroupUserToGroupUserEntity(groupUser: GroupUser, em: EntityManager): GroupUserEmbeddable {
+		const groupUserEntity: GroupUserEmbeddable &#x3D; new GroupUserEmbeddable({
 			user: em.getReference(User, groupUser.userId),
 			role: em.getReference(Role, groupUser.roleId),
 		});
@@ -744,7 +744,7 @@ export class GroupDomainMapper {
 		return groupUserEntity;
 	}
 
-	static mapGroupUserEntityToGroupUser(entity: GroupUserEntity): GroupUser {
+	static mapGroupUserEntityToGroupUser(entity: GroupUserEmbeddable): GroupUser {
 		const groupUser: GroupUser &#x3D; new GroupUser({
 			userId: entity.user.id,
 			roleId: entity.role.id,

@@ -192,7 +192,7 @@
                         <i>Default value : </i><code>{
 		userMigrationEnabled: Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean,
 		userMigrationSystemId: Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string,
-		instance: Configuration.get(&#x27;SC_THEME&#x27;) as string,
+		useWithUserLoginMigration: Configuration.get(&#x27;FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION&#x27;) as boolean,
 	}</code>
                     </td>
                 </tr>
@@ -224,14 +224,14 @@ export const UserImportFeatures &#x3D; Symbol(&#x27;UserImportFeatures&#x27;);
 export interface IUserImportFeatures {
 	userMigrationEnabled: boolean;
 	userMigrationSystemId: string;
-	instance: string;
+	useWithUserLoginMigration: boolean;
 }
 
 export class UserImportConfiguration {
 	static userImportFeatures: IUserImportFeatures &#x3D; {
 		userMigrationEnabled: Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean,
 		userMigrationSystemId: Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string,
-		instance: Configuration.get(&#x27;SC_THEME&#x27;) as string,
+		useWithUserLoginMigration: Configuration.get(&#x27;FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION&#x27;) as boolean,
 	};
 }
 </code></pre>

@@ -8543,12 +8543,12 @@ it should ensure an empty result</p>
 				role: roleFactory.buildWithId({ name: RoleName.TEACHER }),
 			},
 		],
-		validPeriod: new GroupValidPeriodEntity({
+		validPeriod: new GroupValidPeriodEmbeddable({
 			from: new Date(2023, 1),
 			until: new Date(2023, 6),
 		}),
 		organization: schoolEntityFactory.buildWithId(),
-		externalSource: new ExternalSourceEntity({
+		externalSource: new ExternalSourceEmbeddable({
 			externalId: &#x60;externalId-${sequence}&#x60;,
 			system: systemEntityFactory.buildWithId(),
 		}),

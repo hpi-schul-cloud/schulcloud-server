@@ -129,7 +129,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/group/entity/group-user.entity.ts</code>
+            <code>apps/server/src/modules/group/entity/group-user.embeddable.ts</code>
         </p>
 
 
@@ -252,7 +252,7 @@ export interface GroupUserEntityProps {
 }
 
 @Embeddable()
-export class GroupUserEntity {
+export class GroupUserEmbeddable {
 	@ManyToOne(() &#x3D;&gt; User)
 	user: User;
 

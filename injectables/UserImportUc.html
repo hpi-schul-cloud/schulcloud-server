@@ -190,10 +190,6 @@
                                 <a href="#getCurrentUser" >getCurrentUser</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#isNbc" >isNbc</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#removeMatch" >removeMatch</a>
@@ -1206,45 +1202,6 @@ The current user must have permission to read schools users and view importusers
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isNbc"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>isNbc</b></span>
-                        <a href="#isNbc"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isNbc()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="398"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:398</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="removeMatch"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -1910,7 +1867,7 @@ The current user must have permission to read schools users and view importusers
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, Account, AccountSave } from &#x27;@modules/account&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, AccountSave, AccountService } from &#x27;@modules/account&#x27;;
 import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { UserLoginMigrationService, UserMigrationService } from &#x27;@modules/user-login-migration&#x27;;
@@ -2142,7 +2099,7 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap &#x3D; true): Promise&lt;void&gt; {
-		const useWithUserLoginMigration: boolean &#x3D; this.isNbc();
+		const { useWithUserLoginMigration } &#x3D; this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			useCentralLdap &#x3D; false;
@@ -2209,7 +2166,7 @@ export class UserImportUc {
 
 		school.inMaintenanceSince &#x3D; undefined;
 
-		const isMigrationRestartable: boolean &#x3D; this.isNbc();
+		const isMigrationRestartable: boolean &#x3D; this.userImportFeatures.useWithUserLoginMigration;
 		if (isMigrationRestartable) {
 			school.inUserMigration &#x3D; undefined;
 		}
@@ -2227,7 +2184,7 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise&lt;void&gt; {
-		const useWithUserLoginMigration: boolean &#x3D; this.isNbc();
+		const { useWithUserLoginMigration } &#x3D; this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			await this.updateUserAndAccountWithUserLoginMigration(importUser);
@@ -2305,10 +2262,6 @@ export class UserImportUc {
 		if (school.inUserMigration !&#x3D;&#x3D; undefined &amp;&amp; school.inUserMigration !&#x3D;&#x3D; null) {
 			throw new MigrationAlreadyActivatedException();
 		}
-	}
-
-	private isNbc(): boolean {
-		return this.userImportFeatures.instance &#x3D;&#x3D;&#x3D; &#x27;n21&#x27;;
 	}
 }
 </code></pre>

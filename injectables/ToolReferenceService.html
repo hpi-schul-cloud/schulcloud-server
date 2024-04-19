@@ -377,10 +377,7 @@ export class ToolReferenceService {
 			contextExternalTool,
 			status
 		);
-		toolReference.logoUrl &#x3D; this.externalToolLogoService.buildLogoUrl(
-			&#x27;/v3/tools/external-tools/{id}/logo&#x27;,
-			externalTool
-		);
+		toolReference.logoUrl &#x3D; this.externalToolLogoService.buildLogoUrl(externalTool);
 
 		return toolReference;
 	}
