@@ -13,7 +13,7 @@ import {
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
-import { EtherpadServerError } from './loggable';
+import { EtherpadErrorLoggableException } from './loggable';
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -203,7 +203,7 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private handleError(type: ErrorType, payload: EtherpadParams, response: unknown): EtherpadServerError {
-		return new EtherpadServerError(type, payload, ErrorUtils.createHttpExceptionOptions(response));
+	private handleError(type: ErrorType, payload: EtherpadParams, response: unknown): EtherpadErrorLoggableException {
+		return new EtherpadErrorLoggableException(type, payload, ErrorUtils.createHttpExceptionOptions(response));
 	}
 }

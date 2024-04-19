@@ -2,7 +2,7 @@ import { HttpExceptionOptions, InternalServerErrorException } from '@nestjs/comm
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 import { ErrorType, EtherpadParams } from '../interface';
 
-export class EtherpadServerError extends InternalServerErrorException implements Loggable {
+export class EtherpadErrorLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(
 		private readonly type: ErrorType,
 		private readonly payload: EtherpadParams,

@@ -1,1 +1,1 @@
-export * from './etherpad-server-error-exception';
+export * from './etherpad-error-loggable-exception';

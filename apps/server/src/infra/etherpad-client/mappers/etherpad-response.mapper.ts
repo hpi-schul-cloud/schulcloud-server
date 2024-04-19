@@ -2,7 +2,7 @@ import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import { InlineResponse2003Data, InlineResponse2004Data, InlineResponse200Data } from '../etherpad-api-client';
 import { AuthorId, ErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from '../interface';
-import { EtherpadServerError } from '../loggable';
+import { EtherpadErrorLoggableException } from '../loggable';
 
 export class EtherpadResponseMapper {
 	static mapToSessionResponse(session: InlineResponse2004Data | undefined): SessionId {
@@ -67,7 +67,7 @@ export class EtherpadResponseMapper {
 		type: ErrorType,
 		payload: EtherpadParams,
 		response: T | Error
-	): EtherpadServerError {
-		return new EtherpadServerError(type, payload, ErrorUtils.createHttpExceptionOptions(response.message));
+	): EtherpadErrorLoggableException {
+		return new EtherpadErrorLoggableException(type, payload, ErrorUtils.createHttpExceptionOptions(response.message));
 	}
 }
