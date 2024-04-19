@@ -1,5 +1,5 @@
-import { AnyBoardNode, AnyBoardNodeProps, Card, ColumnBoard, joinPath } from '../domain';
-import { isCardProps, isColumnBoardProps } from './type-guards';
+import { AnyBoardNode, AnyBoardNodeProps, Card, Column, ColumnBoard, joinPath } from '../domain';
+import { isCardProps, isColumnProps, isColumnBoardProps } from './type-guards';
 
 export class TreeBuilder {
 	private childrenMap: Record<string, AnyBoardNodeProps[]> = {};
@@ -18,6 +18,8 @@ export class TreeBuilder {
 
 		if (isColumnBoardProps(props)) {
 			boardNode = new ColumnBoard(props);
+		} else if (isColumnProps(props)) {
+			boardNode = new Column(props);
 		} else if (isCardProps(props)) {
 			boardNode = new Card(props);
 		} else {

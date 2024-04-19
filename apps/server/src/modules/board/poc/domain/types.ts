@@ -1,6 +1,7 @@
 import { BoardNodeType } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import type { Card } from './card.do';
+import type { Column } from './column.do';
 import type { ColumnBoard } from './colum-board.do';
 
 export interface BoardNodeProps {
@@ -19,10 +20,13 @@ export interface ColumnBoardProps extends BoardNodeProps {
 	// context: BoardExternalReference;
 	isVisible: boolean;
 }
+export interface ColumnProps extends BoardNodeProps {
+	title?: string;
+}
 export interface CardProps extends BoardNodeProps {
 	title?: string;
 	height: number;
 }
 
-export type AnyBoardNode = ColumnBoard | Card;
-export type AnyBoardNodeProps = ColumnBoardProps | CardProps;
+export type AnyBoardNode = ColumnBoard | Card | Column;
+export type AnyBoardNodeProps = ColumnBoardProps | CardProps | ColumnProps;
