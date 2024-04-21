@@ -24,7 +24,7 @@ import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymSearchQuery } from '../domain';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,

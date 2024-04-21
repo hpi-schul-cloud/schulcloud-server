@@ -18,7 +18,7 @@ import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class CourseService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly repo: LegacyCourseRepo,

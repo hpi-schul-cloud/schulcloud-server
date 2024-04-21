@@ -20,7 +20,7 @@ import {
 import { LessonRepo } from '../repository';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class LessonService implements AuthorizationLoaderService, DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly lessonRepo: LessonRepo,

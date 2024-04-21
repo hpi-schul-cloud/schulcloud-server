@@ -36,7 +36,7 @@ import { UserMapper } from '../mapper/user.mapper';
 import { UserConfig } from '../interfaces';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly userRepo: UserRepo,

@@ -20,7 +20,7 @@ import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class RocketChatUserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly rocketChatUserRepo: RocketChatUserRepo,

@@ -18,7 +18,7 @@ import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class FilesService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(private readonly repo: FilesRepo, private readonly logger: Logger, private readonly eventBus: EventBus) {
 		this.logger.setContext(FilesService.name);

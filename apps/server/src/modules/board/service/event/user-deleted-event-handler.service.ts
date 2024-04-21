@@ -18,7 +18,7 @@ import { Logger } from '@src/core/logger';
 import { MediaBoardService } from '../media-board';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class UserDeletedEventHandlerService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly mediaBoardService: MediaBoardService,

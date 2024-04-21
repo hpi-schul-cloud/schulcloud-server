@@ -49,7 +49,7 @@ type UserPreferences = {
 };
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class AccountService extends AbstractAccountService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	private readonly accountImpl: AbstractAccountService;
 

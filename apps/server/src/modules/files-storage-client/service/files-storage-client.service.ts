@@ -19,7 +19,7 @@ import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { CopyFileDto, FileDto } from '../dto';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private logger: LegacyLogger,

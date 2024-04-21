@@ -18,7 +18,7 @@ import {
 } from '@modules/deletion';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly newsRepo: NewsRepo,

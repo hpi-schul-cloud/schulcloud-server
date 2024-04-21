@@ -23,23 +23,24 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
-		this.config = [
-			'account',
-			'class',
-			'courseGroup',
-			'course',
-			'dashboard',
-			'file',
-			'fileRecords',
-			'lessons',
-			'pseudonyms',
-			'rocketChatUser',
-			'task',
-			'teams',
-			'user',
-			'submissions',
-			'news',
-		];
+		this.config = ['class', 'dashboard'];
+		// this.config = [
+		// 	'account',
+		// 	'class',
+		// 	'courseGroup',
+		// 	'course',
+		// 	'dashboard',
+		// 	'file',
+		// 	'fileRecords',
+		// 	'lessons',
+		// 	'pseudonyms',
+		// 	'rocketChatUser',
+		// 	'task',
+		// 	'teams',
+		// 	'user',
+		// 	'submissions',
+		// 	'news',
+		// ];
 	}
 
 	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
@@ -48,7 +49,16 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
 
 		if (this.checkLogsPerDomain(deletionLogs)) {
-			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
+			const isDone = await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
+
+			if (isDone) {
+				const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
+					1
+				);
+				if (deletionRequestToExecution.length > 0) {
+					await this.executeDeletionRequests();
+				}
+			}
 		}
 	}
 
@@ -70,15 +80,18 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	async executeDeletionRequests(limit?: number): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 
-		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
-			limit
-		);
+		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(1);
 
-		await Promise.all(
-			deletionRequestToExecution.map(async (req) => {
-				await this.executeDeletionRequest(req);
-			})
-		);
+		// this.logger.debug({ action: 'executeDeletionRequests - array', deletionRequestToExecution });
+
+		if (deletionRequestToExecution.length > 0) {
+			this.logger.debug({ action: 'executeDeletionRequests - array', deletionRequestToExecution });
+			await Promise.all(
+				deletionRequestToExecution.map(async (req) => {
+					await this.executeDeletionRequest(req);
+				})
+			);
+		}
 	}
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {

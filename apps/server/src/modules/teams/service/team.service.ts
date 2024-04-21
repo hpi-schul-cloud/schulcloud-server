@@ -18,7 +18,7 @@ import {
 } from '@modules/deletion';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class TeamService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly teamsRepo: TeamsRepo,

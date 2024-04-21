@@ -20,7 +20,7 @@ import {
 } from '@modules/deletion';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class SubmissionService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly submissionRepo: SubmissionRepo,
