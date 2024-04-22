@@ -6637,6 +6637,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UserLoginMigrationMapper.html" data-type="entity-link" >UserLoginMigrationMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserLoginMigrationNotActiveLoggableException.html" data-type="entity-link" >UserLoginMigrationNotActiveLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UserLoginMigrationNotFoundLoggableException.html" data-type="entity-link" >UserLoginMigrationNotFoundLoggableException</a>
                             </li>
                             <li class="link">
