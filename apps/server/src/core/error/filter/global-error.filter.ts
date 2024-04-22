@@ -1,5 +1,5 @@
 import { IError, RpcMessage } from '@infra/rabbitmq';
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException, ContextType } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { Response } from 'express';
 import _ from 'lodash';
@@ -9,7 +9,8 @@ import { FeathersError } from '../interface';
 import { ErrorUtils } from '../utils';
 import { DomainErrorHandler } from '../domain';
 
-// It look like ContextType from @nestjs/common' do not match correctly
+// We are receiving rmq instead of rpc and rmq is missing in context type.
+// @nestjs/common export type ContextType = 'http' | 'ws' | 'rpc';
 enum UseableContextType {
 	http = 'http',
 	rpc = 'rpc',
