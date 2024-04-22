@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import AdmZip from 'adm-zip';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
 export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.Multer.File, Express.Multer.File> {
+	private zipFileMagicNumber = '504b0304';
+
 	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
 	public transform(value: Express.Multer.File): Express.Multer.File {
 		this.checkValue(value);
 		this.checkSize(value);
 		this.checkFileType(value);
-		this.checkForManifestFile(new AdmZip(value.buffer));
 
 		return value;
 	}
@@ -29,19 +29,10 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 	}
 
 	private checkFileType(value: Express.Multer.File): void {
-		try {
-			// checks if the file is a valid zip file
-			// eslint-disable-next-line no-new
-			new AdmZip(value.buffer);
-		} catch (error) {
-			throw new BadRequestException(error);
-		}
-	}
+		const buffer = value.buffer.toString('hex', 0, 4);
 
-	private checkForManifestFile(archive: AdmZip): void {
-		const manifest = archive.getEntry('imsmanifest.xml') || archive.getEntry('manifest.xml');
-		if (!manifest) {
-			throw new BadRequestException('No manifest file found in the archive');
+		if (buffer !== this.zipFileMagicNumber) {
+			throw new BadRequestException('File is not a zip archive');
 		}
 	}
 }

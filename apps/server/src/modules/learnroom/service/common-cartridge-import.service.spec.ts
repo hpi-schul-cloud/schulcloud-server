@@ -2,7 +2,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { CardService, ColumnBoardService, ColumnService } from '@src/modules/board';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
@@ -16,6 +16,7 @@ describe('CommonCartridgeImportService', () => {
 	let columnBoardServiceMock: DeepMocked<ColumnBoardService>;
 	let columnServiceMock: DeepMocked<ColumnService>;
 	let cardServiceMock: DeepMocked<CardService>;
+	let contentElementServiceMock: DeepMocked<ContentElementService>;
 
 	beforeEach(async () => {
 		orm = await setupEntities();
@@ -39,14 +40,19 @@ describe('CommonCartridgeImportService', () => {
 					provide: CardService,
 					useValue: createMock<CardService>(),
 				},
+				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
+				},
 			],
 		}).compile();
 
-		sut = moduleRef.get<CommonCartridgeImportService>(CommonCartridgeImportService);
+		sut = moduleRef.get(CommonCartridgeImportService);
 		courseServiceMock = moduleRef.get(CourseService);
 		columnBoardServiceMock = moduleRef.get(ColumnBoardService);
 		columnServiceMock = moduleRef.get(ColumnService);
 		cardServiceMock = moduleRef.get(CardService);
+		contentElementServiceMock = moduleRef.get(ContentElementService);
 	});
 
 	afterAll(async () => {
@@ -94,7 +100,7 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnServiceMock.create).toBeCalledTimes(14);
+				expect(columnServiceMock.create).toHaveBeenCalledTimes(14);
 			});
 
 			it('should create cards', async () => {
@@ -102,7 +108,15 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(cardServiceMock.createMany).toBeCalledTimes(14);
+				expect(cardServiceMock.create).toHaveBeenCalled();
+			});
+
+			it('should create elements', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(contentElementServiceMock.create).toHaveBeenCalled();
 			});
 		});
 	});

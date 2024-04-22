@@ -20,6 +20,7 @@ export class BoardResponseMapper {
 			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
 			isVisible: board.isVisible,
+			layout: board.layout,
 		});
 		return result;
 	}

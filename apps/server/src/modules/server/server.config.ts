@@ -76,6 +76,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
+	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_LOGIN_LINK_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
@@ -94,6 +95,7 @@ export interface ServerConfig
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
+	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
@@ -128,6 +130,7 @@ const config: ServerConfig = {
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
+	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get('FEATURE_BOARD_LAYOUT_ENABLED') as boolean,
 	FEATURE_LOGIN_LINK_ENABLED: Configuration.get('FEATURE_LOGIN_LINK_ENABLED') as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
@@ -218,6 +221,9 @@ const config: ServerConfig = {
 	...VideoConferenceConfiguration.videoConference,
 	...UserImportConfiguration.userImportFeatures,
 	FEATURE_MEDIA_SHELF_ENABLED: Configuration.get('FEATURE_MEDIA_SHELF_ENABLED') as boolean,
+	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
+		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
+	) as boolean,
 };
 
 export const serverConfig = () => config;
