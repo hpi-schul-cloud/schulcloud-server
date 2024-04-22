@@ -158,10 +158,6 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#createErrorLoggable" >createErrorLoggable</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                 <a href="#createErrorResponse" >createErrorResponse</a>
                             </li>
                             <li>
@@ -184,6 +180,14 @@
                                     <span class="modifier">Private</span>
                                 <a href="#sendHttpResponse" >sendHttpResponse</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#sendRpcResponse" >sendRpcResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#sendWsResponse" >sendWsResponse</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -202,12 +206,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/ErrorLogger.html" target="_self">ErrorLogger</a>)</code>
+<code>constructor(domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -225,10 +229,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>domainErrorHandler</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ErrorLogger.html" target="_self" >ErrorLogger</a></code>
+                                                                        <code><a href="../injectables/DomainErrorHandler.html" target="_self" >DomainErrorHandler</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -264,15 +268,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>catch(error: T, host: ArgumentsHost)</code>
+<code>catch(error: E, host: ArgumentsHost)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -295,7 +299,7 @@
                                         <tr>
                                                 <td>error</td>
                                             <td>
-                                                        <code>T</code>
+                                                        <code>E</code>
                                             </td>
 
                                             <td>
@@ -320,72 +324,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>void | RpcMessage</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createErrorLoggable"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>createErrorLoggable</b></span>
-                        <a href="#createErrorLoggable"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createErrorLoggable(error)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:34</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>error</td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+                            <b>Returns : </b>    <code>void | RpcMessage | WsException</code>
 
                         </div>
                             <div class="io-description">
@@ -417,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -482,8 +421,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -551,8 +490,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -588,7 +527,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -620,8 +559,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="92"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:92</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -689,8 +628,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -721,15 +660,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>sendHttpResponse(error: T, host: ArgumentsHost)</code>
+                    <code>sendHttpResponse(error: E, host: ArgumentsHost)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -752,7 +691,7 @@
                                         <tr>
                                                 <td>error</td>
                                             <td>
-                                                        <code>T</code>
+                                                        <code>E</code>
                                             </td>
 
                                             <td>
@@ -787,6 +726,144 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendRpcResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>sendRpcResponse</b></span>
+                        <a href="#sendRpcResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sendRpcResponse(error: E)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>error</td>
+                                            <td>
+                                                        <code>E</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>RpcMessage&lt;undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendWsResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>sendWsResponse</b></span>
+                        <a href="#sendWsResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sendWsResponse(error: E)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>error</td>
+                                            <td>
+                                                        <code>E</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>WsException</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -797,59 +874,69 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IError, RpcMessage } from &#x27;@infra/rabbitmq/rpc-message&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IError, RpcMessage } from &#x27;@infra/rabbitmq&#x27;;
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ApiValidationError, BusinessError } from &#x27;@shared/common&#x27;;
-import { ErrorLogger, Loggable } from &#x27;@src/core/logger&#x27;;
-import { LoggingUtils } from &#x27;@src/core/logger/logging.utils&#x27;;
 import { Response } from &#x27;express&#x27;;
 import _ from &#x27;lodash&#x27;;
-import util from &#x27;util&#x27;;
+import { WsException } from &#x27;@nestjs/websockets&#x27;;
 import { ApiValidationErrorResponse, ErrorResponse } from &#x27;../dto&#x27;;
 import { FeathersError } from &#x27;../interface&#x27;;
-import { ErrorLoggable } from &#x27;../loggable/error.loggable&#x27;;
 import { ErrorUtils } from &#x27;../utils&#x27;;
+import { DomainErrorHandler } from &#x27;../domain&#x27;;
+
+// We are receiving rmq instead of rpc and rmq is missing in context type.
+// @nestjs/common export type ContextType &#x3D; &#x27;http&#x27; | &#x27;ws&#x27; | &#x27;rpc&#x27;;
+enum UseableContextType {
+	http &#x3D; &#x27;http&#x27;,
+	rpc &#x3D; &#x27;rpc&#x27;,
+	ws &#x3D; &#x27;ws&#x27;,
+	rmq &#x3D; &#x27;rmq&#x27;,
+}
 
 @Catch()
-export class GlobalErrorFilter&lt;T extends IError | undefined&gt; implements ExceptionFilter&lt;T&gt; {
-	constructor(private readonly logger: ErrorLogger) {}
+export class GlobalErrorFilter&lt;E extends IError&gt; implements ExceptionFilter&lt;E&gt; {
+	constructor(private readonly domainErrorHandler: DomainErrorHandler) {}
 
-	// eslint-disable-next-line consistent-return
-	catch(error: T, host: ArgumentsHost): void | RpcMessage&lt;unknown&gt; {
-		const loggable &#x3D; this.createErrorLoggable(error);
-		this.logger.error(loggable);
+	catch(error: E, host: ArgumentsHost): void | RpcMessage&lt;undefined&gt; | WsException {
+		this.domainErrorHandler.exec(error);
 
-		const contextType &#x3D; host.getType&lt;&#x27;http&#x27; | &#x27;rmq&#x27;&gt;();
-
-		if (contextType &#x3D;&#x3D;&#x3D; &#x27;http&#x27;) {
-			this.sendHttpResponse(error, host);
-		}
-
-		if (contextType &#x3D;&#x3D;&#x3D; &#x27;rmq&#x27;) {
-			return { message: undefined, error };
+		const contextType &#x3D; host.getType&lt;UseableContextType&gt;();
+		switch (contextType) {
+			case UseableContextType.http:
+				return this.sendHttpResponse(error, host);
+			case UseableContextType.rpc:
+			case UseableContextType.rmq:
+				return this.sendRpcResponse(error);
+			case UseableContextType.ws:
+				return this.sendWsResponse(error);
+			default:
+				return undefined;
 		}
 	}
 
-	private createErrorLoggable(error: unknown): Loggable {
-		let loggable: Loggable;
-
-		if (LoggingUtils.isInstanceOfLoggable(error)) {
-			loggable &#x3D; error;
-		} else if (error instanceof Error) {
-			loggable &#x3D; new ErrorLoggable(error);
-		} else {
-			const unknownError &#x3D; new Error(util.inspect(error));
-			loggable &#x3D; new ErrorLoggable(unknownError);
-		}
-
-		return loggable;
-	}
-
-	private sendHttpResponse(error: T, host: ArgumentsHost): void {
+	private sendHttpResponse(error: E, host: ArgumentsHost): void {
 		const errorResponse &#x3D; this.createErrorResponse(error);
 		const httpArgumentHost &#x3D; host.switchToHttp();
 		const response &#x3D; httpArgumentHost.getResponse&lt;Response&gt;();
 		response.status(errorResponse.code).json(errorResponse);
+	}
+
+	private sendRpcResponse(error: E): RpcMessage&lt;undefined&gt; {
+		const rpcError &#x3D; { message: undefined, error };
+
+		return rpcError;
+	}
+
+	// 	// https://docs.nestjs.com/websockets/exception-filters
+	private sendWsResponse(error: E): WsException {
+		const wsError &#x3D; new WsException(error);
+
+		// TODO: Need to implemented an rewrite in correct way
+		// const wsArgumentHost &#x3D; host.switchToWs();
+		// wsArgumentHost.getClient();
+
+		return wsError;
 	}
 
 	private createErrorResponse(error: unknown): ErrorResponse {
@@ -868,7 +955,7 @@ export class GlobalErrorFilter&lt;T extends IError | undefined&gt; implements Ex
 		return response;
 	}
 
-	private createErrorResponseForFeathersError(error: FeathersError) {
+	private createErrorResponseForFeathersError(error: FeathersError): ErrorResponse {
 		const { code, className, name, message } &#x3D; error;
 		const type &#x3D; _.snakeCase(className).toUpperCase();
 		const title &#x3D; _.startCase(name);

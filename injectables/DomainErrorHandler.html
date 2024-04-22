@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content injectable">
                    <div class="content-data">
 
 
@@ -96,13 +96,9 @@
 
 
 
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >LoggingUtils</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >DomainErrorHandler</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,9 +122,8 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/core/logger/logging.utils.ts</code>
+            <code>apps/server/src/core/error/domain/domainErrorHandler.ts</code>
         </p>
-
 
 
 
@@ -148,17 +143,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#createMessageWithContext" >createMessageWithContext</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#isInstanceOfLoggable" >isInstanceOfLoggable</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Private</span>
-                                    <span class="modifier">Static</span>
-                                <a href="#stringifyMessage" >stringifyMessage</a>
+                                <a href="#createErrorLoggable" >createErrorLoggable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#exec" >exec</a>
                             </li>
                         </ul>
                     </td>
@@ -172,7 +162,54 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(logger: <a href="../injectables/ErrorLogger.html" target="_self">ErrorLogger</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/core/error/domain/domainErrorHandler.ts:7</a></div>
+                            </td>
+                        </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ErrorLogger.html" target="_self" >ErrorLogger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -183,26 +220,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createMessageWithContext"></a>
+                    <a name="createErrorLoggable"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>createMessageWithContext</b></span>
-                        <a href="#createMessageWithContext"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>createErrorLoggable</b></span>
+                        <a href="#createErrorLoggable"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createMessageWithContext(loggable: <a href="../interfaces/Loggable.html" target="_self">Loggable</a>, context?: string | undefined)</code>
+                    <code>createErrorLoggable(error)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/core/logger/logging.utils.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/core/error/domain/domainErrorHandler.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -217,97 +254,12 @@
                                     <thead>
                                         <tr>
                                             <td>Name</td>
-                                                <td>Type</td>
                                             <td>Optional</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>loggable</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>context</td>
-                                            <td>
-                                                        <code>string | undefined</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LogMessageWithContext" target="_self" >LogMessageWithContext</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isInstanceOfLoggable"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>isInstanceOfLoggable</b></span>
-                        <a href="#isInstanceOfLoggable"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isInstanceOfLoggable(object: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/core/logger/logging.utils.ts:20</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>object</td>
-                                            <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-                                            </td>
+                                                <td>error</td>
 
                                             <td>
                                                     No
@@ -333,27 +285,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="stringifyMessage"></a>
+                    <a name="exec"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Static</span>
-                        <span ><b>stringifyMessage</b></span>
-                        <a href="#stringifyMessage"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                        <span ><b>exec</b></span>
+                        <a href="#exec"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>stringifyMessage(message)</code>
+                    <code>exec(error)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/core/logger/logging.utils.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/core/error/domain/domainErrorHandler.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -373,7 +324,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>message</td>
+                                                <td>error</td>
 
                                             <td>
                                                     No
@@ -385,7 +336,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
                             <div class="io-description">
@@ -397,40 +348,47 @@
     </table>
 </section>
 
-
-
-
-
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import util from &#x27;util&#x27;;
-import { Loggable } from &#x27;./interfaces&#x27;;
-import { LogMessageWithContext } from &#x27;./types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import util from &#x27;util&#x27;;
+import { ErrorLogger, Loggable, LoggingUtils } from &#x27;@src/core/logger&#x27;;
+import { ErrorLoggable } from &#x27;../loggable&#x27;;
 
-export class LoggingUtils {
-	static createMessageWithContext(loggable: Loggable, context?: string | undefined): LogMessageWithContext {
-		const message &#x3D; loggable.getLogMessage();
-		const stringifiedMessage &#x3D; this.stringifyMessage(message);
-		const messageWithContext &#x3D; { message: stringifiedMessage, context };
+@Injectable()
+export class DomainErrorHandler {
+	constructor(private readonly logger: ErrorLogger) {}
 
-		return messageWithContext;
+	public exec(error: unknown): void {
+		const loggable &#x3D; this.createErrorLoggable(error);
+		this.logger.error(loggable);
 	}
 
-	private static stringifyMessage(message: unknown): string {
-		const stringifiedMessage &#x3D; util.inspect(message).replace(/\n/g, &#x27;&#x27;).replace(/\\n/g, &#x27;&#x27;);
+	private createErrorLoggable(error: unknown): Loggable {
+		let loggable: Loggable;
 
-		return stringifiedMessage;
-	}
+		if (LoggingUtils.isInstanceOfLoggable(error)) {
+			loggable &#x3D; error;
+		} else if (error instanceof Error) {
+			loggable &#x3D; new ErrorLoggable(error);
+		} else {
+			const unknownError &#x3D; new Error(util.inspect(error));
+			loggable &#x3D; new ErrorLoggable(unknownError);
+		}
 
-	static isInstanceOfLoggable(object: any): object is Loggable {
-		return &#x27;getLogMessage&#x27; in object;
+		return loggable;
 	}
 }
 </code></pre>
     </div>
+
 </div>
+
+
+
+
 
 
 
@@ -465,8 +423,8 @@ export class LoggingUtils {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'LoggingUtils.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'DomainErrorHandler.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -929,6 +929,20 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="modules/ErrorModule.html" data-type="entity-link" >ErrorModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-ErrorModule-288f2c48a0691d05d985ab31ffa6bd8951fbcc8b1fab1726e0ad73fe880b15c02ba1890b5a6f0cf18d370d9cddfeb16016a7bd2afe56a87e6df0578d8e8b693a"' : 'data-bs-target="#xs-injectables-links-module-ErrorModule-288f2c48a0691d05d985ab31ffa6bd8951fbcc8b1fab1726e0ad73fe880b15c02ba1890b5a6f0cf18d370d9cddfeb16016a7bd2afe56a87e6df0578d8e8b693a"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ErrorModule-288f2c48a0691d05d985ab31ffa6bd8951fbcc8b1fab1726e0ad73fe880b15c02ba1890b5a6f0cf18d370d9cddfeb16016a7bd2afe56a87e6df0578d8e8b693a"' :
+                                        'id="xs-injectables-links-module-ErrorModule-288f2c48a0691d05d985ab31ffa6bd8951fbcc8b1fab1726e0ad73fe880b15c02ba1890b5a6f0cf18d370d9cddfeb16016a7bd2afe56a87e6df0578d8e8b693a"' }>
+                                        <li class="link">
+                                            <a href="injectables/DomainErrorHandler.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DomainErrorHandler</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </li>
                             <li class="link">
                                 <a href="modules/EtherpadClientModule.html" data-type="entity-link" >EtherpadClientModule</a>
@@ -7161,6 +7175,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/DeletionRequestUc.html" data-type="entity-link" >DeletionRequestUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/DomainErrorHandler.html" data-type="entity-link" >DomainErrorHandler</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/DurationLoggingInterceptor.html" data-type="entity-link" >DurationLoggingInterceptor</a>
