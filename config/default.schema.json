@@ -758,6 +758,11 @@
 			"default": null,
 			"description": "rocketchat admin password"
 		},
+		"ROCKET_CHAT_CLIENT_TIMEOUT_MS": {
+			"type": "number",
+			"default": 30000,
+			"description": "rocketchat client timeout in milliseconds"
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -800,10 +805,12 @@
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
-					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				}
+			},
+			"default": {
+				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
@@ -1121,6 +1128,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable collaborative text editor in column board."
+		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1154,6 +1166,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
+		},
+		"FEATURE_BOARD_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board layout feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
@@ -1354,7 +1371,6 @@
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
-
 			},
 			"default": {}
 		},
@@ -1634,6 +1650,16 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
+		},
+		"FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard to use the user login migration process"
+		},
+		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the provisioning of other groupusers"
 		}
 	},
 	"required": []

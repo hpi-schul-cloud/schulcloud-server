@@ -8,6 +8,7 @@ import type {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -98,6 +99,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);
+	}
+
+	async visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void> {
+		this.deleteNode(collaborativeTextEditorElement);
+		await this.visitChildrenAsync(collaborativeTextEditorElement);
 	}
 
 	async visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {

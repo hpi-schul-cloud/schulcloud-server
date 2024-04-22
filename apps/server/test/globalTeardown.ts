@@ -1,4 +1,4 @@
-import { MongoMemoryServer } from 'mongodb-memory-server-global-4.4';
+import { MongoMemoryServer } from 'mongodb-memory-server-global';
 
 export = async function globalTeardown() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

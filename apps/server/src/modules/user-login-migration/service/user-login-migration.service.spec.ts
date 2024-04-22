@@ -5,13 +5,14 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
+	IdenticalUserLoginMigrationSystemLoggableException,
+	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
@@ -339,12 +340,45 @@ describe(UserLoginMigrationService.name, () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw a MoinSchuleSystemNotFoundLoggableException', async () => {
 				const { schoolId } = setup();
 
 				const func = async () => service.startMigration(schoolId);
 
-				await expect(func).rejects.toThrow(new InternalServerErrorException('Cannot find SANIS system'));
+				await expect(func).rejects.toThrow(new MoinSchuleSystemNotFoundLoggableException());
+			});
+		});
+
+		describe('when creating a new migration but the SANIS system and schools login system are the same', () => {
+			const setup = () => {
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+				const system: SystemDto = new SystemDto({
+					id: targetSystemId,
+					type: 'oauth2',
+					alias: 'SANIS',
+				});
+
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [targetSystemId] }, schoolId);
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.findByType.mockResolvedValue([system]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+					targetSystemId,
+				};
+			};
+
+			it('should throw an IdenticalUserLoginMigrationSystemLoggableException', async () => {
+				const { schoolId, targetSystemId } = setup();
+
+				const func = async () => service.startMigration(schoolId);
+
+				await expect(func).rejects.toThrow(
+					new IdenticalUserLoginMigrationSystemLoggableException(schoolId, targetSystemId)
+				);
 			});
 		});
 	});

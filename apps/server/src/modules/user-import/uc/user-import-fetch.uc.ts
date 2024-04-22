@@ -4,7 +4,7 @@ import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserMigrationIsNotEnabledLoggableException } from '../loggable/user-migration-not-enable-loggable-exception';
+import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 
 @Injectable()

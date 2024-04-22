@@ -35,7 +35,7 @@ describe(UserImportService.name, () => {
 	const features: IUserImportFeatures = {
 		userMigrationSystemId: new ObjectId().toHexString(),
 		userMigrationEnabled: true,
-		instance: 'n21',
+		useWithUserLoginMigration: true,
 	};
 
 	beforeAll(async () => {

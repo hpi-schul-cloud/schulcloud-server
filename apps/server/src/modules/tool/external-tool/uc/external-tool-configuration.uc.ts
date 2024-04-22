@@ -68,10 +68,7 @@ export class ExternalToolConfigurationUc {
 		});
 
 		availableTools.forEach((externalTool) => {
-			externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(
-				'/v3/tools/external-tools/{id}/logo',
-				externalTool
-			);
+			externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(externalTool);
 		});
 
 		return availableTools;
@@ -101,17 +98,8 @@ export class ExternalToolConfigurationUc {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.ensureContextPermissions(user, contextExternalToolsInUse, context);
 
-		const availableSchoolExternalTools: SchoolExternalTool[] =
-			this.externalToolConfigurationService.filterForAvailableSchoolExternalTools(
-				schoolExternalTools,
-				contextExternalToolsInUse
-			);
-
 		let availableToolsForContext: ContextExternalToolTemplateInfo[] =
-			this.externalToolConfigurationService.filterForAvailableExternalTools(
-				externalTools.data,
-				availableSchoolExternalTools
-			);
+			this.externalToolConfigurationService.filterForAvailableExternalTools(externalTools.data, schoolExternalTools);
 
 		availableToolsForContext = this.externalToolConfigurationService.filterForContextRestrictions(
 			availableToolsForContext,
@@ -126,10 +114,7 @@ export class ExternalToolConfigurationUc {
 		});
 
 		availableToolsForContext.forEach((toolTemplateInfo) => {
-			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(
-				'/v3/tools/external-tools/{id}/logo',
-				toolTemplateInfo.externalTool
-			);
+			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(toolTemplateInfo.externalTool);
 		});
 
 		return availableToolsForContext;

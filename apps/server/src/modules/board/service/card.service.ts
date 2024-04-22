@@ -1,7 +1,7 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Card, CardInitProps, Column, ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -27,11 +27,11 @@ export class CardService {
 		return cards as Card[];
 	}
 
-	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
+	async create(parent: Column, requiredEmptyElements?: ContentElementType[], props?: CardInitProps): Promise<Card> {
 		const card = new Card({
 			id: new ObjectId().toHexString(),
-			title: '',
-			height: 150,
+			title: props?.title || '',
+			height: props?.height || 150,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

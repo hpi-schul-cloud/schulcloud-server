@@ -8,11 +8,12 @@ import {
 	toolConfigurationStatusFactory,
 } from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
+import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 import { ToolReferenceService } from './tool-reference.service';
-import { ToolVersionService } from './tool-version-service';
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -21,7 +22,7 @@ describe('ToolReferenceService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let toolVersionService: DeepMocked<ToolVersionService>;
+	let toolVersionService: DeepMocked<ToolConfigurationStatusService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
@@ -41,8 +42,8 @@ describe('ToolReferenceService', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: ToolVersionService,
-					useValue: createMock<ToolVersionService>(),
+					provide: ToolConfigurationStatusService,
+					useValue: createMock<ToolConfigurationStatusService>(),
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -55,7 +56,7 @@ describe('ToolReferenceService', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		toolVersionService = module.get(ToolVersionService);
+		toolVersionService = module.get(ToolConfigurationStatusService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 	});
 
@@ -74,9 +75,9 @@ describe('ToolReferenceService', () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id as string,
-				});
+				}) as SchoolExternalToolWithId;
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId(undefined, contextExternalToolId);
 				const logoUrl = 'logoUrl';
 
@@ -117,10 +118,7 @@ describe('ToolReferenceService', () => {
 
 				await service.getToolReference(contextExternalToolId);
 
-				expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(
-					'/v3/tools/external-tools/{id}/logo',
-					externalTool
-				);
+				expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool);
 			});
 
 			it('should return the tool reference', async () => {
@@ -137,6 +135,7 @@ describe('ToolReferenceService', () => {
 						isOutdatedOnScopeContext: false,
 					}),
 					contextToolId: contextExternalToolId,
+					description: externalTool.description,
 				});
 			});
 		});

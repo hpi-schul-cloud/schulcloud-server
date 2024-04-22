@@ -11,6 +11,7 @@ import {
 } from '@modules/common-cartridge';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { LinkElement, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
 import { LearnroomConfig } from '../learnroom.config';
 
@@ -116,5 +117,32 @@ export class CommonCartridgeMapper {
 			version,
 			identifier: createIdentifier(course.id),
 		};
+	}
+
+	public mapRichTextElementToResource(element: RichTextElement): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.WEB_CONTENT,
+			title: this.getTextTitle(element.text),
+			identifier: createIdentifier(element.id),
+			html: `<p>${element.text}</p>`,
+			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+		};
+	}
+
+	public mapLinkElementToResource(element: LinkElement): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.WEB_LINK,
+			identifier: createIdentifier(element.id),
+			title: element.title,
+			url: element.url,
+		};
+	}
+
+	private getTextTitle(text: string): string {
+		const title = text
+			.slice(0, 50)
+			.replace(/<[^>]*>?/gm, '')
+			.concat('...');
+		return title;
 	}
 }
