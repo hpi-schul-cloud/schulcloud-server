@@ -4,6 +4,7 @@ describe(ToolParameterDuplicateLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const exception: ToolParameterDuplicateLoggableException = new ToolParameterDuplicateLoggableException(
+				'toolId',
 				'parameter1'
 			);
 
@@ -22,6 +23,7 @@ describe(ToolParameterDuplicateLoggableException.name, () => {
 				message: 'The parameter is defined multiple times.',
 				stack: exception.stack,
 				data: {
+					toolId: 'toolId',
 					parameterName: 'parameter1',
 				},
 			});
