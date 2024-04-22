@@ -1,4 +1,4 @@
-import { CommonCartridgeErrorEnum } from './error.enum';
+import { CommonCartridgeErrorEnum } from './error.enums';
 import { ResourceTypeNotSupportedLoggableException } from './resource-type-not-supported.loggable-exception';
 
 describe('ResourceTypeNotSupportedLoggableException', () => {

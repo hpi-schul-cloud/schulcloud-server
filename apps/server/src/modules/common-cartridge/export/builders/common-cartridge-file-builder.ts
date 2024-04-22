@@ -8,6 +8,7 @@ import {
 	CommonCartridgeElementFactory,
 	CommonCartridgeElementProps,
 } from '../elements/common-cartridge-element-factory';
+import { MissingMetadataLoggableException } from '../errors';
 import { CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
 import {
@@ -54,7 +55,7 @@ export class CommonCartridgeFileBuilder {
 
 	public build(): Buffer {
 		if (!this.metadataElement) {
-			throw new Error('Metadata is required'); // TODO add loggable
+			throw new MissingMetadataLoggableException();
 		}
 
 		const archive = new AdmZip();

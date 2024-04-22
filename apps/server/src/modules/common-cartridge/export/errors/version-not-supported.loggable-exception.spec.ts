@@ -1,4 +1,4 @@
-import { CommonCartridgeErrorEnum } from './error.enum';
+import { CommonCartridgeErrorEnum } from './error.enums';
 import { VersionNotSupportedLoggableException } from './version-not-supported.loggable-exception';
 
 describe('VersionNotSupportedLoggableException', () => {

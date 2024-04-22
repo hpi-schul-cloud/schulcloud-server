@@ -1,5 +1,5 @@
 import { ElementTypeNotSupportedLoggableException } from './element-type-not-supported.loggable-exception';
-import { CommonCartridgeErrorEnum } from './error.enum';
+import { CommonCartridgeErrorEnum } from './error.enums';
 
 describe('ElementTypeNotSupportedLoggableException', () => {
 	describe('getLogMessage', () => {

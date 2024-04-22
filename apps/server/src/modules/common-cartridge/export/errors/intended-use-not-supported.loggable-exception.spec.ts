@@ -1,4 +1,4 @@
-import { CommonCartridgeErrorEnum } from './error.enum';
+import { CommonCartridgeErrorEnum } from './error.enums';
 import { IntendedUseNotSupportedLoggableException } from './intended-use-not-supported.loggable-exception';
 
 describe('IntendedUseNotSupportedLoggableException', () => {
