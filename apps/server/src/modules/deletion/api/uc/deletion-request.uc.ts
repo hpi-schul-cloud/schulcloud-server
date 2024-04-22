@@ -69,21 +69,6 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedBatchEvent> {
 				await this.executeDeletionRequests();
 			}
 		}
-
-		// const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-
-		// if (this.checkLogsPerDomain(deletionLogs)) {
-		// 	const isDone = await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
-
-		// 	if (isDone) {
-		// 		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
-		// 			1
-		// 		);
-		// 		if (deletionRequestToExecution.length > 0) {
-		// 			await this.executeDeletionRequests();
-		// 		}
-		// 	}
-		// }
 	}
 
 	private async checkLogsPerChunk(domainDeletionReports: DomainDeletionReport[]): Promise<number> {
@@ -94,11 +79,9 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedBatchEvent> {
 				const deletionLogs = await this.deletionLogService.findByDeletionRequestId(report.deletionRequestId);
 				if (deletionLogs && deletionLogs.length > 0) {
 					if (this.checkLogsPerDomain(deletionLogs)) {
-						console.log('JJJJEJEEESSSSTTTTEEEEMMMM', report.deletionRequestId);
 						await this.deletionRequestService.markDeletionRequestAsExecuted(report.deletionRequestId);
 						// eslint-disable-next-line no-plusplus
 						finishedDeletionRequestCounter++;
-						console.log('COUNTER -------- ', finishedDeletionRequestCounter);
 					}
 				}
 			}
@@ -131,19 +114,10 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedBatchEvent> {
 		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
 			chunk
 		);
-		for (const report of deletionRequestToExecution) {
-			console.log('DELETIONREQUEST ############### ', report);
-		}
-		// this.logger.debug({ action: 'executeDeletionRequests - array', deletionRequestToExecution });
 
 		if (deletionRequestToExecution.length > 0) {
 			this.logger.debug({ action: 'executeDeletionRequests - array', deletionRequestToExecution });
 			await this.executeDeletionRequest(deletionRequestToExecution);
-			// await Promise.all(
-			// 	deletionRequestToExecution.map(async (req) => {
-			// 		await this.executeDeletionRequest(req);
-			// 	})
-			// );
 		}
 	}
 
