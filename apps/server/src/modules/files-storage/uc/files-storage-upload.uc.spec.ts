@@ -15,6 +15,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
+import { DomainErrorHandler } from '@src/core';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
@@ -83,6 +84,10 @@ describe('FilesStorageUC upload methods', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
