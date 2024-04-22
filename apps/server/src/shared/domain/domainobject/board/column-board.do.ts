@@ -1,6 +1,7 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { Column } from './column.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from './types';
+import { BoardLayout } from './types/board-layout.enum';
 
 export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 	get title(): string {
@@ -27,6 +28,10 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 		this.props.isVisible = isVisible;
 	}
 
+	get layout(): BoardLayout {
+		return this.props.layout;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed = domainObject instanceof Column;
 		return allowed;
@@ -45,6 +50,7 @@ export interface ColumnBoardProps extends BoardCompositeProps {
 	title: string;
 	context: BoardExternalReference;
 	isVisible: boolean;
+	layout: BoardLayout;
 }
 
 export function isColumnBoard(reference: unknown): reference is ColumnBoard {
