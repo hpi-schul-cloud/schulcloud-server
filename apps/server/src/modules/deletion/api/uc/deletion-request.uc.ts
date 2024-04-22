@@ -10,10 +10,12 @@ import { DeletionRequestService, DeletionLogService } from '../../domain/service
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestResponse, DeletionRequestLogResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
+import { UserDeletedBatchEvent } from '../../domain/event/user-deleted-batch.event';
+import { DataDeletedBatchEvent } from '../../domain/event/data-deleted-batch.event';
 
 @Injectable()
-@EventsHandler(DataDeletedEvent)
-export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
+@EventsHandler(DataDeletedBatchEvent)
+export class DeletionRequestUc implements IEventHandler<DataDeletedBatchEvent> {
 	config: string[];
 
 	constructor(
@@ -43,23 +45,68 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		// ];
 	}
 
-	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
-		await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
+	async handle({ domainDeletionReport }: DataDeletedBatchEvent) {
+		// await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
+		const createdLogs = await Promise.all(
+			domainDeletionReport.map((report: DomainDeletionReport) =>
+				report?.deletionRequestId ? this.deletionLogService.createDeletionLog(report.deletionRequestId, report) : null
+			)
+		);
 
-		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
+		if (domainDeletionReport.length === createdLogs.length) {
+			// map over array with domainDeletionReport
+			// 1 step get deletionlogs per deltionRequestId
+			// 2 step check if all domain reports and flag with success
+			// 3 step increase counter of sucesfuuly delete data
 
-		if (this.checkLogsPerDomain(deletionLogs)) {
-			const isDone = await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
+			// after all array we sholud check if all handled items are finished with succes counter === doeminDeletionReport.length
+			// we shold call this.executeDeletionRequest
+			// NOT NECCESARY - > if yes we shold check first if are in DB any deletionRequest to execute, if yes we shold call this.executeDeletionRequest
 
-			if (isDone) {
-				const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
-					1
-				);
-				if (deletionRequestToExecution.length > 0) {
-					await this.executeDeletionRequests();
-				}
+			const isSuccess = await this.checkLogsPerChunk(domainDeletionReport);
+
+			if (isSuccess === domainDeletionReport.length) {
+				await this.executeDeletionRequests();
 			}
 		}
+
+		// const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
+
+		// if (this.checkLogsPerDomain(deletionLogs)) {
+		// 	const isDone = await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
+
+		// 	if (isDone) {
+		// 		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
+		// 			1
+		// 		);
+		// 		if (deletionRequestToExecution.length > 0) {
+		// 			await this.executeDeletionRequests();
+		// 		}
+		// 	}
+		// }
+	}
+
+	private async checkLogsPerChunk(domainDeletionReports: DomainDeletionReport[]): Promise<number> {
+		let finishedDeletionRequestCounter = 0;
+
+		const deletionLogPromises = domainDeletionReports.map(async (report: DomainDeletionReport) => {
+			if (report.deletionRequestId) {
+				const deletionLogs = await this.deletionLogService.findByDeletionRequestId(report.deletionRequestId);
+				if (deletionLogs && deletionLogs.length > 0) {
+					if (this.checkLogsPerDomain(deletionLogs)) {
+						console.log('JJJJEJEEESSSSTTTTEEEEMMMM', report.deletionRequestId);
+						await this.deletionRequestService.markDeletionRequestAsExecuted(report.deletionRequestId);
+						// eslint-disable-next-line no-plusplus
+						finishedDeletionRequestCounter++;
+						console.log('COUNTER -------- ', finishedDeletionRequestCounter);
+					}
+				}
+			}
+		});
+
+		await Promise.all(deletionLogPromises);
+
+		return finishedDeletionRequestCounter;
 	}
 
 	private checkLogsPerDomain(deletionLogs: DeletionLog[]): boolean {
@@ -79,18 +126,24 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 
 	async executeDeletionRequests(limit?: number): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
+		const chunk = 10;
 
-		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(1);
-
+		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
+			chunk
+		);
+		for (const report of deletionRequestToExecution) {
+			console.log('DELETIONREQUEST ############### ', report);
+		}
 		// this.logger.debug({ action: 'executeDeletionRequests - array', deletionRequestToExecution });
 
 		if (deletionRequestToExecution.length > 0) {
 			this.logger.debug({ action: 'executeDeletionRequests - array', deletionRequestToExecution });
-			await Promise.all(
-				deletionRequestToExecution.map(async (req) => {
-					await this.executeDeletionRequest(req);
-				})
-			);
+			await this.executeDeletionRequest(deletionRequestToExecution);
+			// await Promise.all(
+			// 	deletionRequestToExecution.map(async (req) => {
+			// 		await this.executeDeletionRequest(req);
+			// 	})
+			// );
 		}
 	}
 
@@ -119,13 +172,17 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		await this.deletionRequestService.deleteById(deletionRequestId);
 	}
 
-	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
-		try {
-			await this.eventBus.publish(new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId));
-			await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
-		} catch (error) {
-			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
-			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
-		}
+	private async executeDeletionRequest(deletionRequests: DeletionRequest[]): Promise<void> {
+		await this.eventBus.publish(new UserDeletedBatchEvent(deletionRequests));
+		deletionRequests.map(async (req) => {
+			await this.deletionRequestService.markDeletionRequestAsPending(req.id);
+		});
+		// try {
+		// 	// await this.eventBus.publish(new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId));
+		// 	await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
+		// } catch (error) {
+		// 	this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
+		// 	await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
+		// }
 	}
 }

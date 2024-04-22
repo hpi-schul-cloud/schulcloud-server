@@ -34,9 +34,12 @@ export class DeletionLogRepo {
 		return mapped;
 	}
 
-	async create(deletionLog: DeletionLog): Promise<void> {
+	async create(deletionLog: DeletionLog): Promise<DeletionLog> {
 		const deletionLogEntity: DeletionLogEntity = DeletionLogMapper.mapToEntity(deletionLog);
 		this.em.persist(deletionLogEntity);
+		const created = deletionLogEntity;
 		await this.em.flush();
+
+		return DeletionLogMapper.mapToDO(created);
 	}
 }

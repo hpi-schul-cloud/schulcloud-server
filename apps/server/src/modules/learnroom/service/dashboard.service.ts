@@ -4,9 +4,7 @@ import { EntityId } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import {
-	UserDeletedEvent,
 	DeletionService,
-	DataDeletedEvent,
 	DomainDeletionReport,
 	DataDeletionDomainOperationLoggable,
 	DomainName,
@@ -15,10 +13,13 @@ import {
 	OperationType,
 	StatusModel,
 } from '@modules/deletion';
+import { UserDeletedBatchEvent } from '@modules/deletion/domain/event/user-deleted-batch.event';
+import { DeletionRequest } from '@src/modules/deletion/domain/do';
+import { DataDeletedBatchEvent } from '@src/modules/deletion/domain/event/data-deleted-batch.event';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
+@EventsHandler(UserDeletedBatchEvent)
+export class DashboardService implements DeletionService, IEventHandler<UserDeletedBatchEvent> {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
 		private readonly dashboardElementRepo: DashboardElementRepo,
@@ -28,12 +29,19 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 		this.logger.setContext(DashboardService.name);
 	}
 
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	// public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+	// 	const dataDeleted = await this.deleteUserData(targetRefId);
+	// 	await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	// }
+
+	public async handle({ deletionRequests }: UserDeletedBatchEvent): Promise<void> {
+		const deletionReports: DomainDeletionReport[] = await Promise.all(
+			deletionRequests.map(async (req: DeletionRequest) => this.deleteUserData(req.targetRefId, req.id))
+		);
+		await this.eventBus.publish(new DataDeletedBatchEvent(deletionReports));
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async deleteUserData(userId: EntityId, deletionRequestId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',
@@ -51,9 +59,12 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 			refs.push(usersDashboard.id);
 		}
 
-		const result = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, deletedDashboard, refs),
-		]);
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.DASHBOARD,
+			[DomainOperationReportBuilder.build(OperationType.DELETE, deletedDashboard, refs)],
+			undefined,
+			deletionRequestId
+		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

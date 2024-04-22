@@ -3,8 +3,6 @@ import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
-	UserDeletedEvent,
-	DataDeletedEvent,
 	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
@@ -14,12 +12,15 @@ import {
 	StatusModel,
 	DataDeletionDomainOperationLoggable,
 } from '@modules/deletion';
+import { UserDeletedBatchEvent } from '@modules/deletion/domain/event/user-deleted-batch.event';
+import { DeletionRequest } from '@src/modules/deletion/domain/do';
+import { DataDeletedBatchEvent } from '@src/modules/deletion/domain/event/data-deleted-batch.event';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class ClassService implements DeletionService, IEventHandler<UserDeletedEvent> {
+@EventsHandler(UserDeletedBatchEvent)
+export class ClassService implements DeletionService, IEventHandler<UserDeletedBatchEvent> {
 	constructor(
 		private readonly classesRepo: ClassesRepo,
 		private readonly logger: Logger,
@@ -28,9 +29,16 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		this.logger.setContext(ClassService.name);
 	}
 
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	// public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+	// 	const dataDeleted = await this.deleteUserData(targetRefId);
+	// 	await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	// }
+
+	public async handle({ deletionRequests }: UserDeletedBatchEvent): Promise<void> {
+		const deletionReports: DomainDeletionReport[] = await Promise.all(
+			deletionRequests.map(async (req: DeletionRequest) => this.deleteUserData(req.targetRefId, req.id))
+		);
+		await this.eventBus.publish(new DataDeletedBatchEvent(deletionReports));
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
@@ -45,7 +53,7 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		return classes;
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async deleteUserData(userId: EntityId, deletionRequestId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Classes',
@@ -72,13 +80,18 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 
 		await this.classesRepo.updateMany(updatedClasses);
 
-		const result = DomainDeletionReportBuilder.build(DomainName.CLASS, [
-			DomainOperationReportBuilder.build(
-				OperationType.UPDATE,
-				numberOfUpdatedClasses,
-				this.getClassesId(updatedClasses)
-			),
-		]);
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.CLASS,
+			[
+				DomainOperationReportBuilder.build(
+					OperationType.UPDATE,
+					numberOfUpdatedClasses,
+					this.getClassesId(updatedClasses)
+				),
+			],
+			undefined,
+			deletionRequestId
+		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -90,7 +103,6 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 				0
 			)
 		);
-
 		return result;
 	}
 
