@@ -10,6 +10,7 @@ import busboy from 'busboy';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
+import { DomainErrorHandler } from '@src/core';
 import {
 	CopyFileParams,
 	CopyFileResponse,
@@ -40,7 +41,8 @@ export class FilesStorageUC {
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService,
 		// maybe better to pass the request context from controller and avoid em at this place
-		private readonly em: EntityManager
+		private readonly em: EntityManager,
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -129,7 +131,7 @@ export class FilesStorageUC {
 
 			/* istanbul ignore next */
 			response.data.on('error', (error) => {
-				throw error;
+				this.domainErrorHandler.exec(error);
 			});
 
 			return response;
