@@ -3,7 +3,8 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 // add migration wizard permissions to admin role
 export class Migration20240416104203 extends Migration {
 	async up(): Promise<void> {
-		const adminRoleUpdate = await this.getCollection('roles').updateOne(
+		const adminRoleUpdate = await this.driver.nativeUpdate(
+			'roles',
 			{ name: 'administrator' },
 			{
 				$addToSet: {
@@ -14,7 +15,7 @@ export class Migration20240416104203 extends Migration {
 			}
 		);
 
-		if (adminRoleUpdate.modifiedCount > 0) {
+		if (adminRoleUpdate.affectedRows > 0) {
 			console.info(
 				'Permissions IMPORT_USER_MIGRATE, IMPORT_USER_UPDATE, IMPORT_USER_VIEW were added to role administrator.'
 			);
@@ -22,7 +23,8 @@ export class Migration20240416104203 extends Migration {
 	}
 
 	async down(): Promise<void> {
-		const adminRoleUpdate = await this.getCollection('roles').updateOne(
+		const adminRoleUpdate = await this.driver.nativeUpdate(
+			'roles',
 			{ name: 'administrator' },
 			{
 				$pull: {
@@ -33,7 +35,7 @@ export class Migration20240416104203 extends Migration {
 			}
 		);
 
-		if (adminRoleUpdate.modifiedCount > 0) {
+		if (adminRoleUpdate.affectedRows > 0) {
 			console.info(
 				'Rollback: Removed permissions IMPORT_USER_MIGRATE, IMPORT_USER_UPDATE, IMPORT_USER_VIEW from role administrator.'
 			);
