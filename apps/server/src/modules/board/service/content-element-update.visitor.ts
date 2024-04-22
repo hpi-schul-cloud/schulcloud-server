@@ -15,6 +15,7 @@ import type {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { InputFormat } from '@shared/domain/types';
@@ -116,6 +117,12 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 			return Promise.resolve();
 		}
 		return this.rejectNotHandled(externalToolElement);
+	}
+
+	async visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void> {
+		return this.rejectNotHandled(collaborativeTextEditorElement);
 	}
 
 	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
