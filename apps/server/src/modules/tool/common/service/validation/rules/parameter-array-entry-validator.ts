@@ -28,7 +28,7 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 
 			if (foundEntry) {
 				this.entryValidators.forEach((validator: ParameterEntryValidator) => {
-					const entryErrors: ValidationError[] = validator.validate(foundEntry, param);
+					const entryErrors: ValidationError[] = validator.validate(foundEntry, param, toolId);
 
 					errors.push(...entryErrors);
 				});
