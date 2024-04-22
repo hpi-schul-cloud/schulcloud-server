@@ -17,12 +17,13 @@ export class CommonCartridgeResourceFactory {
 		}
 
 		const content = this.archive.readAsText(organization.resourcePath);
+		const { title } = organization;
 
 		switch (organization.resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
-				return this.createWebLinkResource(content);
+				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content);
+				return this.createWebContentResource(content, title);
 			default:
 				return undefined;
 		}
@@ -35,14 +36,13 @@ export class CommonCartridgeResourceFactory {
 		return isValidOrganization;
 	}
 
-	private createWebLinkResource(content: string): CommonCartridgeWebLinkResourceProps | undefined {
-		const document = this.tryCreateDocument(content);
+	private createWebLinkResource(content: string, title: string): CommonCartridgeWebLinkResourceProps | undefined {
+		const document = this.tryCreateDocument(content, 'text/xml');
 
 		if (!document) {
 			return undefined;
 		}
 
-		const title = document.querySelector('webLink > title')?.textContent || '';
 		const url = document.querySelector('webLink > url')?.getAttribute('href') || '';
 
 		return {
@@ -52,14 +52,13 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private createWebContentResource(content: string): CommonCartridgeWebContentResourceProps | undefined {
-		const document = this.tryCreateDocument(content);
+	private createWebContentResource(content: string, title: string): CommonCartridgeWebContentResourceProps | undefined {
+		const document = this.tryCreateDocument(content, 'text/html');
 
 		if (!document) {
 			return undefined;
 		}
 
-		const title = document.querySelector('head > title')?.textContent || '';
 		const html = document.querySelector('body > p')?.textContent || '';
 
 		return {
@@ -69,9 +68,9 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private tryCreateDocument(content: string): Document | undefined {
+	private tryCreateDocument(content: string, contentType: 'text/html' | 'text/xml'): Document | undefined {
 		try {
-			const parser = new JSDOM(content, { contentType: 'text/xml' }).window.document;
+			const parser = new JSDOM(content, { contentType }).window.document;
 
 			return parser;
 		} catch (error) {

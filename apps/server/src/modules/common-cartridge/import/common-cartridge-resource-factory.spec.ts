@@ -9,10 +9,9 @@ import { CommonCartridgeResourceFactory } from './common-cartridge-resource-fact
 describe('CommonCartridgeResourceFactory', () => {
 	let sut: CommonCartridgeResourceFactory;
 	let admZipMock: DeepMocked<AdmZip>;
+	let webLinkXml: string | undefined;
 
 	const setupWebLinkXml = async () => {
-		let webLinkXml: string | undefined;
-
 		// caching the web link xml to avoid reading the file multiple times from disk
 		if (!webLinkXml) {
 			webLinkXml = await readFile(
@@ -26,10 +25,7 @@ describe('CommonCartridgeResourceFactory', () => {
 		return webLinkXml;
 	};
 	const setupWebContentHtml = () => {
-		let webContentHtml: string | undefined;
-
-		if (!webContentHtml) {
-			webContentHtml = `<html>
+		const webContentHtml = `<html>
 				<head>
 					<title>Title</title>
 				</head>
@@ -38,8 +34,6 @@ describe('CommonCartridgeResourceFactory', () => {
 				</body>
 			</html>`;
 
-			return webContentHtml;
-		}
 		return webContentHtml;
 	};
 	const setupOrganizationProps = () => {
@@ -70,7 +64,7 @@ describe('CommonCartridgeResourceFactory', () => {
 	describe('create', () => {
 		describe('when creating a web link resource', () => {
 			const setup = async () => {
-				const webLinkXml = await setupWebLinkXml();
+				webLinkXml = await setupWebLinkXml();
 				const organizationProps = setupOrganizationProps();
 
 				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_LINK;
@@ -87,7 +81,7 @@ describe('CommonCartridgeResourceFactory', () => {
 
 				expect(result).toStrictEqual<CommonCartridgeWebLinkResourceProps>({
 					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-					title: 'Title',
+					title: organizationProps.title,
 					url: 'http://www.example.tld',
 				});
 			});
@@ -170,7 +164,7 @@ describe('CommonCartridgeResourceFactory', () => {
 
 					expect(result).toStrictEqual({
 						type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-						title: 'Title',
+						title: organizationProps.title,
 						html: 'Content',
 					});
 				});
@@ -186,20 +180,9 @@ describe('CommonCartridgeResourceFactory', () => {
 
 					expect(result).toStrictEqual({
 						type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-						title: '',
+						title: organizationProps.title,
 						html: '',
 					});
-				});
-			});
-
-			describe('when web content is not valid HTML', () => {
-				it('should return undefined', () => {
-					const { organizationProps } = setup();
-					admZipMock.readAsText.mockReturnValue('');
-
-					const result = sut.create(organizationProps);
-
-					expect(result).toBeUndefined();
 				});
 			});
 		});
