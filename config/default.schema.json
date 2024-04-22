@@ -1160,6 +1160,11 @@
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
 		},
+		"FEATURE_BOARD_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board layout feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1359,7 +1364,6 @@
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
 				}
-
 			},
 			"default": {}
 		},
