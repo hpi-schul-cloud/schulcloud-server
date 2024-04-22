@@ -4,6 +4,7 @@ import {
 	AnyBoardDo,
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	BoardLayout,
 } from '@shared/domain/domainobject/board/types';
 import { LearnroomElement } from '../../interface';
 import { BoardNode } from './boardnode.entity';
@@ -21,6 +22,8 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 		this._contextId = new ObjectId(props.context.id);
 
 		this.isVisible = props.isVisible ?? false;
+
+		this.layout = props.layout ?? BoardLayout.COLUMNS;
 	}
 
 	@Property({ fieldName: 'contextType' })
@@ -38,6 +41,9 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 			id: this._contextId.toHexString(),
 		};
 	}
+
+	@Property({ nullable: false })
+	layout: BoardLayout;
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
 		const domainObject = builder.buildColumnBoard(this);
@@ -61,4 +67,5 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 
 export interface ColumnBoardNodeProps extends RootBoardNodeProps {
 	isVisible: boolean;
+	layout: BoardLayout;
 }

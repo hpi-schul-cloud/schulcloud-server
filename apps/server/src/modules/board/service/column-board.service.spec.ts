@@ -1,16 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	BoardLayout,
 	ColumnBoard,
 	ContentElementFactory,
 } from '@shared/domain/domainobject';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';
@@ -164,7 +165,7 @@ describe(ColumnBoardService.name, () => {
 				const { context } = setupBoards();
 				const title = `My brand new Mainboard`;
 
-				const columnBoardInfo = await service.create(context, title);
+				const columnBoardInfo = await service.create(context, BoardLayout.COLUMNS, title);
 
 				expect(columnBoardInfo).toEqual(expect.objectContaining({ title }));
 			});
