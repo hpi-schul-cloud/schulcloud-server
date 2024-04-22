@@ -1,17 +1,19 @@
 /* istanbul ignore file */
-import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BoardNodeType } from '@shared/domain/entity';
+import { BaseFactory } from '@shared/testing';
 import { ColumnBoard, ColumnBoardProps, ROOT_PATH } from '../domain';
 
 class ColumnBoardFactory extends BaseFactory<ColumnBoard, ColumnBoardProps> {
-	// withoutContext(): this {
-	// 	const params = { context: undefined };
-	// 	return this.params(params);
-	// }
+	withoutContext(): this {
+		const params = { context: undefined };
+		return this.params(params);
+	}
 }
+
 export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequence }) => {
-	return {
+	const props: ColumnBoardProps = {
 		id: new ObjectId().toHexString(),
 		type: BoardNodeType.COLUMN_BOARD,
 		path: ROOT_PATH,
@@ -21,10 +23,12 @@ export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequ
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		// context: {
-		// 	type: BoardExternalReferenceType.Course,
-		// 	id: new ObjectId().toHexString(),
-		// },
+		context: {
+			type: BoardExternalReferenceType.Course,
+			id: new ObjectId().toHexString(),
+		},
 		isVisible: true,
 	};
+
+	return props;
 });

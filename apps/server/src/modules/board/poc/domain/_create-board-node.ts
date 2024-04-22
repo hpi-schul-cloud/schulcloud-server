@@ -1,10 +1,18 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BoardNodeType } from '@shared/domain/entity';
 import { Card } from './card.do';
 import { ColumnBoard } from './colum-board.do';
 import { Column } from './column.do';
 import { ROOT_PATH } from './path-utils';
-import type { AnyBoardNodeProps, BoardNodeProps, CardProps, ColumnBoardProps, ColumnProps } from './types';
+import type {
+	AnyBoardNode,
+	AnyBoardNodeProps,
+	BoardNodeProps,
+	CardProps,
+	ColumnBoardProps,
+	ColumnProps,
+} from './types';
 
 // This is an exploration how we can build a general board node factory function
 // just for inspiration
@@ -56,6 +64,7 @@ const createBoardNode = <T extends AnyBoardNodeType>(
 				...baseProps,
 				title: (props as ColumnBoardProps).title,
 				isVisible: (props as ColumnBoardProps).isVisible,
+				context: (props as ColumnBoardProps).context,
 				...props,
 				type: BoardNodeType.COLUMN_BOARD,
 			});
@@ -101,6 +110,10 @@ const createCard = (props: InitProps<CardProps>) => {
 const board = createBoardNode(BoardNodeType.COLUMN_BOARD, {
 	title: '',
 	isVisible: false,
+	context: {
+		type: BoardExternalReferenceType.Course,
+		id: new ObjectId().toHexString(),
+	},
 });
 
 const column = createBoardNode(BoardNodeType.COLUMN, {});

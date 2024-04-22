@@ -1,8 +1,9 @@
+import { BoardExternalReference } from '@shared/domain/domainobject';
 import { BoardNodeType } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import type { Card } from './card.do';
-import type { Column } from './column.do';
 import type { ColumnBoard } from './colum-board.do';
+import type { Column } from './column.do';
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -19,7 +20,7 @@ export interface ColumnBoardProps extends BoardNodeProps {
 	// needed to ensure the right type
 	type: BoardNodeType.COLUMN_BOARD;
 	title: string;
-	// context: BoardExternalReference;
+	context: BoardExternalReference;
 	isVisible: boolean;
 }
 export interface ColumnProps extends BoardNodeProps {

@@ -1,4 +1,5 @@
-import { MikroORM } from '@mikro-orm/mongodb';
+import { MikroORM, ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
 import { BoardNodeEntity } from './board-node.entity';
 
@@ -26,9 +27,13 @@ describe('entity', () => {
 
 	it('persists', async () => {
 		const entity = new BoardNodeEntity();
-		entity.type = BoardNodeType.CARD;
-		entity.height = 42;
-		entity.title = undefined;
+		entity.type = BoardNodeType.COLUMN_BOARD;
+		entity.title = 'board #1';
+		entity.context = {
+			type: BoardExternalReferenceType.Course,
+			id: new ObjectId().toHexString(),
+		};
+		entity.isVisible = true;
 
 		await orm.em.persistAndFlush(entity);
 		orm.em.clear();
@@ -39,5 +44,6 @@ describe('entity', () => {
 
 		expect(result).toBeDefined();
 		expect(result.id).toEqual(entity.id);
+		expect(result.context).toEqual(entity.context);
 	});
 });
