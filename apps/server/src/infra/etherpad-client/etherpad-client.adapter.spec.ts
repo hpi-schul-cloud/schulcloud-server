@@ -133,7 +133,7 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
-	describe('getOrCreateSession', () => {
+	describe('getOrCreateSessionId', () => {
 		describe('when session already exists', () => {
 			const setup = () => {
 				const groupId = 'groupId';
@@ -284,7 +284,7 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
-	describe('listSessionsOfAuthor', () => {
+	describe('listSessionIdsOfAuthor', () => {
 		describe('when author has sessions', () => {
 			const setup = () => {
 				const authorId = 'authorId';
@@ -347,7 +347,7 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
-	describe('getOrCreateGroup', () => {
+	describe('getOrCreateGroupId', () => {
 		describe('when group does not exist', () => {
 			const setup = () => {
 				const parentId = 'parentId';
@@ -413,7 +413,7 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
-	describe('getOrCreateEtherpad', () => {
+	describe('getOrCreateEtherpadId', () => {
 		describe('when pad does not exist', () => {
 			const setup = () => {
 				const groupId = 'groupId';
