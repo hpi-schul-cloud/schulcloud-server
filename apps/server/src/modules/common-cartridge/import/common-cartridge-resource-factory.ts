@@ -52,14 +52,10 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private createWebContentResource(content: string, title: string): CommonCartridgeWebContentResourceProps | undefined {
+	private createWebContentResource(content: string, title: string): CommonCartridgeWebContentResourceProps {
 		const document = this.tryCreateDocument(content, 'text/html');
 
-		if (!document) {
-			return undefined;
-		}
-
-		const html = document.querySelector('body > p')?.textContent || '';
+		const html = document?.querySelector('body > p')?.textContent ?? '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
