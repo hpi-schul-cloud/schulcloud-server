@@ -28,13 +28,13 @@
 <title>cluster_BoardModule_providers</title>
 <polygon fill="none" stroke="black" points="1223,-78 1223,-130 5209,-130 5209,-78 1223,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_BoardModule_exports</title>
-<polygon fill="none" stroke="black" points="1749,-208 1749,-260 3456,-260 3456,-208 1749,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_BoardModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 1215,-130 1215,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_BoardModule_exports</title>
+<polygon fill="none" stroke="black" points="1749,-208 1749,-260 3456,-260 3456,-208 1749,-208"/>
 </g>
 <!-- ConsoleWriterModule -->
 <g id="node1" class="node">
