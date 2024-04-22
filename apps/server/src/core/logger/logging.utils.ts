@@ -7,11 +7,13 @@ export class LoggingUtils {
 		const message = loggable.getLogMessage();
 		const stringifiedMessage = this.stringifyMessage(message);
 		const messageWithContext = { message: stringifiedMessage, context };
+
 		return messageWithContext;
 	}
 
 	private static stringifyMessage(message: unknown): string {
 		const stringifiedMessage = util.inspect(message).replace(/\n/g, '').replace(/\\n/g, '');
+
 		return stringifiedMessage;
 	}
 

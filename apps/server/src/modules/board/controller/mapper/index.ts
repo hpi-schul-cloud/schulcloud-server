@@ -1,5 +1,6 @@
 export * from './board-response.mapper';
 export * from './card-response.mapper';
+export * from './collaborative-text-editor-element-response.mapper';
 export * from './column-response.mapper';
 export * from './content-element-response.factory';
 export * from './create-board-response.mapper';
