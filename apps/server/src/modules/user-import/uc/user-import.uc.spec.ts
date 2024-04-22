@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -850,7 +851,7 @@ describe('[ImportUserModule]', () => {
 						userImportFeatures.useWithUserLoginMigration = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
 
 						return {
 							user,
@@ -881,6 +882,41 @@ describe('[ImportUserModule]', () => {
 					});
 				});
 
+				describe('when user login migration is closed', () => {
+					const setup = () => {
+						const targetSystemId = new ObjectId().toHexString();
+						const user = userFactory.buildWithId();
+						const school = legacySchoolDoFactory.buildWithId({
+							externalId: 'externalId',
+							officialSchoolNumber: 'officialSchoolNumber',
+							inUserMigration: undefined,
+							systems: [targetSystemId],
+						});
+						const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+							schoolId: school.id,
+							targetSystemId,
+							closedAt: new Date(),
+						});
+
+						userImportFeatures.useWithUserLoginMigration = true;
+						userRepo.findById.mockResolvedValueOnce(user);
+						schoolService.getSchoolById.mockResolvedValueOnce(school);
+						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+
+						return {
+							user,
+						};
+					};
+
+					it('should throw UserLoginMigrationNotActiveLoggableException', async () => {
+						const { user } = setup();
+
+						await expect(uc.startSchoolInUserMigration(user.id)).rejects.toThrow(
+							UserLoginMigrationNotActiveLoggableException
+						);
+					});
+				});
+
 				describe('when the user login migration is not running', () => {
 					const setup = () => {
 						const targetSystemId = new ObjectId().toHexString();
@@ -895,7 +931,7 @@ describe('[ImportUserModule]', () => {
 						userImportFeatures.useWithUserLoginMigration = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
+						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
 
 						return {
 							user,
@@ -928,7 +964,7 @@ describe('[ImportUserModule]', () => {
 						userImportFeatures.useWithUserLoginMigration = true;
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+						userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
 
 						return {
 							user,
