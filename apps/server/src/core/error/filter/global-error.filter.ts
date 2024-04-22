@@ -1,56 +1,66 @@
-import { IError, RpcMessage } from '@infra/rabbitmq/rpc-message';
+import { IError, RpcMessage } from '@infra/rabbitmq';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
-import { ErrorLogger, Loggable } from '@src/core/logger';
-import { LoggingUtils } from '@src/core/logger/logging.utils';
 import { Response } from 'express';
 import _ from 'lodash';
-import util from 'util';
+import { WsException } from '@nestjs/websockets';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
-import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
+import { DomainErrorHandler } from '../domain';
+
+// We are receiving rmq instead of rpc and rmq is missing in context type.
+// @nestjs/common export type ContextType = 'http' | 'ws' | 'rpc';
+enum UseableContextType {
+	http = 'http',
+	rpc = 'rpc',
+	ws = 'ws',
+	rmq = 'rmq',
+}
 
 @Catch()
-export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
-	constructor(private readonly logger: ErrorLogger) {}
+export class GlobalErrorFilter<E extends IError> implements ExceptionFilter<E> {
+	constructor(private readonly domainErrorHandler: DomainErrorHandler) {}
 
-	// eslint-disable-next-line consistent-return
-	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
-		const loggable = this.createErrorLoggable(error);
-		this.logger.error(loggable);
+	catch(error: E, host: ArgumentsHost): void | RpcMessage<undefined> | WsException {
+		this.domainErrorHandler.exec(error);
 
-		const contextType = host.getType<'http' | 'rmq'>();
-
-		if (contextType === 'http') {
-			this.sendHttpResponse(error, host);
-		}
-
-		if (contextType === 'rmq') {
-			return { message: undefined, error };
+		const contextType = host.getType<UseableContextType>();
+		switch (contextType) {
+			case UseableContextType.http:
+				return this.sendHttpResponse(error, host);
+			case UseableContextType.rpc:
+			case UseableContextType.rmq:
+				return this.sendRpcResponse(error);
+			case UseableContextType.ws:
+				return this.sendWsResponse(error);
+			default:
+				return undefined;
 		}
 	}
 
-	private createErrorLoggable(error: unknown): Loggable {
-		let loggable: Loggable;
-
-		if (LoggingUtils.isInstanceOfLoggable(error)) {
-			loggable = error;
-		} else if (error instanceof Error) {
-			loggable = new ErrorLoggable(error);
-		} else {
-			const unknownError = new Error(util.inspect(error));
-			loggable = new ErrorLoggable(unknownError);
-		}
-
-		return loggable;
-	}
-
-	private sendHttpResponse(error: T, host: ArgumentsHost): void {
+	private sendHttpResponse(error: E, host: ArgumentsHost): void {
 		const errorResponse = this.createErrorResponse(error);
 		const httpArgumentHost = host.switchToHttp();
 		const response = httpArgumentHost.getResponse<Response>();
 		response.status(errorResponse.code).json(errorResponse);
+	}
+
+	private sendRpcResponse(error: E): RpcMessage<undefined> {
+		const rpcError = { message: undefined, error };
+
+		return rpcError;
+	}
+
+	// 	// https://docs.nestjs.com/websockets/exception-filters
+	private sendWsResponse(error: E): WsException {
+		const wsError = new WsException(error);
+
+		// TODO: Need to implemented an rewrite in correct way
+		// const wsArgumentHost = host.switchToWs();
+		// wsArgumentHost.getClient();
+
+		return wsError;
 	}
 
 	private createErrorResponse(error: unknown): ErrorResponse {
@@ -69,7 +79,7 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 		return response;
 	}
 
-	private createErrorResponseForFeathersError(error: FeathersError) {
+	private createErrorResponseForFeathersError(error: FeathersError): ErrorResponse {
 		const { code, className, name, message } = error;
 		const type = _.snakeCase(className).toUpperCase();
 		const title = _.startCase(name);
