@@ -31,13 +31,12 @@ export class ExternalToolLogoService {
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	buildLogoUrl(template: string, externalTool: ExternalTool): string | undefined {
+	buildLogoUrl(externalTool: ExternalTool): string | undefined {
 		const { logo, id } = externalTool;
 		const backendUrl = this.toolFeatures.backEndUrl;
 
-		if (logo) {
-			const filledTemplate = template.replace(/\{id\}/g, id || '');
-			return `${backendUrl}${filledTemplate}`;
+		if (logo && id) {
+			return `${backendUrl}/v3/tools/external-tools/${id}/logo`;
 		}
 
 		return undefined;

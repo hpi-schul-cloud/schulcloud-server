@@ -6,8 +6,8 @@ import {
 	Card,
 	ContentElementFactory,
 	ContentElementType,
-	isAnyContentElement,
 	SubmissionItem,
+	isAnyContentElement,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';

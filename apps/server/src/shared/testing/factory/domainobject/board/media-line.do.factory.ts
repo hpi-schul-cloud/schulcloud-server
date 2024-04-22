@@ -1,8 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaLine, type MediaLineProps } from '@shared/domain/domainobject';
+import { AnyMediaBoardDo, type MediaBoardProps, MediaLine, type MediaLineProps } from '@shared/domain/domainobject';
+import { DeepPartial } from 'fishery';
 import { BaseFactory } from '../../base.factory';
 
-export const mediaLineFactory = BaseFactory.define<MediaLine, MediaLineProps>(MediaLine, ({ sequence }) => {
+class MediaLineFactory extends BaseFactory<MediaLine, MediaLineProps> {
+	addChild(child: AnyMediaBoardDo): this {
+		const params: DeepPartial<MediaBoardProps> = { children: [child] };
+
+		return this.params(params);
+	}
+}
+
+export const mediaLineFactory = MediaLineFactory.define(MediaLine, ({ sequence }) => {
 	return {
 		id: new ObjectId().toHexString(),
 		children: [],

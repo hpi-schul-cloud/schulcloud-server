@@ -23,7 +23,10 @@ const getScope = async (context) => {
  * @throws {BadRequest} if no user permission service exists for the scope
  */
 const getPermissionService = (app, scopeName) => {
-	const permissionServicePath = `/${scopeName}/:scopeId/userPermissions`;
+	let permissionServicePath = `/${scopeName}/:scopeId/userPermissions`;
+	if (scopeName === 'courses') {
+		permissionServicePath = `/coursesUserPermissions/:scopeId`;
+	}
 	const permissionService = app.service(permissionServicePath);
 	if (permissionService === undefined) {
 		throw new BadRequest(`There is no userPermission service for the scope '${scopeName}'.`);

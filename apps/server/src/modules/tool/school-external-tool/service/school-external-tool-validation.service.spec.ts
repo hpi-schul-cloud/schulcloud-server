@@ -5,7 +5,6 @@ import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing'
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
@@ -15,7 +14,6 @@ describe(SchoolExternalToolValidationService.name, () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
-	let toolFeatures: DeepMocked<IToolFeatures>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,19 +27,12 @@ describe(SchoolExternalToolValidationService.name, () => {
 					provide: CommonToolValidationService,
 					useValue: createMock<CommonToolValidationService>(),
 				},
-				{
-					provide: ToolFeatures,
-					useValue: {
-						toolStatusWithoutVersions: false,
-					},
-				},
 			],
 		}).compile();
 
 		service = module.get(SchoolExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(CommonToolValidationService);
-		toolFeatures = module.get(ToolFeatures);
 	});
 
 	afterEach(() => {
@@ -56,7 +47,6 @@ describe(SchoolExternalToolValidationService.name, () => {
 
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
-				toolFeatures.toolStatusWithoutVersions = true;
 
 				return {
 					schoolExternalTool,
@@ -95,7 +85,6 @@ describe(SchoolExternalToolValidationService.name, () => {
 
 				externalToolService.findById.mockResolvedValue(externalTool);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([error]);
-				toolFeatures.toolStatusWithoutVersions = true;
 
 				return {
 					schoolExternalTool,
@@ -108,31 +97,6 @@ describe(SchoolExternalToolValidationService.name, () => {
 				const { schoolExternalTool, error } = setup();
 
 				await expect(service.validate(schoolExternalTool)).rejects.toThrow(error);
-			});
-		});
-	});
-
-	// TODO N21-1337 refactor after feature flag is removed
-	describe('validate with FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED on false', () => {
-		describe('when version of externalTool and schoolExternalTool are different', () => {
-			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolVersion: 1337 });
-				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 8383 });
-
-				externalToolService.findById.mockResolvedValue(externalTool);
-				toolFeatures.toolStatusWithoutVersions = false;
-
-				return {
-					schoolExternalTool,
-				};
-			};
-
-			it('should throw error', async () => {
-				const { schoolExternalTool } = setup();
-
-				const func = () => service.validate(schoolExternalTool);
-
-				await expect(func()).rejects.toThrowError('tool_version_mismatch');
 			});
 		});
 	});

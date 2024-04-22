@@ -18,10 +18,10 @@ import {
 import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -169,10 +169,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
-					'/v3/tools/external-tools/{id}/logo',
-					externalToolsPage.data[1]
-				);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(externalToolsPage.data[1]);
 			});
 
 			it('should call filterForAvailableTools with ids of used tools', async () => {
@@ -285,9 +282,6 @@ describe('ExternalToolConfigurationUc', () => {
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([usedContextExternalTool]);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				externalToolConfigurationService.filterForAvailableSchoolExternalTools.mockReturnValue([
-					usedSchoolExternalTool,
-				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
@@ -327,29 +321,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', usedTool);
-			});
-
-			it('should call filterForAvailableSchoolExternalTools', async () => {
-				const { schoolExternalTools, usedContextExternalTool } = setup();
-
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
-
-				expect(externalToolConfigurationService.filterForAvailableSchoolExternalTools).toHaveBeenCalledWith(
-					schoolExternalTools,
-					[usedContextExternalTool]
-				);
-			});
-
-			it('should call filterForAvailableTools', async () => {
-				const { externalTools, usedSchoolExternalTool } = setup();
-
-				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
-
-				expect(externalToolConfigurationService.filterForAvailableExternalTools).toHaveBeenCalledWith(
-					externalTools.data,
-					[usedSchoolExternalTool]
-				);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(usedTool);
 			});
 
 			it('should filter for restricted contexts', async () => {
@@ -391,9 +363,6 @@ describe('ExternalToolConfigurationUc', () => {
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([unusedSchoolExternalTool]);
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
 
-				externalToolConfigurationService.filterForAvailableSchoolExternalTools.mockReturnValue([
-					unusedSchoolExternalTool,
-				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([]);
 				externalToolConfigurationService.filterForContextRestrictions.mockReturnValue([]);
 
@@ -431,9 +400,6 @@ describe('ExternalToolConfigurationUc', () => {
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([usedSchoolExternalTool]);
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([usedContextExternalTool]);
 
-				externalToolConfigurationService.filterForAvailableSchoolExternalTools.mockReturnValue([
-					usedSchoolExternalTool,
-				]);
 				externalToolConfigurationService.filterForAvailableExternalTools.mockReturnValue([
 					{ externalTool: usedTool, schoolExternalTool: usedSchoolExternalTool },
 				]);
@@ -475,13 +441,13 @@ describe('ExternalToolConfigurationUc', () => {
 				const school: School = schoolFactory.build();
 
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(
 					{
 						toolId: externalTool.id,
 						schoolId: school.id,
 					},
 					schoolExternalToolId
-				);
+				) as SchoolExternalToolWithId;
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -520,10 +486,10 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has insufficient permission to read an external tool', () => {
 			const setup = () => {
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(
 					undefined,
 					schoolExternalToolId
-				);
+				) as SchoolExternalToolWithId;
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.checkPermission.mockImplementation(() => {
@@ -551,13 +517,13 @@ describe('ExternalToolConfigurationUc', () => {
 				});
 
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId(
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(
 					{
 						toolId: externalTool.id,
 						schoolId: 'schoolId',
 					},
 					schoolExternalToolId
-				);
+				) as SchoolExternalToolWithId;
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
@@ -583,9 +549,9 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalToolId: string = new ObjectId().toHexString();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
@@ -668,9 +634,9 @@ describe('ExternalToolConfigurationUc', () => {
 					isHidden: true,
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
-				});
+				}) as SchoolExternalToolWithId;
 
 				const contextExternalToolId: string = new ObjectId().toHexString();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
@@ -745,7 +711,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				const result = await uc.getToolContextTypes(userId);
 
-				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
+				expect(result).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT, ToolContextType.MEDIA_BOARD]);
 			});
 		});
 
