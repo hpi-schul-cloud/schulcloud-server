@@ -1,4 +1,5 @@
 import { ValidationError } from '@shared/common';
+import { EntityId } from '@shared/domain/types';
 import { CustomParameter, CustomParameterEntry, ToolParameterRequiredLoggableException } from '../../../domain';
 import { ParameterArrayValidator } from './parameter-array-validator';
 import { ParameterEntryRegexValidator } from './parameter-entry-regex-validator';
@@ -13,7 +14,11 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 		new ParameterEntryRegexValidator(),
 	];
 
-	validate(entries: CustomParameterEntry[], declarations: CustomParameter[]): ValidationError[] {
+	validate(
+		entries: CustomParameterEntry[],
+		declarations: CustomParameter[],
+		toolId: EntityId | undefined
+	): ValidationError[] {
 		const errors: ValidationError[] = [];
 
 		for (const param of declarations) {
@@ -28,7 +33,7 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 					errors.push(...entryErrors);
 				});
 			} else if (!param.isOptional) {
-				errors.push(new ToolParameterRequiredLoggableException(param));
+				errors.push(new ToolParameterRequiredLoggableException(toolId, param));
 			}
 		}
 
