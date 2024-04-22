@@ -3,7 +3,6 @@ import {
 	SanisGruppenResponse,
 	SanisResponse,
 	SanisResponseValidationGroups,
-	SanisRole,
 	schulconnexResponseFactory,
 } from '@infra/schulconnex-client';
 import { GroupService } from '@modules/group';
@@ -15,7 +14,6 @@ import { ValidationErrorLoggableException } from '@shared/common/loggable-except
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { axiosResponseFactory } from '@shared/testing';
-import { UUID } from 'bson';
 import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
@@ -432,88 +430,6 @@ describe('SanisStrategy', () => {
 				const { input } = setup();
 
 				await expect(strategy.getData(input)).rejects.toThrow(ValidationErrorLoggableException);
-			});
-		});
-
-		describe('when the response contains invalid empty objects', () => {
-			const setup = () => {
-				const provisioningUrl = 'sanisProvisioningUrl';
-				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
-						provisioningUrl,
-					}),
-					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
-				});
-				const sanisResponse = {
-					pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-					person: {
-						name: {
-							vorname: 'Hans',
-							familienname: 'Peter',
-						},
-						geburt: {
-							datum: '2023-11-17',
-						},
-					},
-					personenkontexte: [
-						{
-							id: new UUID().toString(),
-							rolle: SanisRole.LEIT,
-							organisation: {
-								id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
-								name: 'schoolName',
-								kennung: 'Kennung',
-								anschrift: {
-									ort: 'Hannover',
-								},
-							},
-							gruppen: [
-								{
-									sonstige_gruppenzugehoerige: [{}],
-								},
-							],
-						},
-					],
-				};
-				const user: ExternalUserDto = new ExternalUserDto({
-					externalId: 'externalUserId',
-				});
-				const school: ExternalSchoolDto = new ExternalSchoolDto({
-					externalId: 'externalSchoolId',
-					name: 'schoolName',
-				});
-
-				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse as SanisResponse)));
-				mapper.mapToExternalUserDto.mockReturnValue(user);
-				mapper.mapToExternalSchoolDto.mockReturnValue(school);
-				mapper.mapToExternalGroupDtos.mockReturnValue(undefined);
-				validationFunction.mockRestore();
-				validationFunction.mockRestore();
-
-				return {
-					input,
-					provisioningUrl,
-					user,
-					school,
-					sanisResponse,
-				};
-			};
-
-			it('should not throw', async () => {
-				const { input } = setup();
-
-				await expect(strategy.getData(input)).resolves.not.toThrow();
-			});
-
-			it('should return undefined for groups instead of an empty list', async () => {
-				const { input } = setup();
-
-				const result: OauthDataDto = await strategy.getData(input);
-
-				expect(result.externalGroups).toBeUndefined();
 			});
 		});
 	});

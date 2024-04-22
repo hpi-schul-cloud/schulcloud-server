@@ -2,13 +2,15 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature, SystemTypeEnum } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
+	IdenticalUserLoginMigrationSystemLoggableException,
+	MoinSchuleSystemNotFoundLoggableException,
 } from '../loggable';
 
 @Injectable()
@@ -110,20 +112,18 @@ export class UserLoginMigrationService {
 
 	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
-		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
+		const moinSchuleSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
 
-		if (!sanisSystem) {
-			throw new InternalServerErrorException('Cannot find SANIS system');
+		if (!moinSchuleSystem) {
+			throw new MoinSchuleSystemNotFoundLoggableException();
+		} else if (school.systems?.includes(moinSchuleSystem.id as string)) {
+			throw new IdenticalUserLoginMigrationSystemLoggableException(school.id, moinSchuleSystem.id);
 		}
-
-		const systemIds: EntityId[] =
-			school.systems?.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string)) || [];
-		const sourceSystemId = systemIds[0];
 
 		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			schoolId: school.id as string,
-			targetSystemId: sanisSystem.id as string,
-			sourceSystemId,
+			targetSystemId: moinSchuleSystem.id as string,
+			sourceSystemId: school.systems?.[0],
 			startedAt: new Date(),
 		});
 
