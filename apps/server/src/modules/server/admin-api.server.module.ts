@@ -12,7 +12,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
 import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
-import { EtherpadClientModule } from '@src/infra/etherpadClient/etherpad-client-module';
+import { EtherpadClientModule } from '@src/infra/etherpadClient';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
 
