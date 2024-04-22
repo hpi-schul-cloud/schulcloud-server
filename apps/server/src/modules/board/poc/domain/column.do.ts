@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import { ColumnProps } from './types';
+import type { AnyBoardNode, ColumnProps } from './types';
 
 export class Column extends BoardNode<ColumnProps> {
 	get title(): string | undefined {
@@ -8,5 +8,9 @@ export class Column extends BoardNode<ColumnProps> {
 
 	set title(title: string | undefined) {
 		this.props.title = title;
+	}
+
+	isAllowedAsChild(boardNode: AnyBoardNode): boolean {
+		return false;
 	}
 }

@@ -9,21 +9,25 @@ export interface BoardNodeProps {
 	path: string;
 	level: number;
 	position: number;
-	type: BoardNodeType;
+	// type: BoardNodeType;
 	children: AnyBoardNode[];
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 export interface ColumnBoardProps extends BoardNodeProps {
+	// needed to ensure the right type
+	type: BoardNodeType.COLUMN_BOARD;
 	title: string;
 	// context: BoardExternalReference;
 	isVisible: boolean;
 }
 export interface ColumnProps extends BoardNodeProps {
+	type: BoardNodeType.COLUMN;
 	title?: string;
 }
 export interface CardProps extends BoardNodeProps {
+	type: BoardNodeType.CARD;
 	title?: string;
 	height: number;
 }
