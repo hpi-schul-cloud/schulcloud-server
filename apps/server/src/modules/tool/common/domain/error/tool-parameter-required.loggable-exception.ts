@@ -24,7 +24,7 @@ export class ToolParameterRequiredLoggableException extends BusinessError implem
 			message: this.message,
 			stack: this.stack,
 			data: {
-				parameterDeclaration: this.parameterDeclaration.name,
+				parameterName: this.parameterDeclaration.name,
 			},
 		};
 	}
