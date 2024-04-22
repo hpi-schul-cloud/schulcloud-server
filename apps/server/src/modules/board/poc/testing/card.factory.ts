@@ -1,12 +1,11 @@
 /* istanbul ignore file */
 import { BoardNodeType } from '@shared/domain/entity';
 import { BaseFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
-import { Card, CardProps } from '../domain';
-import { ROOT_PATH } from '../domain/path-utils';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Card, CardProps, ROOT_PATH } from '../domain';
 
 export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence }) => {
-	return {
+	const props: CardProps = {
 		id: new ObjectId().toHexString(),
 		type: BoardNodeType.CARD,
 		path: ROOT_PATH,
@@ -18,4 +17,6 @@ export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence
 		updatedAt: new Date(),
 		height: 42,
 	};
+
+	return props;
 });

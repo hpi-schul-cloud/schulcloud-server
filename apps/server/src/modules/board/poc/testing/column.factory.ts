@@ -1,12 +1,11 @@
 /* istanbul ignore file */
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardNodeType } from '@shared/domain/entity';
 import { BaseFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
-import { Column, ColumnProps } from '../domain';
-import { ROOT_PATH } from '../domain/path-utils';
+import { Column, ColumnProps, ROOT_PATH } from '../domain';
 
 export const columnFactory = BaseFactory.define<Column, ColumnProps>(Column, ({ sequence }) => {
-	return {
+	const props: ColumnProps = {
 		id: new ObjectId().toHexString(),
 		type: BoardNodeType.COLUMN,
 		path: ROOT_PATH,
@@ -17,4 +16,6 @@ export const columnFactory = BaseFactory.define<Column, ColumnProps>(Column, ({ 
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
+
+	return props;
 });
