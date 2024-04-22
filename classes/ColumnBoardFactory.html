@@ -1325,7 +1325,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ColumnBoard, ColumnBoardProps } from &#x27;@shared/domain/domainobject&#x27;;
-import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject/board/types&#x27;;
+import { BoardExternalReferenceType, BoardLayout } from &#x27;@shared/domain/domainobject/board/types&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BaseFactory } from &#x27;../../base.factory&#x27;;
 
@@ -1349,6 +1349,7 @@ export const columnBoardFactory &#x3D; ColumnBoardFactory.define(ColumnBoard, ({
 			id: new ObjectId().toHexString(),
 		},
 		isVisible: true,
+		layout: params?.layout ?? BoardLayout.COLUMNS,
 	};
 });
 </code></pre>

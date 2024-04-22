@@ -316,8 +316,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -410,8 +410,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -598,8 +598,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -746,7 +746,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReferenceType, Column, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardExternalReferenceType, BoardLayout, Column, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course, User } from &#x27;@shared/domain/entity&#x27;;
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from &#x27;@src/modules/board&#x27;;
 import {
@@ -785,7 +785,8 @@ export class CommonCartridgeImportService {
 				type: BoardExternalReferenceType.Course,
 				id: course.id,
 			},
-			parser.getTitle()
+			BoardLayout.COLUMNS,
+			parser.getTitle() || &#x27;&#x27;
 		);
 
 		await this.createColumns(parser, columnBoard);

@@ -3063,6 +3063,7 @@ This allows adding console commands to execute provider methods.</p>
 			id: new ObjectId().toHexString(),
 		},
 		isVisible: true,
+		layout: params?.layout ?? BoardLayout.COLUMNS,
 	};
 })</code>
                     </td>
@@ -3097,6 +3098,7 @@ This allows adding console commands to execute provider methods.</p>
 				id: new ObjectId().toHexString(),
 			},
 			isVisible: true,
+			layout: BoardLayout.COLUMNS,
 		};
 	}
 )</code>
@@ -3718,6 +3720,7 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_COURSE_SHARE: Configuration.get(&#x27;FEATURE_COURSE_SHARE&#x27;) as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get(&#x27;FEATURE_LESSON_SHARE&#x27;) as boolean,
 	FEATURE_TASK_SHARE: Configuration.get(&#x27;FEATURE_TASK_SHARE&#x27;) as boolean,
+	FEATURE_BOARD_LAYOUT_ENABLED: Configuration.get(&#x27;FEATURE_BOARD_LAYOUT_ENABLED&#x27;) as boolean,
 	FEATURE_LOGIN_LINK_ENABLED: Configuration.get(&#x27;FEATURE_LOGIN_LINK_ENABLED&#x27;) as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get(&#x27;FEATURE_COPY_SERVICE_ENABLED&#x27;) as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get(&#x27;FEATURE_CONSENT_NECESSARY&#x27;) as boolean,
