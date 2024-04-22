@@ -22,7 +22,7 @@ export class EtherpadClientAdapter {
 		private readonly authorApi: AuthorApi
 	) {}
 
-	async getOrCreateAuthor(userId: EntityId, username: string): Promise<AuthorId> {
+	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
 		const response = await this.tryCreateAuthor(userId, username);
 		const user = this.handleResponse<InlineResponse2003>(response, { userId });
 
@@ -31,7 +31,7 @@ export class EtherpadClientAdapter {
 		return authorId;
 	}
 
-	private async tryCreateAuthor(userId: string, username: string) {
+	private async tryCreateAuthor(userId: string, username: string): Promise<AxiosResponse<InlineResponse2003>> {
 		try {
 			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
 
@@ -41,7 +41,7 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	async getOrCreateSession(
+	public async getOrCreateSessionId(
 		groupId: GroupId,
 		authorId: AuthorId,
 		parentId: EntityId,
@@ -62,7 +62,11 @@ export class EtherpadClientAdapter {
 		return sessionId;
 	}
 
-	private async tryCreateSession(groupId: string, authorId: string, sessionCookieExpire: Date) {
+	private async tryCreateSession(
+		groupId: string,
+		authorId: string,
+		sessionCookieExpire: Date
+	): Promise<AxiosResponse<InlineResponse2004>> {
 		try {
 			const response = await this.sessionApi.createSessionUsingGET(
 				groupId,
@@ -89,7 +93,7 @@ export class EtherpadClientAdapter {
 		return sessionId;
 	}
 
-	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string) {
+	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string): string | undefined {
 		const sessionEntries = Object.entries(sessions);
 		const sessionId = sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) => {
 			if (value.groupID === groupId && value.authorID === authorId) {
@@ -102,7 +106,7 @@ export class EtherpadClientAdapter {
 		return sessionId[0];
 	}
 
-	async listSessionsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
+	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
 		const response = await this.tryListSessionsOfAuthor(authorId);
 		const sessions = this.handleResponse<InlineResponse2006>(response, { authorId });
 
@@ -111,7 +115,7 @@ export class EtherpadClientAdapter {
 		return sessionIds;
 	}
 
-	private async tryListSessionsOfAuthor(authorId: string) {
+	private async tryListSessionsOfAuthor(authorId: string): Promise<AxiosResponse<InlineResponse2006>> {
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
 
@@ -121,7 +125,7 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	async getOrCreateGroup(parentId: EntityId): Promise<GroupId> {
+	public async getOrCreateGroupId(parentId: EntityId): Promise<GroupId> {
 		const groupResponse = await this.tryGetOrCreateGroup(parentId);
 		const group = this.handleResponse<InlineResponse200>(groupResponse, { parentId });
 
@@ -130,7 +134,7 @@ export class EtherpadClientAdapter {
 		return groupId;
 	}
 
-	private async tryGetOrCreateGroup(parentId: string) {
+	private async tryGetOrCreateGroup(parentId: string): Promise<AxiosResponse<InlineResponse200>> {
 		try {
 			const response = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
 
@@ -140,10 +144,10 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	async getOrCreateEtherpad(groupId: GroupId, parentId: EntityId): Promise<PadId> {
+	public async getOrCreateEtherpadId(groupId: GroupId, parentId: EntityId): Promise<PadId> {
 		let padId: PadId | undefined;
 
-		padId = await this.getPad(groupId, parentId);
+		padId = await this.getPadId(groupId, parentId);
 
 		if (!padId) {
 			const padResponse = await this.tryCreateEtherpad(groupId, parentId);
@@ -155,7 +159,7 @@ export class EtherpadClientAdapter {
 		return padId;
 	}
 
-	private async tryCreateEtherpad(groupId: string, parentId: string) {
+	private async tryCreateEtherpad(groupId: string, parentId: string): Promise<AxiosResponse<InlineResponse2001>> {
 		try {
 			const response = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
 
@@ -165,16 +169,16 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private async getPad(groupId: GroupId, parentId: EntityId): Promise<PadId | undefined> {
+	private async getPadId(groupId: GroupId, parentId: EntityId): Promise<PadId | undefined> {
 		const padsResponse = await this.tryListPads(groupId);
 		const pads = this.handleResponse<InlineResponse2002>(padsResponse, { parentId });
 
-		const pad = pads?.padIDs?.find((padId: string) => padId.includes(`${groupId}$${parentId}`));
+		const padId = pads?.padIDs?.find((id: string) => id.includes(`${groupId}$${parentId}`));
 
-		return pad;
+		return padId;
 	}
 
-	private async tryListPads(groupId: string) {
+	private async tryListPads(groupId: string): Promise<AxiosResponse<InlineResponse2002>> {
 		try {
 			const response = await this.groupApi.listPadsUsingGET(groupId);
 
@@ -184,7 +188,10 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private handleResponse<T extends EtherpadResponse>(axiosResponse: AxiosResponse<T>, payload: EtherpadParams) {
+	private handleResponse<T extends EtherpadResponse>(
+		axiosResponse: AxiosResponse<T>,
+		payload: EtherpadParams
+	): T['data'] {
 		const response = axiosResponse.data;
 
 		switch (response.code) {

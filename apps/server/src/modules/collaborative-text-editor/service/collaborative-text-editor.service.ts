@@ -24,16 +24,16 @@ export class CollaborativeTextEditorService {
 		const sessionExpiryDate = this.buildSessionExpiryDate();
 		const { parentId } = params;
 
-		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroup(parentId);
-		const padId = await this.collaborativeTextEditorAdapter.getOrCreateEtherpad(groupId, parentId);
-		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthor(userId, userName);
-		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSession(
+		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
+		const padId = await this.collaborativeTextEditorAdapter.getOrCreateEtherpadId(groupId, parentId);
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId, userName);
+		const sessionId = await this.collaborativeTextEditorAdapter.getOrCreateSessionId(
 			groupId,
 			authorId,
 			parentId,
 			sessionExpiryDate
 		);
-		const authorsSessionIds = await this.collaborativeTextEditorAdapter.listSessionsOfAuthor(authorId);
+		const authorsSessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
 		const url = this.buildPath(padId);
 		const uniqueSessionIds = this.removeDuplicateSessions([...authorsSessionIds, sessionId]);

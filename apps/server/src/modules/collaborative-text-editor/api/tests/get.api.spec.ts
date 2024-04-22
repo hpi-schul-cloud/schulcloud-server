@@ -130,11 +130,11 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				const loggedInClient = await testApiClient.login(studentAccount);
 
 				const editorId = 'editorId';
-				etherpadClientAdapter.getOrCreateEtherpad.mockResolvedValueOnce(editorId);
+				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
 				const otherSessionIds = ['otherSessionId1', 'otherSessionId2'];
-				etherpadClientAdapter.listSessionsOfAuthor.mockResolvedValueOnce(otherSessionIds);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 				const sessionId = 'sessionId';
-				etherpadClientAdapter.getOrCreateSession.mockResolvedValueOnce(sessionId);
+				etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
 				const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
 				const expectedPath = `${basePath}/${editorId}`;
