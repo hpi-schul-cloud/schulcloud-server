@@ -6,6 +6,7 @@ import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	collaborativeTextEditorElementFactory,
 	columnBoardFactory,
 	columnFactory,
 	contextExternalToolFactory,
@@ -439,6 +440,30 @@ describe(RecursiveDeleteVisitor.name, () => {
 					em.getReference(childMediaExternalToolElement.constructor, childMediaExternalToolElement.id)
 				);
 			});
+		});
+	});
+
+	describe('visitCollaborativeTextEditorAsync', () => {
+		const setup = () => {
+			const childCollaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build({
+				children: [childCollaborativeTextEditorElement],
+			});
+
+			return { collaborativeTextEditorElement, childCollaborativeTextEditorElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { collaborativeTextEditorElement, childCollaborativeTextEditorElement } = setup();
+
+			await service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
+
+			expect(em.remove).toHaveBeenCalledWith(
+				em.getReference(collaborativeTextEditorElement.constructor, collaborativeTextEditorElement.id)
+			);
+			expect(em.remove).toHaveBeenCalledWith(
+				em.getReference(childCollaborativeTextEditorElement.constructor, childCollaborativeTextEditorElement.id)
+			);
 		});
 	});
 });
