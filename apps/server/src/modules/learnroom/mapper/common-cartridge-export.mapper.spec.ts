@@ -5,7 +5,7 @@ import {
 	CommonCartridgeElementType,
 	CommonCartridgeFileBuilderProps,
 	CommonCartridgeIntendedUseType,
-	CommonCartridgeOrganizationBuilderOptions,
+	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
@@ -95,7 +95,7 @@ describe('CommonCartridgeExportMapper', () => {
 				const { lesson } = setup();
 				const organizationProps = sut.mapLessonToOrganization(lesson);
 
-				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationProps>>({
 					identifier: createIdentifier(lesson.id),
 					title: lesson.name,
 				});
@@ -124,7 +124,7 @@ describe('CommonCartridgeExportMapper', () => {
 				const { componentProps } = setup();
 				const organizationProps = sut.mapContentToOrganization(componentProps);
 
-				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationProps>>({
 					identifier: expect.any(String),
 					title: componentProps.title,
 				});
@@ -195,7 +195,7 @@ describe('CommonCartridgeExportMapper', () => {
 				const { task } = setup();
 				const organizationProps = sut.mapTaskToOrganization(task);
 
-				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
+				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationProps>>({
 					identifier: expect.any(String),
 					title: task.name,
 				});

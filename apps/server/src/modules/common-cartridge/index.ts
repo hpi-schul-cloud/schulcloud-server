@@ -1,4 +1,8 @@
 export {
+	CommonCartridgeFileBuilderProps,
+	CommonCartridgeOrganizationProps,
+} from './export/builders/common-cartridge-file-builder';
+export {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
