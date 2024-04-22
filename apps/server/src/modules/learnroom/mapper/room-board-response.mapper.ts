@@ -99,6 +99,7 @@ export class RoomBoardResponseMapper {
 			published: columnBoardInfo.published,
 			createdAt: columnBoardInfo.createdAt,
 			updatedAt: columnBoardInfo.updatedAt,
+			layout: columnBoardInfo.layout,
 		});
 
 		const boardElementResponse = new BoardElementResponse({
