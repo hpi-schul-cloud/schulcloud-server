@@ -74,6 +74,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 			context: columnBoard.context,
 			isVisible: columnBoard.isVisible,
+			layout: columnBoard.layout,
 		});
 
 		this.saveRecursive(boardNode, columnBoard);

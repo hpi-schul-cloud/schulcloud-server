@@ -63,6 +63,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			context: boardNode.context,
 			isVisible: boardNode.isVisible ?? false,
+			layout: boardNode.layout,
 		});
 
 		return columnBoard;
