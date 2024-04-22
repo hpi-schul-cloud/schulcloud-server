@@ -1,24 +1,48 @@
+import { RequiredEntityData, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { BoardNodeType } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { RequiredEntityData, Utils } from '@mikro-orm/core';
+import { AnyBoardNode, AnyBoardNodeProps, Card, Column, ColumnBoard } from '../domain';
+import { joinPath } from '../domain/path-utils';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
-import { joinPath } from '../domain/path-utils';
-import { AnyBoardNode, AnyBoardNodeProps } from '../domain';
+
+type AnyBoardNodeType = `${BoardNodeType}`;
+type BoardNodeTypeToClass<T extends AnyBoardNodeType> = T extends BoardNodeType.COLUMN_BOARD
+	? ColumnBoard
+	: T extends BoardNodeType.COLUMN
+	? Column
+	: T extends BoardNodeType.CARD
+	? Card
+	: never;
 
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
-		const props: AnyBoardNodeProps = (await this.em.findOneOrFail(BoardNodeEntity, { id })) as AnyBoardNodeProps;
+		const props = (await this.em.findOneOrFail(BoardNodeEntity, { id })) as AnyBoardNodeProps;
 		const descendants = await this.findDescendants(props, depth);
 
 		const builder = new TreeBuilder(descendants);
 		const boardNode = builder.build(props);
 
 		return boardNode;
+	}
+
+	async findByIdAndType<T extends AnyBoardNodeType>(
+		id: EntityId,
+		type: T,
+		depth?: number
+	): Promise<BoardNodeTypeToClass<T>> {
+		const props = (await this.em.findOneOrFail(BoardNodeEntity, { id, type })) as AnyBoardNodeProps;
+		const descendants = await this.findDescendants(props, depth);
+
+		const builder = new TreeBuilder(descendants);
+		const boardNode = builder.build(props);
+
+		return boardNode as BoardNodeTypeToClass<T>;
 	}
 
 	// TODO findByIds()

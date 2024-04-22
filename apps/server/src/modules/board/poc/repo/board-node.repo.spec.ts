@@ -1,11 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { BoardNodeEntity } from './entity/board-node.entity';
-import { BoardNodeRepo } from './board-node.repo';
+import { ColumnBoard } from '../domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
+import { BoardNodeRepo } from './board-node.repo';
+import { BoardNodeEntity } from './entity/board-node.entity';
 
 describe('BoardNodeRepo', () => {
 	let module: TestingModule;
@@ -83,7 +84,7 @@ describe('BoardNodeRepo', () => {
 
 			const result = await repo.findById(board.id);
 
-			// TODO tree matcher (by id)?
+			// TODO implement tree matcher (by id)?
 			expect(result.id).toEqual(board.id);
 			expect(result.children[0].id).toEqual(column.id);
 			expect(result.children[0].children[0].id).toEqual(card.id);
@@ -93,6 +94,59 @@ describe('BoardNodeRepo', () => {
 	describe('findByIds', () => {
 		it.todo('should be able to find a node tree by root id');
 		it.todo('should use depth...');
+	});
+
+	describe('findByIdAndType', () => {
+		const setup = async () => {
+			const board = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
+
+			await repo.persistAndFlush(board);
+			em.clear();
+
+			return { board };
+		};
+
+		describe('when type is valid', () => {
+			it('should return the proper instance', async () => {
+				const { board } = await setup();
+
+				const result = await repo.findByIdAndType(board.id, BoardNodeType.COLUMN_BOARD);
+
+				expect(result).toBeInstanceOf(ColumnBoard);
+			});
+		});
+
+		describe('when type is not valid', () => {
+			it('should throw an error', async () => {
+				const { board } = await setup();
+
+				await expect(repo.findByIdAndType(board.id, BoardNodeType.COLUMN)).rejects.toThrowError();
+			});
+		});
+
+		describe('when depth is omitted', () => {
+			it('should return the whole tree', async () => {
+				const { board } = await setup();
+
+				const result = await repo.findByIdAndType(board.id, BoardNodeType.COLUMN_BOARD);
+
+				expect(result.id).toEqual(board.id);
+				expect(result.children[0].id).toEqual(board.children[0].id);
+				expect(result.children[0].children[0].id).toEqual(board.children[0].children[0].id);
+			});
+		});
+
+		describe('when depth is specified', () => {
+			it('should return a tree with limited depth', async () => {
+				const { board } = await setup();
+
+				const result = await repo.findByIdAndType(board.id, BoardNodeType.COLUMN_BOARD, 1);
+
+				expect(result.children[0].children.length).toBe(0);
+			});
+		});
 	});
 
 	// ---- BEGIN OLD CODE - remove when not needed anymore
