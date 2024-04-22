@@ -111,6 +111,16 @@ describe(`content element create (api)`, () => {
 				expect((response.body as SubmissionContainerElementResponse).content.dueDate).toBeNull();
 			});
 
+			it('should return the created content element of type COLABORATIVE_TEXT_EDITOR', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.COLLABORATIVE_TEXT_EDITOR,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
+			});
+
 			it('should actually create the content element', async () => {
 				const { loggedInClient, cardNode } = await setup();
 				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.RICH_TEXT });

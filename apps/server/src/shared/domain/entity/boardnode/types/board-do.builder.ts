@@ -1,5 +1,6 @@
 import type {
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -14,6 +15,7 @@ import type {
 	SubmissionItem,
 } from '../../../domainobject';
 import type { CardNode } from '../card-node.entity';
+import type { CollaborativeTextEditorElementNode } from '../collaborative-text-editor-element-node.entity';
 import type { ColumnBoardNode } from '../column-board-node.entity';
 import type { ColumnNode } from '../column-node.entity';
 import type { DrawingElementNode } from '../drawing-element-node.entity';
@@ -36,6 +38,7 @@ export interface BoardDoBuilder {
 	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
 	buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem;
 	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement;
+	buildCollaborativeTextEditorElement(boardNode: CollaborativeTextEditorElementNode): CollaborativeTextEditorElement;
 
 	buildMediaBoard(boardNode: MediaBoardNode): MediaBoard;
 	buildMediaLine(boardNode: MediaLineNode): MediaLine;
