@@ -1,0 +1,2164 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >AuthorApi</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>AuthorApi - object-oriented interface</p>
+
+            </p>
+
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../classes/BaseAPI.html" target="_self" >BaseAPI</a></code>
+            </p>
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/AuthorApiInterface.html" target="_self" >AuthorApiInterface</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#configuration" >configuration</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#createAuthorIfNotExistsForUsingGET" >createAuthorIfNotExistsForUsingGET</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#createAuthorIfNotExistsForUsingPOST" >createAuthorIfNotExistsForUsingPOST</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#createAuthorUsingGET" >createAuthorUsingGET</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#createAuthorUsingPOST" >createAuthorUsingPOST</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getAuthorNameUsingGET" >getAuthorNameUsingGET</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getAuthorNameUsingPOST" >getAuthorNameUsingPOST</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#listPadsOfAuthorUsingGET" >listPadsOfAuthorUsingGET</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#listPadsOfAuthorUsingPOST" >listPadsOfAuthorUsingPOST</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#listSessionsOfAuthorUsingGET" >listSessionsOfAuthorUsingGET</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#listSessionsOfAuthorUsingPOST" >listSessionsOfAuthorUsingPOST</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="configuration"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>configuration</b></span>
+                        <a href="#configuration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Configuration.html" target="_self" >Configuration | undefined</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/BaseAPI.html" target="_self" >BaseAPI</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseAPI.html#source" target="_self" >BaseAPI:50</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createAuthorIfNotExistsForUsingGET"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>createAuthorIfNotExistsForUsingGET</b></span>
+                        <a href="#createAuthorIfNotExistsForUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createAuthorIfNotExistsForUsingGET(authorMapper?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, name?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="796"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:796</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorMapper</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>name</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createAuthorIfNotExistsForUsingPOST"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>createAuthorIfNotExistsForUsingPOST</b></span>
+                        <a href="#createAuthorIfNotExistsForUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createAuthorIfNotExistsForUsingPOST(authorMapper?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, name?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="809"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:809</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorMapper</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>name</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createAuthorUsingGET"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>createAuthorUsingGET</b></span>
+                        <a href="#createAuthorUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createAuthorUsingGET(name?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="821"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:821</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>name</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createAuthorUsingPOST"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>createAuthorUsingPOST</b></span>
+                        <a href="#createAuthorUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createAuthorUsingPOST(name?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="833"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:833</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>name</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAuthorNameUsingGET"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getAuthorNameUsingGET</b></span>
+                        <a href="#getAuthorNameUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAuthorNameUsingGET(authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="845"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:845</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAuthorNameUsingPOST"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getAuthorNameUsingPOST</b></span>
+                        <a href="#getAuthorNameUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAuthorNameUsingPOST(authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="857"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:857</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listPadsOfAuthorUsingGET"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>listPadsOfAuthorUsingGET</b></span>
+                        <a href="#listPadsOfAuthorUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listPadsOfAuthorUsingGET(authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="869"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:869</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listPadsOfAuthorUsingPOST"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>listPadsOfAuthorUsingPOST</b></span>
+                        <a href="#listPadsOfAuthorUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listPadsOfAuthorUsingPOST(authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="881"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:881</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listSessionsOfAuthorUsingGET"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>listSessionsOfAuthorUsingGET</b></span>
+                        <a href="#listSessionsOfAuthorUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listSessionsOfAuthorUsingGET(authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="893"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:893</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listSessionsOfAuthorUsingPOST"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>listSessionsOfAuthorUsingPOST</b></span>
+                        <a href="#listSessionsOfAuthorUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listSessionsOfAuthorUsingPOST(authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="905"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/author-api.ts:905</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import globalAxios, { AxiosPromise, AxiosInstance } from &#x27;axios&#x27;;
+import { Configuration } from &#x27;../configuration&#x27;;
+// Some imports not used depending on template conditions
+// @ts-ignore
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from &#x27;../common&#x27;;
+// @ts-ignore
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from &#x27;../base&#x27;;
+// @ts-ignore
+import { InlineResponse20015 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse2002 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse2003 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse2006 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse400 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse401 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse500 } from &#x27;../models&#x27;;
+/**
+ * AuthorApi - axios parameter creator
+ * @export
+ */
+export const AuthorApiAxiosParamCreator &#x3D; function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingGET: async (authorMapper?: string, name?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/createAuthorIfNotExistsFor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorMapper !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorMapper&#x27;] &#x3D; authorMapper;
+            }
+
+            if (name !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;name&#x27;] &#x3D; name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingPOST: async (authorMapper?: string, name?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/createAuthorIfNotExistsFor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorMapper !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorMapper&#x27;] &#x3D; authorMapper;
+            }
+
+            if (name !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;name&#x27;] &#x3D; name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingGET: async (name?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/createAuthor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (name !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;name&#x27;] &#x3D; name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingPOST: async (name?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/createAuthor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (name !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;name&#x27;] &#x3D; name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingGET: async (authorID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/getAuthorName&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingPOST: async (authorID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/getAuthorName&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingGET: async (authorID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/listPadsOfAuthor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingPOST: async (authorID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/listPadsOfAuthor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingGET: async (authorID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/listSessionsOfAuthor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingPOST: async (authorID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/listSessionsOfAuthor&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AuthorApi - functional programming interface
+ * @export
+ */
+export const AuthorApiFp &#x3D; function(configuration?: Configuration) {
+    const localVarAxiosParamCreator &#x3D; AuthorApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2003&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createAuthorIfNotExistsForUsingGET(authorMapper, name, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2003&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createAuthorIfNotExistsForUsingPOST(authorMapper, name, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorUsingGET(name?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2003&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createAuthorUsingGET(name, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorUsingPOST(name?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2003&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createAuthorUsingPOST(name, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAuthorNameUsingGET(authorID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse20015&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.getAuthorNameUsingGET(authorID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAuthorNameUsingPOST(authorID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse20015&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.getAuthorNameUsingPOST(authorID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPadsOfAuthorUsingGET(authorID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2002&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listPadsOfAuthorUsingGET(authorID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPadsOfAuthorUsingPOST(authorID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2002&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listPadsOfAuthorUsingPOST(authorID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsOfAuthorUsingGET(authorID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2006&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listSessionsOfAuthorUsingGET(authorID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2006&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listSessionsOfAuthorUsingPOST(authorID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * AuthorApi - factory interface
+ * @export
+ */
+export const AuthorApiFactory &#x3D; function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp &#x3D; AuthorApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt; {
+            return localVarFp.createAuthorIfNotExistsForUsingGET(authorMapper, name, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt; {
+            return localVarFp.createAuthorIfNotExistsForUsingPOST(authorMapper, name, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingGET(name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt; {
+            return localVarFp.createAuthorUsingGET(name, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingPOST(name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt; {
+            return localVarFp.createAuthorUsingPOST(name, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingGET(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse20015&gt; {
+            return localVarFp.getAuthorNameUsingGET(authorID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingPOST(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse20015&gt; {
+            return localVarFp.getAuthorNameUsingPOST(authorID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt; {
+            return localVarFp.listPadsOfAuthorUsingGET(authorID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt; {
+            return localVarFp.listPadsOfAuthorUsingPOST(authorID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt; {
+            return localVarFp.listSessionsOfAuthorUsingGET(authorID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt; {
+            return localVarFp.listSessionsOfAuthorUsingPOST(authorID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AuthorApi - interface
+ * @export
+ * @interface AuthorApi
+ */
+export interface AuthorApiInterface {
+    /**
+     * 
+     * @summary this functions helps you to map your application author ids to Etherpad author ids
+     * @param {string} [authorMapper] 
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt;;
+
+    /**
+     * 
+     * @summary this functions helps you to map your application author ids to Etherpad author ids
+     * @param {string} [authorMapper] 
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt;;
+
+    /**
+     * 
+     * @summary creates a new author
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    createAuthorUsingGET(name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt;;
+
+    /**
+     * 
+     * @summary creates a new author
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    createAuthorUsingPOST(name?: string, options?: any): AxiosPromise&lt;InlineResponse2003&gt;;
+
+    /**
+     * 
+     * @summary Returns the Author Name of the author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    getAuthorNameUsingGET(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse20015&gt;;
+
+    /**
+     * 
+     * @summary Returns the Author Name of the author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    getAuthorNameUsingPOST(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse20015&gt;;
+
+    /**
+     * 
+     * @summary returns an array of all pads this author contributed to
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    listPadsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt;;
+
+    /**
+     * 
+     * @summary returns an array of all pads this author contributed to
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    listPadsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt;;
+
+    /**
+     * 
+     * @summary returns all sessions of an author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    listSessionsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt;;
+
+    /**
+     * 
+     * @summary returns all sessions of an author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApiInterface
+     */
+    listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt;;
+
+}
+
+/**
+ * AuthorApi - object-oriented interface
+ * @export
+ * @class AuthorApi
+ * @extends {BaseAPI}
+ */
+export class AuthorApi extends BaseAPI implements AuthorApiInterface {
+    /**
+     * 
+     * @summary this functions helps you to map your application author ids to Etherpad author ids
+     * @param {string} [authorMapper] 
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any) {
+        return AuthorApiFp(this.configuration).createAuthorIfNotExistsForUsingGET(authorMapper, name, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary this functions helps you to map your application author ids to Etherpad author ids
+     * @param {string} [authorMapper] 
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any) {
+        return AuthorApiFp(this.configuration).createAuthorIfNotExistsForUsingPOST(authorMapper, name, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new author
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorUsingGET(name?: string, options?: any) {
+        return AuthorApiFp(this.configuration).createAuthorUsingGET(name, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new author
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorUsingPOST(name?: string, options?: any) {
+        return AuthorApiFp(this.configuration).createAuthorUsingPOST(name, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Returns the Author Name of the author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public getAuthorNameUsingGET(authorID?: string, options?: any) {
+        return AuthorApiFp(this.configuration).getAuthorNameUsingGET(authorID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Returns the Author Name of the author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public getAuthorNameUsingPOST(authorID?: string, options?: any) {
+        return AuthorApiFp(this.configuration).getAuthorNameUsingPOST(authorID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns an array of all pads this author contributed to
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listPadsOfAuthorUsingGET(authorID?: string, options?: any) {
+        return AuthorApiFp(this.configuration).listPadsOfAuthorUsingGET(authorID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns an array of all pads this author contributed to
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listPadsOfAuthorUsingPOST(authorID?: string, options?: any) {
+        return AuthorApiFp(this.configuration).listPadsOfAuthorUsingPOST(authorID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns all sessions of an author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listSessionsOfAuthorUsingGET(authorID?: string, options?: any) {
+        return AuthorApiFp(this.configuration).listSessionsOfAuthorUsingGET(authorID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns all sessions of an author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listSessionsOfAuthorUsingPOST(authorID?: string, options?: any) {
+        return AuthorApiFp(this.configuration).listSessionsOfAuthorUsingPOST(authorID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'AuthorApi.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

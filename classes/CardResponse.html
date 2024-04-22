@@ -196,7 +196,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -267,7 +267,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:58</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -303,7 +303,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -339,7 +339,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -375,7 +375,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:64</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -413,7 +413,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -449,7 +449,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:61</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -472,6 +472,7 @@
 import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
 import {
 	AnyContentElementResponse,
+	CollaborativeTextEditorElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
@@ -488,7 +489,8 @@ import { VisibilitySettingsResponse } from &#x27;./visibility-settings.response&
 	LinkElementResponse,
 	RichTextElementResponse,
 	DrawingElementResponse,
-	SubmissionContainerElementResponse
+	SubmissionContainerElementResponse,
+	CollaborativeTextEditorElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -522,6 +524,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
+				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 			],
 		},
 	})

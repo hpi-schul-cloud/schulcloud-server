@@ -150,6 +150,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card } from &#x27;../card.do&#x27;;
+import { CollaborativeTextEditorElement } from &#x27;../collaborative-text-editor-element.do&#x27;;
 import type { ColumnBoard } from &#x27;../column-board.do&#x27;;
 import type { Column } from &#x27;../column.do&#x27;;
 import type { DrawingElement } from &#x27;../drawing-element.do&#x27;;
@@ -175,6 +176,7 @@ export interface ColumnBoardCompositeVisitor {
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 	visitSubmissionItem(submissionItem: SubmissionItem): void;
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void;
+	visitCollaborativeTextEditorElement(collaborativeTextEditorElement: CollaborativeTextEditorElement): void;
 }
 
 export interface ColumnBoardCompositeVisitorAsync {
@@ -188,6 +190,9 @@ export interface ColumnBoardCompositeVisitorAsync {
 	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise&lt;void&gt;;
 	visitSubmissionItemAsync(submissionItem: SubmissionItem): Promise&lt;void&gt;;
 	visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise&lt;void&gt;;
+	visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise&lt;void&gt;;
 }
 
 export interface MediaBoardCompositeVisitor {

@@ -160,6 +160,7 @@
                             <code><a href="../interfaces/SchulconnexClientConfig.html" target="_self" >SchulconnexClientConfig</a></code>
                             <code><a href="../interfaces/SynchronizationConfig.html" target="_self" >SynchronizationConfig</a></code>
                             <code><a href="../interfaces/DeletionConfig.html" target="_self" >DeletionConfig</a></code>
+                            <code><a href="../interfaces/CollaborativeTextEditorConfig.html" target="_self" >CollaborativeTextEditorConfig</a></code>
                             <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ProvisioningConfig</a></code>
             </p>
 
@@ -215,6 +216,12 @@
                                         <a href="#FEATURE_BOARD_LAYOUT_ENABLED" 
 >
                                             FEATURE_BOARD_LAYOUT_ENABLED
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED" 
+>
+                                            FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED
                                         </a>
                                 </li>
                                 <li>
@@ -676,6 +683,39 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <code>FEATURE_BOARD_LAYOUT_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED"></a>
+                                        <span class="name "><b>FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED</b>
+                                            <a href="#FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -1997,24 +2037,25 @@ import type { SchulconnexClientConfig } from &#x27;@infra/schulconnex-client&#x2
 import type { AccountConfig } from &#x27;@modules/account&#x27;;
 import type { AuthenticationConfig, XApiKeyConfig } from &#x27;@modules/authentication&#x27;;
 import type { BoardConfig } from &#x27;@modules/board&#x27;;
+import type { MediaBoardConfig } from &#x27;@modules/board/media-board.config&#x27;;
+import type { CollaborativeTextEditorConfig } from &#x27;@modules/collaborative-text-editor&#x27;;
+import { DeletionConfig } from &#x27;@modules/deletion&#x27;;
 import type { FilesStorageClientConfig } from &#x27;@modules/files-storage-client&#x27;;
+import { SynchronizationConfig } from &#x27;@modules/idp-console&#x27;;
 import type { LearnroomConfig } from &#x27;@modules/learnroom&#x27;;
 import type { LessonConfig } from &#x27;@modules/lesson&#x27;;
+import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
 import type { SchoolConfig } from &#x27;@modules/school&#x27;;
 import type { SharingConfig } from &#x27;@modules/sharing&#x27;;
 import { getTldrawClientConfig, type TldrawClientConfig } from &#x27;@modules/tldraw-client&#x27;;
-import { type IToolFeatures, ToolConfiguration } from &#x27;@modules/tool&#x27;;
+import { ToolConfiguration, type IToolFeatures } from &#x27;@modules/tool&#x27;;
 import type { UserConfig } from &#x27;@modules/user&#x27;;
-import { type IUserImportFeatures, UserImportConfiguration } from &#x27;@modules/user-import&#x27;;
+import { UserImportConfiguration, type IUserImportFeatures } from &#x27;@modules/user-import&#x27;;
 import type { UserLoginMigrationConfig } from &#x27;@modules/user-login-migration&#x27;;
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from &#x27;@modules/video-conference&#x27;;
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from &#x27;@modules/video-conference&#x27;;
 import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import type { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
-import { DeletionConfig } from &#x27;@modules/deletion&#x27;;
-import type { MediaBoardConfig } from &#x27;@modules/board/media-board.config&#x27;;
-import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
-import { SynchronizationConfig } from &#x27;@modules/idp-console&#x27;;
 import { SchulcloudTheme } from &#x27;./types/schulcloud-theme.enum&#x27;;
 import { Timezone } from &#x27;./types/timezone.enum&#x27;;
 
@@ -2050,6 +2091,7 @@ export interface ServerConfig
 		SchulconnexClientConfig,
 		SynchronizationConfig,
 		DeletionConfig,
+		CollaborativeTextEditorConfig,
 		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -2068,6 +2110,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_LOGIN_LINK_ENABLED: boolean;
@@ -2116,6 +2159,9 @@ const config: ServerConfig &#x3D; {
 	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get(&#x27;FEATURE_COLUMN_BOARD_ENABLED&#x27;) as boolean,
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get(&#x27;FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED&#x27;) as boolean,
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get(&#x27;FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED&#x27;) as boolean,
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: Configuration.get(
+		&#x27;FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED&#x27;
+	) as boolean,
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: Configuration.get(
 		&#x27;FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED&#x27;
 	) as boolean,
@@ -2198,9 +2244,8 @@ const config: ServerConfig &#x3D; {
 		: undefined,
 	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get(&#x27;FEATURE_NEXBOARD_COPY_ENABLED&#x27;) as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get(&#x27;FEATURE_ETHERPAD_ENABLED&#x27;) as boolean,
-	ETHERPAD__PAD_URI: Configuration.has(&#x27;ETHERPAD__PAD_URI&#x27;)
-		? (Configuration.get(&#x27;ETHERPAD__PAD_URI&#x27;) as string)
-		: undefined,
+	ETHERPAD__PAD_URI: Configuration.get(&#x27;ETHERPAD__PAD_URI&#x27;) as string,
+	ETHERPAD_COOKIE__EXPIRES_SECONDS: Configuration.get(&#x27;ETHERPAD_COOKIE__EXPIRES_SECONDS&#x27;) as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;) as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as unknown as LanguageType,

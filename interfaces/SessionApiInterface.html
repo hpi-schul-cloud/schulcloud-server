@@ -1,0 +1,1437 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  SessionApiInterface</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>SessionApi - interface</p>
+
+            </p>
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Methods</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#createSessionUsingGET" 
+>
+                                        createSessionUsingGET
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#createSessionUsingPOST" 
+>
+                                        createSessionUsingPOST
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#deleteSessionUsingGET" 
+>
+                                        deleteSessionUsingGET
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#deleteSessionUsingPOST" 
+>
+                                        deleteSessionUsingPOST
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#getSessionInfoUsingGET" 
+>
+                                        getSessionInfoUsingGET
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#getSessionInfoUsingPOST" 
+>
+                                        getSessionInfoUsingPOST
+                                    </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createSessionUsingGET"></a>
+                    <span class="name">
+                        <span ><b>createSessionUsingGET</b></span>
+                        <a href="#createSessionUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createSessionUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, validUntil?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="462"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts:462</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>groupID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>validUntil</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2004&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createSessionUsingPOST"></a>
+                    <span class="name">
+                        <span ><b>createSessionUsingPOST</b></span>
+                        <a href="#createSessionUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createSessionUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, validUntil?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="474"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts:474</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>groupID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>authorID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>validUntil</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2004&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteSessionUsingGET"></a>
+                    <span class="name">
+                        <span ><b>deleteSessionUsingGET</b></span>
+                        <a href="#deleteSessionUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteSessionUsingGET(sessionID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="484"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts:484</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>sessionID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2001&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteSessionUsingPOST"></a>
+                    <span class="name">
+                        <span ><b>deleteSessionUsingPOST</b></span>
+                        <a href="#deleteSessionUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteSessionUsingPOST(sessionID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="494"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts:494</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>sessionID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2001&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSessionInfoUsingGET"></a>
+                    <span class="name">
+                        <span ><b>getSessionInfoUsingGET</b></span>
+                        <a href="#getSessionInfoUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSessionInfoUsingGET(sessionID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="504"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts:504</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>sessionID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2005&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSessionInfoUsingPOST"></a>
+                    <span class="name">
+                        <span ><b>getSessionInfoUsingPOST</b></span>
+                        <a href="#getSessionInfoUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSessionInfoUsingPOST(sessionID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="514"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/session-api.ts:514</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>sessionID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2005&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import globalAxios, { AxiosPromise, AxiosInstance } from &#x27;axios&#x27;;
+import { Configuration } from &#x27;../configuration&#x27;;
+// Some imports not used depending on template conditions
+// @ts-ignore
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from &#x27;../common&#x27;;
+// @ts-ignore
+import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from &#x27;../base&#x27;;
+// @ts-ignore
+import { InlineResponse2001 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse2004 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse2005 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse400 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse401 } from &#x27;../models&#x27;;
+// @ts-ignore
+import { InlineResponse500 } from &#x27;../models&#x27;;
+/**
+ * SessionApi - axios parameter creator
+ * @export
+ */
+export const SessionApiAxiosParamCreator &#x3D; function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingGET: async (groupID?: string, authorID?: string, validUntil?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/createSession&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (groupID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;groupID&#x27;] &#x3D; groupID;
+            }
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+            if (validUntil !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;validUntil&#x27;] &#x3D; validUntil;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingPOST: async (groupID?: string, authorID?: string, validUntil?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/createSession&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (groupID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;groupID&#x27;] &#x3D; groupID;
+            }
+
+            if (authorID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;authorID&#x27;] &#x3D; authorID;
+            }
+
+            if (validUntil !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;validUntil&#x27;] &#x3D; validUntil;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingGET: async (sessionID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/deleteSession&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (sessionID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;sessionID&#x27;] &#x3D; sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingPOST: async (sessionID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/deleteSession&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (sessionID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;sessionID&#x27;] &#x3D; sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingGET: async (sessionID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/getSessionInfo&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;GET&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (sessionID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;sessionID&#x27;] &#x3D; sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingPOST: async (sessionID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            const localVarPath &#x3D; &#x60;/getSessionInfo&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, &quot;apikey&quot;, configuration)
+
+            if (sessionID !&#x3D;&#x3D; undefined) {
+                localVarQueryParameter[&#x27;sessionID&#x27;] &#x3D; sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * SessionApi - functional programming interface
+ * @export
+ */
+export const SessionApiFp &#x3D; function(configuration?: Configuration) {
+    const localVarAxiosParamCreator &#x3D; SessionApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2004&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createSessionUsingGET(groupID, authorID, validUntil, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2004&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createSessionUsingPOST(groupID, authorID, validUntil, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSessionUsingGET(sessionID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2001&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.deleteSessionUsingGET(sessionID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSessionUsingPOST(sessionID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2001&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.deleteSessionUsingPOST(sessionID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSessionInfoUsingGET(sessionID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2005&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.getSessionInfoUsingGET(sessionID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSessionInfoUsingPOST(sessionID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2005&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.getSessionInfoUsingPOST(sessionID, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * SessionApi - factory interface
+ * @export
+ */
+export const SessionApiFactory &#x3D; function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp &#x3D; SessionApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise&lt;InlineResponse2004&gt; {
+            return localVarFp.createSessionUsingGET(groupID, authorID, validUntil, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise&lt;InlineResponse2004&gt; {
+            return localVarFp.createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingGET(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt; {
+            return localVarFp.deleteSessionUsingGET(sessionID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingPOST(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt; {
+            return localVarFp.deleteSessionUsingPOST(sessionID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingGET(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2005&gt; {
+            return localVarFp.getSessionInfoUsingGET(sessionID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingPOST(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2005&gt; {
+            return localVarFp.getSessionInfoUsingPOST(sessionID, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * SessionApi - interface
+ * @export
+ * @interface SessionApi
+ */
+export interface SessionApiInterface {
+    /**
+     * 
+     * @summary creates a new session. validUntil is an unix timestamp in seconds
+     * @param {string} [groupID] 
+     * @param {string} [authorID] 
+     * @param {string} [validUntil] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApiInterface
+     */
+    createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise&lt;InlineResponse2004&gt;;
+
+    /**
+     * 
+     * @summary creates a new session. validUntil is an unix timestamp in seconds
+     * @param {string} [groupID] 
+     * @param {string} [authorID] 
+     * @param {string} [validUntil] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApiInterface
+     */
+    createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise&lt;InlineResponse2004&gt;;
+
+    /**
+     * 
+     * @summary deletes a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApiInterface
+     */
+    deleteSessionUsingGET(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt;;
+
+    /**
+     * 
+     * @summary deletes a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApiInterface
+     */
+    deleteSessionUsingPOST(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt;;
+
+    /**
+     * 
+     * @summary returns information about a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApiInterface
+     */
+    getSessionInfoUsingGET(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2005&gt;;
+
+    /**
+     * 
+     * @summary returns information about a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApiInterface
+     */
+    getSessionInfoUsingPOST(sessionID?: string, options?: any): AxiosPromise&lt;InlineResponse2005&gt;;
+
+}
+
+/**
+ * SessionApi - object-oriented interface
+ * @export
+ * @class SessionApi
+ * @extends {BaseAPI}
+ */
+export class SessionApi extends BaseAPI implements SessionApiInterface {
+    /**
+     * 
+     * @summary creates a new session. validUntil is an unix timestamp in seconds
+     * @param {string} [groupID] 
+     * @param {string} [authorID] 
+     * @param {string} [validUntil] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any) {
+        return SessionApiFp(this.configuration).createSessionUsingGET(groupID, authorID, validUntil, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new session. validUntil is an unix timestamp in seconds
+     * @param {string} [groupID] 
+     * @param {string} [authorID] 
+     * @param {string} [validUntil] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any) {
+        return SessionApiFp(this.configuration).createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public deleteSessionUsingGET(sessionID?: string, options?: any) {
+        return SessionApiFp(this.configuration).deleteSessionUsingGET(sessionID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public deleteSessionUsingPOST(sessionID?: string, options?: any) {
+        return SessionApiFp(this.configuration).deleteSessionUsingPOST(sessionID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns information about a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public getSessionInfoUsingGET(sessionID?: string, options?: any) {
+        return SessionApiFp(this.configuration).getSessionInfoUsingGET(sessionID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns information about a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public getSessionInfoUsingPOST(sessionID?: string, options?: any) {
+        return SessionApiFp(this.configuration).getSessionInfoUsingPOST(sessionID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'SessionApiInterface.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

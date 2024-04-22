@@ -161,6 +161,9 @@
                             <a href="#ClassSortBy" title="apps/server/src/modules/group/controller/dto/interface/class-sort-by.enum.ts" ><b>ClassSortBy</b>&nbsp;&nbsp;&nbsp;(apps/.../class-sort-by.enum.ts)</a>
                         </li>
                         <li>
+                            <a href="#CollaborativeTextEditorParentType" title="apps/server/src/modules/collaborative-text-editor/api/dto/get-collaborative-text-editor-for-parent.params.ts" ><b>CollaborativeTextEditorParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../get-collaborative-text-editor-for-parent.params.ts)</a>
+                        </li>
+                        <li>
                             <a href="#CommonCartridgeElementType" title="apps/server/src/modules/common-cartridge/export/common-cartridge.enums.ts" ><b>CommonCartridgeElementType</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge.enums.ts)</a>
                         </li>
                         <li>
@@ -237,6 +240,9 @@
                         </li>
                         <li>
                             <a href="#ErrorType" title="apps/server/src/modules/files-storage/error/error-status.enum.ts" ><b>ErrorType</b>&nbsp;&nbsp;&nbsp;(apps/.../error-status.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#EtherpadErrorType" title="apps/server/src/infra/etherpad-client/interface/etherpad-error-type.enum.ts" ><b>EtherpadErrorType</b>&nbsp;&nbsp;&nbsp;(apps/.../etherpad-error-type.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#ExternalToolParameterDatasheetTemplateProperty" title="apps/server/src/modules/tool/external-tool/domain/datasheet/external-tool-parameter-datasheet-template-property.ts" ><b>ExternalToolParameterDatasheetTemplateProperty</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-parameter-datasheet-template-property.ts)</a>
@@ -992,6 +998,16 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
+                                &nbsp;COLLABORATIVE_TEXT_EDITOR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>collaborative-text-editor</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
                                 &nbsp;MEDIA_BOARD
                             </td>
                         </tr>
@@ -1213,6 +1229,29 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>teacherNames</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/collaborative-text-editor/api/dto/get-collaborative-text-editor-for-parent.params.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="CollaborativeTextEditorParentType"></a>
+                        <span class="name "><b>CollaborativeTextEditorParentType</b><a href="#CollaborativeTextEditorParentType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BOARD_CONTENT_ELEMENT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>content-element</code>
                             </td>
                         </tr>
             </tbody>
@@ -1658,6 +1697,16 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>externalTool</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;COLLABORATIVE_TEXT_EDITOR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>collaborativeTextEditor</code>
                             </td>
                         </tr>
             </tbody>
@@ -3219,6 +3268,69 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>PREVIEW_NOT_POSSIBLE</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/infra/etherpad-client/interface/etherpad-error-type.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="EtherpadErrorType"></a>
+                        <span class="name "><b>EtherpadErrorType</b><a href="#EtherpadErrorType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BAD_REQUEST
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>BAD_REQUEST</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;INTERNAL_ERROR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>INTERNAL_ERROR</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;FUNCTION_NOT_FOUND
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>FUNCTION_NOT_FOUND</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WRONG_API_KEY
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>WRONG_API_KEY</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;CONNECTION_ERROR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>CONNECTION_ERROR</code>
                             </td>
                         </tr>
             </tbody>

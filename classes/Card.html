@@ -296,7 +296,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:38</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:40</a></code>
 </div>
                         </td>
                     </tr>
@@ -371,7 +371,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:42</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:44</a></code>
 </div>
                         </td>
                     </tr>
@@ -444,7 +444,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:27</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:28</a></code>
 </div>
                         </td>
                     </tr>
@@ -870,7 +870,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:11</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:12</a></div>
                                 </td>
                             </tr>
 
@@ -881,7 +881,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:15</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:16</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -939,7 +939,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:19</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:20</a></div>
                                 </td>
                             </tr>
 
@@ -950,7 +950,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:23</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:24</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -999,6 +999,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
 import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+import { CollaborativeTextEditorElement } from &#x27;./collaborative-text-editor-element.do&#x27;;
 import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { LinkElement } from &#x27;./link-element.do&#x27;;
@@ -1030,7 +1031,8 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 			domainObject instanceof LinkElement ||
 			domainObject instanceof RichTextElement ||
 			domainObject instanceof SubmissionContainerElement ||
-			domainObject instanceof ExternalToolElement;
+			domainObject instanceof ExternalToolElement ||
+			domainObject instanceof CollaborativeTextEditorElement;
 		return allowed;
 	}
 
