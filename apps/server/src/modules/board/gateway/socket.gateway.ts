@@ -157,6 +157,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		const { userId } = this.getCurrentUser(client);
 		await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 		client.broadcast.emit('move-card-success', data);
+		client.emit('move-card-success', data);
 	}
 
 	@SubscribeMessage('move-column-request')
@@ -183,6 +184,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		const { userId } = this.getCurrentUser(client);
 		await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 		client.broadcast.emit('update-column-title-success', data);
+		client.emit('update-column-title-success', data);
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
@@ -201,6 +203,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		const { userId } = this.getCurrentUser(client);
 		await this.columnUc.deleteColumn(userId, data.columnId);
 		client.broadcast.emit('delete-column-success', data);
+		client.emit('delete-column-success', data);
 	}
 
 	@SubscribeMessage('reload-board-request')

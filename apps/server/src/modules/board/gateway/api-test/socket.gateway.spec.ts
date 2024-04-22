@@ -4,6 +4,7 @@ import { Test } from '@nestjs/testing';
 
 import { BoardExternalReferenceType, CardProps } from '@shared/domain/domainobject';
 import {
+	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
@@ -17,6 +18,14 @@ import { Request } from 'express';
 import { Socket, io } from 'socket.io-client';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { SocketGateway } from '../socket.gateway';
+
+async function waitForEvent(socket: Socket, eventName: string): Promise<unknown> {
+	return new Promise((resolve) => {
+		socket.on(eventName, (data: unknown) => {
+			resolve(data);
+		});
+	});
+}
 
 describe('SocketGateway', () => {
 	let gateway: SocketGateway;
@@ -51,51 +60,96 @@ describe('SocketGateway', () => {
 			path: '/collaboration',
 			transports: ['websocket', 'polling'],
 		});
+		ioClient.connect();
 
 		await app.listen(3031);
 	});
 
 	afterAll(async () => {
+		ioClient.disconnect();
 		await app.close();
 	});
+
+	const setup = async () => {
+		await cleanupCollections(em);
+		const user = userFactory.build();
+		currentUser = mapUserToCurrentUser(user);
+
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
+
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
+
+		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+		const cardNodes = cardNodeFactory.buildList(2, { parent: columnNode });
+
+		await em.persistAndFlush([columnBoardNode, columnNode, ...cardNodes]);
+		em.clear();
+
+		return { user, columnBoardNode, columnNode, cardNodes };
+	};
 
 	it('should be defined', () => {
 		expect(gateway).toBeDefined();
 	});
 
 	describe('create card', () => {
-		const setup = async () => {
-			await cleanupCollections(em);
-			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
-			await em.persistAndFlush([user, course]);
-
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
-				context: { id: course.id, type: BoardExternalReferenceType.Course },
-			});
-
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-
-			await em.persistAndFlush([columnBoardNode, columnNode]);
-			em.clear();
-
-			return { user, columnBoardNode, columnNode };
-		};
-
 		it('should answer with new card', async () => {
 			const { user, columnNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
-			ioClient.connect();
 
 			ioClient.emit('create-card-request', { columnId: columnNode.id });
+			const success = (await waitForEvent(ioClient, 'create-card-success')) as { columnId: string; newCard: CardProps };
 
-			await new Promise<void>((resolve) => {
-				ioClient.on('create-card-success', (data: { newCard: CardProps; columnId: string }) => {
-					expect(data?.newCard).toEqual(expect.objectContaining({ id: expect.any(String) }));
-					resolve();
-				});
-			});
-			ioClient.disconnect();
+			expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'newCard']));
+		});
+	});
+
+	describe('move card', () => {
+		it('should answer with success', async () => {
+			const { user, columnNode, cardNodes } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const moveCardProps = {
+				cardId: cardNodes[0].id,
+				oldIndex: 0,
+				newIndex: 1,
+				fromColumnId: columnNode.id,
+				toColumnId: columnNode.id,
+			};
+
+			ioClient.emit('move-card-request', moveCardProps);
+			const success = await waitForEvent(ioClient, 'move-card-success');
+
+			expect(success).toEqual(expect.objectContaining(moveCardProps));
+		});
+	});
+
+	describe('update column title', () => {
+		it('should answer with success', async () => {
+			const { user, columnNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('update-column-title-request', { columnId: columnNode.id, newTitle: 'new title' });
+			const success = await waitForEvent(ioClient, 'update-column-title-success');
+
+			expect(success).toEqual(expect.objectContaining({ columnId: columnNode.id }));
+		});
+	});
+
+	describe('delete column', () => {
+		it('should answer with success', async () => {
+			const { user, columnNode } = await setup();
+			const columnId = columnNode.id;
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('delete-column-request', { columnId });
+			const success = await waitForEvent(ioClient, 'delete-column-success');
+
+			expect(success).toEqual(expect.objectContaining({ columnId }));
 		});
 	});
 });
