@@ -5,7 +5,7 @@ import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
 export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
-	@ApiProperty()
+	@ApiProperty({ enum: ToolConfigType, enumName: 'ToolConfigType' })
 	type!: ToolConfigType;
 
 	@IsString()
@@ -22,11 +22,11 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 	secret?: string;
 
 	@IsEnum(LtiMessageType)
-	@ApiProperty()
+	@ApiProperty({ enum: LtiMessageType, enumName: 'LtiMessageType' })
 	lti_message_type!: LtiMessageType;
 
 	@IsEnum(LtiPrivacyPermission)
-	@ApiProperty()
+	@ApiProperty({ enum: LtiPrivacyPermission, enumName: 'LtiPrivacyPermission' })
 	privacy_permission!: LtiPrivacyPermission;
 
 	@IsLocale()

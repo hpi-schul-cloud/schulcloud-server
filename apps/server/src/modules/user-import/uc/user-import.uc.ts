@@ -1,6 +1,7 @@
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
@@ -246,6 +247,7 @@ export class UserImportUc {
 		this.checkSchoolNotInMigration(school);
 		if (useWithUserLoginMigration) {
 			await this.checkSchoolMigrated(currentUser.school.id, school);
+			await this.checkMigrationActive(currentUser.school.id);
 		} else {
 			await this.checkNoExistingLdapBeforeStart(school);
 		}
@@ -281,6 +283,16 @@ export class UserImportUc {
 
 		if (!school.systems?.includes(userLoginMigration.targetSystemId)) {
 			throw new SchoolNotMigratedLoggableException(schoolId);
+		}
+	}
+
+	private async checkMigrationActive(schoolId: EntityId): Promise<void> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
+		);
+
+		if (!userLoginMigration || userLoginMigration?.closedAt) {
+			throw new UserLoginMigrationNotActiveLoggableException(schoolId);
 		}
 	}
 
