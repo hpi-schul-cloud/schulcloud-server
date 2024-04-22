@@ -11,6 +11,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { CollaborativeTextEditorModule } from '../collaborative-text-editor/collaborative-text-editor.module';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -40,6 +41,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ToolConfigModule,
 		TldrawClientModule,
 		CqrsModule,
+		CollaborativeTextEditorModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module

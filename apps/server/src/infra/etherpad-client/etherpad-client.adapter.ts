@@ -10,7 +10,7 @@ import {
 	InlineResponse2006,
 	InlineResponse2006Data,
 } from './etherpad-api-client';
-import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
+import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
 import { EtherpadResponseMapper } from './mappers';
 
@@ -19,7 +19,8 @@ export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
-		private readonly authorApi: AuthorApi
+		private readonly authorApi: AuthorApi,
+		private readonly padApi: PadApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
@@ -186,6 +187,11 @@ export class EtherpadClientAdapter {
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { groupId }, error);
 		}
+	}
+
+	public async deletePad(padId: PadId): Promise<void> {
+		await this.padApi.deletePadUsingPOST(padId);
+		// TODO: Error Mapper
 	}
 
 	private handleResponse<T extends EtherpadResponse>(

@@ -23,6 +23,7 @@ import type {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { BoardNode } from '@shared/domain/entity';
+import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor/service/collaborative-text-editor.service';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
@@ -30,7 +31,8 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		private readonly em: EntityManager,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly drawingElementAdapterService: DrawingElementAdapterService
+		private readonly drawingElementAdapterService: DrawingElementAdapterService,
+		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
 	) {}
 
 	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
@@ -104,6 +106,7 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitCollaborativeTextEditorElementAsync(
 		collaborativeTextEditorElement: CollaborativeTextEditorElement
 	): Promise<void> {
+		await this.collaborativeTextEditorService.deleteCollaborativeTextEditor(collaborativeTextEditorElement.id);
 		this.deleteNode(collaborativeTextEditorElement);
 		await this.visitChildrenAsync(collaborativeTextEditorElement);
 	}
