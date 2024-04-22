@@ -4,4 +4,6 @@ export interface ExternalToolSearchQuery {
 	clientId?: string;
 
 	isHidden?: boolean;
+
+	ids?: string[];
 }

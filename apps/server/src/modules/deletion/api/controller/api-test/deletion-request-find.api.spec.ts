@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { TestXApiKeyClient, cleanupCollections } from '@shared/testing';
+import { TestApiClient, cleanupCollections } from '@shared/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 import { DeletionRequestLogResponse } from '../dto';
@@ -13,7 +13,7 @@ const baseRouteName = '/deletionRequests';
 describe(`deletionRequest find (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testXApiKeyClient: TestXApiKeyClient;
+	let testApiClient: TestApiClient;
 	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
@@ -33,7 +33,7 @@ describe(`deletionRequest find (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
+		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -54,7 +54,7 @@ describe(`deletionRequest find (api)`, () => {
 			it('should return status 202', async () => {
 				const { deletionRequest } = await setup();
 
-				const response = await testXApiKeyClient.get(`${deletionRequest.id}`);
+				const response = await testApiClient.get(`${deletionRequest.id}`);
 
 				expect(response.status).toEqual(200);
 			});
@@ -62,7 +62,7 @@ describe(`deletionRequest find (api)`, () => {
 			it('should return the found deletionRequest', async () => {
 				const { deletionRequest } = await setup();
 
-				const response = await testXApiKeyClient.get(`${deletionRequest.id}`);
+				const response = await testApiClient.get(`${deletionRequest.id}`);
 				const result = response.body as DeletionRequestLogResponse;
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

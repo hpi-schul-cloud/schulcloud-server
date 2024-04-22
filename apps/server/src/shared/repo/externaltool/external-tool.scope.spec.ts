@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolScope } from '@shared/repo/externaltool/external-tool.scope';
 
 describe('ExternalToolScope', () => {
@@ -48,8 +49,21 @@ describe('ExternalToolScope', () => {
 			expect(scope.query).toEqual({ isHidden: param });
 		});
 
-		it('should return scope without added isTemplate to query', () => {
+		it('should return scope without added isHidden to query', () => {
 			scope.byHidden(undefined);
+			expect(scope.query).toEqual({});
+		});
+	});
+
+	describe('byIds', () => {
+		it('should return scope with added ids to query', () => {
+			const param = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+			scope.byIds(param);
+			expect(scope.query).toEqual({ id: { $in: param } });
+		});
+
+		it('should return scope without added ids to query', () => {
+			scope.byIds(undefined);
 			expect(scope.query).toEqual({});
 		});
 	});

@@ -106,7 +106,7 @@ describe('CoursePermissionService', () => {
 
 	before(async () => {
 		app = await appPromise();
-		coursePermissionService = app.service('/courses/:scopeId/userPermissions');
+		coursePermissionService = app.service('/coursesUserPermissions/:scopeId');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 

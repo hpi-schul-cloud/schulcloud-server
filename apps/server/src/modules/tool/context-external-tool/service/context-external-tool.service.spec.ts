@@ -1,6 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
@@ -9,19 +12,15 @@ import {
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Permission } from '@shared/domain/interface';
-import { ToolContextType } from '../../common/enum';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolService } from './context-external-tool.service';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
-import { CommonToolService } from '../../common/service';
 import { CustomParameter } from '../../common/domain';
+import { ToolContextType } from '../../common/enum';
+import { CommonToolService } from '../../common/service';
+import { ExternalToolService } from '../../external-tool';
+import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { ContextExternalTool, ContextRef, RestrictedContextMismatchLoggableException } from '../domain';
+import { ContextExternalToolService } from './context-external-tool.service';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -291,7 +290,7 @@ describe('ContextExternalToolService', () => {
 		describe('when contexts are not restricted', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -345,7 +344,7 @@ describe('ContextExternalToolService', () => {
 				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
 				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [ToolContextType.COURSE] });
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: { type: ToolContextType.COURSE },
 				});
@@ -376,7 +375,7 @@ describe('ContextExternalToolService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: { type: ToolContextType.COURSE },
 				});
@@ -397,7 +396,7 @@ describe('ContextExternalToolService', () => {
 				const { contextExternalTool, externalTool } = setup();
 
 				await expect(service.checkContextRestrictions(contextExternalTool)).rejects.toThrow(
-					new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type)
+					new RestrictedContextMismatchLoggableException(externalTool.name, contextExternalTool.contextRef.type)
 				);
 			});
 		});
@@ -414,7 +413,9 @@ describe('ContextExternalToolService', () => {
 				parameters: [protectedParam, unprotectedParam],
 			});
 
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+				toolId: externalTool.id,
+			}) as SchoolExternalToolWithId;
 
 			const unusedParam: CustomParameter = customParameterFactory.build();
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({

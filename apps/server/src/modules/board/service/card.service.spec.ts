@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, ContentElementType } from '@shared/domain/domainobject';
+import { Card, CardInitProps, ContentElementType } from '@shared/domain/domainobject';
 import { setupEntities } from '@shared/testing';
 import {
 	cardFactory,
@@ -148,6 +148,7 @@ describe(CardService.name, () => {
 					column
 				);
 			});
+
 			it('contentElementService.create should be called with given parameters', async () => {
 				const { column, createCardBodyParams } = setup();
 
@@ -161,6 +162,37 @@ describe(CardService.name, () => {
 					2,
 					expect.anything(),
 					ContentElementType.RICH_TEXT
+				);
+			});
+		});
+
+		describe('when creating a card with initial props', () => {
+			const setup = () => {
+				const column = columnFactory.build();
+				const cardInitProps: CardInitProps = {
+					title: 'card #1',
+					height: 42,
+				};
+
+				return { column, cardInitProps };
+			};
+
+			it('should set and save card with initial props', async () => {
+				const { column, cardInitProps } = setup();
+
+				await service.create(column, undefined, cardInitProps);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					[
+						expect.objectContaining({
+							id: expect.any(String),
+							title: cardInitProps.title,
+							height: cardInitProps.height,
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+					],
+					column
 				);
 			});
 		});

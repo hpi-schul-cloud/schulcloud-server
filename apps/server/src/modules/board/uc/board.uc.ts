@@ -40,7 +40,8 @@ export class BoardUc extends BaseUc {
 		});
 
 		const context = { type: params.parentType, id: params.parentId };
-		const board = await this.columnBoardService.create(context, params.title);
+
+		const board = await this.columnBoardService.create(context, params.layout, params.title);
 
 		return board;
 	}

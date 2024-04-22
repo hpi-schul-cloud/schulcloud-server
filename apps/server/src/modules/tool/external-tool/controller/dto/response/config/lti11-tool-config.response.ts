@@ -3,7 +3,7 @@ import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../.
 import { ExternalToolConfigResponse } from './external-tool-config.response';
 
 export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
-	@ApiProperty()
+	@ApiProperty({ enum: ToolConfigType, enumName: 'ToolConfigType' })
 	type: ToolConfigType;
 
 	@ApiProperty()
@@ -12,10 +12,10 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()
 	key: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: LtiMessageType, enumName: 'LtiMessageType' })
 	lti_message_type: LtiMessageType;
 
-	@ApiProperty()
+	@ApiProperty({ enum: LtiPrivacyPermission, enumName: 'LtiPrivacyPermission' })
 	privacy_permission: LtiPrivacyPermission;
 
 	@ApiProperty()
