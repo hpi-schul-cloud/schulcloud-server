@@ -1,9 +1,10 @@
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { HttpStatus } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 
 export class ContextExternalToolNameAlreadyExistsLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolName: string | undefined) {
+	constructor(private readonly toolId: EntityId | undefined, private readonly toolName: string | undefined) {
 		super(
 			{
 				type: 'CONTEXT_EXTERNAL_TOOL_NAME_ALREADY_EXISTS',
@@ -13,6 +14,7 @@ export class ContextExternalToolNameAlreadyExistsLoggableException extends Busin
 			},
 			HttpStatus.BAD_REQUEST,
 			{
+				toolId,
 				toolName,
 			}
 		);
@@ -24,6 +26,7 @@ export class ContextExternalToolNameAlreadyExistsLoggableException extends Busin
 			message: this.message,
 			stack: this.stack,
 			data: {
+				toolId: this.toolId,
 				toolName: this.toolName,
 			},
 		};

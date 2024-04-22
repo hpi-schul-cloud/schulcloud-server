@@ -4,7 +4,7 @@ describe(ContextExternalToolNameAlreadyExistsLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const exception: ContextExternalToolNameAlreadyExistsLoggableException =
-				new ContextExternalToolNameAlreadyExistsLoggableException('toolname');
+				new ContextExternalToolNameAlreadyExistsLoggableException('toolid', 'toolname');
 
 			return {
 				exception,
@@ -22,6 +22,7 @@ describe(ContextExternalToolNameAlreadyExistsLoggableException.name, () => {
 					'A tool with the same name is already assigned to this course. Tool names must be unique within a course.',
 				stack: exception.stack,
 				data: {
+					toolId: 'toolid',
 					toolName: 'toolname',
 				},
 			});

@@ -134,7 +134,10 @@ describe('ContextExternalToolValidationService', () => {
 					const func = () => service.validate(contextExternalTool1);
 
 					await expect(func()).rejects.toThrowError(
-						new ContextExternalToolNameAlreadyExistsLoggableException(contextExternalTool1.displayName)
+						new ContextExternalToolNameAlreadyExistsLoggableException(
+							contextExternalTool1.id,
+							contextExternalTool1.displayName
+						)
 					);
 				});
 			});
@@ -157,7 +160,10 @@ describe('ContextExternalToolValidationService', () => {
 					const func = () => service.validate(contextExternalTool1);
 
 					await expect(func()).rejects.toThrowError(
-						new ContextExternalToolNameAlreadyExistsLoggableException(contextExternalTool1.displayName)
+						new ContextExternalToolNameAlreadyExistsLoggableException(
+							contextExternalTool1.id,
+							contextExternalTool1.displayName
+						)
 					);
 				});
 			});

@@ -50,7 +50,7 @@ export class ContextExternalToolValidationService {
 		);
 
 		if (duplicate.length > 0) {
-			throw new ContextExternalToolNameAlreadyExistsLoggableException(duplicate[0].displayName);
+			throw new ContextExternalToolNameAlreadyExistsLoggableException(duplicate[0].id, duplicate[0].displayName);
 		}
 	}
 }
