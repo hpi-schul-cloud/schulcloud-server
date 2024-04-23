@@ -23,7 +23,10 @@ export interface SubmissionProperties {
 
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
-@Unique({ properties: ['student', 'task'] })
+@Unique({
+	properties: ['student', 'task'],
+	options: { partialFilterExpression: { studentId: { $exists: true } } },
+})
 export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
