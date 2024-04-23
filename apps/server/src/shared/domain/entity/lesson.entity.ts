@@ -82,7 +82,6 @@ export interface LessonParent {
 }
 
 @Entity({ tableName: 'lessons' })
-@Index({ properties: ['contents.user'] })
 export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomElement, TaskParent {
 	@Property()
 	name: string;
