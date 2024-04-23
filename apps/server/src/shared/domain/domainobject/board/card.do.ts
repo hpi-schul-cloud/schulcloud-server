@@ -1,5 +1,6 @@
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
+import { CollaborativeTextEditorElement } from './collaborative-text-editor-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { LinkElement } from './link-element.do';
@@ -31,7 +32,8 @@ export class Card extends BoardComposite<CardProps> {
 			domainObject instanceof LinkElement ||
 			domainObject instanceof RichTextElement ||
 			domainObject instanceof SubmissionContainerElement ||
-			domainObject instanceof ExternalToolElement;
+			domainObject instanceof ExternalToolElement ||
+			domainObject instanceof CollaborativeTextEditorElement;
 		return allowed;
 	}
 

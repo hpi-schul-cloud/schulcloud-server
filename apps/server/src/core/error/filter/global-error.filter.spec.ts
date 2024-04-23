@@ -4,13 +4,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common';
-import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable } from '@src/core/logger';
 import { Response } from 'express';
-import util from 'util';
+import { WsException } from '@nestjs/websockets';
 import { ErrorResponse } from '../dto';
-import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
 import { GlobalErrorFilter } from './global-error.filter';
+import { DomainErrorHandler } from '../domain';
 
 class SampleBusinessError extends BusinessError {
 	constructor() {
@@ -22,24 +22,6 @@ class SampleBusinessError extends BusinessError {
 			},
 			HttpStatus.NOT_IMPLEMENTED
 		);
-	}
-}
-
-class SampleLoggableException extends BadRequestException implements Loggable {
-	constructor(private testData: string) {
-		super();
-	}
-
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		const message = {
-			type: 'BAD_REQUEST_EXCEPTION',
-			stack: this.stack,
-			data: {
-				testData: this.testData,
-			},
-		};
-
-		return message;
 	}
 }
 
@@ -64,21 +46,21 @@ class SampleLoggableExceptionWithCause extends InternalServerErrorException impl
 describe('GlobalErrorFilter', () => {
 	let module: TestingModule;
 	let service: GlobalErrorFilter<any>;
-	let logger: DeepMocked<ErrorLogger>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				GlobalErrorFilter,
 				{
-					provide: ErrorLogger,
-					useValue: createMock<ErrorLogger>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(GlobalErrorFilter);
-		logger = module.get(ErrorLogger);
+		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
@@ -94,64 +76,26 @@ describe('GlobalErrorFilter', () => {
 	});
 
 	describe('catch', () => {
-		// tests regarding logging
-		describe('when error implements Loggable', () => {
+		describe('when any error is passed as parameter', () => {
 			const setup = () => {
-				const error = new SampleLoggableException('test');
 				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('http');
+				const error = new Error('test');
 
 				return { error, argumentsHost };
 			};
 
-			it('should call logger with error', () => {
+			it('should be pass the error to domain error handler', () => {
 				const { error, argumentsHost } = setup();
 
 				service.catch(error, argumentsHost);
 
-				expect(logger.error).toBeCalledWith(error);
+				expect(domainErrorHandler.exec).toBeCalledWith(error);
 			});
 		});
 
-		describe('when error is a generic error', () => {
-			const setup = () => {
-				const error = new Error('test');
-				const loggable = new ErrorLoggable(error);
-				const argumentsHost = createMock<ArgumentsHost>();
-
-				return { error, loggable, argumentsHost };
-			};
-
-			it('should call logger with ErrorLoggable', () => {
-				const { error, loggable, argumentsHost } = setup();
-
-				service.catch(error, argumentsHost);
-
-				expect(logger.error).toBeCalledWith(loggable);
-			});
-		});
-
-		describe('when error is some random object', () => {
-			const setup = () => {
-				const randomObject = { foo: 'bar' };
-				const error = new Error(util.inspect(randomObject));
-				const loggable = new ErrorLoggable(error);
-				const argumentsHost = createMock<ArgumentsHost>();
-
-				return { error, loggable, argumentsHost };
-			};
-
-			it('should call logger with ErrorLoggable', () => {
-				const { error, loggable, argumentsHost } = setup();
-
-				service.catch(error, argumentsHost);
-
-				expect(logger.error).toBeCalledWith(loggable);
-			});
-		});
-
-		// tests regarding response
-		describe('when context is http', () => {
-			const setupHttpArgumentsHost = () => {
+		describe('given context is http', () => {
+			const mockHttpArgumentsHost = () => {
 				const argumentsHost = createMock<ArgumentsHost>();
 				argumentsHost.getType.mockReturnValueOnce('http');
 
@@ -160,7 +104,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a FeathersError', () => {
 				const setup = () => {
-					const argumentsHost = setupHttpArgumentsHost();
+					const argumentsHost = mockHttpArgumentsHost();
 					const error = new NotFound();
 					const expectedResponse = new ErrorResponse('NOT_FOUND', 'Not Found', 'Error', HttpStatus.NOT_FOUND);
 
@@ -188,7 +132,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a BusinessError', () => {
 				const setup = () => {
-					const argumentsHost = setupHttpArgumentsHost();
+					const argumentsHost = mockHttpArgumentsHost();
 					const error = new SampleBusinessError();
 					const expectedResponse = new ErrorResponse(
 						'SAMPLE_ERROR',
@@ -223,7 +167,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a NestHttpException', () => {
 				const setup = () => {
-					const argumentsHost = setupHttpArgumentsHost();
+					const argumentsHost = mockHttpArgumentsHost();
 					const error = new BadRequestException();
 					const expectedResponse = new ErrorResponse(
 						'BAD_REQUEST',
@@ -256,7 +200,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a generic error', () => {
 				const setup = () => {
-					const argumentsHost = setupHttpArgumentsHost();
+					const argumentsHost = mockHttpArgumentsHost();
 					const error = new Error();
 					const expectedResponse = new ErrorResponse(
 						'INTERNAL_SERVER_ERROR',
@@ -291,7 +235,7 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is some random object', () => {
 				const setup = () => {
-					const argumentsHost = setupHttpArgumentsHost();
+					const argumentsHost = mockHttpArgumentsHost();
 					const error = { foo: 'bar' };
 					const expectedResponse = new ErrorResponse(
 						'INTERNAL_SERVER_ERROR',
@@ -335,7 +279,7 @@ describe('GlobalErrorFilter', () => {
 						HttpStatus.INTERNAL_SERVER_ERROR
 					);
 
-					const argumentsHost = setupHttpArgumentsHost();
+					const argumentsHost = mockHttpArgumentsHost();
 
 					return { error, argumentsHost, expectedResponse };
 				};
@@ -362,12 +306,17 @@ describe('GlobalErrorFilter', () => {
 			});
 		});
 
-		describe('when context is rmq', () => {
+		describe('given context is rmq', () => {
+			const mockRmqArgumentHost = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('rmq');
+
+				return argumentsHost;
+			};
+
 			describe('when error is unknown error', () => {
 				const setup = () => {
-					const argumentsHost = createMock<ArgumentsHost>();
-					argumentsHost.getType.mockReturnValueOnce('rmq');
-
+					const argumentsHost = mockRmqArgumentHost();
 					const error = new Error();
 
 					return { error, argumentsHost };
@@ -384,10 +333,97 @@ describe('GlobalErrorFilter', () => {
 
 			describe('when error is a LoggableError', () => {
 				const setup = () => {
+					const argumentsHost = mockRmqArgumentHost();
 					const causeError = new Error('Cause error');
 					const error = new SampleLoggableExceptionWithCause('test', causeError);
-					const argumentsHost = createMock<ArgumentsHost>();
-					argumentsHost.getType.mockReturnValueOnce('rmq');
+
+					return { error, argumentsHost };
+				};
+
+				it('should return appropriate error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual({ message: undefined, error });
+				});
+			});
+		});
+
+		describe('given context is ws', () => {
+			const mockWsArgumentHost = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('ws');
+
+				return argumentsHost;
+			};
+
+			describe('when error is unknown error', () => {
+				const setup = () => {
+					const argumentsHost = mockWsArgumentHost();
+					const error = new Error('test');
+
+					return { error, argumentsHost };
+				};
+
+				it('should return an RpcMessage with the error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual(new WsException(error));
+				});
+			});
+
+			describe('when error is a LoggableError', () => {
+				const setup = () => {
+					const argumentsHost = mockWsArgumentHost();
+					const causeError = new Error('Cause error');
+					const error = new SampleLoggableExceptionWithCause('test', causeError);
+
+					return { error, argumentsHost };
+				};
+
+				it('should return appropriate error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual(new WsException(error));
+				});
+			});
+		});
+
+		describe('given context is rpc', () => {
+			const mockRpcArgumentHost = () => {
+				const argumentsHost = createMock<ArgumentsHost>();
+				argumentsHost.getType.mockReturnValueOnce('rpc');
+
+				return argumentsHost;
+			};
+
+			describe('when error is unknown error', () => {
+				const setup = () => {
+					const argumentsHost = mockRpcArgumentHost();
+					const error = new Error();
+
+					return { error, argumentsHost };
+				};
+
+				it('should return an RpcMessage with the error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual({ message: undefined, error });
+				});
+			});
+
+			describe('when error is a LoggableError', () => {
+				const setup = () => {
+					const argumentsHost = mockRpcArgumentHost();
+					const causeError = new Error('Cause error');
+					const error = new SampleLoggableExceptionWithCause('test', causeError);
 
 					return { error, argumentsHost };
 				};

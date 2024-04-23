@@ -1,4 +1,5 @@
 export * from './any-content-element.response';
+export * from './collaborative-text-editor-element.response';
 export * from './create-content-element.body.params';
 export * from './drawing-element.response';
 export * from './external-tool-element.response';
