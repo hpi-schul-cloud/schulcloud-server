@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	type AnyBoardDo,
@@ -12,6 +12,7 @@ import { type BoardDoBuilder, BoardNodeType } from '../types';
 
 // TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 @Entity({ discriminatorValue: BoardNodeType.MEDIA_BOARD })
+@Index({ properties: ['_contextId', '_contextType'] })
 export class MediaBoardNode extends BoardNode {
 	constructor(props: RootBoardNodeProps) {
 		super(props);
