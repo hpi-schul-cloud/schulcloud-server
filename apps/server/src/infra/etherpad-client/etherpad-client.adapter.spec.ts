@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import {
@@ -10,6 +11,7 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
+	PadApi,
 	SessionApi,
 } from './etherpad-api-client';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
@@ -39,6 +41,10 @@ describe(EtherpadClientAdapter.name, () => {
 					provide: AuthorApi,
 					useValue: createMock<AuthorApi>(),
 				},
+				{
+					provide: PadApi,
+					useValue: createMock<PadApi>(),
+				},
 			],
 		}).compile();
 
@@ -67,6 +73,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const username = 'username';
 				const response = createMock<AxiosResponse<InlineResponse2003>>({
 					data: {
+						code: 0,
 						data: { authorID: 'authorId' },
 					},
 				});
@@ -98,6 +105,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const username = 'username';
 				const response = createMock<AxiosResponse<InlineResponse2003>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -142,12 +150,14 @@ describe(EtherpadClientAdapter.name, () => {
 				const sessionCookieExpire = new Date();
 				const response = createMock<AxiosResponse<InlineResponse2004>>({
 					data: {
+						code: 0,
 						data: { sessionID: 'sessionId' },
 					},
 				});
 
 				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
+						code: 0,
 						data: {
 							// @ts-expect-error wrong type mapping
 							'session-id-1': { groupID: groupId, authorID: authorId },
@@ -187,12 +197,14 @@ describe(EtherpadClientAdapter.name, () => {
 				const sessionCookieExpire = new Date();
 				const response = createMock<AxiosResponse<InlineResponse2004>>({
 					data: {
+						code: 0,
 						data: { sessionID: 'sessionId' },
 					},
 				});
 
 				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -231,6 +243,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const sessionCookieExpire = new Date();
 				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -239,6 +252,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const response = createMock<AxiosResponse<InlineResponse2004>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -264,6 +278,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const sessionCookieExpire = new Date();
 				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -290,6 +305,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = 'authorId';
 				const response = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
+						code: 0,
 						// @ts-expect-error wrong type mapping
 						data: { 'session-id-1': { groupID: 'groupId', authorID: authorId } },
 					},
@@ -313,6 +329,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = 'authorId';
 				const response = createMock<AxiosResponse<InlineResponse2006>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -345,6 +362,30 @@ describe(EtherpadClientAdapter.name, () => {
 				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrowError(EtherpadErrorLoggableException);
 			});
 		});
+
+		describe('when InlineResponse2006Data is not an object', () => {
+			const setup = () => {
+				const authorId = 'authorId';
+				const response = createMock<AxiosResponse<InlineResponse2006>>({
+					data: {
+						code: 0,
+						// @ts-expect-error wrong type mapping
+						data: [],
+					},
+				});
+
+				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(response);
+				return authorId;
+			};
+
+			it('should throw an error', async () => {
+				const authorId = setup();
+
+				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrowError(
+					'Etherpad session ids response is not an object'
+				);
+			});
+		});
 	});
 
 	describe('getOrCreateGroupId', () => {
@@ -353,6 +394,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const parentId = 'parentId';
 				const response = createMock<AxiosResponse<InlineResponse200>>({
 					data: {
+						code: 0,
 						data: { groupID: 'groupId' },
 					},
 				});
@@ -382,7 +424,7 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const parentId = 'parentId';
 				const response = createMock<AxiosResponse<InlineResponse200>>({
-					data: {},
+					data: { code: 0 },
 				});
 
 				groupApi.createGroupIfNotExistsForUsingGET.mockResolvedValue(response);
@@ -420,12 +462,14 @@ describe(EtherpadClientAdapter.name, () => {
 				const parentId = 'parentId';
 				const response = createMock<AxiosResponse<InlineResponse2001>>({
 					data: {
+						code: 0,
 						data: { padID: 'padId' },
 					},
 				});
 
 				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
 					data: {
+						code: 0,
 						data: { padIDs: [] },
 					},
 				});
@@ -458,6 +502,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const parentId = 'parentId';
 				const response = createMock<AxiosResponse<InlineResponse2002>>({
 					data: {
+						code: 0,
 						data: { padIDs: ['groupId$parentId'] },
 					},
 				});
@@ -489,11 +534,13 @@ describe(EtherpadClientAdapter.name, () => {
 				const parentId = 'parentId';
 				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
 					data: {
+						code: 0,
 						data: { padIDs: [] },
 					},
 				});
 				const response = createMock<AxiosResponse<InlineResponse2001>>({
 					data: {
+						code: 0,
 						data: {},
 					},
 				});
@@ -516,6 +563,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const parentId = 'parentId';
 				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
 					data: {
+						code: 0,
 						data: { padIDs: [] },
 					},
 				});
@@ -555,7 +603,7 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
-	describe('handleResponse', () => {
+	describe('handleEtherpadResponse', () => {
 		const setup = (code = 0) => {
 			const parentId = 'parentId';
 			const response = createMock<AxiosResponse<InlineResponse200>>({
@@ -620,6 +668,17 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await expect(result).rejects.toThrowError(EtherpadErrorType.WRONG_API_KEY);
 				await expect(result).rejects.toThrowError(EtherpadErrorLoggableException);
+			});
+		});
+
+		describe('when status code is other than known code', () => {
+			it('should throw an error', async () => {
+				const parentId = setup(5);
+
+				const result = service.getOrCreateGroupId(parentId);
+
+				const exception = new InternalServerErrorException('Etherpad Response Code unknown');
+				await expect(result).rejects.toThrowError(exception);
 			});
 		});
 	});

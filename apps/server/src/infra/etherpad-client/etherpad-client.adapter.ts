@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import {
@@ -25,7 +25,7 @@ export class EtherpadClientAdapter {
 
 	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
 		const response = await this.tryCreateAuthor(userId, username);
-		const user = this.handleResponse<InlineResponse2003>(response, { userId });
+		const user = this.handleEtherpadResponse<InlineResponse2003>(response, { userId });
 
 		const authorId = EtherpadResponseMapper.mapToAuthorResponse(user);
 
@@ -56,7 +56,7 @@ export class EtherpadClientAdapter {
 		}
 
 		const response = await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
-		const session = this.handleResponse<InlineResponse2004>(response, { parentId });
+		const session = this.handleEtherpadResponse<InlineResponse2004>(response, { parentId });
 
 		sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
 
@@ -85,7 +85,7 @@ export class EtherpadClientAdapter {
 		let sessionId: SessionId | undefined;
 
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		const sessions = this.handleResponse<InlineResponse2006>(response, { groupId, authorId });
+		const sessions = this.handleEtherpadResponse<InlineResponse2006>(response, { groupId, authorId });
 
 		if (sessions) {
 			sessionId = this.findSessionId(sessions, groupId, authorId);
@@ -109,11 +109,20 @@ export class EtherpadClientAdapter {
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		const sessions = this.handleResponse<InlineResponse2006>(response, { authorId });
+		const sessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
 
-		const sessionIds = Object.keys(sessions as object);
+		// InlineResponse2006Data has the wrong type definition. Therefore we savely cast it to an object.
+		if (!this.isObject(sessions)) {
+			throw new InternalServerErrorException('Etherpad session ids response is not an object');
+		}
+
+		const sessionIds = Object.keys(sessions);
 
 		return sessionIds;
+	}
+
+	private isObject(value: any): value is object {
+		return typeof value === 'object' && !Array.isArray(value) && value !== null;
 	}
 
 	private async tryListSessionsOfAuthor(authorId: string): Promise<AxiosResponse<InlineResponse2006>> {
@@ -128,7 +137,7 @@ export class EtherpadClientAdapter {
 
 	public async getOrCreateGroupId(parentId: EntityId): Promise<GroupId> {
 		const groupResponse = await this.tryGetOrCreateGroup(parentId);
-		const group = this.handleResponse<InlineResponse200>(groupResponse, { parentId });
+		const group = this.handleEtherpadResponse<InlineResponse200>(groupResponse, { parentId });
 
 		const groupId = EtherpadResponseMapper.mapToGroupResponse(group);
 
@@ -152,7 +161,7 @@ export class EtherpadClientAdapter {
 
 		if (!padId) {
 			const padResponse = await this.tryCreateEtherpad(groupId, parentId);
-			const pad = this.handleResponse<InlineResponse2001>(padResponse, { parentId });
+			const pad = this.handleEtherpadResponse<InlineResponse2001>(padResponse, { parentId });
 
 			padId = EtherpadResponseMapper.mapToPadResponse(pad);
 		}
@@ -172,7 +181,7 @@ export class EtherpadClientAdapter {
 
 	private async getPadId(groupId: GroupId, parentId: EntityId): Promise<PadId | undefined> {
 		const padsResponse = await this.tryListPads(groupId);
-		const pads = this.handleResponse<InlineResponse2002>(padsResponse, { parentId });
+		const pads = this.handleEtherpadResponse<InlineResponse2002>(padsResponse, { parentId });
 
 		const padId = pads?.padIDs?.find((id: string) => id.includes(`${groupId}$${parentId}`));
 
@@ -190,17 +199,29 @@ export class EtherpadClientAdapter {
 	}
 
 	public async deletePad(padId: PadId): Promise<void> {
-		await this.padApi.deletePadUsingPOST(padId);
-		// TODO: Error Mapper
+		const response = await this.tryDeletePad(padId);
+		this.handleEtherpadResponse<InlineResponse2001>(response, { padId });
 	}
 
-	private handleResponse<T extends EtherpadResponse>(
+	private async tryDeletePad(padId: string): Promise<AxiosResponse<InlineResponse2001>> {
+		try {
+			const response = await this.padApi.deletePadUsingPOST(padId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
+		}
+	}
+
+	private handleEtherpadResponse<T extends EtherpadResponse>(
 		axiosResponse: AxiosResponse<T>,
 		payload: EtherpadParams
 	): T['data'] {
 		const response = axiosResponse.data;
 
 		switch (response.code) {
+			case 0:
+				return response.data;
 			case 1:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.BAD_REQUEST, payload, response);
 			case 2:
@@ -210,7 +231,7 @@ export class EtherpadClientAdapter {
 			case 4:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.WRONG_API_KEY, payload, response);
 			default:
-				return response.data as T['data'];
+				throw new InternalServerErrorException('Etherpad Response Code unknown');
 		}
 	}
 }
