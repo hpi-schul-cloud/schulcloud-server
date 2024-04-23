@@ -3,6 +3,7 @@ import { DynamicModule, Global, Module } from '@nestjs/common';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { EtherpadRestClient } from './etherpad-rest-client';
 import { EtherpadRestClientOptions } from './etherpad-rest-client-options';
+
 /**
  * @Global is used here to make sure that the module is only instantiated once, with the configuration and can be used in every module.
  * Otherwise, you need to import the module with configuration in every module where you want to use it.
