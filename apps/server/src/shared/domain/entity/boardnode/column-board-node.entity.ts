@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	AnyBoardDo,
@@ -26,9 +26,11 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 		this.layout = props.layout ?? BoardLayout.COLUMNS;
 	}
 
+	@Index()
 	@Property({ fieldName: 'contextType' })
 	_contextType: BoardExternalReferenceType;
 
+	@Index()
 	@Property({ fieldName: 'context' })
 	_contextId: ObjectId;
 
