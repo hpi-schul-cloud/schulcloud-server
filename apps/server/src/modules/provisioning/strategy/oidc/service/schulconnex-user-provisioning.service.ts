@@ -1,4 +1,5 @@
-import { AccountService, AccountSave } from '@modules/account';
+import { AccountSave, AccountService } from '@modules/account';
+import { EmailAlreadyExistsLoggable } from '@modules/provisioning/loggable';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
@@ -20,13 +21,17 @@ export class SchulconnexUserProvisioningService {
 		systemId: EntityId,
 		schoolId?: string
 	): Promise<UserDO> {
+		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
+		if (externalUser.email) {
+			await this.checkUniqueEmail(externalUser.email, systemId, schoolId, existingUser?.externalId);
+		}
+
 		let roleRefs: RoleReference[] | undefined;
 		if (externalUser.roles) {
 			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
 			roleRefs = roles.map((role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name }));
 		}
 
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
 		let user: UserDO;
 		let createNewAccount = false;
 		if (existingUser) {
@@ -69,5 +74,19 @@ export class SchulconnexUserProvisioningService {
 		}
 
 		return savedUser;
+	}
+
+	private async checkUniqueEmail(
+		email: string,
+		systemId: string,
+		schoolId?: string,
+		externalId?: string
+	): Promise<void> {
+		const foundUsers: UserDO[] = await this.userService.findByEmail(email);
+		const unmatchedUsers: UserDO[] = foundUsers.filter((user: UserDO) => user.externalId !== externalId);
+
+		if (unmatchedUsers.length || (!externalId && foundUsers.length)) {
+			throw new EmailAlreadyExistsLoggable(email, systemId, schoolId, externalId);
+		}
 	}
 }
