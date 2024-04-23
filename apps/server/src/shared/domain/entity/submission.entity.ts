@@ -40,9 +40,11 @@ export class Submission extends BaseEntityWithTimestamps {
 	student?: User;
 
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
+	@Index()
 	courseGroup?: CourseGroup;
 
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
+	@Index()
 	teamMembers = new Collection<User>(this);
 
 	@Property({ nullable: true })
