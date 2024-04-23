@@ -29,14 +29,37 @@ describe('BoardNode', () => {
 			const { boardNode } = setup();
 			expect(boardNode.path).toBe(ROOT_PATH);
 		});
+
+		describe('when children are provided', () => {
+			const setupWithChildren = () => {
+				const boardNode = columnFactory.build({ children: cardFactory.buildList(2) });
+
+				return { boardNode };
+			};
+
+			it('should update the paths of children', () => {
+				const { boardNode } = setupWithChildren();
+
+				expect(boardNode.children[0].path).toBe(joinPath(boardNode.path, boardNode.id));
+				expect(boardNode.children[1].path).toBe(joinPath(boardNode.path, boardNode.id));
+			});
+
+			it('should update the positions of children', () => {
+				const { boardNode } = setupWithChildren();
+
+				expect(boardNode.children[0].position).toBe(0);
+				expect(boardNode.children[1].position).toBe(1);
+			});
+		});
 	});
 
 	describe('when adding a child', () => {
 		const setup = () => {
 			const parent = columnFactory.build();
 			const child = cardFactory.build();
+			const extraChild = cardFactory.build();
 
-			return { parent, child };
+			return { parent, child, extraChild };
 		};
 
 		it('should update the ancestor list', () => {
@@ -71,6 +94,16 @@ describe('BoardNode', () => {
 			expect(child.path).toEqual(joinPath(parent.path, parent.id));
 		});
 
+		it('should update the position of the child', () => {
+			const { parent, child, extraChild } = setup();
+
+			parent.addChild(child);
+			parent.addChild(extraChild);
+
+			expect(child.position).toBe(0);
+			expect(extraChild.position).toBe(1);
+		});
+
 		describe('when child already exists', () => {
 			const setupWithChild = () => {
 				const child = cardFactory.build();
@@ -88,20 +121,61 @@ describe('BoardNode', () => {
 
 		describe('when position is given', () => {
 			describe('when position is valid', () => {
-				it.todo('should insert at proper position');
+				it('should insert at proper position', () => {
+					const { parent, child, extraChild } = setup();
+
+					parent.addChild(child, 0);
+					parent.addChild(extraChild, 0);
+
+					expect(parent.children.map((n) => n.id)).toEqual([extraChild.id, child.id]);
+				});
+
+				it('should update child + siblings positions', () => {
+					const { parent, child, extraChild } = setup();
+
+					parent.addChild(child, 0);
+					parent.addChild(extraChild, 0);
+
+					expect(extraChild.position).toBe(0);
+					expect(child.position).toBe(1);
+				});
 			});
 
 			describe('when position < 0', () => {
-				it.todo('should thow an error');
+				it('should thow an error', () => {
+					const { parent, child } = setup();
+
+					expect(() => parent.addChild(child, -1)).toThrowError();
+				});
 			});
 
 			describe('when position > length', () => {
-				it.todo('should thow an error');
+				it('should thow an error', () => {
+					const { parent, child } = setup();
+
+					expect(() => parent.addChild(child, 1)).toThrowError();
+				});
 			});
 		});
 
 		describe('when position omitted', () => {
-			it.todo('should append the child');
+			it('should append the child', () => {
+				const { parent, child, extraChild } = setup();
+
+				parent.addChild(child);
+				parent.addChild(extraChild);
+
+				expect(parent.children.map((n) => n.id)).toEqual([child.id, extraChild.id]);
+			});
+
+			it('should update child position', () => {
+				const { parent, child, extraChild } = setup();
+
+				parent.addChild(child);
+				parent.addChild(extraChild);
+
+				expect(parent.children.map((n) => n.position)).toEqual([0, 1]);
+			});
 		});
 	});
 
@@ -174,10 +248,21 @@ describe('BoardNode', () => {
 	});
 
 	describe('hasChild', () => {
-		it.todo('should check by id');
+		const setup = () => {
+			const parent = columnFactory.build({ children: cardFactory.buildList(1) });
+			const child = parent.children[0];
+			const extraChild = cardFactory.build({ id: child.id });
+
+			return { parent, child, extraChild };
+		};
 
 		// TODO unfortunately we're not able to check by object reference
 		// that requrires using the identity map which is not implemented yet
-		it.todo('should not be able to check by reference');
+		it('should check by id', () => {
+			const { parent, child, extraChild } = setup();
+
+			expect(parent.hasChild(child)).toBe(true);
+			expect(parent.hasChild(extraChild)).toBe(true);
+		});
 	});
 });

@@ -7,7 +7,10 @@ import { AnyBoardNode, BoardNodeProps } from './types';
 export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T> {
 	constructor(props: T) {
 		super(props);
-		props.children.forEach((child) => child.updatePath(this));
+		props.children.forEach((child, pos) => {
+			child.updatePath(this);
+			child.updatePosition(pos);
+		});
 	}
 
 	get level(): number {
@@ -36,6 +39,10 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return this.props.path;
 	}
 
+	get position(): number {
+		return this.props.position;
+	}
+
 	addChild(child: AnyBoardNode, position?: number): void {
 		const { children } = this.props;
 		// TODO check isAllowedAsChild
@@ -49,6 +56,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		children.splice(position, 0, child);
 
 		child.updatePath(this);
+		this.props.children.forEach((c, pos) => c.updatePosition(pos));
 	}
 
 	hasChild(child: AnyBoardNode): boolean {
@@ -79,5 +87,9 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		this.props.children.forEach((child) => {
 			child.resetPath();
 		});
+	}
+
+	private updatePosition(position: number): void {
+		this.props.position = position;
 	}
 }
