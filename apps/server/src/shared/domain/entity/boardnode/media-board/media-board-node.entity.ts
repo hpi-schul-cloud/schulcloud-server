@@ -12,7 +12,8 @@ import { type BoardDoBuilder, BoardNodeType } from '../types';
 
 // TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 @Entity({ discriminatorValue: BoardNodeType.MEDIA_BOARD })
-@Index({ properties: ['_contextId', '_contextType'] })
+@Index({ properties: ['_contextId'] })
+@Index({ properties: ['_contextType'] })
 export class MediaBoardNode extends BoardNode {
 	constructor(props: RootBoardNodeProps) {
 		super(props);
