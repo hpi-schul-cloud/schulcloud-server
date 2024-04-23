@@ -1,10 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { User } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
-import { TestApiClient, UserAndAccountTestFactory, schoolEntityFactory } from '@shared/testing';
-import { AccountEntity } from '@modules/account/entity/account.entity';
+import { schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 import { MeResponse } from '../dto';
 
@@ -109,11 +108,7 @@ describe('Me Controller (API)', () => {
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(account);
-					const expectedPermissions = user
-						.resolvePermissions()
-						// In this test the STUDENT_LIST permission is not set on the school and thus filtered out here.
-						// This is just an example. See the unit tests for all variations.
-						.filter((permission) => permission !== Permission.STUDENT_LIST);
+					const expectedPermissions = user.resolvePermissions();
 					const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
 					return { loggedInClient, expectedResponse };
