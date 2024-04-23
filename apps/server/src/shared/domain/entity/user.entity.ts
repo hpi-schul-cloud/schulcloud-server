@@ -164,7 +164,6 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		return uniquePermissions;
 	}
 
-	// TODO: refactor it in https://ticketsystem.dbildungscloud.de/browse/BC-7021
 	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
 		const setOfPermission = new Set(permissions);
 		const schoolPermissions = this.school.permissions;
