@@ -11,11 +11,10 @@ import {
 } from '../dto';
 
 export class MeResponseMapper {
-	public static mapToResponse(school: School, user: User, accountId: EntityId, permissions: Set<string>): MeResponse {
+	public static mapToResponse(school: School, user: User, accountId: EntityId, permissions: string[]): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user);
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
-		const permissionsResponse = MeResponseMapper.mapPermissions(permissions);
 		const language = user.getInfo().language || school.getInfo().language;
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
 
@@ -23,7 +22,7 @@ export class MeResponseMapper {
 			school: schoolResponse,
 			user: userResponse,
 			roles: rolesResponse,
-			permissions: permissionsResponse,
+			permissions,
 			language,
 			account: accountResponse,
 		});
@@ -76,12 +75,6 @@ export class MeResponseMapper {
 		});
 
 		return roleResponse;
-	}
-
-	private static mapPermissions(permissions: Set<string>): string[] {
-		const permissionsResponse = Array.from(permissions);
-
-		return permissionsResponse;
 	}
 
 	private static mapAccount(accountId: EntityId): MeAccountResponse {
