@@ -57,6 +57,10 @@ describe('CommonCartridgeResourceFactory', () => {
 		sut = new CommonCartridgeResourceFactory(admZipMock);
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
 	});
@@ -173,7 +177,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			describe('when web content is not provided', () => {
 				it('should return an empty value', () => {
 					const { organizationProps } = setup();
-					const emptyWebContent = `<html></html>`;
+					const emptyWebContent = '';
 					admZipMock.readAsText.mockReturnValue(emptyWebContent);
 
 					const result = sut.create(organizationProps);
@@ -183,6 +187,19 @@ describe('CommonCartridgeResourceFactory', () => {
 						title: organizationProps.title,
 						html: '',
 					});
+				});
+			});
+
+			describe('when html is not valid', () => {
+				it('should return undefined', () => {
+					const { organizationProps } = setup();
+
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					jest.spyOn(sut as any, 'tryCreateDocument').mockReturnValue(undefined);
+
+					const result = sut.create(organizationProps);
+
+					expect(result).toBeUndefined();
 				});
 			});
 		});

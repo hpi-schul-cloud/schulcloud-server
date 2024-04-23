@@ -43,7 +43,7 @@ export class CommonCartridgeResourceFactory {
 			return undefined;
 		}
 
-		const url = document.querySelector('webLink > url')?.getAttribute('href') || '';
+		const url = document.querySelector('webLink > url')?.getAttribute('href') ?? '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
@@ -52,10 +52,14 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private createWebContentResource(content: string, title: string): CommonCartridgeWebContentResourceProps {
+	private createWebContentResource(content: string, title: string): CommonCartridgeWebContentResourceProps | undefined {
 		const document = this.tryCreateDocument(content, 'text/html');
 
-		const html = document?.querySelector('body > p')?.textContent ?? '';
+		if (!document) {
+			return undefined;
+		}
+
+		const html = document.body.textContent?.trim() ?? '';
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
