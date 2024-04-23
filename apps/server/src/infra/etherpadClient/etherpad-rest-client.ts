@@ -13,11 +13,8 @@ import {
 	EtherpadDeleteResponse,
 	EtherpadGroupResponse,
 } from './response';
-import {
-	EtherpadConfigurationMissingLoggable,
-	EtherpadCookiesConfigurationMissingLoggable,
-	MissingCookie,
-} from './loggable';
+import { EtherpadConfigurationMissingLoggable, EtherpadCookiesConfigurationMissingLoggable } from './loggable';
+import { MissingCookie } from './interface';
 
 export class EtherpadRestClient implements EthepadApiInterface {
 	private readonly ETHERPAD_URI: string;
@@ -125,14 +122,14 @@ export class EtherpadRestClient implements EthepadApiInterface {
 		}
 		if (!this.options.cookieExpirationInSeconds) {
 			const cookieValue = 28800;
-			this.logger.debug(new EtherpadCookiesConfigurationMissingLoggable(cookieValue, MissingCookie.cookieExpiration));
+			this.logger.debug(new EtherpadCookiesConfigurationMissingLoggable(cookieValue, MissingCookie.COOKIE_EXPIRATION));
 			this.options.cookieExpirationInSeconds = cookieValue;
 		}
 
 		if (!this.options.cookieReleaseThreshold) {
 			const cookieValue = 7200;
 			this.logger.debug(
-				new EtherpadCookiesConfigurationMissingLoggable(cookieValue, MissingCookie.cookieReleaseThreshold)
+				new EtherpadCookiesConfigurationMissingLoggable(cookieValue, MissingCookie.COOKIE_RELEASE_THRESHOLD)
 			);
 			this.options.cookieExpirationInSeconds = cookieValue;
 		}

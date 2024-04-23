@@ -3,11 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
-import {
-	EtherpadConfigurationMissingLoggable,
-	EtherpadCookiesConfigurationMissingLoggable,
-	MissingCookie,
-} from './loggable';
+import { EtherpadConfigurationMissingLoggable, EtherpadCookiesConfigurationMissingLoggable } from './loggable';
 import {
 	EtherpadAuthorIdResponse,
 	EtherpadAuthorPadsResponse,
@@ -24,6 +20,7 @@ import {
 } from './response';
 import { EtherpadRestClient } from './etherpad-rest-client';
 import { EtherpadRestClientOptions } from './etherpad-rest-client-options';
+import { MissingCookie } from './interface';
 
 describe(EtherpadRestClient.name, () => {
 	let client: EtherpadRestClient;
@@ -70,10 +67,10 @@ describe(EtherpadRestClient.name, () => {
 
 				expect(logger.debug).toHaveBeenCalledWith(new EtherpadConfigurationMissingLoggable());
 				expect(logger.debug).toHaveBeenCalledWith(
-					new EtherpadCookiesConfigurationMissingLoggable(28800, MissingCookie.cookieExpiration)
+					new EtherpadCookiesConfigurationMissingLoggable(28800, MissingCookie.COOKIE_EXPIRATION)
 				);
 				expect(logger.debug).toHaveBeenCalledWith(
-					new EtherpadCookiesConfigurationMissingLoggable(7200, MissingCookie.cookieReleaseThreshold)
+					new EtherpadCookiesConfigurationMissingLoggable(7200, MissingCookie.COOKIE_RELEASE_THRESHOLD)
 				);
 			});
 		});

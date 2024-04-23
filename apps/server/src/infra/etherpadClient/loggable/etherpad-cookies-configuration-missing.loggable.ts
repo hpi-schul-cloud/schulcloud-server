@@ -1,9 +1,5 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-
-export enum MissingCookie {
-	cookieReleaseThreshold,
-	cookieExpiration,
-}
+import { MissingCookie } from '../interface';
 
 export class EtherpadCookiesConfigurationMissingLoggable implements Loggable {
 	private cookieValue: number;
@@ -17,10 +13,10 @@ export class EtherpadCookiesConfigurationMissingLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		let message = '';
-		if (this.missingCookie === MissingCookie.cookieExpiration) {
+		if (this.missingCookie === MissingCookie.COOKIE_EXPIRATION) {
 			message = `EtherpadRestClient: Missing cookies expiration configuration. Setting cookie expiration to default value ${this.cookieValue}`;
 		}
-		if (this.missingCookie === MissingCookie.cookieReleaseThreshold) {
+		if (this.missingCookie === MissingCookie.COOKIE_RELEASE_THRESHOLD) {
 			message = `EtherpadRestClient: Missing cookies release threshold configuration. Setting cookie release threshold to default value ${this.cookieValue}`;
 		}
 		return {

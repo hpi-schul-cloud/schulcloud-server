@@ -1,19 +1,22 @@
+import { MissingCookie } from '../interface';
 import { EtherpadConfigurationMissingLoggable } from './etherpad-configuration-missing.loggable';
-import {
-	EtherpadCookiesConfigurationMissingLoggable,
-	MissingCookie,
-} from './etherpad-cookies-configuration-missing.loggable';
+import { EtherpadCookiesConfigurationMissingLoggable } from './etherpad-cookies-configuration-missing.loggable';
 
 describe(EtherpadCookiesConfigurationMissingLoggable.name, () => {
 	describe('getLogMessage', () => {
 		describe('when cookie expiration missing', () => {
-			it('should return a log message', () => {
+			const setup = () => {
 				const cookieValue = 888;
 				const loggable: EtherpadConfigurationMissingLoggable = new EtherpadCookiesConfigurationMissingLoggable(
 					cookieValue,
-					MissingCookie.cookieExpiration
+					MissingCookie.COOKIE_EXPIRATION
 				);
-
+				return {
+					loggable,
+				};
+			};
+			it('should return a log message', () => {
+				const { loggable } = setup();
 				const logMessage = loggable.getLogMessage();
 
 				expect(logMessage).toEqual({
@@ -24,13 +27,18 @@ describe(EtherpadCookiesConfigurationMissingLoggable.name, () => {
 		});
 
 		describe('when cookie release threshold missing', () => {
-			it('should return a log message', () => {
+			const setup = () => {
 				const cookieValue = 888;
 				const loggable: EtherpadConfigurationMissingLoggable = new EtherpadCookiesConfigurationMissingLoggable(
 					cookieValue,
-					MissingCookie.cookieReleaseThreshold
+					MissingCookie.COOKIE_RELEASE_THRESHOLD
 				);
-
+				return {
+					loggable,
+				};
+			};
+			it('should return a log message', () => {
+				const { loggable } = setup();
 				const logMessage = loggable.getLogMessage();
 
 				expect(logMessage).toEqual({
