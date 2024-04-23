@@ -261,4 +261,27 @@ describe('CollaborativeTextEditorService', () => {
 			});
 		});
 	});
+
+	describe('deleteCollaborativeTextEditor', () => {
+		describe('WHEN etherpadClientAdapter.deletePad returns successfully', () => {
+			it('should call etherpadClientAdapter.deletePad with correct parameter', async () => {
+				const parentId = 'parentId';
+
+				await service.deleteCollaborativeTextEditor(parentId);
+
+				expect(etherpadClientAdapter.deletePad).toHaveBeenCalledWith(parentId);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.deletePad throws an error', () => {
+			it('should throw an error', async () => {
+				const parentId = 'parentId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.deletePad.mockRejectedValueOnce(error);
+
+				await expect(service.deleteCollaborativeTextEditor(parentId)).rejects.toThrowError(error);
+			});
+		});
+	});
 });
