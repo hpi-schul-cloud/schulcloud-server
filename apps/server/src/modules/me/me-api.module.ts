@@ -3,11 +3,10 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { MeController, MeUc } from './api';
-import { SchoolPermissionService } from './domain/school-permission.service';
 
 @Module({
 	imports: [SchoolModule, UserModule, AuthenticationModule],
 	controllers: [MeController],
-	providers: [MeUc, SchoolPermissionService],
+	providers: [MeUc],
 })
 export class MeApiModule {}

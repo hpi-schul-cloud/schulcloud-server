@@ -4,6 +4,7 @@ import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LinkElement } from '@shared/domain/domainobject';
 import {
+	collaborativeTextEditorElementFactory,
 	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -170,6 +171,31 @@ describe(RecursiveCopyVisitor.name, () => {
 					},
 				],
 			});
+		});
+	});
+
+	describe('visitCollaborativeTextEditorElementAsync', () => {
+		const setup = () => {
+			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+			const visitor = new RecursiveCopyVisitor(
+				createMock<SchoolSpecificFileCopyService>(),
+				contextExternalToolService,
+				toolFeatures
+			);
+
+			return {
+				collaborativeTextEditorElement,
+				visitor,
+			};
+		};
+
+		it('should throw an error', async () => {
+			const { visitor, collaborativeTextEditorElement } = setup();
+			const error = new Error(`Cannot copy element of type: '${collaborativeTextEditorElement.constructor.name}'`);
+
+			await expect(() =>
+				visitor.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement)
+			).rejects.toThrow(error);
 		});
 	});
 });

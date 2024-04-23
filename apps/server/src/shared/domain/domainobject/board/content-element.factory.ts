@@ -1,8 +1,9 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolElement } from './external-tool-element.do';
+import { CollaborativeTextEditorElement } from './collaborative-text-editor-element.do';
 import { DrawingElement } from './drawing-element.do';
+import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { LinkElement } from './link-element.do';
 import { RichTextElement } from './rich-text-element.do';
@@ -32,6 +33,9 @@ export class ContentElementFactory {
 				break;
 			case ContentElementType.EXTERNAL_TOOL:
 				element = this.buildExternalTool();
+				break;
+			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
+				element = this.buildCollaborativeTextEditor();
 				break;
 			default:
 				break;
@@ -108,6 +112,17 @@ export class ContentElementFactory {
 
 	private buildExternalTool() {
 		const element = new ExternalToolElement({
+			id: new ObjectId().toHexString(),
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
+	private buildCollaborativeTextEditor() {
+		const element = new CollaborativeTextEditorElement({
 			id: new ObjectId().toHexString(),
 			children: [],
 			createdAt: new Date(),

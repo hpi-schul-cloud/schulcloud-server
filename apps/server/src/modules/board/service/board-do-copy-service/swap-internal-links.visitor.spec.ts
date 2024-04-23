@@ -3,6 +3,7 @@ import { LinkElement, MediaBoard, MediaExternalToolElement, MediaLine } from '@s
 import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,
+	collaborativeTextEditorElementFactory,
 	columnBoardFactory,
 	columnFactory,
 	drawingElementFactory,
@@ -65,6 +66,7 @@ describe('swap internal links visitor', () => {
 				submissionContainer,
 				drawingElementFactory.build(),
 				externalToolElementFactory.build(),
+				collaborativeTextEditorElementFactory.build(),
 			],
 		});
 		const column = columnFactory.build({
