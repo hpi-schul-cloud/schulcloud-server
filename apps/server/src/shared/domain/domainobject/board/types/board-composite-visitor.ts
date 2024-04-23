@@ -1,4 +1,5 @@
 import type { Card } from '../card.do';
+import { CollaborativeTextEditorElement } from '../collaborative-text-editor-element.do';
 import type { ColumnBoard } from '../column-board.do';
 import type { Column } from '../column.do';
 import type { DrawingElement } from '../drawing-element.do';
@@ -24,6 +25,7 @@ export interface ColumnBoardCompositeVisitor {
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 	visitSubmissionItem(submissionItem: SubmissionItem): void;
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void;
+	visitCollaborativeTextEditorElement(collaborativeTextEditorElement: CollaborativeTextEditorElement): void;
 }
 
 export interface ColumnBoardCompositeVisitorAsync {
@@ -37,6 +39,9 @@ export interface ColumnBoardCompositeVisitorAsync {
 	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void>;
 	visitSubmissionItemAsync(submissionItem: SubmissionItem): Promise<void>;
 	visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void>;
+	visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void>;
 }
 
 export interface MediaBoardCompositeVisitor {

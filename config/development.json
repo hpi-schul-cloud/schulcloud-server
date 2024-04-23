@@ -80,6 +80,7 @@
 	"FEATURE_COLUMN_BOARD_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": true,
+	"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": true,
 	"FEATURE_BOARD_LAYOUT_ENABLED": true,
 	"SCHULCONNEX_CLIENT": {
@@ -87,5 +88,9 @@
 		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
 		"CLIENT_ID": "schulcloud",
 		"CLIENT_SECRET": "secret"
+	},
+	"ETHERPAD_URI": "http://localhost:9001/api/1/",
+	"ETHERPAD": {
+		"PAD_URI": "http://localhost:9001/p"
 	}
 }

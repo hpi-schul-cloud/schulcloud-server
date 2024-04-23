@@ -10,6 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { DomainErrorHandler } from '@src/core';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -66,6 +67,10 @@ describe('FilesStorageUC delete methods', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 				{
 					provide: S3ClientAdapter,
 					useValue: createMock<S3ClientAdapter>(),
