@@ -130,7 +130,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(null);
-				userService.isEmailFromExternalSourceUnique.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -208,6 +207,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, systemId, existingUser } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
+				userService.isEmailFromExternalSourceUnique.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
