@@ -23,7 +23,10 @@ export interface SubmissionProperties {
 
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
-@Unique({ properties: ['student', 'task'] })
+@Unique({
+	properties: ['student', 'task'],
+	options: { partialFilterExpression: { studentId: { $exists: true } } },
+})
 export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
@@ -37,9 +40,11 @@ export class Submission extends BaseEntityWithTimestamps {
 	student?: User;
 
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
+	@Index()
 	courseGroup?: CourseGroup;
 
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
+	@Index()
 	teamMembers = new Collection<User>(this);
 
 	@Property({ nullable: true })
