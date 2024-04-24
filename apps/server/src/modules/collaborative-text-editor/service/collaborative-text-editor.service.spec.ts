@@ -264,21 +264,55 @@ describe('CollaborativeTextEditorService', () => {
 
 	describe('deleteCollaborativeTextEditor', () => {
 		describe('WHEN etherpadClientAdapter.deleteGroup returns successfully', () => {
-			it('should call etherpadClientAdapter.deletePad with correct parameter', async () => {
+			const setup = () => {
 				const parentId = 'parentId';
+				const groupId = 'groupId';
+
+				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
+
+				return { parentId, groupId };
+			};
+
+			it('should call etherpadClientAdapter.getOrCreateGroupId with correct parameter', async () => {
+				const { parentId } = setup();
 
 				await service.deleteCollaborativeTextEditor(parentId);
 
-				expect(etherpadClientAdapter.deleteGroup).toHaveBeenCalledWith(parentId);
+				expect(etherpadClientAdapter.getOrCreateGroupId).toHaveBeenCalledWith(parentId);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.getOrCreateGroupId throws an error', () => {
+			const setup = () => {
+				const parentId = 'parentId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateGroupId.mockRejectedValueOnce(error);
+
+				return { parentId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { parentId, error } = setup();
+
+				await expect(service.deleteCollaborativeTextEditor(parentId)).rejects.toThrowError(error);
 			});
 		});
 
 		describe('WHEN etherpadClientAdapter.deleteGroup throws an error', () => {
-			it('should throw an error', async () => {
+			const setup = () => {
 				const parentId = 'parentId';
+				const groupId = 'groupId';
 				const error = new Error('error');
 
+				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
 				etherpadClientAdapter.deleteGroup.mockRejectedValueOnce(error);
+
+				return { parentId, groupId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { parentId, error } = setup();
 
 				await expect(service.deleteCollaborativeTextEditor(parentId)).rejects.toThrowError(error);
 			});
