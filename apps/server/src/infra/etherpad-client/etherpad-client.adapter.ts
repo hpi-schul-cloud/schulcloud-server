@@ -11,7 +11,16 @@ import {
 	InlineResponse2006Data,
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
-import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
+import {
+	AuthorId,
+	EtherpadErrorType,
+	EtherpadParams,
+	EtherpadResponse,
+	EtherpadResponseCode,
+	GroupId,
+	PadId,
+	SessionId,
+} from './interface';
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -220,15 +229,15 @@ export class EtherpadClientAdapter {
 		const response = axiosResponse.data;
 
 		switch (response.code) {
-			case 0:
+			case EtherpadResponseCode.OK:
 				return response.data;
-			case 1:
+			case EtherpadResponseCode.BAD_REQUEST:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.BAD_REQUEST, payload, response);
-			case 2:
+			case EtherpadResponseCode.INTERNAL_ERROR:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.INTERNAL_ERROR, payload, response);
-			case 3:
+			case EtherpadResponseCode.FUNCTION_NOT_FOUND:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.FUNCTION_NOT_FOUND, payload, response);
-			case 4:
+			case EtherpadResponseCode.WRONG_API_KEY:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.WRONG_API_KEY, payload, response);
 			default:
 				throw new InternalServerErrorException('Etherpad Response Code unknown');
