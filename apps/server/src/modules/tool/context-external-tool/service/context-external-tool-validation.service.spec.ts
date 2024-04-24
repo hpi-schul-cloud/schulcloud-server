@@ -3,6 +3,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
+import { ContextExternalToolNameAlreadyExistsLoggableException } from '@modules/tool/common/domain';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -133,8 +134,9 @@ describe('ContextExternalToolValidationService', () => {
 					const func = () => service.validate(contextExternalTool1);
 
 					await expect(func()).rejects.toThrowError(
-						new ValidationError(
-							'tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
+						new ContextExternalToolNameAlreadyExistsLoggableException(
+							contextExternalTool1.id,
+							contextExternalTool1.displayName
 						)
 					);
 				});
@@ -158,8 +160,9 @@ describe('ContextExternalToolValidationService', () => {
 					const func = () => service.validate(contextExternalTool1);
 
 					await expect(func()).rejects.toThrowError(
-						new ValidationError(
-							'tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
+						new ContextExternalToolNameAlreadyExistsLoggableException(
+							contextExternalTool1.id,
+							contextExternalTool1.displayName
 						)
 					);
 				});
