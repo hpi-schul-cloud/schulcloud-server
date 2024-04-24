@@ -8,6 +8,7 @@ describe(ToolParameterValueRegexLoggableException.name, () => {
 			const parameter: CustomParameter = customParameterFactory.build();
 
 			const exception: ToolParameterValueRegexLoggableException = new ToolParameterValueRegexLoggableException(
+				'toolId',
 				parameter
 			);
 
@@ -27,6 +28,7 @@ describe(ToolParameterValueRegexLoggableException.name, () => {
 				message: 'The parameter value does not fit the regex.',
 				stack: exception.stack,
 				data: {
+					toolId: 'toolId',
 					parameterName: parameter.name,
 				},
 			});

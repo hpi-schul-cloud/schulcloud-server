@@ -31,7 +31,11 @@ export class CommonToolValidationService {
 		);
 
 		this.arrayValidators.forEach((validator: ParameterArrayValidator) => {
-			const entryErrors: ValidationError[] = validator.validate(validatableTool.parameters, parametersForScope);
+			const entryErrors: ValidationError[] = validator.validate(
+				validatableTool.parameters,
+				parametersForScope,
+				validatableTool.id
+			);
 
 			errors.push(...entryErrors);
 		});
