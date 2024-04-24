@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property, wrap } from '@mikro-orm/core';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -146,7 +147,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 	public resolvePermissions(): string[] {
 		if (!this.roles.isInitialized(true)) {
-			throw new Error('Roles items are not loaded.');
+			throw new ReferenceNotPopulatedLoggableException('user', 'roles');
 		}
 
 		let permissions: string[] = [];
@@ -166,7 +167,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 	private resolveSchoolPermissions(permissions: string[], roles: Role[]): Set<string> {
 		if (!wrap(this.school).isInitialized()) {
-			throw new Error('School is not populated.');
+			throw new ReferenceNotPopulatedLoggableException('user', 'school');
 		}
 
 		const schoolPermissions = this.school.permissions;
