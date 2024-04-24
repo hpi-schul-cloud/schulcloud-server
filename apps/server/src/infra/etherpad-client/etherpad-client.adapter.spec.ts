@@ -11,7 +11,6 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
-	PadApi,
 	SessionApi,
 } from './etherpad-api-client';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
@@ -24,7 +23,6 @@ describe(EtherpadClientAdapter.name, () => {
 	let groupApi: DeepMocked<GroupApi>;
 	let sessionApi: DeepMocked<SessionApi>;
 	let authorApi: DeepMocked<AuthorApi>;
-	let padApi: DeepMocked<PadApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,10 +40,6 @@ describe(EtherpadClientAdapter.name, () => {
 					provide: AuthorApi,
 					useValue: createMock<AuthorApi>(),
 				},
-				{
-					provide: PadApi,
-					useValue: createMock<PadApi>(),
-				},
 			],
 		}).compile();
 
@@ -53,7 +47,6 @@ describe(EtherpadClientAdapter.name, () => {
 		sessionApi = module.get(SessionApi);
 		authorApi = module.get(AuthorApi);
 		groupApi = module.get(GroupApi);
-		padApi = module.get(PadApi);
 	});
 
 	afterAll(async () => {
@@ -605,10 +598,10 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
-	describe('deletePad', () => {
-		describe('when deletePadUsingPOST returns successfull', () => {
+	describe('deleteGroup', () => {
+		describe('when deleteGroupUsingPOST returns successfull', () => {
 			const setup = () => {
-				const padId = 'padId';
+				const groupId = 'groupId';
 				const response = createMock<AxiosResponse<InlineResponse2001>>({
 					data: {
 						code: EtherpadResponseCode.OK,
@@ -616,22 +609,23 @@ describe(EtherpadClientAdapter.name, () => {
 					},
 				});
 
-				padApi.deletePadUsingPOST.mockResolvedValue(response);
-				return padId;
+				groupApi.deleteGroupUsingPOST.mockResolvedValue(response);
+
+				return groupId;
 			};
 
 			it('should call deletePadUsingGET with correct params', async () => {
-				const padId = setup();
+				const groupId = setup();
 
-				await service.deletePad(padId);
+				await service.deleteGroup(groupId);
 
-				expect(padApi.deletePadUsingPOST).toBeCalledWith(padId);
+				expect(groupApi.deleteGroupUsingPOST).toBeCalledWith(groupId);
 			});
 		});
 
-		describe('when deletePadUsingPOST returns etherpad error code', () => {
+		describe('when deleteGroupUsingPOST returns etherpad error code', () => {
 			const setup = () => {
-				const padId = 'padId';
+				const groupId = 'groupId';
 				const response = createMock<AxiosResponse<InlineResponse2001>>({
 					data: {
 						code: EtherpadResponseCode.BAD_REQUEST,
@@ -639,31 +633,32 @@ describe(EtherpadClientAdapter.name, () => {
 					},
 				});
 
-				padApi.deletePadUsingPOST.mockResolvedValue(response);
-				return padId;
+				groupApi.deleteGroupUsingPOST.mockResolvedValue(response);
+
+				return groupId;
 			};
 
 			it('should throw EtherpadErrorLoggableException', async () => {
-				const padId = setup();
+				const groupId = setup();
 
-				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.BAD_REQUEST, { padId }, {});
-				await expect(service.deletePad(padId)).rejects.toThrowError(exception);
+				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.BAD_REQUEST, { padId: groupId }, {});
+				await expect(service.deleteGroup(groupId)).rejects.toThrowError(exception);
 			});
 		});
 
-		describe('when deletePadUsingGET returns error', () => {
+		describe('when deleteGroupUsingPOST returns error', () => {
 			const setup = () => {
-				const padId = 'padId';
+				const groupId = 'padId';
 
-				padApi.deletePadUsingPOST.mockRejectedValueOnce(new Error('error'));
+				groupApi.deleteGroupUsingPOST.mockRejectedValueOnce(new Error('error'));
 
-				return padId;
+				return groupId;
 			};
 
 			it('should throw EtherpadErrorLoggableException', async () => {
-				const padId = setup();
+				const groupId = setup();
 
-				await expect(service.deletePad(padId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.deleteGroup(groupId)).rejects.toThrowError(EtherpadErrorLoggableException);
 			});
 		});
 	});

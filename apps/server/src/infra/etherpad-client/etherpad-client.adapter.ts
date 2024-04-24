@@ -10,7 +10,7 @@ import {
 	InlineResponse2006,
 	InlineResponse2006Data,
 } from './etherpad-api-client';
-import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
+import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
 import {
 	AuthorId,
 	EtherpadErrorType,
@@ -28,8 +28,7 @@ export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
-		private readonly authorApi: AuthorApi,
-		private readonly padApi: PadApi
+		private readonly authorApi: AuthorApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
@@ -106,7 +105,7 @@ export class EtherpadClientAdapter {
 	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string): string | undefined {
 		const sessionEntries = Object.entries(sessions);
 		const sessionId = sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) => {
-			if (value.groupID === groupId && value.authorID === authorId) {
+			if (value?.groupID === groupId && value?.authorID === authorId) {
 				return key;
 			}
 
@@ -207,18 +206,18 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async deletePad(padId: PadId): Promise<void> {
-		const response = await this.tryDeletePad(padId);
-		this.handleEtherpadResponse<InlineResponse2001>(response, { padId });
+	public async deleteGroup(groupId: GroupId): Promise<void> {
+		const response = await this.tryDeleteGroup(groupId);
+		this.handleEtherpadResponse<InlineResponse2001>(response, { groupId });
 	}
 
-	private async tryDeletePad(padId: string): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryDeleteGroup(groupId: string): Promise<AxiosResponse<InlineResponse2001>> {
 		try {
-			const response = await this.padApi.deletePadUsingPOST(padId);
+			const response = await this.groupApi.deleteGroupUsingPOST(groupId);
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { groupId }, error);
 		}
 	}
 
