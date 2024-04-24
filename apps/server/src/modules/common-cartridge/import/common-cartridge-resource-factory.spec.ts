@@ -148,7 +148,7 @@ describe('CommonCartridgeResourceFactory', () => {
 			});
 		});
 
-		describe('when creating a web content resource', () => {
+		describe('when web content is provided', () => {
 			const setup = () => {
 				const webContentHtml = setupWebContentHtml();
 				const organizationProps = setupOrganizationProps();
@@ -160,47 +160,57 @@ describe('CommonCartridgeResourceFactory', () => {
 				return { organizationProps };
 			};
 
-			describe('when web content is provided', () => {
-				it('should create a web content resource', () => {
-					const { organizationProps } = setup();
+			it('should create a web content resource', () => {
+				const { organizationProps } = setup();
 
-					const result = sut.create(organizationProps);
+				const result = sut.create(organizationProps);
 
-					expect(result).toStrictEqual({
-						type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-						title: organizationProps.title,
-						html: 'Content',
-					});
+				expect(result).toStrictEqual({
+					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					title: organizationProps.title,
+					html: 'Content',
 				});
 			});
+		});
 
-			describe('when web content is not provided', () => {
-				it('should return an empty value', () => {
-					const { organizationProps } = setup();
-					const emptyWebContent = '';
-					admZipMock.readAsText.mockReturnValue(emptyWebContent);
+		describe('when web content is not provided', () => {
+			const setup = () => {
+				const organizationProps = setupOrganizationProps();
 
-					const result = sut.create(organizationProps);
+				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue('');
 
-					expect(result).toStrictEqual({
-						type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-						title: organizationProps.title,
-						html: '',
-					});
+				return { organizationProps };
+			};
+			it('should return an empty value', () => {
+				const { organizationProps } = setup();
+
+				const result = sut.create(organizationProps);
+
+				expect(result).toStrictEqual({
+					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					title: organizationProps.title,
+					html: '',
 				});
 			});
+		});
 
-			describe('when html is not valid', () => {
-				it('should return undefined', () => {
-					const { organizationProps } = setup();
+		describe('when html is not valid', () => {
+			const setup = () => {
+				const organizationProps = setupOrganizationProps();
+				const tryCreateDocumentMock = jest.fn().mockReturnValue(undefined);
 
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					jest.spyOn(sut as any, 'tryCreateDocument').mockReturnValue(undefined);
+				Reflect.set(sut, 'tryCreateDocument', tryCreateDocumentMock);
 
-					const result = sut.create(organizationProps);
+				return { organizationProps };
+			};
+			it('should return undefined', () => {
+				const { organizationProps } = setup();
 
-					expect(result).toBeUndefined();
-				});
+				const result = sut.create(organizationProps);
+
+				expect(result).toBeUndefined();
 			});
 		});
 	});
