@@ -42,6 +42,7 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
+import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor/service/collaborative-text-editor.service';
 import { ContextExternalTool } from '../../tool/context-external-tool/domain';
 import { ContextExternalToolEntity } from '../../tool/context-external-tool/entity';
 import { BoardDoRepo } from './board-do.repo';
@@ -65,6 +66,7 @@ describe(BoardDoRepo.name, () => {
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
 				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
 				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
+				{ provide: CollaborativeTextEditorService, useValue: createMock<CollaborativeTextEditorService>() },
 			],
 		}).compile();
 		repo = module.get(BoardDoRepo);
