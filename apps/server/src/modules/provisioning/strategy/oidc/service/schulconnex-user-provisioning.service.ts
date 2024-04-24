@@ -47,16 +47,18 @@ export class SchulconnexUserProvisioningService {
 		let createNewAccount = false;
 		if (existingUser) {
 			user = existingUser;
-			user.firstName = externalUser.firstName ?? existingUser.firstName;
-			user.lastName = externalUser.lastName ?? existingUser.lastName;
-			user.email = externalUser.email ?? existingUser.email;
-			user.roles = roleRefs ?? existingUser.roles;
-			user.schoolId = schoolId ?? existingUser.schoolId;
-			user.birthday = externalUser.birthday ?? existingUser.birthday;
 
 			if (!isUniqueEmail) {
 				user.email = existingUser.email;
+			} else {
+				user.email = externalUser.email ?? existingUser.email;
 			}
+
+			user.firstName = externalUser.firstName ?? existingUser.firstName;
+			user.lastName = externalUser.lastName ?? existingUser.lastName;
+			user.roles = roleRefs ?? existingUser.roles;
+			user.schoolId = schoolId ?? existingUser.schoolId;
+			user.birthday = externalUser.birthday ?? existingUser.birthday;
 		} else {
 			createNewAccount = true;
 
