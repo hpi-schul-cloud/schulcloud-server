@@ -173,7 +173,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		const schoolPermissions = this.school.permissions;
 		let setOfPermissions = new Set(permissions);
 
-		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
+		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
 			return setOfPermissions;
 		}
 
