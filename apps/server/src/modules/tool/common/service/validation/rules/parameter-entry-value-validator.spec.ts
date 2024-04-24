@@ -24,7 +24,7 @@ describe(ParameterEntryValueValidator.name, () => {
 			it('should return an empty array', () => {
 				const { entry, declaration } = setup();
 
-				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration);
+				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration, undefined);
 
 				expect(result).toHaveLength(0);
 			});
@@ -49,7 +49,7 @@ describe(ParameterEntryValueValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entry, declaration } = setup();
 
-				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration);
+				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration, undefined);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterValueMissingLoggableException);
 			});
@@ -73,7 +73,7 @@ describe(ParameterEntryValueValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entry, declaration } = setup();
 
-				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration);
+				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration, undefined);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterValueMissingLoggableException);
 			});
