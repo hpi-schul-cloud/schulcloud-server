@@ -263,22 +263,22 @@ describe('CollaborativeTextEditorService', () => {
 	});
 
 	describe('deleteCollaborativeTextEditor', () => {
-		describe('WHEN etherpadClientAdapter.deletePad returns successfully', () => {
+		describe('WHEN etherpadClientAdapter.deleteGroup returns successfully', () => {
 			it('should call etherpadClientAdapter.deletePad with correct parameter', async () => {
 				const parentId = 'parentId';
 
 				await service.deleteCollaborativeTextEditor(parentId);
 
-				expect(etherpadClientAdapter.deletePad).toHaveBeenCalledWith(parentId);
+				expect(etherpadClientAdapter.deleteGroup).toHaveBeenCalledWith(parentId);
 			});
 		});
 
-		describe('WHEN etherpadClientAdapter.deletePad throws an error', () => {
+		describe('WHEN etherpadClientAdapter.deleteGroup throws an error', () => {
 			it('should throw an error', async () => {
 				const parentId = 'parentId';
 				const error = new Error('error');
 
-				etherpadClientAdapter.deletePad.mockRejectedValueOnce(error);
+				etherpadClientAdapter.deleteGroup.mockRejectedValueOnce(error);
 
 				await expect(service.deleteCollaborativeTextEditor(parentId)).rejects.toThrowError(error);
 			});
