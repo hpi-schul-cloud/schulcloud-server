@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CacheService } from '../service';
+import { AlertCacheService } from '../service';
 
 @Injectable()
 export class AlertUc {
-	constructor(private readonly cacheService: CacheService) {}
+	constructor(private readonly cacheService: AlertCacheService) {}
 
 	public find() {
 		return this.cacheService.getMessages();

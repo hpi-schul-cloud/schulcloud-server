@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StatusAdapter } from '../adapter';
 import { Message } from '../controller/dto';
-import { ServerConfig } from '../../server';
+import { AlertConfig } from '../alert.config';
 
 @Injectable()
-export class CacheService {
-	private readonly time: number;
+export class AlertCacheService {
+	private readonly cacheInterval: number;
 
 	private lastUpdatedTimestamp = 0;
 
@@ -17,11 +17,11 @@ export class CacheService {
 	private readonly instance: string;
 
 	constructor(
-		private readonly configService: ConfigService<ServerConfig, true>,
+		private readonly configService: ConfigService<AlertConfig, true>,
 		private readonly statusAdapter: StatusAdapter
 	) {
 		this.instance = configService.get<string>('SC_THEME');
-		this.time = 1;
+		this.cacheInterval = configService.get('ALERT_CACHE_INTERVAL');
 
 		if (configService.get('ALERT_STATUS_URL')) {
 			this.addMessageProvider(statusAdapter, true);
@@ -51,7 +51,7 @@ export class CacheService {
 	}
 
 	public async getMessages() {
-		if (this.lastUpdatedTimestamp < Date.now() - 1000 * 60 * this.time) {
+		if (this.lastUpdatedTimestamp < Date.now() - 1000 * 60 * this.cacheInterval) {
 			await this.updateMessages();
 		}
 

@@ -4,10 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import { AxiosResponse } from 'axios';
 import { ErrorUtils } from '@src/core/error/utils';
 import { ConfigService } from '@nestjs/config';
+import { AlertConfig } from '../alert.config';
 import { Importance } from './enum';
 import { ComponentResponse, IncidentDto, IncidentsResponse, MessagesDto } from './dto';
 import { MessageMapper } from '../controller/mapper';
-import { ServerConfig } from '../../server';
 
 @Injectable()
 export class StatusAdapter {
@@ -15,7 +15,7 @@ export class StatusAdapter {
 
 	constructor(
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<ServerConfig, true>
+		private readonly configService: ConfigService<AlertConfig, true>
 	) {
 		this.url = configService.get('ALERT_STATUS_URL');
 	}

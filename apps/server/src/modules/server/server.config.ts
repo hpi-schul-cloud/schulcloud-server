@@ -23,6 +23,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { AlertConfig } from '@modules/alert';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
 
@@ -59,7 +60,8 @@ export interface ServerConfig
 		SynchronizationConfig,
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
-		ProvisioningConfig {
+		ProvisioningConfig,
+		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
@@ -229,6 +231,7 @@ const config: ServerConfig = {
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
 	) as boolean,
+	ALERT_CACHE_INTERVAL: Configuration.get('ALERT_CACHE_INTERVAL') as number,
 };
 
 export const serverConfig = () => config;

@@ -1,1 +1,1 @@
-export * from './cache.service';
+export * from './alert-cache.service';
