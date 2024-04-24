@@ -1,6 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { Role, SchoolEntity } from '.';
 import { LanguageType, Permission, RoleName } from '../interface';
@@ -43,7 +44,7 @@ describe('User Entity', () => {
 			const user = userFactory.build();
 			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
-			expect(() => user.resolvePermissions()).toThrowError();
+			expect(() => user.resolvePermissions()).toThrow(ReferenceNotPopulatedLoggableException);
 		});
 
 		it('should throw an error if the sub-roles are not populated', () => {
@@ -58,7 +59,7 @@ describe('User Entity', () => {
 			const user = userFactory.build();
 			user.school = orm.em.getReference(SchoolEntity, new ObjectId().toHexString());
 
-			expect(() => user.resolvePermissions()).toThrowError();
+			expect(() => user.resolvePermissions()).toThrow(ReferenceNotPopulatedLoggableException);
 		});
 
 		it('should return empty array if the user has no roles', () => {
