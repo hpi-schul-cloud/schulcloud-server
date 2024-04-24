@@ -4200,6 +4200,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ColumnBoardFactory.html" data-type="entity-link" >ColumnBoardFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ColumnBoardNode.html" data-type="entity-link" >ColumnBoardNode</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ColumnResponse.html" data-type="entity-link" >ColumnResponse</a>
                             </li>
                             <li class="link">
@@ -5419,6 +5422,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/MediaBoardFactory.html" data-type="entity-link" >MediaBoardFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MediaBoardNode.html" data-type="entity-link" >MediaBoardNode</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MediaBoardResponse.html" data-type="entity-link" >MediaBoardResponse</a>

@@ -180,7 +180,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="113" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:113</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="115" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -255,9 +255,11 @@ export abstract class News extends BaseEntityWithTimestamps {
 	school!: SchoolEntity;
 
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;creatorId&#x27;, nullable: true })
+	@Index()
 	creator?: User;
 
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;updaterId&#x27;, nullable: true })
+	@Index()
 	updater?: User;
 
 	permissions: string[] &#x3D; [];

@@ -238,7 +238,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import {
 	AnyBoardDo,
@@ -253,6 +253,8 @@ import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
 // TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })
+@Index({ properties: [&#x27;_contextId&#x27;] })
+@Index({ properties: [&#x27;_contextType&#x27;] })
 export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	constructor(props: ColumnBoardNodeProps) {
 		super(props);

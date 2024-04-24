@@ -197,7 +197,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -234,7 +234,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +271,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -308,7 +308,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -338,6 +338,7 @@ export interface DeletionRequestEntityProps {
 
 @Entity({ tableName: &#x27;deletionrequests&#x27; })
 @Unique({ properties: [&#x27;targetRefId&#x27;, &#x27;targetRefDomain&#x27;] })
+@Index({ properties: [&#x27;createdAt&#x27;] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Index({ options: { expireAfterSeconds: SECONDS_OF_90_DAYS } })

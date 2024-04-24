@@ -135,6 +135,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#creator" >creator</a>
                             </li>
@@ -177,6 +178,7 @@
                                 <a href="#title" >title</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#updater" >updater</a>
@@ -248,6 +250,7 @@
                     <a name="creator"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>creator</b></span>
                         <a href="#creator"><span class="icon ion-ios-link"></span></a>
@@ -265,13 +268,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ManyToOne(&#x27;User&#x27;, {fieldName: &#x27;creatorId&#x27;, nullable: true})<br />
+                            @ManyToOne(&#x27;User&#x27;, {fieldName: &#x27;creatorId&#x27;, nullable: true})<br />@Index()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:64</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -382,7 +385,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:69</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -622,6 +625,7 @@
                     <a name="updater"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>updater</b></span>
                         <a href="#updater"><span class="icon ion-ios-link"></span></a>
@@ -639,13 +643,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ManyToOne(&#x27;User&#x27;, {fieldName: &#x27;updaterId&#x27;, nullable: true})<br />
+                            @ManyToOne(&#x27;User&#x27;, {fieldName: &#x27;updaterId&#x27;, nullable: true})<br />@Index()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:67</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/shared/domain/entity/news.entity.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -720,9 +724,11 @@ export abstract class News extends BaseEntityWithTimestamps {
 	school!: SchoolEntity;
 
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;creatorId&#x27;, nullable: true })
+	@Index()
 	creator?: User;
 
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;updaterId&#x27;, nullable: true })
+	@Index()
 	updater?: User;
 
 	permissions: string[] &#x3D; [];

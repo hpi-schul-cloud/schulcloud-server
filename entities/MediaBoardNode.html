@@ -184,7 +184,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/media-board/media-board-node.entity.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/media-board/media-board-node.entity.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -220,7 +220,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/media-board/media-board-node.entity.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/media-board/media-board-node.entity.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -232,7 +232,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import {
 	type AnyBoardDo,
@@ -246,6 +246,8 @@ import { type BoardDoBuilder, BoardNodeType } from &#x27;../types&#x27;;
 
 // TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
 @Entity({ discriminatorValue: BoardNodeType.MEDIA_BOARD })
+@Index({ properties: [&#x27;_contextId&#x27;] })
+@Index({ properties: [&#x27;_contextType&#x27;] })
 export class MediaBoardNode extends BoardNode {
 	constructor(props: RootBoardNodeProps) {
 		super(props);
