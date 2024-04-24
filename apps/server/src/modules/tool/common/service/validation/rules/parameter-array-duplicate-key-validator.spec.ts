@@ -23,7 +23,7 @@ describe(ParameterArrayDuplicateKeyValidator.name, () => {
 			it('should return an empty array', () => {
 				const { entries } = setup();
 
-				const result: ValidationError[] = new ParameterArrayDuplicateKeyValidator().validate(entries, []);
+				const result: ValidationError[] = new ParameterArrayDuplicateKeyValidator().validate(entries, [], undefined);
 
 				expect(result).toHaveLength(0);
 			});
@@ -48,7 +48,7 @@ describe(ParameterArrayDuplicateKeyValidator.name, () => {
 			it('should return a validation error', () => {
 				const { entries } = setup();
 
-				const result: ValidationError[] = new ParameterArrayDuplicateKeyValidator().validate(entries, []);
+				const result: ValidationError[] = new ParameterArrayDuplicateKeyValidator().validate(entries, [], undefined);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterDuplicateLoggableException);
 			});
