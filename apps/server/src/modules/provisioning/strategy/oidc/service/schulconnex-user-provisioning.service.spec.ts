@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountSave, AccountService } from '@modules/account';
-import { EmailAlreadyExistsLoggable } from '@modules/provisioning/loggable';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
@@ -9,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { userDoFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
 import { SchulconnexUserProvisioningService } from './schulconnex-user-provisioning.service';
@@ -22,6 +22,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 	let userService: DeepMocked<UserService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -39,6 +40,10 @@ describe(SchulconnexUserProvisioningService.name, () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -46,6 +51,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 		userService = module.get(UserService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -72,19 +78,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				},
 				'userId'
 			);
-			const otherUserWithSameEmail: UserDO = userDoFactory
-				.withRoles([{ id: 'existingRoleId', name: RoleName.USER }])
-				.buildWithId(
-					{
-						firstName: 'OtherFirstName',
-						lastName: 'OtherLastName',
-						email: 'email',
-						schoolId: 'OtherSchoolId',
-						externalId: 'OtherUserId',
-						birthday: new Date('2023-11-15'),
-					},
-					'otherId'
-				);
 			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'firstName',
@@ -123,7 +116,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 			return {
 				existingUser,
-				otherUserWithSameEmail,
 				savedUser,
 				externalUser,
 				userRole,
@@ -134,11 +126,21 @@ describe(SchulconnexUserProvisioningService.name, () => {
 		};
 
 		describe('when the user does not exist yet', () => {
+			it('should call user service to check uniqueness of email', async () => {
+				const { externalUser, schoolId, systemId } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(null);
+
+				await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(userService.isEmailFromExternalSourceUnique).toHaveBeenCalledWith(externalUser.email, undefined);
+			});
+
 			it('should call the user service to save the user', async () => {
 				const { externalUser, schoolId, savedUser, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(null);
-				userService.findByEmail.mockResolvedValue([]);
+				userService.isEmailFromExternalSourceUnique.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -149,7 +151,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, savedUser, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(null);
-				userService.findByEmail.mockResolvedValue([]);
 
 				const result: UserDO = await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -166,7 +167,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				} as AccountSave;
 
 				userService.findByExternalId.mockResolvedValue(null);
-				userService.findByEmail.mockResolvedValue([]);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -178,7 +178,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 					const { externalUser } = setupUser();
 
 					userService.findByExternalId.mockResolvedValue(null);
-					userService.findByEmail.mockResolvedValue([]);
 
 					const promise: Promise<UserDO> = service.provisionExternalUser(externalUser, 'systemId', undefined);
 
@@ -187,25 +186,40 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			});
 
 			describe('when the external user has an email, that already exists in SVS', () => {
-				it('should throw EmailAlreadyExistsLoggable', async () => {
-					const { externalUser, systemId, schoolId, otherUserWithSameEmail } = setupUser();
+				it('should log EmailAlreadyExistsLoggable', async () => {
+					const { externalUser, systemId, schoolId } = setupUser();
 
 					userService.findByExternalId.mockResolvedValue(null);
-					userService.findByEmail.mockResolvedValue([otherUserWithSameEmail]);
+					userService.isEmailFromExternalSourceUnique.mockResolvedValue(false);
 
-					const promise: Promise<UserDO> = service.provisionExternalUser(externalUser, systemId, schoolId);
+					await service.provisionExternalUser(externalUser, systemId, schoolId);
 
-					await expect(promise).rejects.toThrow(EmailAlreadyExistsLoggable);
+					expect(logger.warning).toHaveBeenCalledWith({
+						email: externalUser.email,
+						externalId: externalUser.externalId,
+					});
 				});
 			});
 		});
 
 		describe('when the user already exists', () => {
+			it('should call user service to check uniqueness of email', async () => {
+				const { externalUser, schoolId, systemId, existingUser } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(existingUser);
+
+				await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(userService.isEmailFromExternalSourceUnique).toHaveBeenCalledWith(
+					externalUser.email,
+					existingUser.externalId
+				);
+			});
+
 			it('should call the user service to save the user', async () => {
 				const { externalUser, schoolId, existingUser, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
-				userService.findByEmail.mockResolvedValue([existingUser]);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -216,7 +230,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, existingUser, savedUser, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
-				userService.findByEmail.mockResolvedValue([existingUser]);
 
 				const result: UserDO = await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -227,24 +240,10 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, systemId, existingUser } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
-				userService.findByEmail.mockResolvedValue([existingUser]);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
 				expect(accountService.saveWithValidation).not.toHaveBeenCalled();
-			});
-
-			describe('when the external user has an email, that already exists ijn SVS', () => {
-				it('should throw EmailAlreadyExistsLoggable', async () => {
-					const { externalUser, systemId, schoolId, otherUserWithSameEmail, existingUser } = setupUser();
-
-					userService.findByExternalId.mockResolvedValue(existingUser);
-					userService.findByEmail.mockResolvedValue([otherUserWithSameEmail]);
-
-					const promise: Promise<UserDO> = service.provisionExternalUser(externalUser, systemId, schoolId);
-
-					await expect(promise).rejects.toThrow(EmailAlreadyExistsLoggable);
-				});
 			});
 		});
 	});

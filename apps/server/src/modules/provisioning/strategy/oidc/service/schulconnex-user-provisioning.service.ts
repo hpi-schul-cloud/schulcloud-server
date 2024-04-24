@@ -5,6 +5,7 @@ import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';
 
@@ -13,7 +14,8 @@ export class SchulconnexUserProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
 	) {}
 
 	public async provisionExternalUser(
@@ -22,8 +24,17 @@ export class SchulconnexUserProvisioningService {
 		schoolId?: string
 	): Promise<UserDO> {
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
+
+		let isUniqueEmail = true;
 		if (externalUser.email) {
-			await this.checkUniqueEmail(externalUser.email, existingUser?.externalId);
+			isUniqueEmail = await this.userService.isEmailFromExternalSourceUnique(
+				externalUser.email,
+				existingUser?.externalId
+			);
+
+			if (!isUniqueEmail) {
+				this.logger.warning(new EmailAlreadyExistsLoggable(externalUser.email, externalUser.externalId));
+			}
 		}
 
 		let roleRefs: RoleReference[] | undefined;
@@ -42,6 +53,10 @@ export class SchulconnexUserProvisioningService {
 			user.roles = roleRefs ?? existingUser.roles;
 			user.schoolId = schoolId ?? existingUser.schoolId;
 			user.birthday = externalUser.birthday ?? existingUser.birthday;
+
+			if (!isUniqueEmail) {
+				user.email = existingUser.email;
+			}
 		} else {
 			createNewAccount = true;
 
@@ -60,6 +75,10 @@ export class SchulconnexUserProvisioningService {
 				schoolId,
 				birthday: externalUser.birthday,
 			});
+
+			if (!isUniqueEmail) {
+				user.email = '';
+			}
 		}
 
 		const savedUser: UserDO = await this.userService.save(user);
@@ -74,14 +93,5 @@ export class SchulconnexUserProvisioningService {
 		}
 
 		return savedUser;
-	}
-
-	private async checkUniqueEmail(email: string, externalId?: string): Promise<void> {
-		const foundUsers: UserDO[] = await this.userService.findByEmail(email);
-		const unmatchedUsers: UserDO[] = foundUsers.filter((user: UserDO) => user.externalId !== externalId);
-
-		if (unmatchedUsers.length || (!externalId && foundUsers.length)) {
-			throw new EmailAlreadyExistsLoggable(email, externalId);
-		}
 	}
 }

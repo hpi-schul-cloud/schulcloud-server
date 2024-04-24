@@ -6,24 +6,22 @@ describe('EmailAlreadyExistsLoggableException', () => {
 			const email = 'mock-email';
 			const externalId = '789';
 
-			const exception = new EmailAlreadyExistsLoggable(email, externalId);
+			const loggable = new EmailAlreadyExistsLoggable(email, externalId);
 
 			return {
-				exception,
+				loggable,
 				email,
 				externalId,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { exception, email, externalId } = setup();
+			const { loggable, email, externalId } = setup();
 
-			const message = exception.getLogMessage();
+			const message = loggable.getLogMessage();
 
 			expect(message).toEqual({
-				type: 'EMAIL_ALREADY_EXISTS',
 				message: 'The Email to be provisioned already exists.',
-				stack: expect.any(String),
 				data: {
 					email,
 					externalId,
