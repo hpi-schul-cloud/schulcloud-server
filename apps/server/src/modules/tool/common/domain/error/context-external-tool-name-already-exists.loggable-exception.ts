@@ -3,18 +3,19 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { HttpStatus } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
-export class ToolParameterDuplicateLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolId: EntityId | undefined, private readonly parameterName: string) {
+export class ContextExternalToolNameAlreadyExistsLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly toolId: EntityId | undefined, private readonly toolName: string | undefined) {
 		super(
 			{
-				type: 'TOOL_PARAMETER_DUPLICATE',
-				title: 'Duplicate tool parameter',
-				defaultMessage: 'The parameter is defined multiple times.',
+				type: 'CONTEXT_EXTERNAL_TOOL_NAME_ALREADY_EXISTS',
+				title: 'Toolname already exists',
+				defaultMessage:
+					'A tool with the same name is already assigned to this course. Tool names must be unique within a course.',
 			},
 			HttpStatus.BAD_REQUEST,
 			{
 				toolId,
-				parameterName,
+				toolName,
 			}
 		);
 	}
@@ -26,7 +27,7 @@ export class ToolParameterDuplicateLoggableException extends BusinessError imple
 			stack: this.stack,
 			data: {
 				toolId: this.toolId,
-				parameterName: this.parameterName,
+				toolName: this.toolName,
 			},
 		};
 	}

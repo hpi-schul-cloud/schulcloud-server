@@ -8,6 +8,7 @@ describe(ToolParameterTypeMismatchLoggableException.name, () => {
 			const parameter: CustomParameter = customParameterFactory.build();
 
 			const exception: ToolParameterTypeMismatchLoggableException = new ToolParameterTypeMismatchLoggableException(
+				'toolId',
 				parameter
 			);
 
@@ -27,6 +28,7 @@ describe(ToolParameterTypeMismatchLoggableException.name, () => {
 				message: 'The parameter value has the wrong type.',
 				stack: exception.stack,
 				data: {
+					toolId: 'toolId',
 					parameterName: parameter.name,
 					parameterType: parameter.type,
 				},
