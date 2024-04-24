@@ -61,9 +61,11 @@ export abstract class News extends BaseEntityWithTimestamps {
 	school!: SchoolEntity;
 
 	@ManyToOne('User', { fieldName: 'creatorId', nullable: true })
+	@Index()
 	creator?: User;
 
 	@ManyToOne('User', { fieldName: 'updaterId', nullable: true })
+	@Index()
 	updater?: User;
 
 	permissions: string[] = [];
