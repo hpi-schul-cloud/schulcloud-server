@@ -10,6 +10,7 @@ import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 import { LoginDto } from '../uc/dto';
+import { BlockedUserException } from '../loggable/blocked-user-exception';
 
 @Injectable()
 export class AuthenticationService {
@@ -33,7 +34,9 @@ export class AuthenticationService {
 		if (!account) {
 			throw new UnauthorizedLoggableException(username, systemId);
 		}
-
+		if (account.updatedAt != null && account.updatedAt.getDate() <= Date.now()) {
+			throw new BlockedUserException();
+		}
 		return account;
 	}
 

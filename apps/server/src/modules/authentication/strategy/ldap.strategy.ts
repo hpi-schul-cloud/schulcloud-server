@@ -12,6 +12,7 @@ import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
+import { BlockedUserException } from '../loggable/blocked-user-exception';
 
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
@@ -39,6 +40,9 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		const account: Account = await this.loadAccount(username, system.id, school);
 
+		if (account.updatedAt != null && Number(account.updatedAt.getDate()) <= Number(Date.now())) {
+			throw new BlockedUserException();
+		}
 		const userId: string = this.checkValue(account.userId);
 
 		this.authenticationService.checkBrutForce(account);

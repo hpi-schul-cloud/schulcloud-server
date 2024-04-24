@@ -8,6 +8,7 @@ import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { SchoolInMigrationLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
+import { BlockedUserException } from '../loggable/blocked-user-exception';
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
@@ -30,14 +31,15 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		if (!account) {
 			throw new UnauthorizedException('no account found');
 		}
-
+		if (account.updatedAt != null && Number(account.updatedAt.getDate()) <= Number(Date.now())) {
+			throw new BlockedUserException();
+		}
 		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
 			account.id,
 			user,
 			systemId,
 			tokenDto.idToken
 		);
-
 		return currentUser;
 	}
 }
