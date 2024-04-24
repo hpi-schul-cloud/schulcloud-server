@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property, wrap } from '@mikro-orm/core';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -165,6 +165,10 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	}
 
 	private resolveSchoolPermissions(permissions: string[], roles: Role[]): Set<string> {
+		if (!wrap(this.school).isInitialized()) {
+			throw new Error('School is not populated.');
+		}
+
 		const schoolPermissions = this.school.permissions;
 		const setOfPermissions = new Set(permissions);
 

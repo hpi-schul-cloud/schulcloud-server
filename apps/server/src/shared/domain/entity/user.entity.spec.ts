@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { Role } from '.';
+import { Role, SchoolEntity } from '.';
 import { LanguageType, Permission, RoleName } from '../interface';
 import { User } from './user.entity';
 
@@ -50,6 +50,13 @@ describe('User Entity', () => {
 			const role = roleFactory.build();
 			role.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 			const user = userFactory.build({ roles: [role] });
+
+			expect(() => user.resolvePermissions()).toThrowError();
+		});
+
+		it('should throw an error if the school is not populated', () => {
+			const user = userFactory.build();
+			user.school = orm.em.getReference(SchoolEntity, new ObjectId().toHexString());
 
 			expect(() => user.resolvePermissions()).toThrowError();
 		});
