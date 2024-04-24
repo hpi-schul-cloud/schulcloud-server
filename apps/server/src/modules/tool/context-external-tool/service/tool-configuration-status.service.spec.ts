@@ -273,8 +273,8 @@ describe(ToolConfigurationStatusService.name, () => {
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([
-					new ToolParameterValueMissingLoggableException(customParameter),
-					new ToolParameterDuplicateLoggableException(customParameter.name),
+					new ToolParameterValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
 				]);
 
 				return {
