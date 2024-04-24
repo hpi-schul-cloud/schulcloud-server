@@ -5,7 +5,7 @@ import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
-import { SchoolEntity } from './school.entity';
+import { SchoolEntity, SchoolRoles } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
 
 export interface UserProperties {
@@ -170,35 +170,53 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		}
 
 		const schoolPermissions = this.school.permissions;
-		const setOfPermissions = new Set(permissions);
+		let setOfPermissions = new Set(permissions);
 
 		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
 			return setOfPermissions;
 		}
 
 		if (roles.some((role) => role.name === RoleName.TEACHER)) {
-			const isEnabledByDefault = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT') as boolean;
-			const isConfigurable = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE') as boolean;
+			setOfPermissions = this.resolveSchoolPermissionsForTeacher(setOfPermissions, schoolPermissions);
+		}
 
-			if (isConfigurable) {
-				if (schoolPermissions?.teacher?.STUDENT_LIST) {
-					setOfPermissions.add(Permission.STUDENT_LIST);
-				} else {
-					setOfPermissions.delete(Permission.STUDENT_LIST);
-				}
-			} else if (isEnabledByDefault) {
+		if (roles.some((role) => role.name === RoleName.STUDENT)) {
+			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
+		}
+
+		return setOfPermissions;
+	}
+
+	private resolveSchoolPermissionsForTeacher(
+		setOfPermissions: Set<string>,
+		schoolPermissions?: SchoolRoles
+	): Set<string> {
+		const isEnabledByDefault = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT') as boolean;
+		const isConfigurable = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE') as boolean;
+
+		if (isConfigurable) {
+			if (schoolPermissions?.teacher?.STUDENT_LIST) {
 				setOfPermissions.add(Permission.STUDENT_LIST);
 			} else {
 				setOfPermissions.delete(Permission.STUDENT_LIST);
 			}
+		} else if (isEnabledByDefault) {
+			setOfPermissions.add(Permission.STUDENT_LIST);
+		} else {
+			setOfPermissions.delete(Permission.STUDENT_LIST);
 		}
 
-		if (roles.some((role) => role.name === RoleName.STUDENT)) {
-			if (schoolPermissions?.student?.LERNSTORE_VIEW) {
-				setOfPermissions.add(Permission.LERNSTORE_VIEW);
-			} else {
-				setOfPermissions.delete(Permission.LERNSTORE_VIEW);
-			}
+		return setOfPermissions;
+	}
+
+	private resolveSchoolPermissionsForStudent(
+		setOfPermissions: Set<string>,
+		schoolPermissions?: SchoolRoles
+	): Set<string> {
+		if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+			setOfPermissions.add(Permission.LERNSTORE_VIEW);
+		} else {
+			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
 		}
 
 		return setOfPermissions;
