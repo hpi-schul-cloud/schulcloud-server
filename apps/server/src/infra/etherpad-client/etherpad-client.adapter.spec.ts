@@ -15,7 +15,7 @@ import {
 	SessionApi,
 } from './etherpad-api-client';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
-import { EtherpadErrorType } from './interface';
+import { EtherpadErrorType, EtherpadResponseCode } from './interface';
 import { EtherpadErrorLoggableException } from './loggable';
 
 describe(EtherpadClientAdapter.name, () => {
@@ -24,6 +24,7 @@ describe(EtherpadClientAdapter.name, () => {
 	let groupApi: DeepMocked<GroupApi>;
 	let sessionApi: DeepMocked<SessionApi>;
 	let authorApi: DeepMocked<AuthorApi>;
+	let padApi: DeepMocked<PadApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -52,6 +53,7 @@ describe(EtherpadClientAdapter.name, () => {
 		sessionApi = module.get(SessionApi);
 		authorApi = module.get(AuthorApi);
 		groupApi = module.get(GroupApi);
+		padApi = module.get(PadApi);
 	});
 
 	afterAll(async () => {
@@ -603,6 +605,69 @@ describe(EtherpadClientAdapter.name, () => {
 		});
 	});
 
+	describe('deletePad', () => {
+		describe('when deletePadUsingPOST returns successfull', () => {
+			const setup = () => {
+				const padId = 'padId';
+				const response = createMock<AxiosResponse<InlineResponse2001>>({
+					data: {
+						code: EtherpadResponseCode.OK,
+						data: {},
+					},
+				});
+
+				padApi.deletePadUsingPOST.mockResolvedValue(response);
+				return padId;
+			};
+
+			it('should call deletePadUsingGET with correct params', async () => {
+				const padId = setup();
+
+				await service.deletePad(padId);
+
+				expect(padApi.deletePadUsingPOST).toBeCalledWith(padId);
+			});
+		});
+
+		describe('when deletePadUsingPOST returns etherpad error code', () => {
+			const setup = () => {
+				const padId = 'padId';
+				const response = createMock<AxiosResponse<InlineResponse2001>>({
+					data: {
+						code: EtherpadResponseCode.BAD_REQUEST,
+						data: {},
+					},
+				});
+
+				padApi.deletePadUsingPOST.mockResolvedValue(response);
+				return padId;
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const padId = setup();
+
+				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.BAD_REQUEST, { padId }, {});
+				await expect(service.deletePad(padId)).rejects.toThrowError(exception);
+			});
+		});
+
+		describe('when deletePadUsingGET returns error', () => {
+			const setup = () => {
+				const padId = 'padId';
+
+				padApi.deletePadUsingPOST.mockRejectedValueOnce(new Error('error'));
+
+				return padId;
+			};
+
+			it('should throw EtherpadErrorLoggableException', async () => {
+				const padId = setup();
+
+				await expect(service.deletePad(padId)).rejects.toThrowError(EtherpadErrorLoggableException);
+			});
+		});
+	});
+
 	describe('handleEtherpadResponse', () => {
 		const setup = (code = 0) => {
 			const parentId = 'parentId';
@@ -677,7 +742,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const result = service.getOrCreateGroupId(parentId);
 
-				const exception = new InternalServerErrorException('Etherpad Response Code unknown');
+				const exception = new InternalServerErrorException('Etherpad response code unknown');
 				await expect(result).rejects.toThrowError(exception);
 			});
 		});

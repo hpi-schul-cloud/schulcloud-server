@@ -240,7 +240,7 @@ export class EtherpadClientAdapter {
 			case EtherpadResponseCode.WRONG_API_KEY:
 				throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.WRONG_API_KEY, payload, response);
 			default:
-				throw new InternalServerErrorException('Etherpad Response Code unknown');
+				throw new InternalServerErrorException('Etherpad response code unknown');
 		}
 	}
 }
