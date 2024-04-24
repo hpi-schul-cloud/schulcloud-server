@@ -60,15 +60,6 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
@@ -174,7 +165,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -276,8 +267,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -345,8 +336,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-validation.service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -400,6 +391,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
+import { ContextExternalToolNameAlreadyExistsLoggableException } from &#x27;@modules/tool/common/domain/error/context-external-tool-name-already-exists.loggable-exception&#x27;;
 import { CommonToolValidationService } from &#x27;../../common/service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
@@ -449,9 +441,7 @@ export class ContextExternalToolValidationService {
 		);
 
 		if (duplicate.length &gt; 0) {
-			throw new ValidationError(
-				&#x60;tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.&#x60;
-			);
+			throw new ContextExternalToolNameAlreadyExistsLoggableException(duplicate[0].id, duplicate[0].displayName);
 		}
 	}
 }
@@ -501,6 +491,19 @@ export class ContextExternalToolValidationService {
             var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolValidationService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>

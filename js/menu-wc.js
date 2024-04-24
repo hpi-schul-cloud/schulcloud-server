@@ -4374,6 +4374,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContextExternalToolIdParams-1.html" data-type="entity-link" >ContextExternalToolIdParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextExternalToolNameAlreadyExistsLoggableException.html" data-type="entity-link" >ContextExternalToolNameAlreadyExistsLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContextExternalToolPostParams.html" data-type="entity-link" >ContextExternalToolPostParams</a>
                             </li>
                             <li class="link">

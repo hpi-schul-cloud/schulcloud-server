@@ -60,15 +60,6 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
@@ -188,15 +179,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>validate(entries: CustomParameterEntry[], declarations: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>)</code>
+<code>validate(entries: CustomParameterEntry[], declarations: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/validation/rules/parameter-array-unknown-key-validator.ts:6</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="7"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/validation/rules/parameter-array-unknown-key-validator.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -240,6 +231,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>toolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -265,11 +268,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ValidationError } from &#x27;@shared/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from &#x27;../../../domain&#x27;;
 import { ParameterArrayValidator } from &#x27;./parameter-array-validator&#x27;;
 
 export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidator {
-	validate(entries: CustomParameterEntry[], declarations: CustomParameter[]): ValidationError[] {
+	validate(
+		entries: CustomParameterEntry[],
+		declarations: CustomParameter[],
+		toolId: EntityId | undefined
+	): ValidationError[] {
 		const errors: ValidationError[] &#x3D; [];
 
 		for (const entry of entries) {
@@ -278,7 +286,7 @@ export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidato
 			);
 
 			if (!foundParameter) {
-				errors.push(new ToolParameterUnknownLoggableException(entry));
+				errors.push(new ToolParameterUnknownLoggableException(toolId, entry));
 			}
 		}
 
@@ -326,6 +334,19 @@ export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidato
             var COMPODOC_CURRENT_PAGE_URL = 'ParameterArrayUnknownKeyValidator.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>

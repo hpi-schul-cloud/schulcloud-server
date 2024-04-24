@@ -60,15 +60,6 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
@@ -124,10 +115,6 @@
 <title>cluster_H5PEditorModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2008,-268 2008,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_H5PEditorModule_exports</title>
-<polygon fill="none" stroke="black" points="901,-208 901,-260 1145,-260 1145,-208 901,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_H5PEditorModule_imports</title>
 <polygon fill="none" stroke="black" points="1109,-78 1109,-130 2000,-130 2000,-78 1109,-78"/>
@@ -135,6 +122,10 @@
 <g id="clust6" class="cluster">
 <title>cluster_H5PEditorModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 1101,-130 1101,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_H5PEditorModule_exports</title>
+<polygon fill="none" stroke="black" points="901,-208 901,-260 1145,-260 1145,-208 901,-208"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
@@ -569,6 +560,19 @@ export class H5PEditorModule {}
             var COMPODOC_CURRENT_PAGE_URL = 'H5PEditorModule.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>

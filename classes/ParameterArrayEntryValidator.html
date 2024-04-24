@@ -60,15 +60,6 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
@@ -220,7 +211,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/common/service/validation/rules/parameter-array-entry-validator.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/common/service/validation/rules/parameter-array-entry-validator.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -247,15 +238,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>validate(entries: CustomParameterEntry[], declarations: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>)</code>
+<code>validate(entries: CustomParameterEntry[], declarations: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/validation/rules/parameter-array-entry-validator.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/validation/rules/parameter-array-entry-validator.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -299,6 +290,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>toolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -324,6 +327,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ValidationError } from &#x27;@shared/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CustomParameter, CustomParameterEntry, ToolParameterRequiredLoggableException } from &#x27;../../../domain&#x27;;
 import { ParameterArrayValidator } from &#x27;./parameter-array-validator&#x27;;
 import { ParameterEntryRegexValidator } from &#x27;./parameter-entry-regex-validator&#x27;;
@@ -338,7 +342,11 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 		new ParameterEntryRegexValidator(),
 	];
 
-	validate(entries: CustomParameterEntry[], declarations: CustomParameter[]): ValidationError[] {
+	validate(
+		entries: CustomParameterEntry[],
+		declarations: CustomParameter[],
+		toolId: EntityId | undefined
+	): ValidationError[] {
 		const errors: ValidationError[] &#x3D; [];
 
 		for (const param of declarations) {
@@ -348,12 +356,12 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 
 			if (foundEntry) {
 				this.entryValidators.forEach((validator: ParameterEntryValidator) &#x3D;&gt; {
-					const entryErrors: ValidationError[] &#x3D; validator.validate(foundEntry, param);
+					const entryErrors: ValidationError[] &#x3D; validator.validate(foundEntry, param, toolId);
 
 					errors.push(...entryErrors);
 				});
 			} else if (!param.isOptional) {
-				errors.push(new ToolParameterRequiredLoggableException(param));
+				errors.push(new ToolParameterRequiredLoggableException(toolId, param));
 			}
 		}
 
@@ -401,6 +409,19 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
             var COMPODOC_CURRENT_PAGE_URL = 'ParameterArrayEntryValidator.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>

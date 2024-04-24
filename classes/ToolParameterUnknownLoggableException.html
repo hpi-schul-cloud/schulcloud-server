@@ -60,15 +60,6 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
@@ -135,7 +126,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../classes/ValidationError.html" target="_self" >ValidationError</a></code>
+                            <code><a href="../classes/BusinessError.html" target="_self" >BusinessError</a></code>
             </p>
 
             <p class="comment">
@@ -221,12 +212,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(parameterEntry: <a href="../classes/CustomParameterEntry.html" target="_self">CustomParameterEntry</a>)</code>
+<code>constructor(toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>, parameterEntry: <a href="../classes/CustomParameterEntry.html" target="_self">CustomParameterEntry</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-unknown.loggable-exception.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-unknown.loggable-exception.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -243,6 +234,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>toolId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>parameterEntry</td>
                                                   
@@ -517,8 +520,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-unknown.loggable-exception.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-unknown.loggable-exception.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -589,21 +592,35 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ValidationError } from &#x27;@shared/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BusinessError } from &#x27;@shared/common&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { HttpStatus } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CustomParameterEntry } from &#x27;../custom-parameter-entry.do&#x27;;
 
-export class ToolParameterUnknownLoggableException extends ValidationError implements Loggable {
-	constructor(private readonly parameterEntry: CustomParameterEntry) {
-		super(&#x60;tool_param_unknown: The parameter with name ${parameterEntry.name} is not part of this tool.&#x60;);
+export class ToolParameterUnknownLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly toolId: EntityId | undefined, private readonly parameterEntry: CustomParameterEntry) {
+		super(
+			{
+				type: &#x27;TOOL_PARAMETER_UNKNOWN&#x27;,
+				title: &#x27;Tool parameter unknown&#x27;,
+				defaultMessage: &#x27;The parameter is not part of this tool.&#x27;,
+			},
+			HttpStatus.BAD_REQUEST,
+			{
+				toolId,
+				parameterEntry,
+			}
+		);
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: &#x27;TOOL_PARAMETER_UNKNOWN&#x27;,
-			message: &#x27;The parameter is not part of this tool.&#x27;,
+			type: this.type,
+			message: this.message,
 			stack: this.stack,
 			data: {
+				toolId: this.toolId,
 				parameterName: this.parameterEntry.name,
 			},
 		};
@@ -650,6 +667,19 @@ export class ToolParameterUnknownLoggableException extends ValidationError imple
             var COMPODOC_CURRENT_PAGE_URL = 'ToolParameterUnknownLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>

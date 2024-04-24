@@ -60,15 +60,6 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
         <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
@@ -124,13 +115,13 @@
 <title>cluster_DeletionModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 832,-268 832,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_DeletionModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 824,-130 824,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_DeletionModule_exports</title>
 <polygon fill="none" stroke="black" points="281,-208 281,-260 602,-260 602,-208 281,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_DeletionModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 824,-130 824,-78 16,-78"/>
 </g>
 <!-- DeletionLogService  -->
 <g id="node1" class="node">
@@ -360,6 +351,19 @@ export class DeletionModule {}
             var COMPODOC_CURRENT_PAGE_URL = 'DeletionModule.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
