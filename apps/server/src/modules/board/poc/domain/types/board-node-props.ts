@@ -1,16 +1,12 @@
-import { BoardExternalReference } from '@shared/domain/domainobject';
-import { BoardNodeType } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import type { Card } from './card.do';
-import type { ColumnBoard } from './colum-board.do';
-import type { Column } from './column.do';
+import type { EntityId } from '@shared/domain/types';
+import type { BoardExternalReference } from './board-external-reference';
+import type { AnyBoardNode, BoardNodeType } from './board-node-type';
 
 export interface BoardNodeProps {
 	id: EntityId;
 	path: string;
 	level: number;
 	position: number;
-	// type: BoardNodeType;
 	children: AnyBoardNode[];
 	createdAt: Date;
 	updatedAt: Date;
@@ -33,5 +29,4 @@ export interface CardProps extends BoardNodeProps {
 	height: number;
 }
 
-export type AnyBoardNode = ColumnBoard | Card | Column;
 export type AnyBoardNodeProps = ColumnBoardProps | CardProps | ColumnProps;

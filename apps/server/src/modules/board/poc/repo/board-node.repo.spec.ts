@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { ColumnBoard } from '../domain';
+import { BoardNodeType, ColumnBoard } from '../domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { BoardNodeEntity } from './entity/board-node.entity';
@@ -92,8 +92,37 @@ describe('BoardNodeRepo', () => {
 	});
 
 	describe('findByIds', () => {
-		it.todo('should be able to find a node tree by root id');
-		it.todo('should use depth...');
+		const setup = async () => {
+			const board = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
+
+			const extraBoard = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
+
+			await repo.persistAndFlush([board, extraBoard]);
+			em.clear();
+
+			return { board, extraBoard };
+		};
+
+		it('should be able to find multiple board nodes', async () => {
+			const { board, extraBoard } = await setup();
+
+			const result = await repo.findByIds([board.id, extraBoard.id]);
+
+			expect(result[0]).toBeInstanceOf(ColumnBoard);
+			expect(result[1]).toBeInstanceOf(ColumnBoard);
+		});
+
+		it('should be able to limit tree depth', async () => {
+			const { board } = await setup();
+
+			const result = (await repo.findByIds([board.id], 1))[0];
+
+			expect(result.children[0].children).toHaveLength(0);
+		});
 	});
 
 	describe('findByIdAndType', () => {

@@ -1,7 +1,6 @@
 import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
-import { BoardExternalReference } from '@shared/domain/domainobject';
 import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
-import { AnyBoardNode, ROOT_PATH } from '../../domain';
+import { AnyBoardNode, BoardExternalReference, ROOT_PATH } from '../../domain';
 import { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
 

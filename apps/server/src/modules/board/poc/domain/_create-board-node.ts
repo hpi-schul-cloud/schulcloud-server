@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { BoardNodeType } from '@shared/domain/entity';
+import { BoardExternalReferenceType, BoardNodeType } from './types';
 import { Card } from './card.do';
 import { ColumnBoard } from './colum-board.do';
 import { Column } from './column.do';

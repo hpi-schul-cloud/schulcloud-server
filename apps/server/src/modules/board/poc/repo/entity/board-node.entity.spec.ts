@@ -1,6 +1,6 @@
 import { MikroORM, ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BaseEntityWithTimestamps, BoardNodeType } from '@shared/domain/entity';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from './board-node.entity';
 
 describe('entity', () => {

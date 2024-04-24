@@ -1,7 +1,7 @@
 import { Embeddable, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReference, BoardExternalReferenceType } from '@shared/domain/domainobject';
 import type { EntityId } from '@shared/domain/types';
+import { BoardExternalReference, BoardExternalReferenceType } from '../../../domain';
 
 @Embeddable()
 export class Context implements BoardExternalReference {
