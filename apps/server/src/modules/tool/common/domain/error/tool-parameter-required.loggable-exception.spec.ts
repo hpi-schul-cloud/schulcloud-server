@@ -28,8 +28,8 @@ describe(ToolParameterRequiredLoggableException.name, () => {
 				message: 'The parameter is required, but not found in the tool.',
 				stack: exception.stack,
 				data: {
-					toolId: 'toolId',
 					parameterName: parameter.name,
+					toolId: 'toolId',
 				},
 			});
 		});

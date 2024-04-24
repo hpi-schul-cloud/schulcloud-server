@@ -1,11 +1,11 @@
-import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { HttpStatus } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { BusinessError } from '@shared/common';
 import { CustomParameter } from '../custom-parameter.do';
 
 export class ToolParameterRequiredLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolId: EntityId | undefined, private readonly parameterDeclaration: CustomParameter) {
+	constructor(private readonly toolId: EntityId | undefined, private readonly param: CustomParameter) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_REQUIRED',
@@ -14,20 +14,20 @@ export class ToolParameterRequiredLoggableException extends BusinessError implem
 			},
 			HttpStatus.BAD_REQUEST,
 			{
+				param,
 				toolId,
-				parameterDeclaration,
 			}
 		);
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
+			stack: this.stack,
 			type: this.type,
 			message: this.message,
-			stack: this.stack,
 			data: {
+				parameterName: this.param.name,
 				toolId: this.toolId,
-				parameterName: this.parameterDeclaration.name,
 			},
 		};
 	}
