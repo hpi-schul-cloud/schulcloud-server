@@ -79,6 +79,20 @@ describe('StatusAdapter', () => {
 			});
 		});
 
+		describe('when get incidents return status 500', () => {
+			const setup = () => {
+				jest.spyOn(httpService, 'get').mockReturnValue(of(axiosResponseFactory.build({ status: 500 })));
+			};
+			it('should return empty data', async () => {
+				setup();
+
+				const data = await adapter.getMessage('default');
+
+				expect(data.success).toBe(false);
+				expect(data.messages.length).toBe(0);
+			});
+		});
+
 		describe('when get components failed', () => {
 			const setup = () => {
 				jest.spyOn(httpService, 'get').mockImplementation((url) => {
@@ -91,6 +105,33 @@ describe('StatusAdapter', () => {
 
 					if (url.match(componentsPath)) {
 						return throwError(() => new AxiosError());
+					}
+					const response = axiosResponseFactory.build({ data: [] });
+					return of(response);
+				});
+			};
+			it('should set importance to ignore', async () => {
+				setup();
+
+				const data = await adapter.getMessage('default');
+
+				expect(data.success).toBe(true);
+				expect(data.messages.length).toBe(0);
+			});
+		});
+
+		describe('when get components return status 404', () => {
+			const setup = () => {
+				jest.spyOn(httpService, 'get').mockImplementation((url) => {
+					if (url.match(incidentsPath)) {
+						const incidents = [incident];
+						const incidentResponse = new IncidentsResponse(incidents);
+						const response = axiosResponseFactory.build({ data: incidentResponse });
+						return of(response);
+					}
+
+					if (url.match(componentsPath)) {
+						return of(axiosResponseFactory.build({ status: 500 }));
 					}
 					const response = axiosResponseFactory.build({ data: [] });
 					return of(response);

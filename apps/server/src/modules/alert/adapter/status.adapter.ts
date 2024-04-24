@@ -90,25 +90,43 @@ export class StatusAdapter {
 	}
 
 	private async getComponent(componentId: number): Promise<ComponentResponse> {
-		return firstValueFrom(this.httpService.get(`${this.url}/api/v1/components/${componentId}`))
-			.then((response: AxiosResponse<ComponentResponse>) => response.data)
-			.catch((error) => {
-				throw new InternalServerErrorException(
-					null,
-					ErrorUtils.createHttpExceptionOptions(error, 'StatusAdapter:getComponent')
-				);
-			});
+		try {
+			const request = this.httpService.get<ComponentResponse>(`${this.url}/api/v1/components/${componentId}`);
+
+			const resp = await firstValueFrom(request);
+
+			if (resp.status !== 200) {
+				throw new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 200`);
+			}
+
+			return resp.data;
+		} catch (error) {
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(error, 'StatusAdapter:getComponent')
+			);
+		}
 	}
 
 	private async getIncidents(): Promise<IncidentsResponse> {
-		return firstValueFrom(this.httpService.get(`${this.url}/api/v1/incidents`, { params: { sort: 'id' } }))
-			.then((response: AxiosResponse<IncidentsResponse>) => response.data)
-			.catch((error) => {
-				throw new InternalServerErrorException(
-					null,
-					ErrorUtils.createHttpExceptionOptions(error, 'StatusAdapter:getIncidents')
-				);
+		try {
+			const request = this.httpService.get<IncidentsResponse>(`${this.url}/api/v1/incidents`, {
+				params: { sort: 'id' },
 			});
+
+			const resp = await firstValueFrom(request);
+
+			if (resp.status !== 200 && resp.status !== 202) {
+				throw new Error(`invalid HTTP status code in a response from the server - ${resp.status} instead of 202`);
+			}
+
+			return resp.data;
+		} catch (error) {
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(error, 'StatusAdapter:getIncidents')
+			);
+		}
 	}
 
 	private compareIncidents = (a: IncidentDto, b: IncidentDto) => {
