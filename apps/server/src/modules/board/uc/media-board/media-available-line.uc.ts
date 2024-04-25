@@ -38,8 +38,21 @@ export class MediaAvailableLineUc {
 			schoolExternalToolsForAvailableMediaLine
 		);
 
-		const mediaAvailableLine: MediaAvailableLine =
-			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
+		let matchedAndLicencedTools: [ExternalTool, SchoolExternalTool][] = [];
+		// TODO: N21-1881 change to correct flag
+		if (this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+			matchedAndLicencedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
+				const externalTool: ExternalTool = tool[0];
+				if (externalTool?.medium?.mediumId) {
+					return this.licenceService.checkLicenceForExternalTool(externalTool, user);
+				}
+				return true;
+			});
+		}
+
+		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
+			matchedAndLicencedTools ?? matchedTools
+		);
 
 		return mediaAvailableLine;
 	}

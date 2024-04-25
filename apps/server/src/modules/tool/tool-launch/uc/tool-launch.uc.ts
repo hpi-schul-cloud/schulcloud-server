@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
@@ -27,9 +28,24 @@ export class ToolLaunchUc {
 
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
+		// TODO: N21-1881 use configService? change to correct flag
+		if (Configuration.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+			await this.checkLicenseForExternal(contextExternalTool, user);
+		}
+
 		const toolLaunchData: ToolLaunchData = await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
 		const launchRequest: ToolLaunchRequest = this.toolLaunchService.generateLaunchRequest(toolLaunchData);
 
 		return launchRequest;
+	}
+
+	private async checkLicenseForExternal(contextExternalTool: ContextExternalTool, user: User) {
+		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
+
+		const { externalTool } = await this.toolLaunchService.loadToolHierarchy(schoolExternalToolId);
+
+		if (!this.licenceService.checkLicenceForExternalTool(externalTool, user)) {
+			throw new Loggable();
+		}
 	}
 }
