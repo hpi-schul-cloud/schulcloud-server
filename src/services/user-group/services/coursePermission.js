@@ -58,8 +58,7 @@ const setup = (app) => {
 		}
 		throw new Forbidden(`User ${userId} ist nicht Teil des Kurses`);
 	};
-
-	ScopePermissionService.initialize(app, '/courses/:scopeId/userPermissions', determineCoursePermissions);
+	ScopePermissionService.initialize(app, '/coursesUserPermissions/:scopeId', determineCoursePermissions);
 };
 
 module.exports = {

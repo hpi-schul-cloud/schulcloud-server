@@ -1,1 +1,2 @@
-export * from './error.module';
+export { ErrorModule } from './error.module';
+export { DomainErrorHandler } from './domain';

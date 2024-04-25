@@ -8,7 +8,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool, ToolReference } from '../domain';
 import { ToolReferenceMapper } from '../mapper';
 import { ContextExternalToolService } from './context-external-tool.service';
-import { ToolVersionService } from './tool-version-service';
+import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
 @Injectable()
 export class ToolReferenceService {
@@ -17,7 +17,7 @@ export class ToolReferenceService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly toolVersionService: ToolVersionService
+		private readonly toolVersionService: ToolConfigurationStatusService
 	) {}
 
 	async getToolReference(contextExternalToolId: EntityId): Promise<ToolReference> {
@@ -40,10 +40,7 @@ export class ToolReferenceService {
 			contextExternalTool,
 			status
 		);
-		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(
-			'/v3/tools/external-tools/{id}/logo',
-			externalTool
-		);
+		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(externalTool);
 
 		return toolReference;
 	}

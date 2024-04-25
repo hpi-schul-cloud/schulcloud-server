@@ -43,4 +43,5 @@ export class ContextExternalTool extends BaseDO implements ToolVersion {
 	}
 }
 
+// TODO: N21-1885: Remove this type and alls its usages
 export type ContextExternalToolWithId = ContextExternalTool & { id: string };

@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service/tool-configuration-status.service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -28,7 +28,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly toolVersionService: ToolVersionService
+		private readonly toolVersionService: ToolConfigurationStatusService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);

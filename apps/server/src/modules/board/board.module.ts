@@ -1,4 +1,5 @@
 import { ConsoleWriterModule } from '@infra/console';
+import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
@@ -40,8 +41,10 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ToolConfigModule,
 		TldrawClientModule,
 		CqrsModule,
+		CollaborativeTextEditorModule,
 	],
 	providers: [
+		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
 		BoardDoAuthorizableService,
 		BoardDoRepo,
 		BoardDoService,

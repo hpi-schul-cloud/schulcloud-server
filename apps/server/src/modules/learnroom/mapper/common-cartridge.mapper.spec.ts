@@ -15,7 +15,15 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	linkElementFactory,
+	richTextElementFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
 
@@ -393,6 +401,56 @@ describe('CommonCartridgeMapper', () => {
 				expect(fileBuilderProps).toStrictEqual<CommonCartridgeFileBuilderProps>({
 					version: CommonCartridgeVersion.V_1_1_0,
 					identifier: createIdentifier(course.id),
+				});
+			});
+		});
+	});
+
+	describe('mapRichTextElementToResource', () => {
+		describe('when mapping rich text element', () => {
+			const setup = () => {
+				const richTextElement = richTextElementFactory.build();
+
+				return { richTextElement };
+			};
+
+			it('should map to web content', () => {
+				const { richTextElement } = setup();
+
+				const resourceProps = sut.mapRichTextElementToResource(richTextElement);
+
+				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
+					type: CommonCartridgeResourceType.WEB_CONTENT,
+					identifier: expect.any(String),
+					title: richTextElement.text
+						.slice(0, 50)
+						.replace(/<[^>]*>?/gm, '')
+						.concat('...'),
+					html: `<p>${richTextElement.text}</p>`,
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+				});
+			});
+		});
+	});
+
+	describe('mapLinkElementToResource', () => {
+		describe('when mapping link element', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+
+				return { linkElement };
+			};
+
+			it('should map to web link', () => {
+				const { linkElement } = setup();
+
+				const resourceProps = sut.mapLinkElementToResource(linkElement);
+
+				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
+					type: CommonCartridgeResourceType.WEB_LINK,
+					identifier: createIdentifier(linkElement.id),
+					title: linkElement.title,
+					url: linkElement.url,
 				});
 			});
 		});

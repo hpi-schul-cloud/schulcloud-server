@@ -92,7 +92,7 @@ const ExternalTool = mongoose.model(
 			config_secret: String,
 			config_lti_message_type: {
 				type: String,
-				enum: ['basic-lti-launch-request', 'LtiResourceLinkRequest', 'LtiDeepLinkingRequest'],
+				enum: ['basic-lti-launch-request'],
 			},
 			config_privacy_permission: {
 				type: String,

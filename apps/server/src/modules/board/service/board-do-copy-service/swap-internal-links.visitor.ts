@@ -58,6 +58,10 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 		this.visitChildrenOf(submissionItem);
 	}
 
+	visitCollaborativeTextEditorElement(): void {
+		this.doNothing();
+	}
+
 	private visitChildrenOf(boardDo: AnyBoardDo) {
 		boardDo.children.forEach((child) => child.accept(this));
 	}

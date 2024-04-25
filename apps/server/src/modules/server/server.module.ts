@@ -10,6 +10,7 @@ import { AuthenticationApiModule } from '@modules/authentication/authentication-
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
+import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
@@ -36,7 +37,7 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { ServerConfigController, ServerController, ServerUc } from './api';
@@ -77,6 +78,7 @@ const serverModules = [
 		adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+		rocketchatClientTimeoutInMs: Configuration.get('ROCKET_CHAT_CLIENT_TIMEOUT_MS') as number,
 	}),
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
@@ -92,6 +94,7 @@ const serverModules = [
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	CollaborativeTextEditorApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

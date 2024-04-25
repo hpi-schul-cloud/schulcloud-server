@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InputFormat } from '@shared/domain/types';
 import {
 	cardFactory,
+	collaborativeTextEditorElementFactory,
 	columnBoardFactory,
 	columnFactory,
 	drawingElementFactory,
@@ -28,9 +29,10 @@ describe(ContentElementUpdateVisitor.name, () => {
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const submissionItem = submissionItemFactory.build();
+			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { board, column, card, submissionItem, updater };
+			return { board, column, card, submissionItem, collaborativeTextEditorElement, updater };
 		};
 
 		describe('when component is a column board', () => {
@@ -58,6 +60,15 @@ describe(ContentElementUpdateVisitor.name, () => {
 			it('should throw an error', async () => {
 				const { submissionItem, updater } = setup();
 				await expect(() => updater.visitSubmissionItemAsync(submissionItem)).rejects.toThrow();
+			});
+		});
+
+		describe('when component is a collaborative text editor element', () => {
+			it('should throw an error', async () => {
+				const { updater, collaborativeTextEditorElement } = setup();
+				await expect(() =>
+					updater.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement)
+				).rejects.toThrow();
 			});
 		});
 
