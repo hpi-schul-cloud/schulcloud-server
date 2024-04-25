@@ -458,12 +458,12 @@ describe(RecursiveDeleteVisitor.name, () => {
 				return { collaborativeTextEditorElement, childCollaborativeTextEditorElement };
 			};
 
-			it('should call deleteCollaborativeTextEditor', async () => {
+			it('should call deleteCollaborativeTextEditorByParentId', async () => {
 				const { collaborativeTextEditorElement } = setup();
 
 				await service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
 
-				expect(collaborativeTextEditorService.deleteCollaborativeTextEditor).toHaveBeenCalledWith(
+				expect(collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId).toHaveBeenCalledWith(
 					collaborativeTextEditorElement.id
 				);
 			});
@@ -482,14 +482,14 @@ describe(RecursiveDeleteVisitor.name, () => {
 			});
 		});
 
-		describe('WHEN deleteCollaborativeTextEditor returns error', () => {
+		describe('WHEN deleteCollaborativeTextEditorByParentId returns error', () => {
 			const setup = () => {
 				const childCollaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
 				const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build({
 					children: [childCollaborativeTextEditorElement],
 				});
 				const error = new Error('testError');
-				collaborativeTextEditorService.deleteCollaborativeTextEditor.mockRejectedValueOnce(error);
+				collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId.mockRejectedValueOnce(error);
 
 				return { collaborativeTextEditorElement, childCollaborativeTextEditorElement, error };
 			};
@@ -510,8 +510,8 @@ describe(RecursiveDeleteVisitor.name, () => {
 					children: [childCollaborativeTextEditorElement],
 				});
 				const error = new Error('testError');
-				collaborativeTextEditorService.deleteCollaborativeTextEditor.mockResolvedValueOnce();
-				collaborativeTextEditorService.deleteCollaborativeTextEditor.mockRejectedValueOnce(error);
+				collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId.mockResolvedValueOnce();
+				collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId.mockRejectedValueOnce(error);
 
 				return { collaborativeTextEditorElement, childCollaborativeTextEditorElement, error };
 			};

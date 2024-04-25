@@ -106,7 +106,9 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitCollaborativeTextEditorElementAsync(
 		collaborativeTextEditorElement: CollaborativeTextEditorElement
 	): Promise<void> {
-		await this.collaborativeTextEditorService.deleteCollaborativeTextEditor(collaborativeTextEditorElement.id);
+		await this.collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId(
+			collaborativeTextEditorElement.id
+		);
 		this.deleteNode(collaborativeTextEditorElement);
 		await this.visitChildrenAsync(collaborativeTextEditorElement);
 	}

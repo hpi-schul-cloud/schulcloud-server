@@ -262,7 +262,7 @@ describe('CollaborativeTextEditorService', () => {
 		});
 	});
 
-	describe('deleteCollaborativeTextEditor', () => {
+	describe('deleteCollaborativeTextEditorByParentId', () => {
 		describe('WHEN etherpadClientAdapter.deleteGroup returns successfully', () => {
 			const setup = () => {
 				const parentId = 'parentId';
@@ -276,7 +276,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should call etherpadClientAdapter.getOrCreateGroupId with correct parameter', async () => {
 				const { parentId } = setup();
 
-				await service.deleteCollaborativeTextEditor(parentId);
+				await service.deleteCollaborativeTextEditorByParentId(parentId);
 
 				expect(etherpadClientAdapter.getOrCreateGroupId).toHaveBeenCalledWith(parentId);
 			});
@@ -295,7 +295,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { parentId, error } = setup();
 
-				await expect(service.deleteCollaborativeTextEditor(parentId)).rejects.toThrowError(error);
+				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
 			});
 		});
 
@@ -314,7 +314,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { parentId, error } = setup();
 
-				await expect(service.deleteCollaborativeTextEditor(parentId)).rejects.toThrowError(error);
+				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
 			});
 		});
 	});

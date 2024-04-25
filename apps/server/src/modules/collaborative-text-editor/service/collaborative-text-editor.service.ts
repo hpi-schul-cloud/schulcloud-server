@@ -45,7 +45,7 @@ export class CollaborativeTextEditorService {
 		};
 	}
 
-	async deleteCollaborativeTextEditor(parentId: string): Promise<void> {
+	async deleteCollaborativeTextEditorByParentId(parentId: string): Promise<void> {
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
 
 		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
