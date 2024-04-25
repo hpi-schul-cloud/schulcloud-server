@@ -4,6 +4,7 @@ import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import CryptoJS from 'crypto-js';
@@ -23,64 +24,25 @@ export class SchulconnexUserProvisioningService {
 		systemId: EntityId,
 		schoolId?: string
 	): Promise<UserDO> {
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
+		const foundUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
 
-		let isUniqueEmail = true;
-		if (externalUser.email) {
-			isUniqueEmail = await this.userService.isEmailFromExternalSourceUnique(
-				externalUser.email,
-				existingUser?.externalId
-			);
+		const isEmailUnique: boolean = await this.checkUniqueEmail(externalUser.email, foundUser?.externalId);
 
-			if (!isUniqueEmail) {
-				this.logger.warning(new EmailAlreadyExistsLoggable(externalUser.email, externalUser.externalId));
-			}
-		}
+		const roleRefs: RoleReference[] | undefined = await this.createRoleReferences(externalUser.roles);
 
-		let roleRefs: RoleReference[] | undefined;
-		if (externalUser.roles) {
-			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
-			roleRefs = roles.map((role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name }));
-		}
-
-		let user: UserDO;
 		let createNewAccount = false;
-		if (existingUser) {
-			user = existingUser;
-
-			if (!isUniqueEmail) {
-				user.email = existingUser.email;
-			} else {
-				user.email = externalUser.email ?? existingUser.email;
-			}
-
-			user.firstName = externalUser.firstName ?? existingUser.firstName;
-			user.lastName = externalUser.lastName ?? existingUser.lastName;
-			user.roles = roleRefs ?? existingUser.roles;
-			user.schoolId = schoolId ?? existingUser.schoolId;
-			user.birthday = externalUser.birthday ?? existingUser.birthday;
+		let user: UserDO;
+		if (foundUser) {
+			user = this.updateUser(externalUser, foundUser, isEmailUnique, roleRefs, schoolId);
 		} else {
-			createNewAccount = true;
-
 			if (!schoolId) {
 				throw new UnprocessableEntityException(
 					`Unable to create new external user ${externalUser.externalId} without a school`
 				);
 			}
 
-			user = new UserDO({
-				externalId: externalUser.externalId,
-				firstName: externalUser.firstName ?? '',
-				lastName: externalUser.lastName ?? '',
-				email: externalUser.email ?? '',
-				roles: roleRefs ?? [],
-				schoolId,
-				birthday: externalUser.birthday,
-			});
-
-			if (!isUniqueEmail) {
-				user.email = '';
-			}
+			createNewAccount = true;
+			user = this.createUser(externalUser, isEmailUnique, schoolId, roleRefs);
 		}
 
 		const savedUser: UserDO = await this.userService.save(user);
@@ -95,5 +57,69 @@ export class SchulconnexUserProvisioningService {
 		}
 
 		return savedUser;
+	}
+
+	private async checkUniqueEmail(email?: string, externalId?: string): Promise<boolean> {
+		if (email) {
+			const isEmailUnique: boolean = await this.userService.isEmailUniqueForExternal(email, externalId);
+
+			if (!isEmailUnique) {
+				this.logger.warning(new EmailAlreadyExistsLoggable(email, externalId));
+			}
+
+			return isEmailUnique;
+		}
+
+		return true;
+	}
+
+	private async createRoleReferences(roles?: RoleName[]): Promise<RoleReference[] | undefined> {
+		if (roles) {
+			const foundRoles: RoleDto[] = await this.roleService.findByNames(roles);
+			const roleRefs = foundRoles.map(
+				(role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name })
+			);
+
+			return roleRefs;
+		}
+
+		return undefined;
+	}
+
+	private updateUser(
+		externalUser: ExternalUserDto,
+		foundUser: UserDO,
+		isEmailUnique: boolean,
+		roleRefs?: RoleReference[],
+		schoolId?: string
+	): UserDO {
+		const user: UserDO = foundUser;
+		user.firstName = externalUser.firstName ?? foundUser.firstName;
+		user.lastName = externalUser.lastName ?? foundUser.lastName;
+		user.email = isEmailUnique ? externalUser.email ?? foundUser.email : foundUser.email;
+		user.roles = roleRefs ?? foundUser.roles;
+		user.schoolId = schoolId ?? foundUser.schoolId;
+		user.birthday = externalUser.birthday ?? foundUser.birthday;
+
+		return user;
+	}
+
+	private createUser(
+		externalUser: ExternalUserDto,
+		isEmailUnique: boolean,
+		schoolId: string,
+		roleRefs?: RoleReference[]
+	): UserDO {
+		const user: UserDO = new UserDO({
+			externalId: externalUser.externalId,
+			firstName: externalUser.firstName ?? '',
+			lastName: externalUser.lastName ?? '',
+			email: isEmailUnique ? externalUser.email ?? '' : '',
+			roles: roleRefs ?? [],
+			schoolId,
+			birthday: externalUser.birthday,
+		});
+
+		return user;
 	}
 }

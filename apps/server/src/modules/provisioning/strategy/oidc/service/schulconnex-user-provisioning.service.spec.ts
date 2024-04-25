@@ -133,14 +133,14 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
-				expect(userService.isEmailFromExternalSourceUnique).toHaveBeenCalledWith(externalUser.email, undefined);
+				expect(userService.isEmailUniqueForExternal).toHaveBeenCalledWith(externalUser.email, undefined);
 			});
 
 			it('should call the user service to save the user', async () => {
 				const { externalUser, schoolId, savedUser, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(null);
-				userService.isEmailFromExternalSourceUnique.mockResolvedValue(true);
+				userService.isEmailUniqueForExternal.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -185,18 +185,17 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				});
 			});
 
-			describe('when the external user has an email, that already exists in SVS', () => {
+			describe('when the external user has an email, that already exists', () => {
 				it('should log EmailAlreadyExistsLoggable', async () => {
 					const { externalUser, systemId, schoolId } = setupUser();
 
 					userService.findByExternalId.mockResolvedValue(null);
-					userService.isEmailFromExternalSourceUnique.mockResolvedValue(false);
+					userService.isEmailUniqueForExternal.mockResolvedValue(false);
 
 					await service.provisionExternalUser(externalUser, systemId, schoolId);
 
 					expect(logger.warning).toHaveBeenCalledWith({
 						email: externalUser.email,
-						externalId: externalUser.externalId,
 					});
 				});
 			});
@@ -207,14 +206,11 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, systemId, existingUser } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
-				userService.isEmailFromExternalSourceUnique.mockResolvedValue(true);
+				userService.isEmailUniqueForExternal.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
-				expect(userService.isEmailFromExternalSourceUnique).toHaveBeenCalledWith(
-					externalUser.email,
-					existingUser.externalId
-				);
+				expect(userService.isEmailUniqueForExternal).toHaveBeenCalledWith(externalUser.email, existingUser.externalId);
 			});
 
 			it('should call the user service to save the user', async () => {

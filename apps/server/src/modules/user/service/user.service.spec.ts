@@ -943,8 +943,8 @@ describe('UserService', () => {
 		});
 	});
 
-	describe('isEmailFromExternalSourceUnique', () => {
-		describe('when email does not exist in SVS', () => {
+	describe('isEmailUniqueForExternal', () => {
+		describe('when email does not exist', () => {
 			const setup = () => {
 				const email = 'email';
 
@@ -958,7 +958,7 @@ describe('UserService', () => {
 			it('should return true', async () => {
 				const { email } = setup();
 
-				const result: boolean = await service.isEmailFromExternalSourceUnique(email, undefined);
+				const result: boolean = await service.isEmailUniqueForExternal(email, undefined);
 
 				expect(result).toBe(true);
 			});
@@ -982,7 +982,7 @@ describe('UserService', () => {
 				it('should return true', async () => {
 					const { email, externalId } = setup();
 
-					const result: boolean = await service.isEmailFromExternalSourceUnique(email, externalId);
+					const result: boolean = await service.isEmailUniqueForExternal(email, externalId);
 
 					expect(result).toBe(true);
 				});
@@ -1005,7 +1005,7 @@ describe('UserService', () => {
 				it('should return false', async () => {
 					const { email, externalId } = setup();
 
-					const result: boolean = await service.isEmailFromExternalSourceUnique(email, externalId);
+					const result: boolean = await service.isEmailUniqueForExternal(email, externalId);
 
 					expect(result).toBe(false);
 				});
@@ -1026,7 +1026,7 @@ describe('UserService', () => {
 				it('should return false', async () => {
 					const { email } = setup();
 
-					const result: boolean = await service.isEmailFromExternalSourceUnique(email, undefined);
+					const result: boolean = await service.isEmailUniqueForExternal(email, undefined);
 
 					expect(result).toBe(false);
 				});
@@ -1051,7 +1051,7 @@ describe('UserService', () => {
 			it('should return false', async () => {
 				const { email, externalId } = setup();
 
-				const result: boolean = await service.isEmailFromExternalSourceUnique(email, externalId);
+				const result: boolean = await service.isEmailUniqueForExternal(email, externalId);
 
 				expect(result).toBe(false);
 			});
