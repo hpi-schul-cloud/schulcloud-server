@@ -97,6 +97,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				roles: [RoleName.USER],
 				birthday,
 			});
+			const minimalViableExternalUser: ExternalUserDto = new ExternalUserDto({ externalId: 'externalUserId' });
 			const userRole: RoleDto = new RoleDto({
 				id: 'roleId',
 				name: RoleName.USER,
@@ -118,6 +119,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				existingUser,
 				savedUser,
 				externalUser,
+				minimalViableExternalUser,
 				userRole,
 				schoolId,
 				systemId,
@@ -126,10 +128,23 @@ describe(SchulconnexUserProvisioningService.name, () => {
 		};
 
 		describe('when the user does not exist yet', () => {
+			describe('when the external user has no email or roles', () => {
+				it('should return the saved user', async () => {
+					const { minimalViableExternalUser, schoolId, savedUser, systemId } = setupUser();
+
+					userService.findByExternalId.mockResolvedValue(null);
+
+					const result: UserDO = await service.provisionExternalUser(minimalViableExternalUser, systemId, schoolId);
+
+					expect(result).toEqual(savedUser);
+				});
+			});
+
 			it('should call user service to check uniqueness of email', async () => {
 				const { externalUser, schoolId, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(null);
+				userService.isEmailUniqueForExternal.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
@@ -140,7 +155,6 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				const { externalUser, schoolId, savedUser, systemId } = setupUser();
 
 				userService.findByExternalId.mockResolvedValue(null);
-				userService.isEmailUniqueForExternal.mockResolvedValue(true);
 
 				await service.provisionExternalUser(externalUser, systemId, schoolId);
 
