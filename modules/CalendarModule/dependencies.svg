@@ -24,71 +24,71 @@
 <title>cluster_CalendarModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="10,-70 10,-268 486,-268 486,-70 10,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_CalendarModule_imports</title>
+<polygon fill="none" stroke="black" points="362,-78 362,-130 478,-130 478,-78 362,-78"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_CalendarModule_providers</title>
-<polygon fill="none" stroke="black" points="142,-78 142,-130 478,-130 478,-78 142,-78"/>
+<polygon fill="none" stroke="black" points="18,-78 18,-130 354,-130 354,-78 18,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_CalendarModule_exports</title>
-<polygon fill="none" stroke="black" points="161,-208 161,-260 289,-260 289,-208 161,-208"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_CalendarModule_imports</title>
-<polygon fill="none" stroke="black" points="18,-78 18,-130 134,-130 134,-78 18,-78"/>
+<polygon fill="none" stroke="black" points="206,-208 206,-260 334,-260 334,-208 206,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="125.98,-122 122.98,-126 101.98,-126 98.98,-122 26.02,-122 26.02,-86 125.98,-86 125.98,-122"/>
-<text text-anchor="middle" x="76" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="469.98,-122 466.98,-126 445.98,-126 442.98,-122 370.02,-122 370.02,-86 469.98,-86 469.98,-122"/>
+<text text-anchor="middle" x="420" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- CalendarModule -->
 <g id="node2" class="node">
 <title>CalendarModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="280.08,-187 277.08,-191 256.08,-191 253.08,-187 169.92,-187 169.92,-151 280.08,-151 280.08,-187"/>
-<text text-anchor="middle" x="225" y="-164.8" font-family="Times,serif" font-size="14.00">CalendarModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="325.08,-187 322.08,-191 301.08,-191 298.08,-187 214.92,-187 214.92,-151 325.08,-151 325.08,-187"/>
+<text text-anchor="middle" x="270" y="-164.8" font-family="Times,serif" font-size="14.00">CalendarModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;CalendarModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;CalendarModule</title>
-<path fill="none" stroke="black" d="M76,-122.11C76,-141.34 76,-169 76,-169 76,-169 159.94,-169 159.94,-169"/>
-<polygon fill="black" stroke="black" points="159.94,-172.5 169.94,-169 159.94,-165.5 159.94,-172.5"/>
+<path fill="none" stroke="black" d="M420,-122.11C420,-141.34 420,-169 420,-169 420,-169 335.43,-169 335.43,-169"/>
+<polygon fill="black" stroke="black" points="335.43,-165.5 325.43,-169 335.43,-172.5 335.43,-165.5"/>
 </g>
 <!-- CalendarService  -->
 <g id="node3" class="node">
 <title>CalendarService </title>
-<polygon fill="#fb8072" stroke="black" points="281.01,-252 168.99,-252 168.99,-216 281.01,-216 281.01,-252"/>
-<text text-anchor="middle" x="225" y="-229.8" font-family="Times,serif" font-size="14.00">CalendarService </text>
+<polygon fill="#fb8072" stroke="black" points="326.01,-252 213.99,-252 213.99,-216 326.01,-216 326.01,-252"/>
+<text text-anchor="middle" x="270" y="-229.8" font-family="Times,serif" font-size="14.00">CalendarService </text>
 </g>
 <!-- CalendarModule&#45;&gt;CalendarService  -->
 <g id="edge2" class="edge">
 <title>CalendarModule&#45;&gt;CalendarService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M225,-187.11C225,-187.11 225,-205.99 225,-205.99"/>
-<polygon fill="black" stroke="black" points="221.5,-205.99 225,-215.99 228.5,-205.99 221.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M270,-187.11C270,-187.11 270,-205.99 270,-205.99"/>
+<polygon fill="black" stroke="black" points="266.5,-205.99 270,-215.99 273.5,-205.99 266.5,-205.99"/>
 </g>
 <!-- CalendarMapper -->
 <g id="node4" class="node">
 <title>CalendarMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="394" cy="-104" rx="75.84" ry="18"/>
-<text text-anchor="middle" x="394" y="-99.8" font-family="Times,serif" font-size="14.00">CalendarMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="270" cy="-104" rx="75.84" ry="18"/>
+<text text-anchor="middle" x="270" y="-99.8" font-family="Times,serif" font-size="14.00">CalendarMapper</text>
 </g>
 <!-- CalendarMapper&#45;&gt;CalendarModule -->
 <g id="edge3" class="edge">
 <title>CalendarMapper&#45;&gt;CalendarModule</title>
-<path fill="none" stroke="black" d="M394,-122.11C394,-141.34 394,-169 394,-169 394,-169 290.34,-169 290.34,-169"/>
-<polygon fill="black" stroke="black" points="290.34,-165.5 280.34,-169 290.34,-172.5 290.34,-165.5"/>
+<path fill="none" stroke="black" d="M270,-122.11C270,-122.11 270,-140.99 270,-140.99"/>
+<polygon fill="black" stroke="black" points="266.5,-140.99 270,-150.99 273.5,-140.99 266.5,-140.99"/>
 </g>
 <!-- CalendarService -->
 <g id="node5" class="node">
 <title>CalendarService</title>
-<ellipse fill="#fdb462" stroke="black" cx="225" cy="-104" rx="74.7" ry="18"/>
-<text text-anchor="middle" x="225" y="-99.8" font-family="Times,serif" font-size="14.00">CalendarService</text>
+<ellipse fill="#fdb462" stroke="black" cx="101" cy="-104" rx="74.7" ry="18"/>
+<text text-anchor="middle" x="101" y="-99.8" font-family="Times,serif" font-size="14.00">CalendarService</text>
 </g>
 <!-- CalendarService&#45;&gt;CalendarModule -->
 <g id="edge4" class="edge">
 <title>CalendarService&#45;&gt;CalendarModule</title>
-<path fill="none" stroke="black" d="M225,-122.11C225,-122.11 225,-140.99 225,-140.99"/>
-<polygon fill="black" stroke="black" points="221.5,-140.99 225,-150.99 228.5,-140.99 221.5,-140.99"/>
+<path fill="none" stroke="black" d="M101,-122.11C101,-141.34 101,-169 101,-169 101,-169 204.66,-169 204.66,-169"/>
+<polygon fill="black" stroke="black" points="204.66,-172.5 214.66,-169 204.66,-165.5 204.66,-172.5"/>
 </g>
 </g>
 </svg>
