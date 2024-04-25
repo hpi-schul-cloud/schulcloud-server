@@ -1,3 +1,4 @@
+import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { AccountModule } from '@modules/account';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
@@ -6,8 +7,9 @@ import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system/system.module';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { UserLicenseModule } from '../user-license';
 import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
 import {
@@ -19,6 +21,7 @@ import {
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
@@ -35,6 +38,8 @@ import {
 		LoggerModule,
 		GroupModule,
 		LearnroomModule,
+		forwardRef(() => SchulconnexClientModule),
+		UserLicenseModule,
 	],
 	providers: [
 		ProvisioningService,
@@ -43,6 +48,7 @@ import {
 		SchulconnexUserProvisioningService,
 		SchulconnexGroupProvisioningService,
 		SchulconnexCourseSyncService,
+		SchulconnexLicenseProvisioningService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,

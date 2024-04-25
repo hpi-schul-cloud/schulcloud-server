@@ -15,11 +15,11 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
-import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
@@ -229,6 +229,8 @@ const config: ServerConfig = {
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
 	) as boolean,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
+	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
 };
 
 export const serverConfig = () => config;

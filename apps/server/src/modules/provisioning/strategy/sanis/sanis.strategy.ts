@@ -1,7 +1,13 @@
-import { SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
+import { SchulconnexRestClient } from '@infra/schulconnex-client';
+import {
+	SanisResponse,
+	SanisResponseValidationGroups,
+	SchulconnexLizenzInfoResponse,
+} from '@infra/schulconnex-client/response';
 import { GroupService } from '@modules/group';
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -12,15 +18,18 @@ import { firstValueFrom } from 'rxjs';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
+	ExternalLicenseDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from '../../dto';
+import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexProvisioningStrategy } from '../oidc';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from '../oidc/service';
@@ -35,8 +44,11 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		protected readonly groupService: GroupService,
+		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		private readonly responseMapper: SanisResponseMapper,
-		private readonly httpService: HttpService
+		private readonly httpService: HttpService,
+		protected readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(forwardRef(() => SchulconnexRestClient)) private readonly schulconnexRestClient: SchulconnexRestClient
 	) {
 		super(
 			provisioningFeatures,
@@ -44,7 +56,9 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			schulconnexUserProvisioningService,
 			schulconnexGroupProvisioningService,
 			schulconnexCourseSyncService,
-			groupService
+			schulconnexLicenseProvisioningService,
+			groupService,
+			configService
 		);
 	}
 
@@ -90,22 +104,45 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
 		}
 
+		let externalLicenses: ExternalLicenseDto[] | undefined;
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			const lizenzInfoResponses: SchulconnexLizenzInfoResponse[] = await this.schulconnexRestClient.getLizenzInfo(
+				input.accessToken,
+				{ overrideUrl: this.configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') }
+			);
+			await this.checkResponseValidation(lizenzInfoResponses);
+
+			externalLicenses = SanisResponseMapper.mapToExternalLicenses(lizenzInfoResponses);
+		}
+
 		const oauthData: OauthDataDto = new OauthDataDto({
 			system: input.system,
 			externalSchool,
 			externalUser,
 			externalGroups,
+			externalLicenses,
 		});
 
 		return oauthData;
 	}
 
-	private async checkResponseValidation(response: SanisResponse, groups: SanisResponseValidationGroups[]) {
-		const validationErrors: ValidationError[] = await validate(response, {
-			always: true,
-			forbidUnknownValues: false,
-			groups,
-		});
+	private async checkResponseValidation(
+		response: SanisResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[],
+		groups?: SanisResponseValidationGroups[]
+	): Promise<void> {
+		const responsesArray = Array.isArray(response) ? response : [response];
+
+		const validationPromises: Promise<ValidationError[]>[] = responsesArray.map((item) =>
+			validate(item, {
+				always: true,
+				forbidUnknownValues: false,
+				groups,
+			})
+		);
+
+		const validationResults: ValidationError[][] = await Promise.all(validationPromises);
+
+		const validationErrors: ValidationError[] = validationResults.flat();
 
 		if (validationErrors.length) {
 			throw new ValidationErrorLoggableException(validationErrors);
