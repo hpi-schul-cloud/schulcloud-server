@@ -138,6 +138,10 @@
                                 <a href="#createLinkContentElementBody" >createLinkContentElementBody</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createWebContentElementBody" >createWebContentElementBody</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                 <a href="#mapOrganizationToCard" >mapOrganizationToCard</a>
                             </li>
@@ -193,8 +197,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -244,6 +248,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createWebContentElementBody"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>createWebContentElementBody</b></span>
+                        <a href="#createWebContentElementBody"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createWebContentElementBody(resource: <a href="../undefineds/CommonCartridgeWebContentResourceProps.html" target="_self">CommonCartridgeWebContentResourceProps</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>resource</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeWebContentResourceProps" target="_self" >CommonCartridgeWebContentResourceProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyElementContentBody" target="_self" >AnyElementContentBody</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapOrganizationToCard"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -262,8 +335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -331,8 +404,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -400,8 +473,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -469,8 +542,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/mapper/common-cartridge-import.mapper.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -524,10 +597,12 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { CardInitProps, ColumnInitProps, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
-import { AnyElementContentBody, LinkContentBody } from &#x27;@src/modules/board/controller/dto&#x27;;
+import { InputFormat } from &#x27;@shared/domain/types&#x27;;
+import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from &#x27;@src/modules/board/controller/dto&#x27;;
 import { CommonCartridgeOrganizationProps, CommonCartridgeResourceTypeV1P1 } from &#x27;@src/modules/common-cartridge&#x27;;
 import {
 	CommonCartridgeResourceProps,
+	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
 } from &#x27;@src/modules/common-cartridge/import/common-cartridge-import.types&#x27;;
 
@@ -552,6 +627,8 @@ export class CommonCartridgeImportMapper {
 		switch (resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return ContentElementType.LINK;
+			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
+				return ContentElementType.RICH_TEXT;
 			default:
 				return undefined;
 		}
@@ -561,6 +638,8 @@ export class CommonCartridgeImportMapper {
 		switch (resource.type) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createLinkContentElementBody(resource);
+			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
+				return this.createWebContentElementBody(resource);
 			default:
 				throw new Error(&#x27;Resource type not supported&#x27;);
 		}
@@ -571,6 +650,15 @@ export class CommonCartridgeImportMapper {
 
 		body.title &#x3D; resource.title;
 		body.url &#x3D; resource.url;
+
+		return body;
+	}
+
+	private createWebContentElementBody(resource: CommonCartridgeWebContentResourceProps): AnyElementContentBody {
+		const body &#x3D; new RichTextContentBody();
+
+		body.text &#x3D; resource.html;
+		body.inputFormat &#x3D; InputFormat.RICH_TEXT_CK5_SIMPLE;
 
 		return body;
 	}
