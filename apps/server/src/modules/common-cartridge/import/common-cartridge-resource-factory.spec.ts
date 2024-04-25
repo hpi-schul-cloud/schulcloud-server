@@ -199,8 +199,8 @@ describe('CommonCartridgeResourceFactory', () => {
 		describe('when html is not valid', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();
+				organizationProps.resourceType = CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
 				const tryCreateDocumentMock = jest.fn().mockReturnValue(undefined);
-
 				Reflect.set(sut, 'tryCreateDocument', tryCreateDocumentMock);
 
 				return { organizationProps };
