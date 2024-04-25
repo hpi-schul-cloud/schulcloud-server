@@ -25,7 +25,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.title = props.title;
 	}
 
-	@Index()
 	@Property({ nullable: false })
 	path: string;
 
@@ -35,7 +34,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	position: number;
 
-	@Index()
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
 
