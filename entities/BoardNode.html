@@ -135,7 +135,6 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                 <a href="#path" >path</a>
                             </li>
                             <li>
@@ -148,7 +147,6 @@
                                 <a href="#title" >title</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                 <a href="#type" >type</a>
                             </li>
@@ -199,7 +197,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:33</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -212,7 +210,6 @@
                 <td class="col-md-4">
                     <a name="path"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>path</b></span>
                         <a href="#path"><span class="icon ion-ios-link"></span></a>
@@ -230,13 +227,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Index()<br />@Property({nullable: false})<br />
+                            @Property({nullable: false})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -272,7 +269,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -309,7 +306,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -322,7 +319,6 @@
                 <td class="col-md-4">
                     <a name="type"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>type</b></span>
                         <a href="#type"><span class="icon ion-ios-link"></span></a>
@@ -340,13 +336,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Index()<br />@Enum(undefined)<br />
+                            @Enum(undefined)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -385,7 +381,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.title &#x3D; props.title;
 	}
 
-	@Index()
 	@Property({ nullable: false })
 	path: string;
 
@@ -395,7 +390,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	position: number;
 
-	@Index()
 	@Enum(() &#x3D;&gt; BoardNodeType)
 	type!: BoardNodeType;
 

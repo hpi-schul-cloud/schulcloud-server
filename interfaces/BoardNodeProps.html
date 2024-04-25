@@ -361,7 +361,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.title &#x3D; props.title;
 	}
 
-	@Index()
 	@Property({ nullable: false })
 	path: string;
 
@@ -371,7 +370,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	position: number;
 
-	@Index()
 	@Enum(() &#x3D;&gt; BoardNodeType)
 	type!: BoardNodeType;
 
