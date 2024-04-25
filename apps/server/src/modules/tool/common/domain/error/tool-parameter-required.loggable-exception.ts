@@ -1,21 +1,33 @@
-import { ValidationError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { HttpStatus } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { BusinessError } from '@shared/common';
 import { CustomParameter } from '../custom-parameter.do';
 
-export class ToolParameterRequiredLoggableException extends ValidationError implements Loggable {
-	constructor(private readonly parameterDeclaration: CustomParameter) {
+export class ToolParameterRequiredLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly toolId: EntityId | undefined, private readonly param: CustomParameter) {
 		super(
-			`tool_param_required: The parameter with name ${parameterDeclaration.name} is required but not found in the tool.`
+			{
+				type: 'TOOL_PARAMETER_REQUIRED',
+				title: 'Parameter is required',
+				defaultMessage: 'The parameter is required, but not found in the tool.',
+			},
+			HttpStatus.BAD_REQUEST,
+			{
+				param,
+				toolId,
+			}
 		);
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'TOOL_PARAMETER_REQUIRED',
-			message: 'The parameter is required, but not found in the tool.',
 			stack: this.stack,
+			type: this.type,
+			message: this.message,
 			data: {
-				parameterName: this.parameterDeclaration.name,
+				parameterName: this.param.name,
+				toolId: this.toolId,
 			},
 		};
 	}
