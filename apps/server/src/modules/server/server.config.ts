@@ -24,7 +24,7 @@ import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { AlertConfig } from '@modules/alert';
-import { SchulcloudTheme } from './types/schulcloud-theme.enum';
+import { SchulcloudTheme } from '@shared/domain/types';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -231,7 +231,7 @@ const config: ServerConfig = {
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
 	) as boolean,
-	ALERT_CACHE_INTERVAL: Configuration.get('ALERT_CACHE_INTERVAL') as number,
+	ALERT_CACHE_INTERVAL_MIN: Configuration.get('ALERT_CACHE_INTERVAL_MIN') as number,
 };
 
 export const serverConfig = () => config;

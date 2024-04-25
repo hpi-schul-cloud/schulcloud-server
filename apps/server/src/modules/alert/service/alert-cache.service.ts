@@ -21,7 +21,7 @@ export class AlertCacheService {
 		private readonly statusAdapter: StatusAdapter
 	) {
 		this.instance = configService.get<string>('SC_THEME');
-		this.cacheInterval = configService.get('ALERT_CACHE_INTERVAL');
+		this.cacheInterval = configService.get('ALERT_CACHE_INTERVAL_MIN');
 
 		if (configService.get('ALERT_STATUS_URL')) {
 			this.addMessageProvider(statusAdapter, true);

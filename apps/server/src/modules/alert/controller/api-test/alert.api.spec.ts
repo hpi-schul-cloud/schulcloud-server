@@ -5,11 +5,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { of } from 'rxjs';
 import { axiosResponseFactory } from '@shared/testing';
+import { SchulcloudTheme } from '@shared/domain/types';
 import { serverConfig, ServerTestModule } from '../../../server';
 import { createComponent, createIncident } from '../../testing';
 import { AlertResponse } from '../dto';
 import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
-import { SchulcloudTheme } from '../../../server/types/schulcloud-theme.enum';
 
 describe('Alert Controller api', () => {
 	const alertPath = '/alert';
