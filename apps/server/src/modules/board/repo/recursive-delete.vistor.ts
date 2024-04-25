@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
@@ -23,7 +24,6 @@ import type {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { BoardNode } from '@shared/domain/entity';
-import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor/service/collaborative-text-editor.service';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

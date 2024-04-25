@@ -1,4 +1,5 @@
 import { ConsoleWriterModule } from '@infra/console';
+import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
@@ -11,7 +12,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { CollaborativeTextEditorModule } from '../collaborative-text-editor/collaborative-text-editor.module';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
