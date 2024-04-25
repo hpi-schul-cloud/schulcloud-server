@@ -261,4 +261,61 @@ describe('CollaborativeTextEditorService', () => {
 			});
 		});
 	});
+
+	describe('deleteCollaborativeTextEditorByParentId', () => {
+		describe('WHEN etherpadClientAdapter.deleteGroup returns successfully', () => {
+			const setup = () => {
+				const parentId = 'parentId';
+				const groupId = 'groupId';
+
+				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
+
+				return { parentId, groupId };
+			};
+
+			it('should call etherpadClientAdapter.getOrCreateGroupId with correct parameter', async () => {
+				const { parentId } = setup();
+
+				await service.deleteCollaborativeTextEditorByParentId(parentId);
+
+				expect(etherpadClientAdapter.getOrCreateGroupId).toHaveBeenCalledWith(parentId);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.getOrCreateGroupId throws an error', () => {
+			const setup = () => {
+				const parentId = 'parentId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateGroupId.mockRejectedValueOnce(error);
+
+				return { parentId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { parentId, error } = setup();
+
+				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.deleteGroup throws an error', () => {
+			const setup = () => {
+				const parentId = 'parentId';
+				const groupId = 'groupId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
+				etherpadClientAdapter.deleteGroup.mockRejectedValueOnce(error);
+
+				return { parentId, groupId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { parentId, error } = setup();
+
+				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
+			});
+		});
+	});
 });
