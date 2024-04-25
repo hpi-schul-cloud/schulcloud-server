@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
 import { IsEnum, IsMongoId, MaxLength, MinLength } from 'class-validator';
 
 export class CreateBoardBodyParams {
@@ -28,4 +28,13 @@ export class CreateBoardBodyParams {
 	})
 	@IsEnum(BoardExternalReferenceType)
 	parentType!: BoardExternalReferenceType;
+
+	@ApiProperty({
+		description: 'The layout of the board',
+		default: BoardLayout.COLUMNS,
+		enum: BoardLayout,
+		enumName: 'BoardLayout',
+	})
+	@IsEnum(BoardLayout, {})
+	layout!: BoardLayout;
 }

@@ -8,6 +8,7 @@ import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -57,6 +58,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			updatedAt: new Date(),
 			children: this.getCopiesForChildrenOf(original),
 			isVisible: false,
+			layout: original.layout,
 		});
 
 		this.resultMap.set(original.id, {
@@ -283,6 +285,14 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, boardElementCopy);
 
 		return Promise.resolve();
+	}
+
+	async visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void> {
+		return Promise.reject(
+			new Error(`Cannot copy element of type: '${collaborativeTextEditorElement.constructor.name}'`)
+		);
 	}
 
 	async visitMediaBoardAsync(original: MediaBoard): Promise<void> {

@@ -7,3 +7,4 @@ export * from './board-do-authorizable';
 export * from './board-external-reference';
 export * from './column-board-info';
 export * from './content-elements.enum';
+export * from './board-layout.enum';

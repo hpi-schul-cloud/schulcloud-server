@@ -5,6 +5,7 @@ import type {
 	AnyBoardDo,
 	BoardCompositeVisitor,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -21,6 +22,7 @@ import type {
 import {
 	BoardNode,
 	CardNode,
+	CollaborativeTextEditorElementNode,
 	ColumnBoardNode,
 	ColumnNode,
 	DrawingElementNode,
@@ -72,6 +74,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 			context: columnBoard.context,
 			isVisible: columnBoard.isVisible,
+			layout: columnBoard.layout,
 		});
 
 		this.saveRecursive(boardNode, columnBoard);
@@ -201,6 +204,18 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(externalToolElement, boardNode);
+	}
+
+	visitCollaborativeTextEditorElement(collaborativeTextEditorElement: CollaborativeTextEditorElement): void {
+		const parentData = this.parentsMap.get(collaborativeTextEditorElement.id);
+
+		const boardNode = new CollaborativeTextEditorElementNode({
+			id: collaborativeTextEditorElement.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, collaborativeTextEditorElement);
 	}
 
 	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
