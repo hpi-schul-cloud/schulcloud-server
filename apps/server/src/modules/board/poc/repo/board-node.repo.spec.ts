@@ -50,7 +50,7 @@ describe('BoardNodeRepo', () => {
 			expect(nodeCount).toBe(5);
 		});
 
-		it('should be able to persist more multiple root nodes', async () => {
+		it('should be able to persist multiple root nodes', async () => {
 			const { board: board1 } = setup();
 			const { board: board2 } = setup();
 
@@ -178,88 +178,59 @@ describe('BoardNodeRepo', () => {
 		});
 	});
 
-	// ---- BEGIN OLD CODE - remove when not needed anymore
-	// describe('when persisting', () => {
-	// 	it('should work', async () => {
-	// 		const boardNode = cardFactory.build();
+	describe('findCommonParentOfIds', () => {
+		const setup = async () => {
+			const card = cardFactory.build();
+			const column = columnFactory.build({ children: [card] });
+			const board = columnBoardFactory.build({ children: [column] });
 
-	// 		repo.persist(boardNode);
-	// 		await repo.flush();
-	// 	});
-	// });
+			await repo.persistAndFlush(board);
+			em.clear();
 
-	// describe('when finding a single node by known id', () => {
-	// 	const setup = async () => {
-	// 		const props = em.create(BoardNodeEntity, propsFactory.build());
-	// 		await em.persistAndFlush(props);
-	// 		em.clear();
+			return { board, column, card };
+		};
 
-	// 		return { props };
-	// 	};
+		it('should find the common parent', async () => {
+			const { board, column, card } = await setup();
 
-	// 	it('should find the node', async () => {
-	// 		const { props } = await setup();
+			const result = await repo.findCommonParentOfIds([column.id, card.id]);
 
-	// 		const boardNode = await repo.findById(props.id);
+			expect(result.id).toEqual(board.id);
+		});
+	});
 
-	// 		expect(boardNode.id).toBeDefined();
-	// 	});
-	// });
+	describe('remove (and flush)', () => {
+		const setup = async () => {
+			const board = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
 
-	// describe('after persisting a single node', () => {
-	// 	const setup = () => {
-	// 		const boardNode = cardFactory.build();
-	// 		em.clear();
+			await repo.persistAndFlush(board);
 
-	// 		return { boardNode };
-	// 	};
+			return { board };
+		};
 
-	// 	it('should exist in the database', async () => {
-	// 		const { boardNode } = setup();
+		describe('remove + flush', () => {
+			it('should delete all nodes recursivevely', async () => {
+				const { board } = await setup();
+				expect(await em.count(BoardNodeEntity)).toBe(3);
 
-	// 		await repo.persistAndFlush(boardNode);
+				repo.remove(board);
+				await repo.flush();
 
-	// 		const result = await em.findOneOrFail(BoardNodeEntity, { id: boardNode.id });
-	// 		expect(result.id).toEqual(boardNode.id);
-	// 	});
-	// });
+				expect(await em.count(BoardNodeEntity)).toBe(0);
+			});
+		});
 
-	// describe('after persisting multiple nodes', () => {
-	// 	const setup = () => {
-	// 		const boardNodes = cardFactory.buildList(2);
-	// 		em.clear();
+		describe('removeAndFlush', () => {
+			it('should delete all nodes recursivevely', async () => {
+				const { board } = await setup();
+				expect(await em.count(BoardNodeEntity)).toBe(3);
 
-	// 		return { boardNodes };
-	// 	};
+				await repo.removeAndFlush(board);
 
-	// 	it('should exist in the database', async () => {
-	// 		const { boardNodes } = setup();
-
-	// 		await repo.persistAndFlush(boardNodes);
-
-	// 		const result = await em.find(BoardNodeEntity, { id: boardNodes.map((bn) => bn.id) });
-	// 		expect(result.length).toEqual(2);
-	// 	});
-	// });
-
-	// describe('after a tree was peristed', () => {
-	// 	const setup = async () => {
-	// 		const parent = columnFactory.build();
-	// 		const children = cardFactory.buildList(2);
-	// 		children.forEach((child) => parent.addChild(child));
-	// 		await repo.persistAndFlush([parent, ...children]);
-	// 		em.clear();
-
-	// 		return { parent, children };
-	// 	};
-
-	// 	it('can be found using the repo', async () => {
-	// 		const { parent, children } = await setup();
-
-	// 		const result = await repo.findById(parent.id);
-
-	// 		expect(result.children.length).toEqual(children.length);
-	// 	});
-	// });
-	// ---- END OLD CODE
+				expect(await em.count(BoardNodeEntity)).toBe(0);
+			});
+		});
+	});
 });

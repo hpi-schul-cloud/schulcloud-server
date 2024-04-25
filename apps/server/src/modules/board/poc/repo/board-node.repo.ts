@@ -1,9 +1,10 @@
 import { RequiredEntityData, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, AnyBoardNodeProps, AnyBoardNodeType, BoardNodeTypeToClass } from '../domain';
-import { pathOfChildren } from '../domain/path-utils';
+import { pathOfChildren, ROOT_PATH } from '../domain/path-utils';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
 
@@ -51,6 +52,23 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
+	async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
+		const entities = (await this.em.find(BoardNodeEntity, { id: { $in: ids } })) as AnyBoardNodeProps[];
+		const sortedPaths = entities.map((e) => e.path).sort();
+		const commonPath = sortedPaths[0];
+		const dontMatch = sortedPaths.some((p) => !p.startsWith(commonPath));
+
+		if (!commonPath || commonPath === ROOT_PATH || dontMatch) {
+			throw new EntityNotFoundError(`Parent node of [${ids.join(',')}] not found`);
+		}
+
+		const commonAncestorIds = commonPath.split(',').filter((id) => id !== '');
+		const parentId = commonAncestorIds[commonAncestorIds.length - 1];
+		const parentNode = await this.findById(parentId, depth);
+
+		return parentNode;
+	}
+
 	persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
@@ -78,12 +96,13 @@ export class BoardNodeRepo {
 
 	remove(boardNode: AnyBoardNode): BoardNodeRepo {
 		this.em.remove(this.getProps(boardNode));
+		boardNode.children.forEach((child) => this.remove(child));
 
 		return this;
 	}
 
 	async removeAndFlush(boardNode: AnyBoardNode): Promise<void> {
-		await this.em.removeAndFlush(this.getProps(boardNode));
+		await this.remove(boardNode).flush();
 	}
 
 	async flush(): Promise<void> {
