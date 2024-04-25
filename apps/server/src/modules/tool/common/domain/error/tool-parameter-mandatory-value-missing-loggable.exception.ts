@@ -4,13 +4,13 @@ import { EntityId } from '@shared/domain/types';
 import { HttpStatus } from '@nestjs/common';
 import { CustomParameter } from '../custom-parameter.do';
 
-export class ToolParameterValueMissingLoggableException extends BusinessError implements Loggable {
+export class ToolParameterMandatoryValueMissingLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly validatableToolId: EntityId | undefined, private readonly parameter: CustomParameter) {
 		super(
 			{
-				type: 'TOOL_PARAMETER_VALUE_MISSING',
-				title: 'Missing tool parameter value',
-				defaultMessage: 'The parameter has no value.',
+				type: 'TOOL_PARAMETER_MANDATORY_VALUE_MISSING',
+				title: 'Missing mandatory tool parameter value',
+				defaultMessage: 'The mandatory parameter has no value.',
 			},
 			HttpStatus.BAD_REQUEST,
 			{

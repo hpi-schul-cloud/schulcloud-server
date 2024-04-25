@@ -1,16 +1,14 @@
 import { customParameterFactory } from '@shared/testing';
 import { CustomParameter } from '../custom-parameter.do';
-import { ToolParameterValueMissingLoggableException } from './tool-parameter-value-missing.loggable-exception';
+import { ToolParameterMandatoryValueMissingLoggableException } from './tool-parameter-mandatory-value-missing-loggable.exception';
 
-describe(ToolParameterValueMissingLoggableException.name, () => {
+describe(ToolParameterMandatoryValueMissingLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const parameter: CustomParameter = customParameterFactory.build();
 
-			const exception: ToolParameterValueMissingLoggableException = new ToolParameterValueMissingLoggableException(
-				'toolId',
-				parameter
-			);
+			const exception: ToolParameterMandatoryValueMissingLoggableException =
+				new ToolParameterMandatoryValueMissingLoggableException('toolId', parameter);
 
 			return {
 				parameter,

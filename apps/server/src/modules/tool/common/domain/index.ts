@@ -4,7 +4,7 @@ export {
 	ToolParameterUnknownLoggableException,
 	ToolParameterValueRegexLoggableException,
 	ToolParameterTypeMismatchLoggableException,
-	ToolParameterValueMissingLoggableException,
+	ToolParameterMandatoryValueMissingLoggableException,
 	ContextExternalToolNameAlreadyExistsLoggableException,
 } from './error';
 export * from './custom-parameter.do';

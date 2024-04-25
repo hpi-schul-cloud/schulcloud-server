@@ -1,6 +1,10 @@
 import { ValidationError } from '@shared/common';
 import { customParameterFactory } from '@shared/testing';
-import { CustomParameter, CustomParameterEntry, ToolParameterValueMissingLoggableException } from '../../../domain';
+import {
+	CustomParameter,
+	CustomParameterEntry,
+	ToolParameterMandatoryValueMissingLoggableException,
+} from '../../../domain';
 import { ParameterEntryValueValidator } from './parameter-entry-value-validator';
 
 describe(ParameterEntryValueValidator.name, () => {
@@ -51,7 +55,7 @@ describe(ParameterEntryValueValidator.name, () => {
 
 				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration, undefined);
 
-				expect(result[0]).toBeInstanceOf(ToolParameterValueMissingLoggableException);
+				expect(result[0]).toBeInstanceOf(ToolParameterMandatoryValueMissingLoggableException);
 			});
 		});
 
@@ -75,7 +79,7 @@ describe(ParameterEntryValueValidator.name, () => {
 
 				const result: ValidationError[] = new ParameterEntryValueValidator().validate(entry, declaration, undefined);
 
-				expect(result[0]).toBeInstanceOf(ToolParameterValueMissingLoggableException);
+				expect(result[0]).toBeInstanceOf(ToolParameterMandatoryValueMissingLoggableException);
 			});
 		});
 	});

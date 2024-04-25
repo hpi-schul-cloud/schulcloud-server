@@ -10,7 +10,7 @@ import {
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
-	ToolParameterValueMissingLoggableException,
+	ToolParameterMandatoryValueMissingLoggableException,
 } from '../../common/domain';
 import { CommonToolValidationService } from '../../common/service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
@@ -77,6 +77,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -131,6 +132,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: false,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -185,6 +187,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -239,6 +242,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -273,7 +277,7 @@ describe(ToolConfigurationStatusService.name, () => {
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([
-					new ToolParameterValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterMandatoryValueMissingLoggableException(undefined, customParameter),
 					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
 				]);
 
@@ -297,6 +301,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: true,
+					isIncompleteOperationalOnScopeContext: true,
 					isDeactivated: false,
 				});
 			});
@@ -336,6 +341,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: true,
 				});
 			});
@@ -374,6 +380,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: true,
 				});
 			});
@@ -412,6 +419,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
