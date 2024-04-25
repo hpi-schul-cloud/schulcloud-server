@@ -197,7 +197,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -233,7 +233,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -269,7 +269,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -306,7 +306,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -342,7 +342,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -365,7 +365,6 @@ const PATH_SEPARATOR &#x3D; &#x27;,&#x27;;
 
 @Entity({ tableName: &#x27;boardnodes&#x27;, discriminatorColumn: &#x27;type&#x27;, abstract: true })
 @Index({ properties: [&#x27;path&#x27;] })
-@Index({ properties: [&#x27;type&#x27;] })
 export abstract class BoardNode extends BaseEntityWithTimestamps {
 	constructor(props: BoardNodeProps) {
 		super();

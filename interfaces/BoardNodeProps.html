@@ -345,7 +345,6 @@ const PATH_SEPARATOR &#x3D; &#x27;,&#x27;;
 
 @Entity({ tableName: &#x27;boardnodes&#x27;, discriminatorColumn: &#x27;type&#x27;, abstract: true })
 @Index({ properties: [&#x27;path&#x27;] })
-@Index({ properties: [&#x27;type&#x27;] })
 export abstract class BoardNode extends BaseEntityWithTimestamps {
 	constructor(props: BoardNodeProps) {
 		super();
