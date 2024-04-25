@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
@@ -16,7 +17,8 @@ export class ToolLaunchUc {
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userLicenceService: UserLicenseService
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolLaunchRequest> {
@@ -28,9 +30,9 @@ export class ToolLaunchUc {
 
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
-		// TODO: N21-1881 use configService? change to correct flag
-		if (Configuration.get('FEATURE_MEDIA_SHELF_ENABLED')) {
-			await this.checkLicenseForExternal(contextExternalTool, user);
+		// TODO: N21-1881 use configService?
+		if (Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			await this.checkLicenseForExternal(contextExternalTool, userId);
 		}
 
 		const toolLaunchData: ToolLaunchData = await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
@@ -39,12 +41,17 @@ export class ToolLaunchUc {
 		return launchRequest;
 	}
 
-	private async checkLicenseForExternal(contextExternalTool: ContextExternalTool, user: User) {
+	private async checkLicenseForExternal(contextExternalTool: ContextExternalTool, userId: EntityId) {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool } = await this.toolLaunchService.loadToolHierarchy(schoolExternalToolId);
 
-		if (!this.licenceService.checkLicenceForExternalTool(externalTool, user)) {
+		const mediaUserLicenses: MediaUserLicense[] = await this.userLicenceService.getMediaUserLicensesForUser(userId);
+
+		if (
+			externalTool.medium?.mediumId &&
+			!this.userLicenceService.checkLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
+		) {
 			throw new Loggable();
 		}
 	}

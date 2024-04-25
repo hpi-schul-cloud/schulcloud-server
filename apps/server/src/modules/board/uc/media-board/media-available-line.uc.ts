@@ -1,5 +1,7 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -17,7 +19,8 @@ export class MediaAvailableLineUc {
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly mediaBoardService: MediaBoardService
+		private readonly mediaBoardService: MediaBoardService,
+		private readonly userLicenceService: UserLicenseService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -39,12 +42,14 @@ export class MediaAvailableLineUc {
 		);
 
 		let matchedAndLicencedTools: [ExternalTool, SchoolExternalTool][] = [];
-		// TODO: N21-1881 change to correct flag
-		if (this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+		// TODO: N21-1881 use configService?
+		if (Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			const mediaUserLicenses: MediaUserLicense[] = await this.userLicenceService.getMediaUserLicensesForUser(userId);
+
 			matchedAndLicencedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 				const externalTool: ExternalTool = tool[0];
 				if (externalTool?.medium?.mediumId) {
-					return this.licenceService.checkLicenceForExternalTool(externalTool, user);
+					return this.userLicenceService.checkLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses);
 				}
 				return true;
 			});
