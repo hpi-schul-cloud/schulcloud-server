@@ -11,13 +11,16 @@ import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import cookie from 'cookie';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { ColumnUc } from '../uc';
+import { BoardUc, ColumnUc } from '../uc';
 import {
 	CreateCardMessageParams,
 	DeleteColumnMessageParams,
 	MoveCardMessageParams,
 	UpdateColumnTitleMessageParams,
 } from './dto';
+import { CreateColumnMessageParams } from './dto/create-column.message.param copy';
+import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
+import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param copy';
 import { Socket } from './types';
 
 @WebSocketGateway({
@@ -37,7 +40,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly orm: MikroORM,
-		/* private readonly boardUc: BoardUc, */
+		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc
 	) {}
 
@@ -100,28 +103,41 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		this.logger.log('Socket gateway initialized');
 	}
 
+	@SubscribeMessage('delete-board-request')
+	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			await this.boardUc.deleteBoard(userId, data.boardId);
+			client.broadcast.emit('delete-board-success', data);
+			client.emit('delete-board-success', data);
+		} catch (err) {
+			client.emit('delete-board-failure', new Error('Failed to delete board'));
+		}
+	}
+
+	@SubscribeMessage('update-board-title-request')
+	@UseRequestContext()
+	async handleChangeBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
+			client.broadcast.emit('update-board-title-success', data);
+			client.emit('update-board-title-success', data);
+		} catch (err) {
+			client.emit('update-board-title-failure', new Error('Failed to update board title'));
+		}
+	}
+
 	@SubscribeMessage('update-card-request')
 	handleUpdateCard(client: Socket, data: unknown) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		client.broadcast.emit('update-card-success', data);
 		client.emit('update-card-success', data);
-	}
-
-	@SubscribeMessage('lock-card-request')
-	handleLockCard(client: Socket, data: unknown) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('lock-card-success', data);
-		client.emit('lock-card-success', data);
-	}
-
-	@SubscribeMessage('unlock-card-request')
-	handleUnlockCard(client: Socket, data: unknown) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('unlock-card-success', data);
-		client.emit('unlock-card-success', data);
 	}
 
 	@SubscribeMessage('delete-card-request')
@@ -149,15 +165,36 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		client.emit('create-card-success', responsePayload);
 	}
 
-	@SubscribeMessage('move-card-request')
+	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
-	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
+	async handleCreateColumn(client: Socket, data: CreateColumnMessageParams) {
 		this.logger.log(`Message received from client id: ${client.id}`);
 		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		const { userId } = this.getCurrentUser(client);
-		await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-		client.broadcast.emit('move-card-success', data);
-		client.emit('move-card-success', data);
+		const column = (await this.boardUc.createColumn(userId, data.boardId)).getProps();
+		const responsePayload = {
+			...data,
+			newColumn: column,
+		};
+		this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
+
+		client.broadcast.emit('create-column-success', responsePayload);
+		client.emit('create-column-success', responsePayload);
+	}
+
+	@SubscribeMessage('move-card-request')
+	@UseRequestContext()
+	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+			client.broadcast.emit('move-card-success', data);
+			client.emit('move-card-success', data);
+		} catch (err) {
+			client.emit('move-card-failure', new Error('Failed to move card'));
+		}
 	}
 
 	@SubscribeMessage('move-column-request')
@@ -168,23 +205,19 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		client.broadcast.emit('move-column-success', data);
 	}
 
-	@SubscribeMessage('update-board-title-request')
-	@UseRequestContext()
-	handleChangeBoardTitle(client: Socket, data: Record<string, unknown>) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('update-board-title-success', data);
-	}
-
 	@SubscribeMessage('update-column-title-request')
 	@UseRequestContext()
 	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		const { userId } = this.getCurrentUser(client);
-		await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
-		client.broadcast.emit('update-column-title-success', data);
-		client.emit('update-column-title-success', data);
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
+			client.broadcast.emit('update-column-title-success', data);
+			client.emit('update-column-title-success', data);
+		} catch (err) {
+			client.emit('update-column-title-failure', new Error('Failed to update column title'));
+		}
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
@@ -198,12 +231,16 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@SubscribeMessage('delete-column-request')
 	@UseRequestContext()
 	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		const { userId } = this.getCurrentUser(client);
-		await this.columnUc.deleteColumn(userId, data.columnId);
-		client.broadcast.emit('delete-column-success', data);
-		client.emit('delete-column-success', data);
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			await this.columnUc.deleteColumn(userId, data.columnId);
+			client.broadcast.emit('delete-column-success', data);
+			client.emit('delete-column-success', data);
+		} catch (err) {
+			client.emit('delete-column-failure', new Error('Failed to delete column'));
+		}
 	}
 
 	@SubscribeMessage('reload-board-request')
