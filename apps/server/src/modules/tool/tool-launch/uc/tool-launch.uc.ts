@@ -51,7 +51,7 @@ export class ToolLaunchUc {
 
 		if (
 			externalTool.medium?.mediumId &&
-			!this.userLicenceService.checkLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
+			!this.userLicenceService.hasLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
 		) {
 			throw new MissingLicenceLoggableException(externalTool.medium, userId, contextExternalTool.id);
 		}

@@ -85,4 +85,67 @@ describe(UserLicenseService.name, () => {
 			expect(userLicenseRepo.deleteUserLicense).toHaveBeenCalledWith(mediaUserLicense);
 		});
 	});
+
+	describe('hasLicenceForExternalTool', () => {
+		describe('when user has licence', () => {
+			const setup = () => {
+				const mediumId = 'mediumId';
+				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
+				mediaUserLicenses[0].mediumId = 'mediumId';
+
+				return {
+					mediumId,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return true', () => {
+				const { mediumId, mediaUserLicenses } = setup();
+
+				const result = service.hasLicenceForExternalTool(mediumId, mediaUserLicenses);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when user has not the correct licence', () => {
+			const setup = () => {
+				const mediumId = 'mediumId';
+				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
+
+				return {
+					mediumId,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return false', () => {
+				const { mediumId, mediaUserLicenses } = setup();
+
+				const result = service.hasLicenceForExternalTool(mediumId, mediaUserLicenses);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when user has no licences', () => {
+			const setup = () => {
+				const mediumId = 'mediumId';
+				const mediaUserLicenses: MediaUserLicense[] = [];
+
+				return {
+					mediumId,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return false', () => {
+				const { mediumId, mediaUserLicenses } = setup();
+
+				const result = service.hasLicenceForExternalTool(mediumId, mediaUserLicenses);
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
 });

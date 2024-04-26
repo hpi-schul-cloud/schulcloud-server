@@ -49,14 +49,14 @@ export class MediaAvailableLineUc {
 			matchedAndLicencedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 				const externalTool: ExternalTool = tool[0];
 				if (externalTool?.medium?.mediumId) {
-					return this.userLicenceService.checkLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses);
+					return this.userLicenceService.hasLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses);
 				}
 				return true;
 			});
 		}
 
 		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
-			matchedAndLicencedTools ?? matchedTools
+			matchedAndLicencedTools.length ? matchedAndLicencedTools : matchedTools
 		);
 
 		return mediaAvailableLine;

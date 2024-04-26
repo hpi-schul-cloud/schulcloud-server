@@ -1,8 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { MissingLicenceLoggableException } from '@modules/tool/tool-launch/error/missing-licence.loggable-exception';
+import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { contextExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -19,6 +30,7 @@ describe('ToolLaunchUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let userLicenceService: DeepMocked<UserLicenseService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -40,6 +52,10 @@ describe('ToolLaunchUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: UserLicenseService,
+					useValue: createMock<UserLicenseService>(),
+				},
 			],
 		}).compile();
 
@@ -48,6 +64,7 @@ describe('ToolLaunchUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
+		userLicenceService = module.get(UserLicenseService);
 	});
 
 	beforeAll(async () => {
@@ -63,76 +80,227 @@ describe('ToolLaunchUc', () => {
 	});
 
 	describe('getToolLaunchRequest', () => {
-		const setup = () => {
-			const user: User = userFactory.build();
-			const contextExternalToolId = 'contextExternalToolId';
-			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
-				id: contextExternalToolId,
-			});
-			const toolLaunchData: ToolLaunchData = new ToolLaunchData({
-				baseUrl: 'baseUrl',
-				type: ToolLaunchDataType.BASIC,
-				openNewTab: true,
-				properties: [],
-			});
+		describe('when licencing feature flag is false', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+				const contextExternalToolId = 'contextExternalToolId';
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					id: contextExternalToolId,
+				});
+				const toolLaunchData: ToolLaunchData = new ToolLaunchData({
+					baseUrl: 'baseUrl',
+					type: ToolLaunchDataType.BASIC,
+					openNewTab: true,
+					properties: [],
+				});
 
-			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
-			contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
-			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
-			return {
-				user,
-				contextExternalToolId,
-				contextExternalTool,
-				toolLaunchData,
+				return {
+					user,
+					contextExternalToolId,
+					contextExternalTool,
+					toolLaunchData,
+				};
 			};
-		};
 
-		it('should check user permissions to launch the tool', async () => {
-			const { user, contextExternalToolId, contextExternalTool } = setup();
+			it('should check user permissions to launch the tool', async () => {
+				const { user, contextExternalToolId, contextExternalTool } = setup();
 
-			await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-			expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
-				user,
-				contextExternalTool,
-				AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER])
-			);
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
+					user,
+					contextExternalTool,
+					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER])
+				);
+			});
+
+			it('should call service to get context external tool', async () => {
+				const { user, contextExternalToolId } = setup();
+
+				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+				expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalToolId);
+			});
+
+			it('should call service to get data', async () => {
+				const { user, contextExternalToolId, contextExternalTool } = setup();
+
+				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+				expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(user.id, contextExternalTool);
+			});
+
+			it('should call service to generate launch request', async () => {
+				const { user, contextExternalToolId, toolLaunchData } = setup();
+
+				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+
+				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+				expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(toolLaunchData);
+			});
+
+			it('should return launch request', async () => {
+				const { user, contextExternalToolId } = setup();
+
+				const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+				expect(toolLaunchRequest).toBeDefined();
+			});
 		});
 
-		it('should call service to get context external tool', async () => {
-			const { user, contextExternalToolId } = setup();
+		describe('when licencing feature flag is enabled', () => {
+			describe('when tool has no mediumId', () => {
+				const setup = () => {
+					const user: User = userFactory.build();
+					const contextExternalToolId = 'contextExternalToolId';
+					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+						id: contextExternalToolId,
+					});
+					const externalTool: ExternalTool = externalToolFactory.build();
+					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+					const toolLaunchData: ToolLaunchData = new ToolLaunchData({
+						baseUrl: 'baseUrl',
+						type: ToolLaunchDataType.BASIC,
+						openNewTab: true,
+						properties: [],
+					});
+					const mediaUserLicence: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
+					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
+					userLicenceService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserLicence]);
 
-			expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalToolId);
-		});
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
+					contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+					toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
-		it('should call service to get data', async () => {
-			const { user, contextExternalToolId, contextExternalTool } = setup();
+					return {
+						user,
+						contextExternalToolId,
+						contextExternalTool,
+						toolLaunchData,
+					};
+				};
 
-			await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				it('should not check licence', async () => {
+					const { user, contextExternalToolId } = setup();
 
-			expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(user.id, contextExternalTool);
-		});
+					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-		it('should call service to generate launch request', async () => {
-			const { user, contextExternalToolId, toolLaunchData } = setup();
+					expect(userLicenceService.hasLicenceForExternalTool).not.toHaveBeenCalled();
+				});
 
-			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+				it('should return launch request', async () => {
+					const { user, contextExternalToolId } = setup();
 
-			await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-			expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(toolLaunchData);
-		});
+					expect(toolLaunchRequest).toBeDefined();
+				});
+			});
 
-		it('should return launch request', async () => {
-			const { user, contextExternalToolId } = setup();
+			describe('when license exist', () => {
+				const setup = () => {
+					const user: User = userFactory.build();
+					const contextExternalToolId = 'contextExternalToolId';
+					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+						id: contextExternalToolId,
+					});
+					const externalTool: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
+					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+					const toolLaunchData: ToolLaunchData = new ToolLaunchData({
+						baseUrl: 'baseUrl',
+						type: ToolLaunchDataType.BASIC,
+						openNewTab: true,
+						properties: [],
+					});
+					const mediaUserLicence: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
+					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
+					userLicenceService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserLicence]);
+					userLicenceService.hasLicenceForExternalTool.mockReturnValue(true);
 
-			expect(toolLaunchRequest).toBeDefined();
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
+					contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+					toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+
+					return {
+						user,
+						contextExternalToolId,
+						contextExternalTool,
+						toolLaunchData,
+					};
+				};
+
+				it('should check licence', async () => {
+					const { user, contextExternalToolId } = setup();
+
+					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+					expect(userLicenceService.hasLicenceForExternalTool).toHaveBeenCalled();
+				});
+
+				it('should return launch request', async () => {
+					const { user, contextExternalToolId } = setup();
+
+					const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+					expect(toolLaunchRequest).toBeDefined();
+				});
+			});
+
+			describe('when license does not exist', () => {
+				const setup = () => {
+					const user: User = userFactory.build();
+					const contextExternalToolId = 'contextExternalToolId';
+					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+						id: contextExternalToolId,
+					});
+					const externalTool: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
+					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+					const toolLaunchData: ToolLaunchData = new ToolLaunchData({
+						baseUrl: 'baseUrl',
+						type: ToolLaunchDataType.BASIC,
+						openNewTab: true,
+						properties: [],
+					});
+					const mediaUserLicence: MediaUserLicense = mediaUserLicenseFactory.build();
+
+					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
+					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
+					userLicenceService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserLicence]);
+					userLicenceService.hasLicenceForExternalTool.mockReturnValue(false);
+
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
+					contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
+					toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
+
+					return {
+						user,
+						contextExternalToolId,
+						contextExternalTool,
+						toolLaunchData,
+					};
+				};
+
+				it('should throw MissingLicenceLoggableException', async () => {
+					const { user, contextExternalToolId } = setup();
+
+					const toolLaunchRequest: Promise<ToolLaunchRequest> = uc.getToolLaunchRequest(user.id, contextExternalToolId);
+
+					await expect(toolLaunchRequest).rejects.toThrow(MissingLicenceLoggableException);
+				});
+			});
 		});
 	});
 });
