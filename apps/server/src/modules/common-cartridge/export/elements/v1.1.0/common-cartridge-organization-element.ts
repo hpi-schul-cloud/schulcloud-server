@@ -1,6 +1,6 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeGuard } from '../../common-cartridge.guard';
 import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
-import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeOrganizationElementPropsV110 = {
 	type: CommonCartridgeElementType.ORGANIZATION;
@@ -20,34 +20,36 @@ export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeEleme
 	}
 
 	public getManifestXmlObject(): XmlObject {
-		if (this.props.items instanceof CommonCartridgeResource) {
-			return {
-				$: {
-					identifier: this.identifier,
-					identifierref: this.props.items.identifier,
-				},
-				title: this.title,
-			};
-		}
+		const xmlObject = CommonCartridgeGuard.isResource(this.props.items)
+			? this.getManifestXmlObjectForResource(this.props.items)
+			: this.getManifestXmlObjectForResourceCollection(this.props.items);
 
-		return {
+		return xmlObject;
+	}
+
+	private getManifestXmlObjectForResource(item: CommonCartridgeResource): XmlObject {
+		const xmlObject = {
+			$: {
+				identifier: this.identifier,
+				identifierref: item.identifier,
+			},
+			title: this.title,
+		};
+
+		return xmlObject;
+	}
+
+	private getManifestXmlObjectForResourceCollection(
+		items: (CommonCartridgeElement | CommonCartridgeResource)[]
+	): XmlObject {
+		const xmlObject = {
 			$: {
 				identifier: this.identifier,
 			},
 			title: this.title,
-			item: this.props.items.map((item) => {
-				if (item instanceof CommonCartridgeResource) {
-					return {
-						$: {
-							identifier: createIdentifier(),
-							identifierref: item.identifier,
-						},
-						title: item.title,
-					};
-				}
-
-				return item.getManifestXmlObject();
-			}),
+			item: items.map((item) => item.getManifestXmlObject()),
 		};
+
+		return xmlObject;
 	}
 }
