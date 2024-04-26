@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { MissingLicenceLoggableException } from '@modules/tool/tool-launch/error/missing-licence.loggable-exception';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
@@ -52,7 +53,7 @@ export class ToolLaunchUc {
 			externalTool.medium?.mediumId &&
 			!this.userLicenceService.checkLicenceForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
 		) {
-			throw new Loggable();
+			throw new MissingLicenceLoggableException(externalTool.medium, userId, contextExternalTool.id);
 		}
 	}
 }
