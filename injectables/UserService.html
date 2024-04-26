@@ -210,6 +210,11 @@
                                 <a href="#handle" >handle</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#isEmailUniqueForExternal" >isEmailUniqueForExternal</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#me" >me</a>
                             </li>
@@ -1651,6 +1656,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isEmailUniqueForExternal"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>isEmailUniqueForExternal</b></span>
+                        <a href="#isEmailUniqueForExternal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isEmailUniqueForExternal(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="284"
+                                    class="link-to-prism">apps/server/src/modules/user/service/user.service.ts:284</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="me"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -2151,42 +2238,42 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, Account } from &#x27;@modules/account&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, AccountService } from &#x27;@modules/account&#x27;;
 // invalid import
 import { OauthCurrentUser } from &#x27;@modules/authentication/interface&#x27;;
 import { CurrentUserMapper } from &#x27;@modules/authentication/mapper&#x27;;
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionErrorLoggableException,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReport,
+	DomainOperationReportBuilder,
+	OperationReportHelper,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from &#x27;@modules/deletion&#x27;;
+import { RegistrationPinService } from &#x27;@modules/registration-pin&#x27;;
 import { RoleDto, RoleService } from &#x27;@modules/role&#x27;;
 import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
 import { Page, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
+import { IFindOptions, LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { UserDORepo } from &#x27;@shared/repo/user/user-do.repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
-import { RegistrationPinService } from &#x27;@modules/registration-pin&#x27;;
-import { User } from &#x27;@shared/domain/entity&#x27;;
-import { IFindOptions, LanguageType } from &#x27;@shared/domain/interface&#x27;;
-import {
-	UserDeletedEvent,
-	DeletionService,
-	DataDeletedEvent,
-	DomainDeletionReport,
-	DataDeletionDomainOperationLoggable,
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
-	DeletionErrorLoggableException,
-	DomainOperationReport,
-	StatusModel,
-	OperationReportHelper,
-} from &#x27;@modules/deletion&#x27;;
 import { CalendarService } from &#x27;@src/infra/calendar&#x27;;
-import { UserQuery } from &#x27;./user-query.type&#x27;;
-import { UserDto } from &#x27;../uc/dto/user.dto&#x27;;
-import { UserMapper } from &#x27;../mapper/user.mapper&#x27;;
 import { UserConfig } from &#x27;../interfaces&#x27;;
+import { UserMapper } from &#x27;../mapper/user.mapper&#x27;;
+import { UserDto } from &#x27;../uc/dto/user.dto&#x27;;
+import { UserQuery } from &#x27;./user-query.type&#x27;;
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -2432,6 +2519,20 @@ export class UserService implements DeletionService, IEventHandler&lt;UserDelete
 		extractedOperationReport &#x3D; OperationReportHelper.extractOperationReports([results]);
 
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
+	}
+
+	public async isEmailUniqueForExternal(email: string, externalId?: string): Promise&lt;boolean&gt; {
+		const foundUsers: UserDO[] &#x3D; await this.findByEmail(email);
+		if (!externalId &amp;&amp; foundUsers.length) {
+			return false;
+		}
+
+		const unmatchedUsers: UserDO[] &#x3D; foundUsers.filter((user: UserDO) &#x3D;&gt; user.externalId !&#x3D;&#x3D; externalId);
+		if (unmatchedUsers.length) {
+			return false;
+		}
+
+		return true;
 	}
 }
 </code></pre>

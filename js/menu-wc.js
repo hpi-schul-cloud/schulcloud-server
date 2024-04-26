@@ -4734,6 +4734,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ElementUrlParams.html" data-type="entity-link" >ElementUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/EmailAlreadyExistsLoggable.html" data-type="entity-link" >EmailAlreadyExistsLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/EntityNotFoundError.html" data-type="entity-link" >EntityNotFoundError</a>
                             </li>
                             <li class="link">
