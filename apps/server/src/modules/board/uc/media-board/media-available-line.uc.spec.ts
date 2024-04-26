@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
@@ -40,7 +39,7 @@ describe(MediaAvailableLineUc.name, () => {
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
-	let userLicenceService: DeepMocked<UserLicenseService>;
+	let userLicenseService: DeepMocked<UserLicenseService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -81,7 +80,7 @@ describe(MediaAvailableLineUc.name, () => {
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
-		userLicenceService = module.get(UserLicenseService);
+		userLicenseService = module.get(UserLicenseService);
 	});
 
 	afterAll(async () => {
@@ -96,6 +95,7 @@ describe(MediaAvailableLineUc.name, () => {
 		describe('when the user request the available line', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(true);
+				configService.get.mockReturnValueOnce(false);
 
 				const user: User = userFactory.build();
 				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
@@ -212,10 +212,10 @@ describe(MediaAvailableLineUc.name, () => {
 			});
 		});
 
-		describe('when licencing feature flag is enabled', () => {
+		describe('when licensing feature flag is enabled', () => {
 			describe('when tool has no mediumId', () => {
 				const setup = () => {
-					configService.get.mockReturnValueOnce(true);
+					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
 					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
@@ -230,12 +230,11 @@ describe(MediaAvailableLineUc.name, () => {
 					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
 					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-					const mediaUserLicence: MediaUserLicense = mediaUserLicenseFactory.build();
-					mediaUserLicence.mediumId = 'mediumId';
+					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
+					mediaUserlicense.mediumId = 'mediumId';
 
-					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
-					userLicenceService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserLicence]);
-					userLicenceService.hasLicenceForExternalTool.mockReturnValue(true);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					userLicenseService.haslicenseForExternalTool.mockReturnValue(true);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -261,12 +260,12 @@ describe(MediaAvailableLineUc.name, () => {
 					};
 				};
 
-				it('should not check licence', async () => {
+				it('should not check license', async () => {
 					const { user, mediaBoard } = setup();
 
 					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-					expect(userLicenceService.hasLicenceForExternalTool).not.toHaveBeenCalled();
+					expect(userLicenseService.haslicenseForExternalTool).not.toHaveBeenCalled();
 				});
 
 				it('should return media line', async () => {
@@ -289,7 +288,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 			describe('when license exist', () => {
 				const setup = () => {
-					configService.get.mockReturnValueOnce(true);
+					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
 					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
@@ -304,12 +303,11 @@ describe(MediaAvailableLineUc.name, () => {
 					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
 					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-					const mediaUserLicence: MediaUserLicense = mediaUserLicenseFactory.build();
-					mediaUserLicence.mediumId = 'mediumId';
+					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
+					mediaUserlicense.mediumId = 'mediumId';
 
-					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
-					userLicenceService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserLicence]);
-					userLicenceService.hasLicenceForExternalTool.mockReturnValue(true);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					userLicenseService.haslicenseForExternalTool.mockReturnValue(true);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -335,12 +333,12 @@ describe(MediaAvailableLineUc.name, () => {
 					};
 				};
 
-				it('should check licence', async () => {
+				it('should check license', async () => {
 					const { user, mediaBoard } = setup();
 
 					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-					expect(userLicenceService.hasLicenceForExternalTool).toHaveBeenCalled();
+					expect(userLicenseService.haslicenseForExternalTool).toHaveBeenCalled();
 				});
 
 				it('should return the available line', async () => {
@@ -363,7 +361,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 			describe('when license does not exist', () => {
 				const setup = () => {
-					configService.get.mockReturnValueOnce(true);
+					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
 					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
@@ -373,11 +371,10 @@ describe(MediaAvailableLineUc.name, () => {
 					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
 					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-					const mediaUserLicence: MediaUserLicense = mediaUserLicenseFactory.build();
+					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
-					userLicenceService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserLicence]);
-					userLicenceService.hasLicenceForExternalTool.mockReturnValue(false);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					userLicenseService.haslicenseForExternalTool.mockReturnValue(false);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -407,7 +404,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				configService.get.mockReturnValue(false);
 
 				const userId = new ObjectId().toHexString();
 				const mediaBoardId = new ObjectId().toHexString();

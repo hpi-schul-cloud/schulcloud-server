@@ -86,8 +86,8 @@ describe(UserLicenseService.name, () => {
 		});
 	});
 
-	describe('hasLicenceForExternalTool', () => {
-		describe('when user has licence', () => {
+	describe('haslicenseForExternalTool', () => {
+		describe('when user has license', () => {
 			const setup = () => {
 				const mediumId = 'mediumId';
 				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
@@ -102,13 +102,13 @@ describe(UserLicenseService.name, () => {
 			it('should return true', () => {
 				const { mediumId, mediaUserLicenses } = setup();
 
-				const result = service.hasLicenceForExternalTool(mediumId, mediaUserLicenses);
+				const result = service.haslicenseForExternalTool(mediumId, mediaUserLicenses);
 
 				expect(result).toEqual(true);
 			});
 		});
 
-		describe('when user has not the correct licence', () => {
+		describe('when user has not the correct license', () => {
 			const setup = () => {
 				const mediumId = 'mediumId';
 				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
@@ -122,13 +122,13 @@ describe(UserLicenseService.name, () => {
 			it('should return false', () => {
 				const { mediumId, mediaUserLicenses } = setup();
 
-				const result = service.hasLicenceForExternalTool(mediumId, mediaUserLicenses);
+				const result = service.haslicenseForExternalTool(mediumId, mediaUserLicenses);
 
 				expect(result).toEqual(false);
 			});
 		});
 
-		describe('when user has no licences', () => {
+		describe('when user has no licenses', () => {
 			const setup = () => {
 				const mediumId = 'mediumId';
 				const mediaUserLicenses: MediaUserLicense[] = [];
@@ -142,7 +142,7 @@ describe(UserLicenseService.name, () => {
 			it('should return false', () => {
 				const { mediumId, mediaUserLicenses } = setup();
 
-				const result = service.hasLicenceForExternalTool(mediumId, mediaUserLicenses);
+				const result = service.haslicenseForExternalTool(mediumId, mediaUserLicenses);
 
 				expect(result).toEqual(false);
 			});

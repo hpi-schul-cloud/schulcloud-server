@@ -4,7 +4,7 @@ import { BusinessError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class MissingLicenceLoggableException extends BusinessError implements Loggable {
+export class MissinglicenseLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly medium: ExternalToolMedium,
 		private readonly userId: EntityId,
@@ -12,9 +12,9 @@ export class MissingLicenceLoggableException extends BusinessError implements Lo
 	) {
 		super(
 			{
-				type: 'MISSING_LICENCE',
-				title: 'Missing licence',
-				defaultMessage: 'The user does not have the required licence to launch this medium.',
+				type: 'MISSING_licensE',
+				title: 'Missing license',
+				defaultMessage: 'The user does not have the required license to launch this medium.',
 			},
 			HttpStatus.FORBIDDEN
 		);

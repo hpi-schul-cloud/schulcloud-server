@@ -25,7 +25,7 @@ export class UserLicenseService {
 		await this.userLicenseRepo.deleteUserLicense(license);
 	}
 
-	public hasLicenceForExternalTool(externalToolMediumId: string, mediaUserLicenses: MediaUserLicense[]): boolean {
-		return mediaUserLicenses.some((licence: MediaUserLicense) => licence.mediumId === externalToolMediumId);
+	public haslicenseForExternalTool(externalToolMediumId: string, mediaUserLicenses: MediaUserLicense[]): boolean {
+		return mediaUserLicenses.some((license: MediaUserLicense) => license.mediumId === externalToolMediumId);
 	}
 }
