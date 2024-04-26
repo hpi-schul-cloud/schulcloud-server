@@ -24,6 +24,7 @@ export class ToolParameterOptionalValueMissingLoggableException extends Business
 		return {
 			type: this.type,
 			message: this.message,
+			stack: this.stack,
 			data: {
 				parameterName: this.parameter.name,
 				validatableToolId: this.validatableToolId,

@@ -22,8 +22,8 @@ describe(ToolParameterMandatoryValueMissingLoggableException.name, () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'TOOL_PARAMETER_VALUE_MISSING',
-				message: 'The parameter has no value.',
+				type: 'TOOL_PARAMETER_MANDATORY_VALUE_MISSING',
+				message: 'The mandatory parameter has no value.',
 				stack: exception.stack,
 				data: {
 					parameterName: parameter.name,

@@ -12,6 +12,7 @@ import {
 	ToolParameterDuplicateLoggableException,
 	ToolParameterMandatoryValueMissingLoggableException,
 } from '../../common/domain';
+import { ToolParameterOptionalValueMissingLoggableException } from '../../common/domain/error/tool-parameter-optional-value-missing-loggable-exception';
 import { CommonToolValidationService } from '../../common/service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
@@ -264,7 +265,7 @@ describe(ToolConfigurationStatusService.name, () => {
 			});
 		});
 
-		describe('when validation of ContextExternalTool throws at least 1 missing value errors', () => {
+		describe('when validation of ContextExternalTool throws at least 1 missing value on mandatory parameter errors', () => {
 			const setup = () => {
 				const customParameter = customParameterFactory.build();
 				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
@@ -301,6 +302,49 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: true,
+					isIncompleteOperationalOnScopeContext: false,
+					isDeactivated: false,
+				});
+			});
+		});
+
+		describe('when validation of ContextExternalTool throws at least 1 missing value on optional parameter errors', () => {
+			const setup = () => {
+				const customParameter = customParameterFactory.build();
+				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
+				]);
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return incomplete operational as tool status', () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: false,
 					isIncompleteOperationalOnScopeContext: true,
 					isDeactivated: false,
 				});
