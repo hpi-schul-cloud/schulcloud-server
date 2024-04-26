@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -31,6 +32,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
+	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -40,6 +42,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
 				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
 				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
+				{ provide: CollaborativeTextEditorService, useValue: createMock<CollaborativeTextEditorService>() },
 			],
 		}).compile();
 
@@ -48,6 +51,7 @@ describe(RecursiveDeleteVisitor.name, () => {
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		drawingElementAdapterService = module.get(DrawingElementAdapterService);
+		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
 
 		await setupEntities();
 	});
@@ -444,26 +448,81 @@ describe(RecursiveDeleteVisitor.name, () => {
 	});
 
 	describe('visitCollaborativeTextEditorAsync', () => {
-		const setup = () => {
-			const childCollaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
-			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build({
-				children: [childCollaborativeTextEditorElement],
+		describe('WHEN collaborative text editor element is deleted successfully', () => {
+			const setup = () => {
+				const childCollaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+				const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build({
+					children: [childCollaborativeTextEditorElement],
+				});
+
+				return { collaborativeTextEditorElement, childCollaborativeTextEditorElement };
+			};
+
+			it('should call deleteCollaborativeTextEditorByParentId', async () => {
+				const { collaborativeTextEditorElement } = setup();
+
+				await service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
+
+				expect(collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId).toHaveBeenCalledWith(
+					collaborativeTextEditorElement.id
+				);
 			});
 
-			return { collaborativeTextEditorElement, childCollaborativeTextEditorElement };
-		};
+			it('should call entity remove', async () => {
+				const { collaborativeTextEditorElement, childCollaborativeTextEditorElement } = setup();
 
-		it('should call entity remove', async () => {
-			const { collaborativeTextEditorElement, childCollaborativeTextEditorElement } = setup();
+				await service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
 
-			await service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(collaborativeTextEditorElement.constructor, collaborativeTextEditorElement.id)
+				);
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(childCollaborativeTextEditorElement.constructor, childCollaborativeTextEditorElement.id)
+				);
+			});
+		});
 
-			expect(em.remove).toHaveBeenCalledWith(
-				em.getReference(collaborativeTextEditorElement.constructor, collaborativeTextEditorElement.id)
-			);
-			expect(em.remove).toHaveBeenCalledWith(
-				em.getReference(childCollaborativeTextEditorElement.constructor, childCollaborativeTextEditorElement.id)
-			);
+		describe('WHEN deleteCollaborativeTextEditorByParentId returns error', () => {
+			const setup = () => {
+				const childCollaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+				const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build({
+					children: [childCollaborativeTextEditorElement],
+				});
+				const error = new Error('testError');
+				collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId.mockRejectedValueOnce(error);
+
+				return { collaborativeTextEditorElement, childCollaborativeTextEditorElement, error };
+			};
+
+			it('should return error', async () => {
+				const { collaborativeTextEditorElement, error } = setup();
+
+				await expect(
+					service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement)
+				).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN visitChildrenAsync returns error', () => {
+			const setup = () => {
+				const childCollaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+				const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build({
+					children: [childCollaborativeTextEditorElement],
+				});
+				const error = new Error('testError');
+				collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId.mockResolvedValueOnce();
+				collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId.mockRejectedValueOnce(error);
+
+				return { collaborativeTextEditorElement, childCollaborativeTextEditorElement, error };
+			};
+
+			it('should return error', async () => {
+				const { collaborativeTextEditorElement, error } = setup();
+
+				await expect(
+					service.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement)
+				).rejects.toThrowError(error);
+			});
 		});
 	});
 });

@@ -14,6 +14,7 @@ metadata:
   name: moin-schule-users-deletion-queueing-cronjob
 spec:
   schedule: "{{ MOIN_SCHULE_USERS_DELETION_QUEUEING_CRONJOB_SCHEDULE|default("@hourly", true) }}"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
@@ -22,6 +23,8 @@ spec:
           - name: moin-schule-users-deletion-queueing-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
+            - configMapRef:
+                name: moin-schule-users-deletion-queueing-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
             command: ['/bin/sh','-c']
