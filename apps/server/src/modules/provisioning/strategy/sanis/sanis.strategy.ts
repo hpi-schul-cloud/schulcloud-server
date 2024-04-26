@@ -6,7 +6,7 @@ import {
 import { SchulconnexRestClient } from '@infra/schulconnex-client/schulconnex-rest-client';
 import { GroupService } from '@modules/group';
 import { HttpService } from '@nestjs/axios';
-import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
@@ -38,7 +38,6 @@ import { SanisResponseMapper } from './sanis-response.mapper';
 @Injectable()
 export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	constructor(
-		@Inject(forwardRef(() => SchulconnexRestClient)) protected readonly schulconnexRestClient: SchulconnexRestClient,
 		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
 		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
@@ -48,6 +47,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService,
+		protected readonly schulconnexRestClient: SchulconnexRestClient,
 		protected readonly configService: ConfigService<ProvisioningConfig, true>
 	) {
 		super(
