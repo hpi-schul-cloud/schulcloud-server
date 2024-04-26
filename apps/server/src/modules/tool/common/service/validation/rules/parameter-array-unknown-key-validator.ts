@@ -1,9 +1,14 @@
 import { ValidationError } from '@shared/common';
+import { EntityId } from '@shared/domain/types';
 import { CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from '../../../domain';
 import { ParameterArrayValidator } from './parameter-array-validator';
 
 export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidator {
-	validate(entries: CustomParameterEntry[], declarations: CustomParameter[]): ValidationError[] {
+	validate(
+		entries: CustomParameterEntry[],
+		declarations: CustomParameter[],
+		toolId: EntityId | undefined
+	): ValidationError[] {
 		const errors: ValidationError[] = [];
 
 		for (const entry of entries) {
@@ -12,7 +17,7 @@ export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidato
 			);
 
 			if (!foundParameter) {
-				errors.push(new ToolParameterUnknownLoggableException(entry));
+				errors.push(new ToolParameterUnknownLoggableException(toolId, entry));
 			}
 		}
 

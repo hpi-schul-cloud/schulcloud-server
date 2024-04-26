@@ -8,6 +8,7 @@ describe(ToolParameterValueMissingLoggableException.name, () => {
 			const parameter: CustomParameter = customParameterFactory.build();
 
 			const exception: ToolParameterValueMissingLoggableException = new ToolParameterValueMissingLoggableException(
+				'toolId',
 				parameter
 			);
 
@@ -28,6 +29,7 @@ describe(ToolParameterValueMissingLoggableException.name, () => {
 				stack: exception.stack,
 				data: {
 					parameterName: parameter.name,
+					validatableToolId: 'toolId',
 				},
 			});
 		});
