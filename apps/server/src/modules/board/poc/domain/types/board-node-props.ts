@@ -1,6 +1,8 @@
 import type { EntityId } from '@shared/domain/types';
+import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
-import type { AnyBoardNode, BoardNodeType } from './board-node-type';
+import { BoardLayout } from './board-layout.enum';
+import { InputFormat } from './input-format.enum';
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -13,20 +15,22 @@ export interface BoardNodeProps {
 }
 
 export interface ColumnBoardProps extends BoardNodeProps {
-	// needed to ensure the right type
-	type: BoardNodeType.COLUMN_BOARD;
 	title: string;
 	context: BoardExternalReference;
 	isVisible: boolean;
+	layout: BoardLayout;
 }
 export interface ColumnProps extends BoardNodeProps {
-	type: BoardNodeType.COLUMN;
 	title?: string;
 }
 export interface CardProps extends BoardNodeProps {
-	type: BoardNodeType.CARD;
 	title?: string;
 	height: number;
 }
 
-export type AnyBoardNodeProps = ColumnBoardProps | CardProps | ColumnProps;
+export interface RichTextElementProps extends BoardNodeProps {
+	text: string;
+	inputFormat: InputFormat;
+}
+
+export type AnyBoardNodeProps = ColumnBoardProps | CardProps | ColumnProps | RichTextElementProps;

@@ -18,7 +18,7 @@ export class Card extends BoardNode<CardProps> {
 		this.props.height = height;
 	}
 
-	isAllowedAsChild(boardNode: AnyBoardNode): boolean {
+	canChildBeAdded(childNode: AnyBoardNode): boolean {
 		// TODO: relevant types are not defined yet
 		// const allowed =
 		// 	boardNode instanceof TextElement, FileElement...

@@ -1,5 +1,5 @@
-import { BoardNodeType } from '@shared/domain/entity';
-import type { AnyBoardNodeProps, BoardNodeProps, CardProps, ColumnProps, ColumnBoardProps } from '../domain';
+import { BoardNodeType, RichTextElementProps } from '../../domain';
+import type { AnyBoardNodeProps, BoardNodeProps, CardProps, ColumnProps, ColumnBoardProps } from '../../domain';
 
 // omit all given keys from an object type
 type StrictOmit<T, K extends keyof T> = Omit<T, K>;
@@ -12,7 +12,7 @@ type MakeValuesPotentiallyUndefined<T> = {
 };
 
 // The properties that extend the base BoardNodeProps with specific BoardNodeType removed
-type ExtraProps<T extends AnyBoardNodeProps> = StrictOmit<T, keyof BoardNodeProps | 'type'>;
+type ExtraProps<T extends AnyBoardNodeProps> = StrictOmit<T, keyof BoardNodeProps>;
 
 // We use Required<> utility type to make optional properties non-optional
 type ComponentProps<T extends AnyBoardNodeProps> = MakeValuesPotentiallyUndefined<Required<ExtraProps<T>>>;
@@ -27,4 +27,5 @@ export interface BoardNodeEntityProps
 		TypeProps,
 		ComponentProps<ColumnBoardProps>,
 		ComponentProps<ColumnProps>,
-		ComponentProps<CardProps> {}
+		ComponentProps<CardProps>,
+		ComponentProps<RichTextElementProps> {}

@@ -2,7 +2,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BaseFactory } from '@shared/testing';
-import { BoardNodeType, ColumnBoard, ColumnBoardProps, ROOT_PATH } from '../domain';
+import { BoardLayout, ColumnBoard, ColumnBoardProps, ROOT_PATH } from '../domain';
 
 class ColumnBoardFactory extends BaseFactory<ColumnBoard, ColumnBoardProps> {
 	withoutContext(): this {
@@ -14,7 +14,6 @@ class ColumnBoardFactory extends BaseFactory<ColumnBoard, ColumnBoardProps> {
 export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequence }) => {
 	const props: ColumnBoardProps = {
 		id: new ObjectId().toHexString(),
-		type: BoardNodeType.COLUMN_BOARD,
 		path: ROOT_PATH,
 		level: 0,
 		title: `column board #${sequence}`,
@@ -27,6 +26,7 @@ export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequ
 			id: new ObjectId().toHexString(),
 		},
 		isVisible: true,
+		layout: BoardLayout.COLUMNS,
 	};
 
 	return props;

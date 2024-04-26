@@ -66,7 +66,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return exists;
 	}
 
-	abstract isAllowedAsChild(boardNode: AnyBoardNode): boolean;
+	abstract canChildBeAdded(childNode: AnyBoardNode): boolean;
 
 	removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);

@@ -1,36 +1,27 @@
-import { AnyBoardNode, AnyBoardNodeProps, Card, Column, ColumnBoard, joinPath } from '../domain';
-import { isCardProps, isColumnProps, isColumnBoardProps } from './type-guards';
+import { AnyBoardNode, joinPath } from '../domain';
+import { BoardNodeEntity } from './entity';
+import { buildBoardNodeFromEntity } from './types';
 
 export class TreeBuilder {
-	private childrenMap: Record<string, AnyBoardNodeProps[]> = {};
+	private childrenMap: Record<string, BoardNodeEntity[]> = {};
 
-	constructor(descendants: AnyBoardNodeProps[] = []) {
+	constructor(descendants: BoardNodeEntity[] = []) {
 		for (const props of descendants) {
 			this.childrenMap[props.path] ||= [];
 			this.childrenMap[props.path].push(props);
 		}
 	}
 
-	build(props: AnyBoardNodeProps): AnyBoardNode {
-		props.children = this.getChildren(props).map((childProps) => this.build(childProps));
+	build(entity: BoardNodeEntity): AnyBoardNode {
+		entity.children = this.getChildren(entity).map((childProps) => this.build(childProps));
 
-		let boardNode: AnyBoardNode;
-
-		if (isColumnBoardProps(props)) {
-			boardNode = new ColumnBoard(props);
-		} else if (isColumnProps(props)) {
-			boardNode = new Column(props);
-		} else if (isCardProps(props)) {
-			boardNode = new Card(props);
-		} else {
-			throw Error(`Invalid board node type: '${(props as { type: string }).type}'`);
-		}
+		const boardNode = buildBoardNodeFromEntity(entity);
 
 		return boardNode;
 	}
 
-	private getChildren(props: AnyBoardNodeProps): AnyBoardNodeProps[] {
-		const pathOfChildren = joinPath(props.path, props.id);
+	private getChildren(entity: BoardNodeEntity): BoardNodeEntity[] {
+		const pathOfChildren = joinPath(entity.path, entity.id);
 		const children = this.childrenMap[pathOfChildren] || [];
 		const sortedChildren = children.sort((a, b) => a.position - b.position);
 		return sortedChildren;

@@ -1,5 +1,6 @@
 import { BoardNode } from './board-node.do';
-import { AnyBoardNode, ColumnBoardProps } from './types';
+import { Column } from './column.do';
+import { AnyBoardNode, BoardExternalReference, BoardLayout, ColumnBoardProps } from './types';
 
 export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 	get title(): string {
@@ -10,6 +11,14 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		this.props.title = title;
 	}
 
+	get context(): BoardExternalReference {
+		return this.props.context;
+	}
+
+	set context(context: BoardExternalReference) {
+		this.props.context = context;
+	}
+
 	get isVisible(): boolean {
 		return this.props.isVisible;
 	}
@@ -18,10 +27,12 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		this.props.isVisible = isVisible;
 	}
 
-	isAllowedAsChild(boardNode: AnyBoardNode): boolean {
-		// TODO: Column is not defined yet
-		// 	const allowed = boardNode instanceof Column;
-		// false as placeholders
-		return false;
+	get layout(): BoardLayout {
+		return this.props.layout;
+	}
+
+	canChildBeAdded(childNode: AnyBoardNode): boolean {
+		const allowed = childNode instanceof Column;
+		return allowed;
 	}
 }

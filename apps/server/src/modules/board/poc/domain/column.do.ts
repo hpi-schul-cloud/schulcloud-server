@@ -1,4 +1,5 @@
 import { BoardNode } from './board-node.do';
+import { Card } from './card.do';
 import type { AnyBoardNode, ColumnProps } from './types';
 
 export class Column extends BoardNode<ColumnProps> {
@@ -10,7 +11,8 @@ export class Column extends BoardNode<ColumnProps> {
 		this.props.title = title;
 	}
 
-	isAllowedAsChild(boardNode: AnyBoardNode): boolean {
-		return false;
+	canChildBeAdded(childNode: AnyBoardNode): boolean {
+		const allowed = childNode instanceof Card;
+		return allowed;
 	}
 }
