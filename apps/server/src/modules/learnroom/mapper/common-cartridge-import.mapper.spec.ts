@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
 import {
+	CommonCartridgeImportOrganizationProps,
 	CommonCartridgeImportResourceProps,
-	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceTypeV1P1,
 } from '@src/modules/common-cartridge';
-import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 describe('CommonCartridgeImportMapper', () => {
@@ -15,7 +15,7 @@ describe('CommonCartridgeImportMapper', () => {
 	let sut: CommonCartridgeImportMapper;
 
 	const setupOrganization = () => {
-		const organization: CommonCartridgeOrganizationProps = {
+		const organization: CommonCartridgeImportOrganizationProps = {
 			path: faker.string.uuid(),
 			pathDepth: faker.number.int({ min: 0, max: 3 }),
 			identifier: faker.string.uuid(),
