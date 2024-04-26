@@ -62,6 +62,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				const externalLicenses: ExternalLicenseDto[] = [newExternalLicense];
 
 				const existingMediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(1, {
+					userId: user.id,
 					mediumId: existingExternalLicense.mediumId,
 					mediaSourceId: existingExternalLicense.mediaSourceId,
 				});
@@ -98,6 +99,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				};
 
 				const existingMediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(1, {
+					userId: user.id,
 					mediumId: 'toDeleteMediumId',
 					mediaSourceId: 'toDeleteMediaSourceId',
 				});
