@@ -24,7 +24,9 @@ import {
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
+import { MoveColumnMessageParams } from './dto/move-column.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param copy';
+import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
 import { Socket } from './types';
 
 @WebSocketGateway({
@@ -198,21 +200,25 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@SubscribeMessage('fetch-board-request')
 	@UseRequestContext()
 	async handleFetchBoard(client: Socket, data: FetchBoardMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		const { userId } = this.getCurrentUser(client);
-		const board = await this.boardUc.findBoard(userId, data.boardId);
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			const board = await this.boardUc.findBoard(userId, data.boardId);
 
-		const responsePayload = {
-			// ...data,
-			board: BoardResponseMapper.mapToResponse(board),
-		};
-		this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
+			const responsePayload = {
+				// ...data,
+				board: BoardResponseMapper.mapToResponse(board),
+			};
+			this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
 
-		const rootId = await this.getRootIdForBoardDo(board);
-		await this.ensureClientInRoom(client, rootId);
-		client.to(rootId).emit('fetch-board-success', responsePayload);
-		client.emit('fetch-board-success', responsePayload);
+			const rootId = await this.getRootIdForBoardDo(board);
+			await this.ensureClientInRoom(client, rootId);
+			client.to(rootId).emit('fetch-board-success', responsePayload);
+			client.emit('fetch-board-success', responsePayload);
+		} catch (err) {
+			client.emit('fetch-board-failure', new Error('Failed to fetch board'));
+		}
 	}
 
 	@SubscribeMessage('move-card-request')
@@ -234,10 +240,18 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 
 	@SubscribeMessage('move-column-request')
 	@UseRequestContext()
-	handleMoveColumn(client: Socket, data: Record<string, unknown>) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('move-column-success', data);
+	async handleMoveColumn(client: Socket, data: MoveColumnMessageParams) {
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			const result = await this.boardUc.moveColumn(userId, data.columnId, data.targetBoardId, data.newIndex);
+			const rootId = await this.getRootIdForBoardDo(result);
+			client.to(rootId).emit('move-column-success', data);
+			client.broadcast.emit('move-column-success', data);
+		} catch (err) {
+			client.emit('move-column-failure', new Error('Failed to move column'));
+		}
 	}
 
 	@SubscribeMessage('update-column-title-request')
@@ -259,10 +273,20 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 
 	@SubscribeMessage('update-board-visibility-request')
 	@UseRequestContext()
-	handleBoardVisibility(client: Socket, data: Record<string, unknown>) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('update-board-visibility-success', data);
+	async handleBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
+		try {
+			this.logger.log(`Message received from client id: ${client.id}`);
+			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+			const { userId } = this.getCurrentUser(client);
+			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+			// TODO: return rootId from UC
+			// const rootId = await this.getRootIdForBoardDo(result);
+			// await this.ensureClientInRoom(client, rootId);
+			client.broadcast.emit('update-board-visibility-success', {});
+			client.emit('update-board-visibility-success', {});
+		} catch (err) {
+			client.emit('update-board-visibility-failure', new Error('Failed to update board visibility'));
+		}
 	}
 
 	@SubscribeMessage('delete-column-request')
