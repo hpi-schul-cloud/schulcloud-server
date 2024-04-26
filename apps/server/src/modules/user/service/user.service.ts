@@ -1,39 +1,39 @@
-import { AccountService, Account } from '@modules/account';
+import { Account, AccountService } from '@modules/account';
 // invalid import
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionErrorLoggableException,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReport,
+	DomainOperationReportBuilder,
+	OperationReportHelper,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from '@modules/deletion';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { RegistrationPinService } from '@modules/registration-pin';
-import { User } from '@shared/domain/entity';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
-import {
-	UserDeletedEvent,
-	DeletionService,
-	DataDeletedEvent,
-	DomainDeletionReport,
-	DataDeletionDomainOperationLoggable,
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
-	DeletionErrorLoggableException,
-	DomainOperationReport,
-	StatusModel,
-	OperationReportHelper,
-} from '@modules/deletion';
 import { CalendarService } from '@src/infra/calendar';
-import { UserQuery } from './user-query.type';
-import { UserDto } from '../uc/dto/user.dto';
-import { UserMapper } from '../mapper/user.mapper';
 import { UserConfig } from '../interfaces';
+import { UserMapper } from '../mapper/user.mapper';
+import { UserDto } from '../uc/dto/user.dto';
+import { UserQuery } from './user-query.type';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -279,5 +279,19 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		extractedOperationReport = OperationReportHelper.extractOperationReports([results]);
 
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
+	}
+
+	public async isEmailUniqueForExternal(email: string, externalId?: string): Promise<boolean> {
+		const foundUsers: UserDO[] = await this.findByEmail(email);
+		if (!externalId && foundUsers.length) {
+			return false;
+		}
+
+		const unmatchedUsers: UserDO[] = foundUsers.filter((user: UserDO) => user.externalId !== externalId);
+		if (unmatchedUsers.length) {
+			return false;
+		}
+
+		return true;
 	}
 }
