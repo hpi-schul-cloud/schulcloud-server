@@ -12,6 +12,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import cookie from 'cookie';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { BoardResponseMapper } from '../controller/mapper';
 import { BoardDoAuthorizableService } from '../service';
 import { BoardUc, ColumnUc } from '../uc';
 import {
@@ -20,8 +21,9 @@ import {
 	MoveCardMessageParams,
 	UpdateColumnTitleMessageParams,
 } from './dto';
-import { CreateColumnMessageParams } from './dto/create-column.message.param copy';
+import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
+import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param copy';
 import { Socket } from './types';
 
@@ -191,6 +193,26 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		await this.ensureClientInRoom(client, rootId);
 		client.to(rootId).emit('create-column-success', responsePayload);
 		client.emit('create-column-success', responsePayload);
+	}
+
+	@SubscribeMessage('fetch-board-request')
+	@UseRequestContext()
+	async handleFetchBoard(client: Socket, data: FetchBoardMessageParams) {
+		this.logger.log(`Message received from client id: ${client.id}`);
+		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+		const { userId } = this.getCurrentUser(client);
+		const board = await this.boardUc.findBoard(userId, data.boardId);
+
+		const responsePayload = {
+			// ...data,
+			board: BoardResponseMapper.mapToResponse(board),
+		};
+		this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
+
+		const rootId = await this.getRootIdForBoardDo(board);
+		await this.ensureClientInRoom(client, rootId);
+		client.to(rootId).emit('fetch-board-success', responsePayload);
+		client.emit('fetch-board-success', responsePayload);
 	}
 
 	@SubscribeMessage('move-card-request')
