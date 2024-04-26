@@ -128,6 +128,9 @@
                             <a href="#ALL_ENTITIES" title="apps/server/src/shared/domain/entity/all-entities.ts" ><b>ALL_ENTITIES</b>&nbsp;&nbsp;&nbsp;(apps/.../all-entities.ts)</a>
                         </li>
                         <li>
+                            <a href="#AntivirusExchange" title="apps/server/src/infra/rabbitmq/rabbitmq.config.ts" ><b>AntivirusExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../rabbitmq.config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#API_VERSION_PATH" title="apps/server/src/modules/files-storage/files-storage.const.ts" ><b>API_VERSION_PATH</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.const.ts)</a>
                         </li>
                         <li>
@@ -530,10 +533,10 @@
                             <a href="#FILES_STORAGE_S3_CONNECTION" title="apps/server/src/modules/files-storage/files-storage.config.ts" ><b>FILES_STORAGE_S3_CONNECTION</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.config.ts)</a>
                         </li>
                         <li>
-                            <a href="#FilesPreviewExchange" title="apps/server/src/infra/rabbitmq/exchange/files-preview.ts" ><b>FilesPreviewExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../files-preview.ts)</a>
+                            <a href="#FilesPreviewExchange" title="apps/server/src/infra/rabbitmq/rabbitmq.config.ts" ><b>FilesPreviewExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../rabbitmq.config.ts)</a>
                         </li>
                         <li>
-                            <a href="#FilesStorageExchange" title="apps/server/src/infra/rabbitmq/exchange/files-storage.ts" ><b>FilesStorageExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.ts)</a>
+                            <a href="#FilesStorageExchange" title="apps/server/src/infra/rabbitmq/rabbitmq.config.ts" ><b>FilesStorageExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../rabbitmq.config.ts)</a>
                         </li>
                         <li>
                             <a href="#FileStorageAuthorizationContext" title="apps/server/src/modules/files-storage/files-storage.const.ts" ><b>FileStorageAuthorizationContext</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.const.ts)</a>
@@ -746,6 +749,9 @@
                             <a href="#ltiToolFactory" title="apps/server/src/shared/testing/factory/ltitool.factory.ts" ><b>ltiToolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../ltitool.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#MailSendExchange" title="apps/server/src/infra/rabbitmq/rabbitmq.config.ts" ><b>MailSendExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../rabbitmq.config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#mapUserToCurrentUser" title="apps/server/src/shared/testing/map-user-to-current-user.ts" ><b>mapUserToCurrentUser</b>&nbsp;&nbsp;&nbsp;(apps/.../map-user-to-current-user.ts)</a>
                         </li>
                         <li>
@@ -888,6 +894,9 @@
                         </li>
                         <li>
                             <a href="#publicKey" title="apps/server/src/shared/testing/factory/jwt.test.factory.ts" ><b>publicKey</b>&nbsp;&nbsp;&nbsp;(apps/.../jwt.test.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#RabbitMqURI" title="apps/server/src/infra/rabbitmq/rabbitmq.config.ts" ><b>RabbitMqURI</b>&nbsp;&nbsp;&nbsp;(apps/.../rabbitmq.config.ts)</a>
                         </li>
                         <li>
                             <a href="#readableStreamWithFileTypeFactory" title="apps/server/src/shared/testing/factory/readable-stream-with-file-type.factory.ts" ><b>readableStreamWithFileTypeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../readable-stream-with-file-type.factory.ts)</a>
@@ -1967,6 +1976,109 @@
 	RegistrationPinEntity,
 	TldrawDrawing,
 ]</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/infra/rabbitmq/rabbitmq.config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AntivirusExchange"></a>
+                    <span class="name">
+                        <span ><b>AntivirusExchange</b></span>
+                        <a href="#AntivirusExchange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;ANTIVIRUS_EXCHANGE&#x27;) as string</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FilesPreviewExchange"></a>
+                    <span class="name">
+                        <span ><b>FilesPreviewExchange</b></span>
+                        <a href="#FilesPreviewExchange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;FILES_STORAGE__EXCHANGE&#x27;) as string</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FilesStorageExchange"></a>
+                    <span class="name">
+                        <span ><b>FilesStorageExchange</b></span>
+                        <a href="#FilesStorageExchange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;FILES_STORAGE__EXCHANGE&#x27;) as string</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MailSendExchange"></a>
+                    <span class="name">
+                        <span ><b>MailSendExchange</b></span>
+                        <a href="#MailSendExchange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;MAIL_SEND_EXCHANGE&#x27;) as string</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RabbitMqURI"></a>
+                    <span class="name">
+                        <span ><b>RabbitMqURI</b></span>
+                        <a href="#RabbitMqURI"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;RABBITMQ_URI&#x27;) as string</code>
                     </td>
                 </tr>
 
@@ -10927,52 +11039,6 @@ it should ensure an empty result</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/infra/rabbitmq/exchange/files-preview.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="FilesPreviewExchange"></a>
-                    <span class="name">
-                        <span ><b>FilesPreviewExchange</b></span>
-                        <a href="#FilesPreviewExchange"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>Configuration.get(&#x27;FILES_STORAGE__EXCHANGE&#x27;) as string</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/infra/rabbitmq/exchange/files-storage.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="FilesStorageExchange"></a>
-                    <span class="name">
-                        <span ><b>FilesStorageExchange</b></span>
-                        <a href="#FilesStorageExchange"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>Configuration.get(&#x27;FILES_STORAGE__EXCHANGE&#x27;) as string</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-configuration.service.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -12863,11 +12929,11 @@ it should ensure an empty result</p>
 		prefetchCount: 5,
 		exchanges: [
 			{
-				name: Configuration.get(&#x27;MAIL_SEND_EXCHANGE&#x27;) as string,
+				name: MailSendExchange,
 				type: &#x27;direct&#x27;,
 			},
 			{
-				name: Configuration.get(&#x27;ANTIVIRUS_EXCHANGE&#x27;) as string,
+				name: AntivirusExchange,
 				type: &#x27;direct&#x27;,
 			},
 			{
@@ -12879,7 +12945,7 @@ it should ensure an empty result</p>
 				type: &#x27;direct&#x27;,
 			},
 		],
-		uri: Configuration.get(&#x27;RABBITMQ_URI&#x27;) as string,
+		uri: RabbitMqURI,
 	}),
 ]</code>
                     </td>
