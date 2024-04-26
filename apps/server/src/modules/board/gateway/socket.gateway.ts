@@ -25,7 +25,7 @@ import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { MoveColumnMessageParams } from './dto/move-column.message.param';
-import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param copy';
+import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
 import { Socket } from './types';
 
@@ -245,10 +245,15 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 			this.logger.log(`Message received from client id: ${client.id}`);
 			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.boardUc.moveColumn(userId, data.columnId, data.targetBoardId, data.newIndex);
+			const result = await this.boardUc.moveColumn(
+				userId,
+				data.columnMove.columnId,
+				data.targetBoardId,
+				data.columnMove.addedIndex
+			);
 			const rootId = await this.getRootIdForBoardDo(result);
 			client.to(rootId).emit('move-column-success', data);
-			client.broadcast.emit('move-column-success', data);
+			client.emit('move-column-success', data);
 		} catch (err) {
 			client.emit('move-column-failure', new Error('Failed to move column'));
 		}
@@ -278,10 +283,9 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 			this.logger.log(`Message received from client id: ${client.id}`);
 			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
-			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
-			// TODO: return rootId from UC
-			// const rootId = await this.getRootIdForBoardDo(result);
-			// await this.ensureClientInRoom(client, rootId);
+			const result = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+			const rootId = await this.getRootIdForBoardDo(result);
+			await this.ensureClientInRoom(client, rootId);
 			client.broadcast.emit('update-board-visibility-success', {});
 			client.emit('update-board-visibility-success', {});
 		} catch (err) {
