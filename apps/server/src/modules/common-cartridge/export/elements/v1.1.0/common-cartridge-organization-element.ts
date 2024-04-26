@@ -7,7 +7,7 @@ export type CommonCartridgeOrganizationElementPropsV110 = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 	title: string;
-	items: CommonCartridgeResource | Array<CommonCartridgeElement | CommonCartridgeResource>;
+	items: CommonCartridgeResource | Array<CommonCartridgeElement>;
 };
 
 export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeElement {
