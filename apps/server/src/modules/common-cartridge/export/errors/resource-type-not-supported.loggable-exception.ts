@@ -9,7 +9,7 @@ export class ResourceTypeNotSupportedLoggableException extends InternalServerErr
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const message: ErrorLogMessage = {
 			type: CommonCartridgeErrorEnum.RESOURCE_TYPE_NOT_SUPPORTED,
 			stack: this.stack,

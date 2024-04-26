@@ -9,7 +9,7 @@ export class IntendedUseNotSupportedLoggableException extends InternalServerErro
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const message: ErrorLogMessage = {
 			type: CommonCartridgeErrorEnum.INTENDED_USE_NOT_SUPPORTED,
 			stack: this.stack,

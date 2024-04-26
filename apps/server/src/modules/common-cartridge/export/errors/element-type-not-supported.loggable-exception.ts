@@ -9,7 +9,7 @@ export class ElementTypeNotSupportedLoggableException extends InternalServerErro
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const message: ErrorLogMessage = {
 			type: CommonCartridgeErrorEnum.ELEMENT_TYPE_NOT_SUPPORTED,
 			stack: this.stack,

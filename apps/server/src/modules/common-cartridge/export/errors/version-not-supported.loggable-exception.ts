@@ -9,7 +9,7 @@ export class VersionNotSupportedLoggableException extends InternalServerErrorExc
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const message: ErrorLogMessage = {
 			type: CommonCartridgeErrorEnum.VERSION_NOT_SUPPORTED,
 			stack: this.stack,
