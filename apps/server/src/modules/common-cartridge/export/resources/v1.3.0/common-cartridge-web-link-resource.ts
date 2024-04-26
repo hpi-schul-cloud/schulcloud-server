@@ -1,5 +1,5 @@
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeResource } from '../../interfaces';
+import { CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeWebLinkResourcePropsV130 = {
@@ -51,7 +51,7 @@ export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource 
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		return {
 			$: {
 				identifier: this.props.identifier,

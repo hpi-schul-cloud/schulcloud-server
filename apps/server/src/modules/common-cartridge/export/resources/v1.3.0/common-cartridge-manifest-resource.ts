@@ -7,7 +7,7 @@ import {
 	CommonCartridgeOrganizationsWrapperElementV130,
 	CommonCartridgeResourcesWrapperElementV130,
 } from '../../elements/v1.3.0';
-import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
+import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV130 = {
@@ -40,7 +40,7 @@ export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		return {
 			manifest: {
 				$: {

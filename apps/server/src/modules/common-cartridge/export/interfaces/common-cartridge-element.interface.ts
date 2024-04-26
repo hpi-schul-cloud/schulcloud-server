@@ -1,5 +1,6 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { VersionNotSupportedLoggableException } from '../errors';
+import { XmlObject } from './xml-object.interface';
 
 type CommonCartridgeElementProps = {
 	version: CommonCartridgeVersion;
@@ -33,7 +34,7 @@ export abstract class CommonCartridgeElement {
 	 * This method is used to build the imsmanifest.xml file.
 	 * @returns The XML object representation for the imsmanifest.xml file.
 	 */
-	abstract getManifestXmlObject(): Record<string, unknown>;
+	abstract getManifestXmlObject(): XmlObject;
 
 	private checkVersion(target: CommonCartridgeVersion): void {
 		if (this.getSupportedVersion() !== target) {

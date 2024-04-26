@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces';
+import { CommonCartridgeElement, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeResourcesWrapperElementPropsV110 = {
 	type: CommonCartridgeElementType.RESOURCES_WRAPPER;
@@ -16,7 +16,7 @@ export class CommonCartridgeResourcesWrapperElementV110 extends CommonCartridgeE
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		return {
 			resources: [
 				{

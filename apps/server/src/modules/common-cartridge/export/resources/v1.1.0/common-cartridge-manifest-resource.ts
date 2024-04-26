@@ -4,7 +4,7 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
-import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
+import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV110 = {
@@ -37,7 +37,7 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		return {
 			manifest: {
 				$: {

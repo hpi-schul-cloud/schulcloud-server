@@ -4,7 +4,7 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeGuard } from '../../common-cartridge.guard';
-import { CommonCartridgeResource } from '../../interfaces';
+import { CommonCartridgeResource, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeWebContentResourcePropsV110 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -47,7 +47,7 @@ export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResour
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		return {
 			$: {
 				identifier: this.props.identifier,

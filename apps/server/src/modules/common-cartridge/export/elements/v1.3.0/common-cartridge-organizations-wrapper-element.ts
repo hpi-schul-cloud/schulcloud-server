@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces';
+import { CommonCartridgeElement, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeOrganizationsWrapperElementPropsV130 = {
 	type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
@@ -16,7 +16,7 @@ export class CommonCartridgeOrganizationsWrapperElementV130 extends CommonCartri
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		return {
 			organization: [
 				{

@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
+import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeOrganizationElementPropsV130 = {
@@ -19,7 +19,7 @@ export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeEleme
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): XmlObject {
 		if (this.props.items instanceof CommonCartridgeResource) {
 			return {
 				$: {
