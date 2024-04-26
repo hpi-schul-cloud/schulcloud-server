@@ -7,6 +7,7 @@ import {
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
 import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
+import { schulconnexLizenzInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory';
 import { GroupService } from '@modules/group';
 import { GroupTypes } from '@modules/group/domain';
 import { HttpService } from '@nestjs/axios';
@@ -47,7 +48,7 @@ const createAxiosResponse = (data: SanisResponse) =>
 		data,
 	});
 
-describe('SanisStrategy', () => {
+describe(SanisProvisioningStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: SanisProvisioningStrategy;
 
@@ -179,13 +180,9 @@ describe('SanisStrategy', () => {
 						},
 					}),
 				];
-				const schulconnexLizenzInfoResponse: SchulconnexLizenzInfoResponse = {
-					target: {
-						uid: 'mediumId',
-						partOf: 'mediaCatalog',
-					},
-					permission: [],
-				};
+				const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] =
+					schulconnexLizenzInfoResponseFactory.build();
+				const schulconnexLizenzInfoResponse = schulconnexLizenzInfoResponses[0];
 				const licenses: ExternalLicenseDto[] = [
 					new ExternalLicenseDto({
 						mediumId: schulconnexLizenzInfoResponse.target.uid,
@@ -200,7 +197,7 @@ describe('SanisStrategy', () => {
 				validationFunction.mockResolvedValueOnce([]);
 				validationFunction.mockResolvedValueOnce([]);
 				configService.get.mockReturnValueOnce(true);
-				schulconnexRestClient.getLizenzInfo.mockResolvedValueOnce([schulconnexLizenzInfoResponse]);
+				schulconnexRestClient.getLizenzInfo.mockResolvedValueOnce(schulconnexLizenzInfoResponses);
 				validationFunction.mockResolvedValueOnce([]);
 
 				return {
