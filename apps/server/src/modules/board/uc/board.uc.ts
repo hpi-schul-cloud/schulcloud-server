@@ -64,22 +64,25 @@ export class BoardUc extends BaseUc {
 		return board.context;
 	}
 
-	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
+	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.delete(board);
+
+		return board;
 	}
 
-	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<void> {
+	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateTitle(board, title);
+		return board;
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
@@ -97,7 +100,7 @@ export class BoardUc extends BaseUc {
 		columnId: EntityId,
 		targetBoardId: EntityId,
 		targetPosition: number
-	): Promise<void> {
+	): Promise<Column> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 
 		const column = await this.columnService.findById(columnId);
@@ -107,6 +110,7 @@ export class BoardUc extends BaseUc {
 		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
+		return column;
 	}
 
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {
