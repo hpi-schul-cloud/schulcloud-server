@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import {
 	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
@@ -77,5 +78,14 @@ export function createCommonCartridgeManifestResourcePropsV130(): CommonCartridg
 		metadata: {} as CommonCartridgeElement,
 		organizations: [],
 		resources: [],
+	};
+}
+
+export function createCommonCartridgeWebLinkResourceProps(): CommonCartridgeResourceProps {
+	return {
+		type: CommonCartridgeResourceType.WEB_LINK,
+		title: faker.lorem.words(),
+		identifier: faker.string.uuid(),
+		url: faker.internet.url(),
 	};
 }

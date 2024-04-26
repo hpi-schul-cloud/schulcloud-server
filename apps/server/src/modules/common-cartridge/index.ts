@@ -15,8 +15,8 @@ export { CommonCartridgeFileParser } from './import/common-cartridge-file-parser
 export { CommonCartridgeResourceTypeV1P1 } from './import/common-cartridge-import.enums';
 export {
 	CommonCartridgeFileParserOptions,
+	CommonCartridgeOrganizationProps as CommonCartridgeImportOrganizationProps,
 	CommonCartridgeResourceProps as CommonCartridgeImportResourceProps,
-	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from './import/common-cartridge-import.types';
 export { CommonCartridgeImportUtils } from './import/utils/common-cartridge-import-utils';

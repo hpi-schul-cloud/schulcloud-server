@@ -1,5 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '@modules/common-cartridge';
+import {
+	CommonCartridgeElementProps,
+	CommonCartridgeElementType,
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeVersion,
+} from '@modules/common-cartridge';
 import { CommonCartridgeMetadataElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-organization-element';
 import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-organizations-wrapper-element';
@@ -92,5 +97,21 @@ export function createCommonCartridgeResourcesWrapperElementPropsV130(
 		type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 		version: CommonCartridgeVersion.V_1_3_0,
 		items: items || [],
+	};
+}
+
+export function createCommonCartridgeMetadataElementProps(): CommonCartridgeElementProps {
+	return {
+		type: CommonCartridgeElementType.METADATA,
+		title: faker.lorem.words(),
+		creationDate: new Date(),
+		copyrightOwners: ['John Doe', 'Jane Doe'],
+	};
+}
+
+export function createCommonCartridgeOrganizationProps(): CommonCartridgeOrganizationProps {
+	return {
+		title: faker.lorem.words(),
+		identifier: faker.string.uuid(),
 	};
 }
