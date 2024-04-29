@@ -41,64 +41,14 @@ import { Socket } from './types';
 	},
 })
 @UseGuards(WsJwtAuthGuard)
-export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
+export class SocketGateway {
 	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly logger: LegacyLogger,
-		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
-
-	public handleConnection(/* client: Socket */): void {
-		this.logger.log('New connection');
-		/* await this.authorizeConnection(client); */
-
-		// if (!this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED')) {
-		// 	client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.FEATURE_DISABLED);
-		// 	return;
-		// }
-
-		// const docName = this.getDocNameFromRequest(request);
-		// if (!docName) {
-		// 	// 	client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.BAD_REQUEST);
-		// 	return;
-		// }
-
-		try {
-			// await this.authorizeConnection(cookies?.jwt);
-			// await this.tldrawWsService.setupWsConnection(client, docName);
-		} catch (err) {
-			this.logger.error(err);
-			// this.handleError(err, client, docName);
-		}
-	}
-
-	// private getDocNameFromRequest(request: Request): string {
-	// 	const urlStripped = request.url.replace(/(\/)|(tldraw-server)/g, '');
-	// 	return urlStripped;
-	// }
-
-	private async authorizeConnection(client: Socket): Promise<void> {
-		await Promise.resolve();
-		const token = client.handshake.headers.cookie;
-		if (token === undefined) {
-			throw new Error('No token found in cookie');
-		}
-		const jwtPayload = this.getJwtPayload(token);
-		this.logger.log('jwtPayload', JSON.stringify(jwtPayload));
-		// TODO: validate token
-		// TODO: check userid against...
-	}
-
-	private getJwtPayload(token: string): JwtPayload | null {
-		const cookies = cookie.parse(token);
-		if (cookies?.jwt) {
-			return jwt.decode(cookies.jwt, { json: true });
-		}
-		return null;
-	}
 
 	private getCurrentUser(client: Socket) {
 		const { user } = client.handshake;
@@ -113,8 +63,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@SubscribeMessage('delete-board-request')
 	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.boardUc.deleteBoard(userId, data.boardId);
 			const rootId = await this.getRootIdForBoardDo(result);
@@ -130,8 +78,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleChangeBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 			const rootId = await this.getRootIdForBoardDo(result);
@@ -162,15 +108,12 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
 	async handleCreateCard(client: Socket, data: CreateCardMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		const { userId } = this.getCurrentUser(client);
 		const card = await this.columnUc.createCard(userId, data.columnId);
 		const responsePayload = {
 			...data,
 			newCard: card.getProps(),
 		};
-		this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
 
 		const rootId = await this.getRootIdForBoardDo(card);
 		await this.ensureClientInRoom(client, rootId);
@@ -181,15 +124,12 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
 	async handleCreateColumn(client: Socket, data: CreateColumnMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 		const { userId } = this.getCurrentUser(client);
 		const column = await this.boardUc.createColumn(userId, data.boardId);
 		const responsePayload = {
 			...data,
 			newColumn: column.getProps(),
 		};
-		this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
 
 		const rootId = await this.getRootIdForBoardDo(column);
 		await this.ensureClientInRoom(client, rootId);
@@ -205,16 +145,12 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleFetchBoard(client: Socket, data: FetchBoardMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const board = await this.boardUc.findBoard(userId, data.boardId);
 
 			const responsePayload = {
-				// ...data,
 				board: BoardResponseMapper.mapToResponse(board),
 			};
-			this.logger.debug(`Response Payload: ${JSON.stringify(responsePayload)}`);
 
 			const rootId = await this.getRootIdForBoardDo(board);
 			await this.ensureClientInRoom(client, rootId);
@@ -229,8 +165,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 			const rootId = await this.getRootIdForBoardDo(result);
@@ -246,8 +180,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleMoveColumn(client: Socket, data: MoveColumnMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.boardUc.moveColumn(
 				userId,
@@ -267,8 +199,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 			const rootId = await this.getRootIdForBoardDo(result);
@@ -284,8 +214,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 			const rootId = await this.getRootIdForBoardDo(result);
@@ -301,8 +229,6 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 	@UseRequestContext()
 	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
 		try {
-			this.logger.log(`Message received from client id: ${client.id}`);
-			this.logger.debug(`Payload: ${JSON.stringify(data)}`);
 			const { userId } = this.getCurrentUser(client);
 			const result = await this.columnUc.deleteColumn(userId, data.columnId);
 			const rootId = await this.getRootIdForBoardDo(result);
