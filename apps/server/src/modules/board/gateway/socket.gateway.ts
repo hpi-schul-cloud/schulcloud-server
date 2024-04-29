@@ -56,9 +56,9 @@ export class SocketGateway {
 	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
+			const room = await this.ensureUserInRoom(client, data.boardId);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
 			client.to(room).emit('delete-board-success', data);
 			client.emit('delete-board-success', data);
 		} catch (err) {

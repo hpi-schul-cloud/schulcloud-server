@@ -140,6 +140,45 @@ describe('SocketGateway', () => {
 		});
 	});
 
+	describe('delete board', () => {
+		it('should answer with success', async () => {
+			const { user, columnBoardNode } = await setup();
+			const boardId = columnBoardNode.id;
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('delete-board-request', { boardId });
+			const success = await waitForEvent(ioClient, 'delete-board-success');
+
+			expect(success).toEqual(expect.objectContaining({ boardId }));
+		});
+	});
+
+	describe('update board title', () => {
+		it('should answer with success', async () => {
+			const { user, columnBoardNode } = await setup();
+			const boardId = columnBoardNode.id;
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('update-board-title-request', { boardId, newTitle: 'new title' });
+			const success = await waitForEvent(ioClient, 'update-board-title-success');
+
+			expect(success).toEqual(expect.objectContaining({ boardId }));
+		});
+	});
+
+	describe('create column', () => {
+		it('should answer with new column', async () => {
+			const { user, columnBoardNode } = await setup();
+			const boardId = columnBoardNode.id;
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('create-column-request', { boardId });
+			const success = (await waitForEvent(ioClient, 'create-column-success')) as Record<string, unknown>;
+
+			expect(Object.keys(success)).toEqual(expect.arrayContaining(['boardId', 'newColumn']));
+		});
+	});
+
 	describe('delete column', () => {
 		it('should answer with success', async () => {
 			const { user, columnNode } = await setup();
