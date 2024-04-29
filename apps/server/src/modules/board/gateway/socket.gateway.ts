@@ -195,6 +195,9 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		await this.ensureClientInRoom(client, rootId);
 		client.to(rootId).emit('create-column-success', responsePayload);
 		client.emit('create-column-success', responsePayload);
+
+		// payload needs to be returned to allow the client to do sequential operation
+		// of createColumn and move the card into that column
 		return responsePayload;
 	}
 
