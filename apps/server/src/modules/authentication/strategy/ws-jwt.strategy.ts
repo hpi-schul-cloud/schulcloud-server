@@ -24,7 +24,6 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, 'wsjwt') {
 		const { accountId, jti } = payload;
 		// check user exists
 		try {
-			// TODO: check user/account is active and has one role
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
 			const currentUser = CurrentUserMapper.jwtToICurrentUser(payload);
