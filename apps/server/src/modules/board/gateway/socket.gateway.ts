@@ -195,6 +195,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection {
 		await this.ensureClientInRoom(client, rootId);
 		client.to(rootId).emit('create-column-success', responsePayload);
 		client.emit('create-column-success', responsePayload);
+		return responsePayload;
 	}
 
 	@SubscribeMessage('fetch-board-request')
