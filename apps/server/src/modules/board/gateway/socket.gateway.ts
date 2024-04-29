@@ -81,21 +81,21 @@ export class SocketGateway {
 		}
 	}
 
-	@SubscribeMessage('update-card-request')
-	handleUpdateCard(client: Socket, data: unknown) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('update-card-success', data);
-		client.emit('update-card-success', data);
-	}
+	// @SubscribeMessage('update-card-request')
+	// handleUpdateCard(client: Socket, data: unknown) {
+	// 	this.logger.log(`Message received from client id: ${client.id}`);
+	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+	// 	client.broadcast.emit('update-card-success', data);
+	// 	client.emit('update-card-success', data);
+	// }
 
-	@SubscribeMessage('delete-card-request')
-	handleDeleteCard(client: Socket, data: unknown) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('delete-card-success', data);
-		client.emit('delete-card-success', data);
-	}
+	// @SubscribeMessage('delete-card-request')
+	// handleDeleteCard(client: Socket, data: unknown) {
+	// 	this.logger.log(`Message received from client id: ${client.id}`);
+	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+	// 	client.broadcast.emit('delete-card-success', data);
+	// 	client.emit('delete-card-success', data);
+	// }
 
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
@@ -232,12 +232,12 @@ export class SocketGateway {
 		}
 	}
 
-	@SubscribeMessage('reload-board-request')
-	handleReloadBoard(client: Socket, data: DeleteColumnMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('reload-board-success', data);
-	}
+	// @SubscribeMessage('reload-board-request')
+	// handleReloadBoard(client: Socket, data: DeleteColumnMessageParams) {
+	// 	this.logger.log(`Message received from client id: ${client.id}`);
+	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
+	// 	client.broadcast.emit('reload-board-success', data);
+	// }
 
 	private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
 		/* return anyDo.ancestorIds[0] */
