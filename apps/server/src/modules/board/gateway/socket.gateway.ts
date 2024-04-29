@@ -1,17 +1,9 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { UseRequestContext } from '@mikro-orm/core';
 import { UseGuards } from '@nestjs/common';
-import {
-	OnGatewayConnection,
-	OnGatewayInit,
-	SubscribeMessage,
-	WebSocketGateway,
-	WsException,
-} from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { AnyBoardDo } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import cookie from 'cookie';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BoardResponseMapper } from '../controller/mapper';
 import { BoardDoAuthorizableService } from '../service';
 import { BoardUc, ColumnUc } from '../uc';
