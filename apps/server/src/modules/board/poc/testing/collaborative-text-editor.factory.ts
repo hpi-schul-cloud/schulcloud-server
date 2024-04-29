@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { SubmissionItem, SubmissionItemProps, ROOT_PATH } from '../domain';
+import { CollaborativeTextEditor, CollaborativeTextEditorProps, ROOT_PATH } from '../domain';
 
-export const submissionItemFactory = BaseFactory.define<SubmissionItem, SubmissionItemProps>(
-	SubmissionItem,
+export const collaborativeTextEditorFactory = BaseFactory.define<CollaborativeTextEditor, CollaborativeTextEditorProps>(
+	CollaborativeTextEditor,
 	({ sequence }) => {
 		return {
 			id: new ObjectId().toHexString(),
@@ -11,8 +11,6 @@ export const submissionItemFactory = BaseFactory.define<SubmissionItem, Submissi
 			level: 0,
 			position: 0,
 			children: [],
-			completed: false,
-			user: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
