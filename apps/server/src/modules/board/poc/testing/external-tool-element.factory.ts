@@ -4,7 +4,7 @@ import { ExternalToolElement, ExternalToolElementProps, ROOT_PATH } from '../dom
 
 export const externalToollElementFactory = BaseFactory.define<ExternalToolElement, ExternalToolElementProps>(
 	ExternalToolElement,
-	({ sequence }) => {
+	() => {
 		return {
 			id: new ObjectId().toHexString(),
 			path: ROOT_PATH,

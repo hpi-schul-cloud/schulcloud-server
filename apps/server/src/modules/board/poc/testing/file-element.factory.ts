@@ -9,7 +9,7 @@ export const fileElementFactory = BaseFactory.define<FileElement, FileElementPro
 		level: 0,
 		position: 0,
 		children: [],
-		caption: `caption #${sequence}`,
+		caption: `file #${sequence}`,
 		alternativeText: `alternative-text #${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
