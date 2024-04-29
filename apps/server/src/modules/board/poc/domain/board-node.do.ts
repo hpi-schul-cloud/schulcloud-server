@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
-import { AnyBoardNode, BoardNodeProps } from './types';
+import type { AnyBoardNode, BoardNodeProps } from './types';
 
 export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T> {
 	constructor(props: T) {
@@ -66,7 +66,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return exists;
 	}
 
-	abstract canChildBeAdded(childNode: AnyBoardNode): boolean;
+	abstract canHaveChild(childNode: AnyBoardNode): boolean;
 
 	removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);

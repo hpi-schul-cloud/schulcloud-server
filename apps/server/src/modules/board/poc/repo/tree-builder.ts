@@ -1,6 +1,6 @@
 import { AnyBoardNode, joinPath } from '../domain';
+import { getBoardNodeConstructor } from '../domain/type-mapping';
 import { BoardNodeEntity } from './entity';
-import { buildBoardNodeFromEntity } from './types';
 
 export class TreeBuilder {
 	private childrenMap: Record<string, BoardNodeEntity[]> = {};
@@ -15,7 +15,11 @@ export class TreeBuilder {
 	build(entity: BoardNodeEntity): AnyBoardNode {
 		entity.children = this.getChildren(entity).map((childProps) => this.build(childProps));
 
-		const boardNode = buildBoardNodeFromEntity(entity);
+		const Constructor = getBoardNodeConstructor(entity.type);
+
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const boardNode = new Constructor(entity);
 
 		return boardNode;
 	}

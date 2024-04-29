@@ -5,3 +5,4 @@ export * from './colum-board.do';
 export * from './rich-text-element.do';
 export * from './path-utils';
 export * from './types';
+export * from './type-mapping';

@@ -1,13 +1,12 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, BoardNodeType, BoardNodeTypeToClass } from '../domain';
+import { AnyBoardNode, getBoardNodeType } from '../domain';
 import { pathOfChildren, ROOT_PATH } from '../domain/path-utils';
-import { TreeBuilder } from './tree-builder';
 import { BoardNodeEntity } from './entity/board-node.entity';
-import { getBoardNodeType } from './types';
+import { TreeBuilder } from './tree-builder';
 
 @Injectable()
 export class BoardNodeRepo {
@@ -23,18 +22,17 @@ export class BoardNodeRepo {
 		return boardNode;
 	}
 
-	async findByIdAndType<T extends BoardNodeType>(
+	async findByClassAndId<S, T extends AnyBoardNode>(
+		Constructor: { new (props: S): T },
 		id: EntityId,
-		type: T,
 		depth?: number
-	): Promise<BoardNodeTypeToClass<T>> {
-		const props = await this.em.findOneOrFail(BoardNodeEntity, { id, type });
-		const descendants = await this.findDescendants(props, depth);
+	): Promise<T> {
+		const boardNode = await this.findById(id, depth);
+		if (!(boardNode instanceof Constructor)) {
+			throw new NotFoundException(`There is no '${Constructor.name}' with this id`);
+		}
 
-		const builder = new TreeBuilder(descendants);
-		const boardNode = builder.build(props);
-
-		return boardNode as BoardNodeTypeToClass<T>;
+		return boardNode;
 	}
 
 	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {

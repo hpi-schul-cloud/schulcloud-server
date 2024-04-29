@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import { InputFormat, RichTextElementProps } from './types';
+import type { InputFormat, RichTextElementProps } from './types';
 
 export class RichTextElement extends BoardNode<RichTextElementProps> {
 	get text(): string {
@@ -18,7 +18,7 @@ export class RichTextElement extends BoardNode<RichTextElementProps> {
 		this.props.inputFormat = value;
 	}
 
-	canChildBeAdded(): boolean {
+	canHaveChild(): boolean {
 		return false;
 	}
 }

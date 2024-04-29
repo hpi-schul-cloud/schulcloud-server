@@ -24,4 +24,15 @@ export class BoardNodeService {
 		node.height = height;
 		await this.boardNodeRepo.persistAndFlush(node);
 	}
+
+	async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
+		// TODO optimize performance
+		const parentId = child.ancestorIds[child.ancestorIds.length - 1];
+		const parentNode = await this.boardNodeRepo.findById(parentId, 1);
+
+		parentNode.removeChild(child);
+		targetParent.addChild(child, targetPosition);
+
+		await this.boardNodeRepo.flush();
+	}
 }

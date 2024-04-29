@@ -1,6 +1,6 @@
 import { BoardNode } from './board-node.do';
 import { Column } from './column.do';
-import { AnyBoardNode, BoardExternalReference, BoardLayout, ColumnBoardProps } from './types';
+import type { AnyBoardNode, BoardExternalReference, BoardLayout, ColumnBoardProps } from './types';
 
 export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 	get title(): string {
@@ -31,7 +31,7 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		return this.props.layout;
 	}
 
-	canChildBeAdded(childNode: AnyBoardNode): boolean {
+	canHaveChild(childNode: AnyBoardNode): boolean {
 		const allowed = childNode instanceof Column;
 		return allowed;
 	}
