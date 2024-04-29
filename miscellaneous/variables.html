@@ -335,7 +335,13 @@
                             <a href="#createAPIResponseTimeMetricMiddleware" title="apps/server/src/infra/metrics/prometheus/middleware.ts" ><b>createAPIResponseTimeMetricMiddleware</b>&nbsp;&nbsp;&nbsp;(apps/.../middleware.ts)</a>
                         </li>
                         <li>
+                            <a href="#createComponent" title="apps/server/src/modules/alert/testing/component.factory.ts" ><b>createComponent</b>&nbsp;&nbsp;&nbsp;(apps/.../component.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#createConfigModuleOptions" title="apps/server/src/config/config-module-options.ts" ><b>createConfigModuleOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../config-module-options.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#createIncident" title="apps/server/src/modules/alert/testing/incident.factory.ts" ><b>createIncident</b>&nbsp;&nbsp;&nbsp;(apps/.../incident.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#createMikroOrmModule" title="apps/server/src/infra/database/mongo-memory-database/mongo-memory-database.module.ts" ><b>createMikroOrmModule</b>&nbsp;&nbsp;&nbsp;(apps/.../mongo-memory-database.module.ts)</a>
@@ -5088,6 +5094,7 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		&#x27;FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED&#x27;
 	) as boolean,
+	ALERT_CACHE_INTERVAL_MIN: Configuration.get(&#x27;ALERT_CACHE_INTERVAL_MIN&#x27;) as number,
 }</code>
                     </td>
                 </tr>
@@ -6430,6 +6437,7 @@ must use</p>
 	MeApiModule,
 	MediaBoardApiModule,
 	CollaborativeTextEditorApiModule,
+	AlertModule,
 ]</code>
                     </td>
                 </tr>
@@ -7486,6 +7494,30 @@ To filter by consentStatus, it has to created first</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/alert/testing/component.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createComponent"></a>
+                    <span class="name">
+                        <span ><b>createComponent</b></span>
+                        <a href="#createComponent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(id: number, groupId: number) &#x3D;&gt;
+	new ComponentDto(id, &#x27;test&#x27;, &#x27;test&#x27;, &#x27;test&#x27;, 1, 0, groupId, new Date(), new Date(), new Date(), true, &#x27;test&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/config/config-module-options.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -7516,6 +7548,52 @@ To filter by consentStatus, it has to created first</p>
 
 	return options;
 }</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/alert/testing/incident.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createIncident"></a>
+                    <span class="name">
+                        <span ><b>createIncident</b></span>
+                        <a href="#createIncident"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(id: number, componentId: number, status: number) &#x3D;&gt;
+	new IncidentDto(
+		1,
+		componentId,
+		&#x27;test&#x27;,
+		status,
+		&#x27;test&#x27;,
+		new Date(),
+		new Date(),
+		new Date(),
+		1,
+		false,
+		new Date(),
+		1,
+		false,
+		false,
+		&#x27;test&#x27;,
+		0,
+		0,
+		&#x27;test&#x27;,
+		&#x27;test&#x27;,
+		&#x27;test&#x27;,
+		0
+	)</code>
                     </td>
                 </tr>
 

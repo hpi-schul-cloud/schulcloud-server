@@ -96,7 +96,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  Message</li>
+  AlertConfig</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -120,7 +120,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/infra/etherpad-client/etherpad-api-client/models/message.ts</code>
+            <code>apps/server/src/modules/alert/alert.config.ts</code>
         </p>
 
 
@@ -139,31 +139,21 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                            <span class="modifier">Optional</span>
-                                        <a href="#text" 
+                                        <a href="#ALERT_CACHE_INTERVAL_MIN" 
 >
-                                            text
+                                            ALERT_CACHE_INTERVAL_MIN
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
-                                        <a href="#time" 
+                                        <a href="#ALERT_STATUS_URL" 
 >
-                                            time
+                                            ALERT_STATUS_URL
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
-                                        <a href="#userId" 
+                                        <a href="#SC_THEME" 
 >
-                                            userId
-                                        </a>
-                                </li>
-                                <li>
-                                            <span class="modifier">Optional</span>
-                                        <a href="#userName" 
->
-                                            userName
+                                            SC_THEME
                                         </a>
                                 </li>
                             </ul>
@@ -181,9 +171,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="text"></a>
-                                        <span class="name "><b>text</b>
-                                            <a href="#text">
+                                        <a name="ALERT_CACHE_INTERVAL_MIN"></a>
+                                        <span class="name "><b>ALERT_CACHE_INTERVAL_MIN</b>
+                                            <a href="#ALERT_CACHE_INTERVAL_MIN">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -191,45 +181,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>text:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="time"></a>
-                                        <span class="name "><b>time</b>
-                                            <a href="#time">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>time:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                        <code>ALERT_CACHE_INTERVAL_MIN:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -242,11 +194,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -257,9 +204,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="userId"></a>
-                                        <span class="name "><b>userId</b>
-                                            <a href="#userId">
+                                        <a name="ALERT_STATUS_URL"></a>
+                                        <span class="name "><b>ALERT_STATUS_URL</b>
+                                            <a href="#ALERT_STATUS_URL">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -267,7 +214,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>userId:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>ALERT_STATUS_URL:     <code>string | null</code>
 </code>
                                     </td>
                                 </tr>
@@ -275,16 +222,11 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <i>Type : </i>    <code>string | null</code>
 
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -295,9 +237,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="userName"></a>
-                                        <span class="name "><b>userName</b>
-                                            <a href="#userName">
+                                        <a name="SC_THEME"></a>
+                                        <span class="name "><b>SC_THEME</b>
+                                            <a href="#SC_THEME">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -305,7 +247,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>userName:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>SC_THEME:         <code><a href="../miscellaneous/enumerations.html#SchulcloudTheme" target="_self" >SchulcloudTheme</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -313,16 +255,11 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#SchulcloudTheme" target="_self" >SchulcloudTheme</a></code>
 
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -334,34 +271,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface Message {
-    /**
-     * 
-     * @type {string}
-     * @memberof Message
-     */
-    text?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Message
-     */
-    userId?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Message
-     */
-    userName?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof Message
-     */
-    time?: number;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulcloudTheme } from &#x27;@shared/domain/types&#x27;;
+
+export interface AlertConfig {
+	ALERT_CACHE_INTERVAL_MIN: number;
+	SC_THEME: SchulcloudTheme;
+	ALERT_STATUS_URL: string | null;
 }
-
-
 </code></pre>
     </div>
 </div>
@@ -399,7 +315,7 @@
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'Message.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AlertConfig.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

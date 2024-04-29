@@ -153,6 +153,7 @@
                             <code><a href="../interfaces/DeletionConfig.html" target="_self" >DeletionConfig</a></code>
                             <code><a href="../interfaces/CollaborativeTextEditorConfig.html" target="_self" >CollaborativeTextEditorConfig</a></code>
                             <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ProvisioningConfig</a></code>
+                            <code><a href="../interfaces/AlertConfig.html" target="_self" >AlertConfig</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -2047,7 +2048,8 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from &#x2
 import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import type { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
-import { SchulcloudTheme } from &#x27;./types/schulcloud-theme.enum&#x27;;
+import { AlertConfig } from &#x27;@modules/alert&#x27;;
+import { SchulcloudTheme } from &#x27;@shared/domain/types&#x27;;
 import { Timezone } from &#x27;./types/timezone.enum&#x27;;
 
 export enum NodeEnvType {
@@ -2083,7 +2085,8 @@ export interface ServerConfig
 		SynchronizationConfig,
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
-		ProvisioningConfig {
+		ProvisioningConfig,
+		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
@@ -2253,6 +2256,7 @@ const config: ServerConfig &#x3D; {
 	FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED: Configuration.get(
 		&#x27;FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED&#x27;
 	) as boolean,
+	ALERT_CACHE_INTERVAL_MIN: Configuration.get(&#x27;ALERT_CACHE_INTERVAL_MIN&#x27;) as number,
 };
 
 export const serverConfig &#x3D; () &#x3D;&gt; config;
