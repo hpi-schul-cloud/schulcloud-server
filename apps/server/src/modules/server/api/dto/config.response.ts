@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerConfig } from '../..';
-import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
