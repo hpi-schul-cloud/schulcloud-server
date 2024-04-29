@@ -179,7 +179,7 @@ export class SocketGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
-			const room = await this.ensureUserInRoom(client, data.columnId);
+			const room = await this.ensureUserInRoom(client, data.targetBoardId);
 			client.to(room).emit('move-column-success', data);
 			client.emit('move-column-success', data);
 		} catch (err) {
