@@ -1,14 +1,14 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MissinglicenseLoggableException } from '@modules/tool/tool-launch/error';
+import { MissingLicenseLoggableException } from '@modules/tool/tool-launch/error';
 
-describe('MissinglicenseLoggableException', () => {
+describe('MissingLicenseLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const contextExternalToolId = 'contextExternalTooId';
 			const medium: ExternalToolMedium = new ExternalToolMedium({ mediumId: 'mediumId', publisher: 'publisher' });
 			const userId = 'userId';
 
-			const exception = new MissinglicenseLoggableException(medium, userId, contextExternalToolId);
+			const exception = new MissingLicenseLoggableException(medium, userId, contextExternalToolId);
 
 			return {
 				contextExternalToolId,
@@ -24,7 +24,7 @@ describe('MissinglicenseLoggableException', () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'MISSING_licensE',
+				type: 'MISSING_LICENSE',
 				message: 'The user does not have the required license to launch this medium.',
 				stack: expect.any(String),
 				data: {

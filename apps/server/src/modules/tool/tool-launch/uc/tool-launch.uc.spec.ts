@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { MissinglicenseLoggableException } from '@modules/tool/tool-launch/error';
+import { MissingLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -308,12 +308,12 @@ describe('ToolLaunchUc', () => {
 					};
 				};
 
-				it('should throw MissinglicenseLoggableException', async () => {
+				it('should throw MissingLicenseLoggableException', async () => {
 					const { user, contextExternalToolId } = setup();
 
 					const toolLaunchRequest: Promise<ToolLaunchRequest> = uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-					await expect(toolLaunchRequest).rejects.toThrow(MissinglicenseLoggableException);
+					await expect(toolLaunchRequest).rejects.toThrow(MissingLicenseLoggableException);
 				});
 			});
 		});
