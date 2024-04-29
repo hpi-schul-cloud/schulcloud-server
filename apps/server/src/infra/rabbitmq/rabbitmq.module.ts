@@ -1,7 +1,12 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module, OnModuleDestroy } from '@nestjs/common';
-import { FilesPreviewExchange, FilesStorageExchange } from './exchange';
+import {
+	AntivirusExchange,
+	FilesPreviewExchange,
+	FilesStorageExchange,
+	MailSendExchange,
+	RabbitMqURI,
+} from './rabbitmq.config';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -17,11 +22,11 @@ const imports = [
 		prefetchCount: 5,
 		exchanges: [
 			{
-				name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
+				name: MailSendExchange,
 				type: 'direct',
 			},
 			{
-				name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+				name: AntivirusExchange,
 				type: 'direct',
 			},
 			{
@@ -33,7 +38,7 @@ const imports = [
 				type: 'direct',
 			},
 		],
-		uri: Configuration.get('RABBITMQ_URI') as string,
+		uri: RabbitMqURI,
 	}),
 ];
 @Global()
