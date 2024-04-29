@@ -8,9 +8,11 @@ import type { LinkElement } from '../link-element.do';
 import type { RichTextElement } from '../rich-text-element.do';
 import type { SubmissionContainerElement } from '../submission-container-element.do';
 import type { SubmissionItem } from '../submission-item.do';
+import type { CollaborativeTextEditor } from '../colaborative-text-editor.do';
 
 export type AnyBoardNode =
 	| Card
+	| CollaborativeTextEditor
 	| Column
 	| ColumnBoard
 	| DrawingElement

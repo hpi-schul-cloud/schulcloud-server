@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
 import { FileElement, FileElementProps, ROOT_PATH } from '../domain';
 
-export const FileElementFactory = BaseFactory.define<FileElement, FileElementProps>(FileElement, ({ sequence }) => {
+export const fileElementFactory = BaseFactory.define<FileElement, FileElementProps>(FileElement, ({ sequence }) => {
 	return {
 		id: new ObjectId().toHexString(),
 		path: ROOT_PATH,

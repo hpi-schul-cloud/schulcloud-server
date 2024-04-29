@@ -23,10 +23,13 @@ export interface ColumnBoardProps extends BoardNodeProps {
 export interface ColumnProps extends BoardNodeProps {
 	title?: string;
 }
+
 export interface CardProps extends BoardNodeProps {
 	title?: string;
 	height: number;
 }
+
+export interface CollaborativeTextEditorProps extends BoardNodeProps {}
 
 export interface DrawingElementProps extends BoardNodeProps {
 	description: string;
@@ -64,6 +67,7 @@ export interface SubmissionItemProps extends BoardNodeProps {
 
 export type AnyBoardNodeProps =
 	| CardProps
+	| CollaborativeTextEditorProps
 	| ColumnBoardProps
 	| ColumnProps
 	| DrawingElementProps
