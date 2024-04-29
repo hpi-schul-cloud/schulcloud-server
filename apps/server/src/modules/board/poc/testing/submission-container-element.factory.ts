@@ -5,7 +5,7 @@ import { SubmissionContainerElement, SubmissionContainerElementProps, ROOT_PATH 
 export const submissionContainerElementFactory = BaseFactory.define<
 	SubmissionContainerElement,
 	SubmissionContainerElementProps
->(SubmissionContainerElement, ({ sequence }) => {
+>(SubmissionContainerElement, () => {
 	const inThreeDays = new Date(Date.now() + 259200000);
 
 	return {

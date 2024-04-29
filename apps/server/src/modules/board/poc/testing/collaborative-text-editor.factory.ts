@@ -4,7 +4,7 @@ import { CollaborativeTextEditor, CollaborativeTextEditorProps, ROOT_PATH } from
 
 export const collaborativeTextEditorFactory = BaseFactory.define<CollaborativeTextEditor, CollaborativeTextEditorProps>(
 	CollaborativeTextEditor,
-	({ sequence }) => {
+	() => {
 		return {
 			id: new ObjectId().toHexString(),
 			path: ROOT_PATH,
