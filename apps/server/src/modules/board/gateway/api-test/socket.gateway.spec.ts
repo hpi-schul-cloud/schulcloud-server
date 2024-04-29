@@ -109,6 +109,19 @@ describe('SocketGateway', () => {
 		});
 	});
 
+	describe('fetch board', () => {
+		it('should answer with success', async () => {
+			const { user, columnBoardNode } = await setup();
+			const boardId = columnBoardNode.id;
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('fetch-board-request', { boardId });
+			const success = await waitForEvent(ioClient, 'fetch-board-success');
+
+			expect(success).toEqual(expect.objectContaining({ id: boardId }));
+		});
+	});
+
 	describe('move card', () => {
 		it('should answer with success', async () => {
 			const { user, columnNode, cardNodes } = await setup();
@@ -177,6 +190,19 @@ describe('SocketGateway', () => {
 			const success = (await waitForEvent(ioClient, 'create-column-success')) as Record<string, unknown>;
 
 			expect(Object.keys(success)).toEqual(expect.arrayContaining(['boardId', 'newColumn']));
+		});
+	});
+
+	describe('update board visibility', () => {
+		it('should answer with success', async () => {
+			const { user, columnBoardNode } = await setup();
+			const boardId = columnBoardNode.id;
+			currentUser = mapUserToCurrentUser(user);
+
+			ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
+			const success = await waitForEvent(ioClient, 'update-board-visibility-success');
+
+			expect(success).toBeDefined();
 		});
 	});
 

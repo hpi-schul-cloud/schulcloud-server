@@ -138,9 +138,7 @@ export class SocketGateway {
 			const { userId } = this.getCurrentUser(client);
 			const board = await this.boardUc.findBoard(userId, data.boardId);
 
-			const responsePayload = {
-				board: BoardResponseMapper.mapToResponse(board),
-			};
+			const responsePayload = BoardResponseMapper.mapToResponse(board);
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
 			client.to(room).emit('fetch-board-success', responsePayload);
