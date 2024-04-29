@@ -100,35 +100,44 @@ export class SocketGateway {
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
 	async handleCreateCard(client: Socket, data: CreateCardMessageParams) {
-		const { userId } = this.getCurrentUser(client);
-		const card = await this.columnUc.createCard(userId, data.columnId);
-		const responsePayload = {
-			...data,
-			newCard: card.getProps(),
-		};
+		try {
+			const { userId } = this.getCurrentUser(client);
+			const card = await this.columnUc.createCard(userId, data.columnId);
+			const responsePayload = {
+				...data,
+				newCard: card.getProps(),
+			};
 
-		const room = await this.ensureUserInRoom(client, data.columnId);
-		client.to(room).emit('create-card-success', responsePayload);
-		client.emit('create-card-success', responsePayload);
+			const room = await this.ensureUserInRoom(client, data.columnId);
+			client.to(room).emit('create-card-success', responsePayload);
+			client.emit('create-card-success', responsePayload);
+		} catch (err) {
+			client.emit('create-card-failure', new Error('Failed to create card'));
+		}
 	}
 
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
 	async handleCreateColumn(client: Socket, data: CreateColumnMessageParams) {
-		const { userId } = this.getCurrentUser(client);
-		const column = await this.boardUc.createColumn(userId, data.boardId);
-		const responsePayload = {
-			...data,
-			newColumn: column.getProps(),
-		};
+		try {
+			const { userId } = this.getCurrentUser(client);
+			const column = await this.boardUc.createColumn(userId, data.boardId);
+			const responsePayload = {
+				...data,
+				newColumn: column.getProps(),
+			};
 
-		const room = await this.ensureUserInRoom(client, data.boardId);
-		client.to(room).emit('create-column-success', responsePayload);
-		client.emit('create-column-success', responsePayload);
+			const room = await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit('create-column-success', responsePayload);
+			client.emit('create-column-success', responsePayload);
 
-		// payload needs to be returned to allow the client to do sequential operation
-		// of createColumn and move the card into that column
-		return responsePayload;
+			// payload needs to be returned to allow the client to do sequential operation
+			// of createColumn and move the card into that column
+			return responsePayload;
+		} catch (err) {
+			client.emit('create-column-failure', new Error('Failed to create column'));
+			return {};
+		}
 	}
 
 	@SubscribeMessage('fetch-board-request')

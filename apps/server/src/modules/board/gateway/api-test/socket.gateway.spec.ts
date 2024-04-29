@@ -90,7 +90,7 @@ describe('SocketGateway', () => {
 		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes]);
 		em.clear();
 
-		return { user, columnBoardNode, columnNode, cardNodes };
+		return { user, columnBoardNode, columnNode, columnNode2, cardNodes };
 	};
 
 	it('should be defined', () => {
@@ -98,147 +98,333 @@ describe('SocketGateway', () => {
 	});
 
 	describe('create card', () => {
-		it('should answer with new card', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		describe('when column exists', () => {
+			it('should answer with new card', async () => {
+				const { user, columnNode } = await setup();
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('create-card-request', { columnId: columnNode.id });
-			const success = (await waitForEvent(ioClient, 'create-card-success')) as { columnId: string; newCard: CardProps };
+				ioClient.emit('create-card-request', { columnId: columnNode.id });
+				const success = (await waitForEvent(ioClient, 'create-card-success')) as {
+					columnId: string;
+					newCard: CardProps;
+				};
 
-			expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'newCard']));
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'newCard']));
+			});
+		});
+		describe('when column does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('create-card-request', { columnId: 'non-existing-column' });
+				const failure = await waitForEvent(ioClient, 'create-card-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('fetch board', () => {
-		it('should answer with success', async () => {
-			const { user, columnBoardNode } = await setup();
-			const boardId = columnBoardNode.id;
-			currentUser = mapUserToCurrentUser(user);
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { user, columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('fetch-board-request', { boardId });
-			const success = await waitForEvent(ioClient, 'fetch-board-success');
+				ioClient.emit('fetch-board-request', { boardId });
+				const success = await waitForEvent(ioClient, 'fetch-board-success');
 
-			expect(success).toEqual(expect.objectContaining({ id: boardId }));
+				expect(success).toEqual(expect.objectContaining({ id: boardId }));
+			});
+		});
+
+		describe('when board does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				const boardId = 'non-existing-id';
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('fetch-board-request', { boardId });
+				const failure = await waitForEvent(ioClient, 'fetch-board-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('move card', () => {
-		it('should answer with success', async () => {
-			const { user, columnNode, cardNodes } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		describe('when moving card to another column', () => {
+			it('should answer with success', async () => {
+				const { user, columnNode, columnNode2, cardNodes } = await setup();
+				currentUser = mapUserToCurrentUser(user);
 
-			const moveCardProps = {
-				cardId: cardNodes[0].id,
-				oldIndex: 0,
-				newIndex: 1,
-				fromColumnId: columnNode.id,
-				toColumnId: columnNode.id,
-			};
+				const moveCardProps = {
+					cardId: cardNodes[0].id,
+					oldIndex: 0,
+					newIndex: 0,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode2.id,
+				};
 
-			ioClient.emit('move-card-request', moveCardProps);
-			const success = await waitForEvent(ioClient, 'move-card-success');
+				ioClient.emit('move-card-request', moveCardProps);
+				const success = await waitForEvent(ioClient, 'move-card-success');
 
-			expect(success).toEqual(expect.objectContaining(moveCardProps));
+				expect(success).toEqual(expect.objectContaining({ toColumnId: columnNode2.id }));
+			});
+		});
+
+		describe('when moving card to another index in the same column', () => {
+			it('should answer with success', async () => {
+				const { user, columnNode, cardNodes } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const moveCardProps = {
+					cardId: cardNodes[0].id,
+					oldIndex: 0,
+					newIndex: 1,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode.id,
+				};
+
+				ioClient.emit('move-card-request', moveCardProps);
+				const success = await waitForEvent(ioClient, 'move-card-success');
+
+				expect(success).toEqual(expect.objectContaining(moveCardProps));
+			});
+		});
+
+		describe('when trying to move a non existing card', () => {
+			it('should answer with failure', async () => {
+				const { user, columnNode } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const moveCardProps = {
+					cardId: 'non-existing-card',
+					oldIndex: 0,
+					newIndex: 1,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode.id,
+				};
+
+				ioClient.emit('move-card-request', moveCardProps);
+				const failure = await waitForEvent(ioClient, 'move-card-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('update column title', () => {
-		it('should answer with success', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		describe('when column exists', () => {
+			it('should answer with success', async () => {
+				const { user, columnNode } = await setup();
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('update-column-title-request', { columnId: columnNode.id, newTitle: 'new title' });
-			const success = await waitForEvent(ioClient, 'update-column-title-success');
+				ioClient.emit('update-column-title-request', { columnId: columnNode.id, newTitle: 'new title' });
+				const success = await waitForEvent(ioClient, 'update-column-title-success');
 
-			expect(success).toEqual(expect.objectContaining({ columnId: columnNode.id }));
+				expect(success).toEqual(expect.objectContaining({ columnId: columnNode.id }));
+			});
+		});
+
+		describe('when column does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('update-column-title-request', { columnId: 'non-existing-id', newTitle: 'new title' });
+				const failure = await waitForEvent(ioClient, 'update-column-title-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('delete board', () => {
-		it('should answer with success', async () => {
-			const { user, columnBoardNode } = await setup();
-			const boardId = columnBoardNode.id;
-			currentUser = mapUserToCurrentUser(user);
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { user, columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('delete-board-request', { boardId });
-			const success = await waitForEvent(ioClient, 'delete-board-success');
+				ioClient.emit('delete-board-request', { boardId });
+				const success = await waitForEvent(ioClient, 'delete-board-success');
 
-			expect(success).toEqual(expect.objectContaining({ boardId }));
+				expect(success).toEqual(expect.objectContaining({ boardId }));
+			});
+		});
+
+		describe('when board does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				const boardId = 'non-existing-id';
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('delete-board-request', { boardId });
+				const failure = await waitForEvent(ioClient, 'delete-board-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('update board title', () => {
-		it('should answer with success', async () => {
-			const { user, columnBoardNode } = await setup();
-			const boardId = columnBoardNode.id;
-			currentUser = mapUserToCurrentUser(user);
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { user, columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('update-board-title-request', { boardId, newTitle: 'new title' });
-			const success = await waitForEvent(ioClient, 'update-board-title-success');
+				ioClient.emit('update-board-title-request', { boardId, newTitle: 'new title' });
+				const success = await waitForEvent(ioClient, 'update-board-title-success');
 
-			expect(success).toEqual(expect.objectContaining({ boardId }));
+				expect(success).toEqual(expect.objectContaining({ boardId }));
+			});
+		});
+
+		describe('when board does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				const boardId = 'non-existing-id';
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('update-board-title-request', { boardId, newTitle: 'new title' });
+				const failure = await waitForEvent(ioClient, 'update-board-title-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('create column', () => {
-		it('should answer with new column', async () => {
-			const { user, columnBoardNode } = await setup();
-			const boardId = columnBoardNode.id;
-			currentUser = mapUserToCurrentUser(user);
+		describe('when board exists', () => {
+			it('should answer with new column', async () => {
+				const { user, columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('create-column-request', { boardId });
-			const success = (await waitForEvent(ioClient, 'create-column-success')) as Record<string, unknown>;
+				ioClient.emit('create-column-request', { boardId });
+				const success = (await waitForEvent(ioClient, 'create-column-success')) as Record<string, unknown>;
 
-			expect(Object.keys(success)).toEqual(expect.arrayContaining(['boardId', 'newColumn']));
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['boardId', 'newColumn']));
+			});
+		});
+
+		describe('when board does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				const boardId = 'non-existing-id';
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('create-column-request', { boardId });
+				const failure = await waitForEvent(ioClient, 'create-column-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('update board visibility', () => {
-		it('should answer with success', async () => {
-			const { user, columnBoardNode } = await setup();
-			const boardId = columnBoardNode.id;
-			currentUser = mapUserToCurrentUser(user);
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { user, columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
-			const success = await waitForEvent(ioClient, 'update-board-visibility-success');
+				ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
+				const success = await waitForEvent(ioClient, 'update-board-visibility-success');
 
-			expect(success).toBeDefined();
+				expect(success).toBeDefined();
+			});
+		});
+
+		describe('when board does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				const boardId = 'non-existing-id';
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
+				const failure = await waitForEvent(ioClient, 'update-board-visibility-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('delete column', () => {
-		it('should answer with success', async () => {
-			const { user, columnNode } = await setup();
-			const columnId = columnNode.id;
-			currentUser = mapUserToCurrentUser(user);
+		describe('when column exists', () => {
+			it('should answer with success', async () => {
+				const { user, columnNode } = await setup();
+				const columnId = columnNode.id;
+				currentUser = mapUserToCurrentUser(user);
 
-			ioClient.emit('delete-column-request', { columnId });
-			const success = await waitForEvent(ioClient, 'delete-column-success');
+				ioClient.emit('delete-column-request', { columnId });
+				const success = await waitForEvent(ioClient, 'delete-column-success');
 
-			expect(success).toEqual(expect.objectContaining({ columnId }));
+				expect(success).toEqual(expect.objectContaining({ columnId }));
+			});
+		});
+
+		describe('when column does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user } = await setup();
+				const columnId = 'not-existing-id';
+				currentUser = mapUserToCurrentUser(user);
+
+				ioClient.emit('delete-column-request', { columnId });
+				const failure = await waitForEvent(ioClient, 'delete-column-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 
 	describe('move column', () => {
-		it('should answer with success', async () => {
-			const { user, columnBoardNode, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		describe('when column does exist', () => {
+			it('should answer with success', async () => {
+				const { user, columnBoardNode, columnNode } = await setup();
+				currentUser = mapUserToCurrentUser(user);
 
-			const moveColumnProps = {
-				columnId: columnNode.id,
-				targetBoardId: columnBoardNode.id,
-				newIndex: 1,
-				columnMove: {
-					addedIndex: 1,
-					removedIndex: 0,
+				const moveColumnProps = {
 					columnId: columnNode.id,
-				},
-			};
+					targetBoardId: columnBoardNode.id,
+					newIndex: 1,
+					columnMove: {
+						addedIndex: 1,
+						removedIndex: 0,
+						columnId: columnNode.id,
+					},
+				};
 
-			ioClient.emit('move-column-request', moveColumnProps);
-			const success = await waitForEvent(ioClient, 'move-column-success');
+				ioClient.emit('move-column-request', moveColumnProps);
+				const success = await waitForEvent(ioClient, 'move-column-success');
 
-			expect(success).toEqual(expect.objectContaining(moveColumnProps));
+				expect(success).toEqual(expect.objectContaining(moveColumnProps));
+			});
+		});
+		describe('when column does not exist', () => {
+			it('should answer with failure', async () => {
+				const { user, columnBoardNode } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const moveColumnProps = {
+					columnId: 'non-existing-id',
+					targetBoardId: columnBoardNode.id,
+					newIndex: 1,
+					columnMove: {
+						addedIndex: 1,
+						removedIndex: 0,
+						columnId: 'non-existing-id',
+					},
+				};
+
+				ioClient.emit('move-column-request', moveColumnProps);
+				const failure = await waitForEvent(ioClient, 'move-column-failure');
+
+				expect(failure).toBeDefined();
+			});
 		});
 	});
 });
