@@ -213,6 +213,22 @@ export class LessonCopyService {
 				}
 				copiedContentStatus.push(etherpadStatus);
 			}
+
+			if (element.component === ComponentType.TLDRAW && tldrawEnabled) {
+				const tldrawContent = await this.copyTldraw(element, params);
+				const tldrawStatus = {
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT_TLDRAW,
+					status: CopyStatusEnum.PARTIAL,
+				};
+				if (tldrawContent) {
+					copiedContent.push(tldrawContent);
+				} else {
+					tldrawStatus.status = CopyStatusEnum.FAIL;
+				}
+				copiedContentStatus.push(tldrawStatus);
+			}
+
 			if (element.component === ComponentType.INTERNAL) {
 				const linkContent = this.copyEmbeddedTaskLink(element);
 				const embeddedTaskStatus = {
@@ -335,6 +351,18 @@ export class LessonCopyService {
 		}
 		return false;
 	}
+
+	private async copyTldraw(
+		originalElement: ComponentProperties,
+		params: LessonCopyParams
+	): Promise<ComponentProperties | false> {
+		const copy = { ...originalElement } as ComponentProperties;
+		delete copy._id;
+		const content = { ...copy.content, url: '', board: '' } as ComponentTldrawProperties;
+
+		cosnt tldraw = await this.
+	}
+
 
 	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
 		const linkedTasks = lesson.getLessonLinkedTasks();

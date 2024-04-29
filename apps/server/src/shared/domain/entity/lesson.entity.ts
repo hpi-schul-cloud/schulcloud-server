@@ -26,6 +26,7 @@ export enum ComponentType {
 	LERNSTORE = 'resources',
 	TEXT = 'text',
 	NEXBOARD = 'neXboard',
+	TLDRAW = 'tldraw',
 }
 
 export interface ComponentTextProperties {
@@ -63,6 +64,11 @@ export interface ComponentInternalProperties {
 	url: string;
 }
 
+export interface ComponentTldrawProperties {
+	url: string:
+	title: string;
+}
+
 export type ComponentProperties = {
 	_id?: string;
 	title: string;
@@ -75,6 +81,7 @@ export type ComponentProperties = {
 	| { component: ComponentType.INTERNAL; content: ComponentInternalProperties }
 	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
 	| { component: ComponentType.NEXBOARD; content: ComponentNexboardProperties }
+	| { component: ComponentType.TLDRAW; content: ComponentTldrawProperties }
 );
 
 export interface LessonParent {
