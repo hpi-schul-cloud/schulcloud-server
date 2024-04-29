@@ -8,6 +8,7 @@ import {
 	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
 	ComponentNexboardProperties,
+	ComponentTldrawProperties,
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
@@ -19,6 +20,7 @@ import { LessonRepo } from '../repository';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
+import { TldrawService } from './tldraw.service';
 
 @Injectable()
 export class LessonCopyService {
@@ -27,6 +29,7 @@ export class LessonCopyService {
 		private readonly taskCopyService: TaskCopyService,
 		private readonly etherpadService: EtherpadService,
 		private readonly nexboardService: NexboardService,
+		private readonly tldrawService: TldrawService,
 		private readonly lessonRepo: LessonRepo,
 		private readonly copyFilesService: CopyFilesService
 	) {}
@@ -166,6 +169,7 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
+		const tldrawEnabled = Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean;
 		const nexboardCopyEnabled = Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean;
 		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
@@ -360,9 +364,15 @@ export class LessonCopyService {
 		delete copy._id;
 		const content = { ...copy.content, url: '', board: '' } as ComponentTldrawProperties;
 
-		cosnt tldraw = await this.
+		const tldraw = await this.tldrawService.createTldraw(params.user.id, content.title);
+		if (tldraw) {
+			content.url = tldraw.url;
+			content.board = nexboard.board;
+			copy.content = content;
+			return copy;
+		}
+		return false;
 	}
-
 
 	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
 		const linkedTasks = lesson.getLessonLinkedTasks();

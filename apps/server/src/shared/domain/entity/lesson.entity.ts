@@ -65,7 +65,7 @@ export interface ComponentInternalProperties {
 }
 
 export interface ComponentTldrawProperties {
-	url: string:
+	url: string;
 	title: string;
 }
 
