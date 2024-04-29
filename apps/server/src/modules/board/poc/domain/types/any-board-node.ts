@@ -10,7 +10,12 @@ import type { SubmissionContainerElement } from '../submission-container-element
 import type { SubmissionItem } from '../submission-item.do';
 import type { CollaborativeTextEditor } from '../collaborative-text-editor.do';
 
+import type { MediaBoard, MediaExternalToolElement, MediaLine } from '../media-board';
+
+export type AnyMediaBoardNode = MediaBoard | MediaLine | MediaExternalToolElement;
+
 export type AnyBoardNode =
+	| AnyMediaBoardNode
 	| Card
 	| CollaborativeTextEditor
 	| Column

@@ -20,6 +20,7 @@ export interface ColumnBoardProps extends BoardNodeProps {
 	isVisible: boolean;
 	layout: BoardLayout;
 }
+
 export interface ColumnProps extends BoardNodeProps {
 	title?: string;
 }
@@ -65,6 +66,21 @@ export interface SubmissionItemProps extends BoardNodeProps {
 	userId: EntityId;
 }
 
+export interface MediaBoardProps extends BoardNodeProps {
+	context: BoardExternalReference;
+}
+
+// TOTO use only one interface for media-external-tool and external-tool
+export interface MediaExternalToolElementProps extends BoardNodeProps {
+	contextExternalToolId: string;
+}
+
+export interface MediaLineProps extends BoardNodeProps {
+	title: string;
+}
+
+export type MediaBoardNodeProps = MediaBoardProps | MediaExternalToolElementProps | MediaLineProps;
+
 export type AnyBoardNodeProps =
 	| CardProps
 	| CollaborativeTextEditorProps
@@ -76,4 +92,5 @@ export type AnyBoardNodeProps =
 	| LinkElementProps
 	| RichTextElementProps
 	| SubmissionContainerElementProps
-	| SubmissionItemProps;
+	| SubmissionItemProps
+	| MediaBoardNodeProps;
