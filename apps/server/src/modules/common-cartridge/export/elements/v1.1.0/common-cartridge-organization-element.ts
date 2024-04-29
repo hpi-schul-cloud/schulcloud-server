@@ -1,6 +1,7 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeGuard } from '../../common-cartridge.guard';
 import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeOrganizationElementPropsV110 = {
 	type: CommonCartridgeElementType.ORGANIZATION;
@@ -47,7 +48,19 @@ export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeEleme
 				identifier: this.identifier,
 			},
 			title: this.title,
-			item: items.map((item) => item.getManifestXmlObject()),
+			item: items.map((item) => {
+				if (CommonCartridgeGuard.isResource(item)) {
+					return {
+						$: {
+							identifier: createIdentifier(),
+							identifierref: item.identifier,
+						},
+						title: item.title,
+					};
+				}
+
+				return item.getManifestXmlObject();
+			}),
 		};
 
 		return xmlObject;
