@@ -28,9 +28,48 @@ export interface CardProps extends BoardNodeProps {
 	height: number;
 }
 
+export interface DrawingElementProps extends BoardNodeProps {
+	description: string;
+}
+
+export interface ExternalToolElementProps extends BoardNodeProps {
+	// TODO why is this optional?
+	contextExternalToolId?: string;
+}
+
+export interface FileElementProps extends BoardNodeProps {
+	alternativeText?: string;
+	caption?: string;
+}
+export interface LinkElementProps extends BoardNodeProps {
+	title: string;
+	url: string;
+	description?: string;
+	imageUrl?: string;
+}
+
 export interface RichTextElementProps extends BoardNodeProps {
 	text: string;
 	inputFormat: InputFormat;
 }
 
-export type AnyBoardNodeProps = ColumnBoardProps | CardProps | ColumnProps | RichTextElementProps;
+export interface SubmissionContainerElementProps extends BoardNodeProps {
+	dueDate?: Date;
+}
+
+export interface SubmissionItemProps extends BoardNodeProps {
+	completed: boolean;
+	userId: EntityId;
+}
+
+export type AnyBoardNodeProps =
+	| CardProps
+	| ColumnBoardProps
+	| ColumnProps
+	| DrawingElementProps
+	| ExternalToolElementProps
+	| FileElementProps
+	| LinkElementProps
+	| RichTextElementProps
+	| SubmissionContainerElementProps
+	| SubmissionItemProps;

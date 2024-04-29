@@ -25,10 +25,14 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ persist: false })
 	children: AnyBoardNode[] = [];
 
-	// Card, Column, ColumnBoard
+	// Card, Column, ColumnBoard, LinkElement
 	// --------------------------------------------------------------------------
 	@Property({ nullable: true })
 	title: string | undefined;
+
+	// LinkElement, DrawingElement
+	@Property({ type: 'string', nullable: true })
+	description: string | undefined;
 
 	// Card
 	// --------------------------------------------------------------------------
@@ -67,4 +71,38 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 
 	@Enum({ type: 'InputFormat', nullable: true })
 	inputFormat: InputFormat | undefined;
+
+	// LinkElement
+	// --------------------------------------------------------------------------
+	@Property({ type: 'string', nullable: true })
+	url: string | undefined;
+
+	@Property({ type: 'string', nullable: true })
+	imageUrl: string | undefined;
+
+	// FileElement
+	// --------------------------------------------------------------------------
+	@Property({ type: 'string', nullable: true })
+	caption: string | undefined;
+
+	@Property({ type: 'string', nullable: true })
+	alternativeText: string | undefined;
+
+	// SubmissionContainerElement
+	// --------------------------------------------------------------------------
+	@Property({ type: 'Date', nullable: true })
+	dueDate: Date | undefined;
+
+	// SubmissionItem
+	// --------------------------------------------------------------------------
+	@Property({ type: 'boolean', nullable: true })
+	completed: boolean | undefined;
+
+	@Property({ type: 'string', nullable: true })
+	userId: string | undefined;
+
+	// ExternalToolElement
+	// --------------------------------------------------------------------------
+	@Property({ type: 'string', nullable: true })
+	contextExternalToolId: string | undefined;
 }

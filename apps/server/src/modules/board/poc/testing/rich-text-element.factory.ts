@@ -9,7 +9,7 @@ export const richTextElementFactory = BaseFactory.define<RichTextElement, RichTe
 			id: new ObjectId().toHexString(),
 			path: ROOT_PATH,
 			level: 0,
-			title: `column #${sequence}`,
+			title: `rich-text #${sequence}`,
 			position: 0,
 			children: [],
 			text: `<p><b>text</b> #${sequence}</p>`,

@@ -1,5 +1,17 @@
 import { BoardNodeType, RichTextElementProps } from '../../domain';
-import type { AnyBoardNodeProps, BoardNodeProps, CardProps, ColumnProps, ColumnBoardProps } from '../../domain';
+import type {
+	AnyBoardNodeProps,
+	BoardNodeProps,
+	CardProps,
+	ColumnProps,
+	ColumnBoardProps,
+	LinkElementProps,
+	FileElementProps,
+	DrawingElementProps,
+	SubmissionContainerElementProps,
+	SubmissionItemProps,
+	ExternalToolElementProps,
+} from '../../domain';
 
 // omit all given keys from an object type
 type StrictOmit<T, K extends keyof T> = Omit<T, K>;
@@ -28,4 +40,10 @@ export interface BoardNodeEntityProps
 		ComponentProps<ColumnBoardProps>,
 		ComponentProps<ColumnProps>,
 		ComponentProps<CardProps>,
-		ComponentProps<RichTextElementProps> {}
+		ComponentProps<RichTextElementProps>,
+		ComponentProps<LinkElementProps>,
+		ComponentProps<FileElementProps>,
+		ComponentProps<DrawingElementProps>,
+		ComponentProps<SubmissionContainerElementProps>,
+		ComponentProps<SubmissionItemProps>,
+		ComponentProps<ExternalToolElementProps> {}

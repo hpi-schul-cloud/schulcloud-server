@@ -1,5 +1,10 @@
+import { SubmissionContainerElement } from '@shared/domain/domainobject';
 import { BoardNode } from './board-node.do';
 import type { AnyBoardNode, CardProps } from './types';
+import { DrawingElement } from './drawing-element.do';
+import { LinkElement } from './link-element.do';
+import { FileElement } from './file-element.do';
+import { RichTextElement } from './rich-text-element.do';
 
 export class Card extends BoardNode<CardProps> {
 	get title(): string | undefined {
@@ -19,10 +24,12 @@ export class Card extends BoardNode<CardProps> {
 	}
 
 	canHaveChild(childNode: AnyBoardNode): boolean {
-		// TODO: relevant types are not defined yet
-		// const allowed =
-		// 	boardNode instanceof TextElement, FileElement...
-		// false just as placeholder
-		return false;
+		return (
+			childNode instanceof DrawingElement ||
+			childNode instanceof FileElement ||
+			childNode instanceof LinkElement ||
+			childNode instanceof RichTextElement ||
+			childNode instanceof SubmissionContainerElement
+		);
 	}
 }

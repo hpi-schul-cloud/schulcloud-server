@@ -2,6 +2,9 @@ import { Card } from './card.do';
 import { ColumnBoard } from './colum-board.do';
 import { Column } from './column.do';
 import { RichTextElement } from './rich-text-element.do';
+import { LinkElement } from './link-element.do';
+import { FileElement } from './file-element.do';
+import { DrawingElement } from './drawing-element.do';
 import type { AnyBoardNode } from './types/any-board-node';
 import { BoardNodeType } from './types/board-node-type.enum';
 
@@ -21,6 +24,9 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.COLUMN]: Column,
 	[BoardNodeType.CARD]: Card,
 	[BoardNodeType.RICH_TEXT_ELEMENT]: RichTextElement,
+	[BoardNodeType.LINK_ELEMENT]: LinkElement,
+	[BoardNodeType.FILE_ELEMENT]: FileElement,
+	[BoardNodeType.DRAWING_ELEMENT]: DrawingElement,
 } as const;
 
 export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>
