@@ -197,7 +197,7 @@ jobs:
     needs:
       - branch_meta
       - deploy
-    uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@BC-6832-Refactor-pipelines-to-include-Tldraw
+    uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@main
     with:
       ref: ${{ needs.branch_meta.outputs.branch }}
     secrets:
