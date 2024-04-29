@@ -1,4 +1,4 @@
-import { defaultMikroOrmOptions } from '@modules/server';
+import { defaultMikroOrmOptions, serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
@@ -8,15 +8,15 @@ import { ConsoleWriterModule } from '@src/infra/console';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { AuthenticationModule } from '../authentication';
+import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { AuthorizationModule } from '../authorization';
-import { config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
 
 @Module({
 	imports: [
 		CoreModule,
-		ConfigModule.forRoot(createConfigModuleOptions(config)),
+		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		MongoMemoryDatabaseModule.forRoot({
@@ -26,6 +26,7 @@ import { BoardModule } from './board.module';
 		BoardModule,
 		AuthorizationModule,
 		AuthenticationModule,
+		AuthenticationApiModule,
 		BoardWsApiModule,
 	],
 	providers: [],
