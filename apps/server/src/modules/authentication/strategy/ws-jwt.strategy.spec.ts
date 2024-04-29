@@ -2,13 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
 import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
-
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
 
@@ -87,7 +85,7 @@ describe('jwt strategy', () => {
 
 		it('should throw an UnauthorizedException', async () => {
 			setup();
-			await expect(() => strategy.validate(jwtPayload)).rejects.toThrow(UnauthorizedException);
+			await expect(() => strategy.validate(jwtPayload)).rejects.toThrow(WsException);
 		});
 	});
 });
