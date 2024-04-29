@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -65,6 +66,7 @@ describe(BoardDoRepo.name, () => {
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
 				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
 				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
+				{ provide: CollaborativeTextEditorService, useValue: createMock<CollaborativeTextEditorService>() },
 			],
 		}).compile();
 		repo = module.get(BoardDoRepo);
