@@ -83,10 +83,11 @@ describe('SocketGateway', () => {
 		});
 
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const columnNode2 = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 
 		const cardNodes = cardNodeFactory.buildList(2, { parent: columnNode });
 
-		await em.persistAndFlush([columnBoardNode, columnNode, ...cardNodes]);
+		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes]);
 		em.clear();
 
 		return { user, columnBoardNode, columnNode, cardNodes };
@@ -189,6 +190,29 @@ describe('SocketGateway', () => {
 			const success = await waitForEvent(ioClient, 'delete-column-success');
 
 			expect(success).toEqual(expect.objectContaining({ columnId }));
+		});
+	});
+
+	describe('move column', () => {
+		it('should answer with success', async () => {
+			const { user, columnBoardNode, columnNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const moveColumnProps = {
+				columnId: columnNode.id,
+				targetBoardId: columnBoardNode.id,
+				newIndex: 1,
+				columnMove: {
+					addedIndex: 1,
+					removedIndex: 0,
+					columnId: columnNode.id,
+				},
+			};
+
+			ioClient.emit('move-column-request', moveColumnProps);
+			const success = await waitForEvent(ioClient, 'move-column-success');
+
+			expect(success).toEqual(expect.objectContaining(moveColumnProps));
 		});
 	});
 });
