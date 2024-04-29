@@ -1,7 +1,6 @@
-import { UseRequestContext } from '@mikro-orm/core';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import { AnyBoardDo } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { BoardResponseMapper } from '../controller/mapper';
@@ -37,6 +36,7 @@ export class SocketGateway {
 	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly logger: LegacyLogger,
+		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
@@ -56,10 +56,10 @@ export class SocketGateway {
 	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.boardUc.deleteBoard(userId, data.boardId);
-			const rootId = await this.getRootIdForBoardDo(result);
-			await this.ensureClientInRoom(client, rootId);
-			client.to(rootId).emit('delete-board-success', data);
+			await this.boardUc.deleteBoard(userId, data.boardId);
+
+			const room = await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit('delete-board-success', data);
 			client.emit('delete-board-success', data);
 		} catch (err) {
 			client.emit('delete-board-failure', new Error('Failed to delete board'));
@@ -71,10 +71,10 @@ export class SocketGateway {
 	async handleChangeBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
-			const rootId = await this.getRootIdForBoardDo(result);
-			await this.ensureClientInRoom(client, rootId);
-			client.to(rootId).emit('update-board-title-success', data);
+			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
+
+			const room = await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit('update-board-title-success', data);
 			client.emit('update-board-title-success', data);
 		} catch (err) {
 			client.emit('update-board-title-failure', new Error('Failed to update board title'));
@@ -107,9 +107,8 @@ export class SocketGateway {
 			newCard: card.getProps(),
 		};
 
-		const rootId = await this.getRootIdForBoardDo(card);
-		await this.ensureClientInRoom(client, rootId);
-		client.to(rootId).emit('create-card-success', responsePayload);
+		const room = await this.ensureUserInRoom(client, data.columnId);
+		client.to(room).emit('create-card-success', responsePayload);
 		client.emit('create-card-success', responsePayload);
 	}
 
@@ -123,9 +122,8 @@ export class SocketGateway {
 			newColumn: column.getProps(),
 		};
 
-		const rootId = await this.getRootIdForBoardDo(column);
-		await this.ensureClientInRoom(client, rootId);
-		client.to(rootId).emit('create-column-success', responsePayload);
+		const room = await this.ensureUserInRoom(client, data.boardId);
+		client.to(room).emit('create-column-success', responsePayload);
 		client.emit('create-column-success', responsePayload);
 
 		// payload needs to be returned to allow the client to do sequential operation
@@ -144,9 +142,8 @@ export class SocketGateway {
 				board: BoardResponseMapper.mapToResponse(board),
 			};
 
-			const rootId = await this.getRootIdForBoardDo(board);
-			await this.ensureClientInRoom(client, rootId);
-			client.to(rootId).emit('fetch-board-success', responsePayload);
+			const room = await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit('fetch-board-success', responsePayload);
 			client.emit('fetch-board-success', responsePayload);
 		} catch (err) {
 			client.emit('fetch-board-failure', new Error('Failed to fetch board'));
@@ -158,10 +155,10 @@ export class SocketGateway {
 	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
-			const rootId = await this.getRootIdForBoardDo(result);
-			await this.ensureClientInRoom(client, rootId);
-			client.to(rootId).emit('move-card-success', data);
+			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('move-card-success', data);
 			client.emit('move-card-success', data);
 		} catch (err) {
 			client.emit('move-card-failure', new Error('Failed to move card'));
@@ -173,14 +170,10 @@ export class SocketGateway {
 	async handleMoveColumn(client: Socket, data: MoveColumnMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.boardUc.moveColumn(
-				userId,
-				data.columnMove.columnId,
-				data.targetBoardId,
-				data.columnMove.addedIndex
-			);
-			const rootId = await this.getRootIdForBoardDo(result);
-			client.to(rootId).emit('move-column-success', data);
+			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
+
+			const room = await this.ensureUserInRoom(client, data.columnId);
+			client.to(room).emit('move-column-success', data);
 			client.emit('move-column-success', data);
 		} catch (err) {
 			client.emit('move-column-failure', new Error('Failed to move column'));
@@ -192,10 +185,10 @@ export class SocketGateway {
 	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
-			const rootId = await this.getRootIdForBoardDo(result);
-			await this.ensureClientInRoom(client, rootId);
-			client.to(rootId).emit('update-column-title-success', data);
+			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
+
+			const room = await this.ensureUserInRoom(client, data.columnId);
+			client.to(room).emit('update-column-title-success', data);
 			client.emit('update-column-title-success', data);
 		} catch (err) {
 			client.emit('update-column-title-failure', new Error('Failed to update column title'));
@@ -207,10 +200,10 @@ export class SocketGateway {
 	async handleBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
-			const rootId = await this.getRootIdForBoardDo(result);
-			await this.ensureClientInRoom(client, rootId);
-			client.broadcast.emit('update-board-visibility-success', {});
+			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+
+			const room = await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit('update-board-visibility-success', {});
 			client.emit('update-board-visibility-success', {});
 		} catch (err) {
 			client.emit('update-board-visibility-failure', new Error('Failed to update board visibility'));
@@ -222,10 +215,10 @@ export class SocketGateway {
 	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const result = await this.columnUc.deleteColumn(userId, data.columnId);
-			const rootId = await this.getRootIdForBoardDo(result);
-			await this.ensureClientInRoom(client, rootId);
-			client.to(rootId).emit('delete-column-success', data);
+			const room = await this.ensureUserInRoom(client, data.columnId);
+			await this.columnUc.deleteColumn(userId, data.columnId);
+
+			client.to(room).emit('delete-column-success', data);
 			client.emit('delete-column-success', data);
 		} catch (err) {
 			client.emit('delete-column-failure', new Error('Failed to delete column'));
@@ -239,16 +232,21 @@ export class SocketGateway {
 	// 	client.broadcast.emit('reload-board-success', data);
 	// }
 
-	private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
-		/* return anyDo.ancestorIds[0] */
+	private async ensureUserInRoom(client: Socket, id: string) {
+		const rootId = await this.getRootIdForId(id);
+		const room = `board_${rootId}`;
+		await client.join(room);
+		return room;
+	}
 
-		const authorizable = await this.authorizableService.getBoardAuthorizable(anyBoardDo);
+	// private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
+	// 	return anyDo.ancestorIds[0];
+	// }
+
+	private async getRootIdForId(id: string) {
+		const authorizable = await this.authorizableService.findById(id);
 		const rootId = authorizable.rootDo.id;
 
 		return rootId;
-	}
-
-	private async ensureClientInRoom(client: Socket, room: string) {
-		await client.join(room);
 	}
 }
