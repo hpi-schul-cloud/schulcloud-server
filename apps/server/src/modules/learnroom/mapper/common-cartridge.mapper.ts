@@ -107,13 +107,6 @@ export class CommonCartridgeMapper {
 						};
 					}) || []
 				);
-			case ComponentType.TLDRAW:
-				return(
-					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: createIdentifier(content._id),
-					title: content.title,
-					url:content.url,
-			);
 			default:
 				return [];
 		}

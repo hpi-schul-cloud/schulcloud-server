@@ -362,12 +362,11 @@ export class LessonCopyService {
 	): Promise<ComponentProperties | false> {
 		const copy = { ...originalElement } as ComponentProperties;
 		delete copy._id;
-		const content = { ...copy.content, url: '', board: '' } as ComponentTldrawProperties;
+		const content = { ...copy.content, url: '' } as ComponentTldrawProperties;
 
 		const tldraw = await this.tldrawService.createTldraw(params.user.id, content.title);
 		if (tldraw) {
 			content.url = tldraw.url;
-			content.board = nexboard.board;
 			copy.content = content;
 			return copy;
 		}
