@@ -980,13 +980,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
+import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property, wrap } from &#x27;@mikro-orm/core&#x27;;
+import { ReferenceNotPopulatedLoggableException } from &#x27;@shared/common/loggable-exception/reference-not-populated.loggable-exception&#x27;;
 import { EntityWithSchool, LanguageType, Permission, RoleName } from &#x27;../interface&#x27;;
 import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { ConsentEntity } from &#x27;./consent&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
-import { SchoolEntity } from &#x27;./school.entity&#x27;;
+import { SchoolEntity, SchoolRoles } from &#x27;./school.entity&#x27;;
 import { UserParentsEntity } from &#x27;./user-parents.entity&#x27;;
 
 export interface UserProperties {
@@ -1127,7 +1128,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 	public resolvePermissions(): string[] {
 		if (!this.roles.isInitialized(true)) {
-			throw new Error(&#x27;Roles items are not loaded.&#x27;);
+			throw new ReferenceNotPopulatedLoggableException(&#x27;user&#x27;, &#x27;roles&#x27;);
 		}
 
 		let permissions: string[] &#x3D; [];
@@ -1138,44 +1139,70 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			permissions &#x3D; [...permissions, ...rolePermissions];
 		});
 
-		const setOfPermission &#x3D; this.resolveSchoolPermissions(permissions, roles);
+		const setOfPermissions &#x3D; this.resolveSchoolPermissions(permissions, roles);
 
-		const uniquePermissions &#x3D; [...setOfPermission];
+		const uniquePermissions &#x3D; [...setOfPermissions];
 
 		return uniquePermissions;
 	}
 
-	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
-		const setOfPermission &#x3D; new Set(permissions);
+	private resolveSchoolPermissions(permissions: string[], roles: Role[]): Set&lt;string&gt; {
+		if (!wrap(this.school).isInitialized()) {
+			throw new ReferenceNotPopulatedLoggableException(&#x27;user&#x27;, &#x27;school&#x27;);
+		}
+
 		const schoolPermissions &#x3D; this.school.permissions;
+		let setOfPermissions &#x3D; new Set(permissions);
 
-		if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.ADMINISTRATOR)) {
-			return setOfPermission;
+		// This exclusion is necessary because of possible double roles (e.g. admin and teacher). Then the higher role should keep its permissions.
+		if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.ADMINISTRATOR || role.name &#x3D;&#x3D;&#x3D; RoleName.SUPERHERO)) {
+			return setOfPermissions;
 		}
 
-		if (this.school.permissions) {
-			if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.STUDENT)) {
-				if (schoolPermissions?.student?.LERNSTORE_VIEW) {
-					setOfPermission.add(Permission.LERNSTORE_VIEW);
-				} else {
-					setOfPermission.delete(Permission.LERNSTORE_VIEW);
-				}
-			}
-
-			if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.TEACHER)) {
-				const canStudentListByDefault &#x3D; Configuration.get(
-					&#x27;TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT&#x27;
-				) as boolean;
-
-				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
-					setOfPermission.add(Permission.STUDENT_LIST);
-				} else {
-					setOfPermission.delete(Permission.STUDENT_LIST);
-				}
-			}
+		if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.TEACHER)) {
+			setOfPermissions &#x3D; this.resolveSchoolPermissionsForTeacher(setOfPermissions, schoolPermissions);
 		}
 
-		return setOfPermission;
+		if (roles.some((role) &#x3D;&gt; role.name &#x3D;&#x3D;&#x3D; RoleName.STUDENT)) {
+			setOfPermissions &#x3D; this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
+		}
+
+		return setOfPermissions;
+	}
+
+	private resolveSchoolPermissionsForTeacher(
+		setOfPermissions: Set&lt;string&gt;,
+		schoolPermissions?: SchoolRoles
+	): Set&lt;string&gt; {
+		const isEnabledByDefault &#x3D; Configuration.get(&#x27;TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT&#x27;) as boolean;
+		const isConfigurable &#x3D; Configuration.get(&#x27;TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE&#x27;) as boolean;
+
+		if (isConfigurable) {
+			if (schoolPermissions?.teacher?.STUDENT_LIST) {
+				setOfPermissions.add(Permission.STUDENT_LIST);
+			} else {
+				setOfPermissions.delete(Permission.STUDENT_LIST);
+			}
+		} else if (isEnabledByDefault) {
+			setOfPermissions.add(Permission.STUDENT_LIST);
+		} else {
+			setOfPermissions.delete(Permission.STUDENT_LIST);
+		}
+
+		return setOfPermissions;
+	}
+
+	private resolveSchoolPermissionsForStudent(
+		setOfPermissions: Set&lt;string&gt;,
+		schoolPermissions?: SchoolRoles
+	): Set&lt;string&gt; {
+		if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+			setOfPermissions.add(Permission.LERNSTORE_VIEW);
+		} else {
+			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
+		}
+
+		return setOfPermissions;
 	}
 
 	public getRoles(): Role[] {

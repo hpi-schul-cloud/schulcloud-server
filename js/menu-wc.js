@@ -5961,6 +5961,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ReferencedEntityNotFoundLoggable.html" data-type="entity-link" >ReferencedEntityNotFoundLoggable</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ReferenceNotPopulatedLoggableException.html" data-type="entity-link" >ReferenceNotPopulatedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ReferencesService.html" data-type="entity-link" >ReferencesService</a>
                             </li>
                             <li class="link">
