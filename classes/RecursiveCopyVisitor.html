@@ -466,8 +466,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="344"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:344</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="354"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:354</a></div>
                         </td>
                     </tr>
 
@@ -533,8 +533,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="331"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:331</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="341"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:341</a></div>
                         </td>
                     </tr>
 
@@ -671,8 +671,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="327"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:327</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="337"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:337</a></div>
                         </td>
                     </tr>
 
@@ -733,7 +733,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement: <a href="../classes/CollaborativeTextEditorElement.html" target="_self">CollaborativeTextEditorElement</a>)</code>
+                    <code>visitCollaborativeTextEditorElementAsync(original: <a href="../classes/CollaborativeTextEditorElement.html" target="_self">CollaborativeTextEditorElement</a>)</code>
                 </td>
             </tr>
 
@@ -762,7 +762,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>collaborativeTextEditorElement</td>
+                                                <td>original</td>
                                             <td>
                                                             <code><a href="../classes/CollaborativeTextEditorElement.html" target="_self" >CollaborativeTextEditorElement</a></code>
                                             </td>
@@ -1223,8 +1223,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="298"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:298</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="308"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:308</a></div>
                         </td>
                     </tr>
 
@@ -1290,8 +1290,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="318"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:318</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="328"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:328</a></div>
                         </td>
                     </tr>
 
@@ -1359,8 +1359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="308"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:308</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="318"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-copy-service/recursive-copy.visitor.ts:318</a></div>
                         </td>
                     </tr>
 
@@ -1912,12 +1912,22 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitCollaborativeTextEditorElementAsync(
-		collaborativeTextEditorElement: CollaborativeTextEditorElement
-	): Promise&lt;void&gt; {
-		return Promise.reject(
-			new Error(&#x60;Cannot copy element of type: &#x27;${collaborativeTextEditorElement.constructor.name}&#x27;&#x60;)
-		);
+	async visitCollaborativeTextEditorElementAsync(original: CollaborativeTextEditorElement): Promise&lt;void&gt; {
+		const now &#x3D; new Date();
+		const copy &#x3D; new CollaborativeTextEditorElement({
+			id: new ObjectId().toHexString(),
+			createdAt: now,
+			updatedAt: now,
+		});
+
+		this.resultMap.set(original.id, {
+			copyEntity: copy,
+			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		});
+		this.copyMap.set(original.id, copy);
+
+		return Promise.resolve();
 	}
 
 	async visitMediaBoardAsync(original: MediaBoard): Promise&lt;void&gt; {
