@@ -1,6 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Card, ContentElementType } from '@shared/domain/domainobject';
+import { Card, Column, ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { BoardDoAuthorizableService, CardService, ColumnService } from '../service';
@@ -20,22 +20,26 @@ export class ColumnUc extends BaseUc {
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<void> {
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.delete(column);
+
+		return column;
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<Column> {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
 		const column = await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.updateTitle(column, title);
+
+		return column;
 	}
 
 	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
@@ -49,7 +53,7 @@ export class ColumnUc extends BaseUc {
 		return card;
 	}
 
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<Card> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
 		const card = await this.cardService.findById(cardId);
@@ -59,5 +63,6 @@ export class ColumnUc extends BaseUc {
 		await this.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
+		return card;
 	}
 }
