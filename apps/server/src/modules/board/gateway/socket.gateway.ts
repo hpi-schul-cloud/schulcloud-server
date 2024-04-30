@@ -210,8 +210,8 @@ export class SocketGateway {
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('update-board-visibility-success', {});
-			client.emit('update-board-visibility-success', {});
+			client.to(room).emit('update-board-visibility-success', data);
+			client.emit('update-board-visibility-success', data);
 		} catch (err) {
 			client.emit('update-board-visibility-failure', new Error('Failed to update board visibility'));
 		}
