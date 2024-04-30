@@ -545,6 +545,11 @@
 			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
 		},
+		"ALERT_CACHE_INTERVAL_MIN": {
+			"type": "number",
+			"default": 1,
+			"description": "Time between updating alerts (in minutes)"
+		},
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
