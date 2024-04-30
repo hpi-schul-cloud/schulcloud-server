@@ -374,11 +374,47 @@ export const createMultiDocumentAggregation = ({
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
 
+	aggregation.push(
+		// @ts-ignore
+		{
+			$lookup: {
+				from: 'accounts',
+				let: { user_id: '$_id' },
+				pipeline: [{ $match: { $expr: { $eq: ['$userId', '$$user_id'] } } }, { $project: { systemId: 1, _id: 0 } }],
+				as: 'account',
+			},
+		},
+		{
+			$unwind: {
+				path: '$account',
+				preserveNullAndEmptyArrays: true,
+			},
+		},
+		{
+			$addFields: {
+				systemId: '$account.systemId',
+			},
+		},
+		{
+			$project: {
+				account: 0,
+			},
+		}
+	);
+
+	// @ts-ignore
+	aggregation.push({
+		$unwind: {
+			path: '$account',
+			preserveNullAndEmptyArrays: true,
+		},
+	});
+
 	if (searchQuery) {
 		// to sort by this value, add 'searchQuery' to sort value
 		// @ts-ignore
 		match.$text = {
-			$search: searchQuery
+			$search: searchQuery,
 		};
 	}
 

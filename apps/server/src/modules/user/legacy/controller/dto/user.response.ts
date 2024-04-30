@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ConsentsResponse } from './consents.response';
 import { ClassResponse } from './class.response';
+import { ConsentsResponse } from './consents.response';
 
 export class UserResponse {
 	constructor({
@@ -17,6 +17,7 @@ export class UserResponse {
 		importHash,
 		lastLoginSystemChange,
 		outdatedSince,
+		isEditable,
 	}: UserResponse) {
 		this._id = _id.toString();
 		this.firstName = firstName;
@@ -31,6 +32,7 @@ export class UserResponse {
 		this.importHash = importHash;
 		this.lastLoginSystemChange = lastLoginSystemChange;
 		this.outdatedSince = outdatedSince;
+		this.isEditable = isEditable;
 	}
 
 	@ApiProperty()
@@ -71,4 +73,7 @@ export class UserResponse {
 
 	@ApiProperty()
 	outdatedSince?: Date;
+
+	@ApiProperty()
+	isEditable?: boolean;
 }

@@ -3,9 +3,9 @@ import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { ObjectId } from 'bson';
-import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UserSearchQuery } from '../interfaces';
+import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
 
 @Injectable()
 export class UsersAdminRepo extends BaseRepo<User> {
@@ -71,6 +71,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 				'preferences.registrationMailSend',
 				'lastLoginSystemChange',
 				'outdatedSince',
+				'systemId',
 			],
 			skip: params?.$skip ?? params?.skip,
 			limit: params?.$limit ?? params?.limit,
