@@ -11,7 +11,7 @@ export const externalToollElementFactory = BaseFactory.define<ExternalToolElemen
 			level: 0,
 			position: 0,
 			children: [],
-			contextExternalToolId: new ObjectId().toHexString(),
+			contextExternalToolId: new ObjectId().toHexString(), // TODO check if this should be undefined
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

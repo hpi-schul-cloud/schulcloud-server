@@ -1,6 +1,6 @@
 export * from './board-node.do';
 export * from './board-node-authorizable.do';
-export * from './colaborative-text-editor.do';
+export * from './collaborative-text-editor.do';
 export * from './card.do';
 export * from './column.do';
 export * from './colum-board.do';
@@ -8,6 +8,9 @@ export * from './drawing-element.do';
 export * from './external-tool-element.do';
 export * from './file-element.do';
 export * from './link-element.do';
+export * from './media-board/media-available-line-element.do';
+export * from './media-board/media-available-line.do';
+export * from './media-board/media-line.do';
 export * from './rich-text-element.do';
 export * from './submission-container-element.do';
 export * from './submission-item.do';

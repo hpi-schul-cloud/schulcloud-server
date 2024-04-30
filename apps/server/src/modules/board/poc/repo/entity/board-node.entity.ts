@@ -25,7 +25,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ persist: false })
 	children: AnyBoardNode[] = [];
 
-	// Card, Column, ColumnBoard, LinkElement
+	// Card, Column, ColumnBoard, LinkElement, MedialLine
 	// --------------------------------------------------------------------------
 	@Property({ nullable: true })
 	title: string | undefined;
@@ -34,12 +34,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'string', nullable: true })
 	description: string | undefined;
 
-	// Card
-	// --------------------------------------------------------------------------
-	@Property({ type: 'integer', nullable: true })
-	height: number | undefined;
-
-	// ColumnBoard
+	// ColumnBoard, MediaBoard
 	// --------------------------------------------------------------------------
 	@Embedded(() => Context, { prefix: false, nullable: true })
 	_context: BoardNodeEntityProps['context'];
@@ -58,11 +53,18 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 		}
 	}
 
+	// ColumnBoard
+	// --------------------------------------------------------------------------
 	@Property({ type: 'boolean', nullable: true })
 	isVisible: boolean | undefined;
 
 	@Property({ type: 'boolean', nullable: true })
 	layout: BoardLayout | undefined;
+
+	// Card
+	// --------------------------------------------------------------------------
+	@Property({ type: 'integer', nullable: true })
+	height: number | undefined;
 
 	// RichTextElement
 	// --------------------------------------------------------------------------
@@ -101,8 +103,10 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'string', nullable: true })
 	userId: string | undefined;
 
-	// ExternalToolElement
+	// ExternalToolElement, MediaExternalToolElement
 	// --------------------------------------------------------------------------
+	// TODO ManyToOne to ContextExternalToolEntity
+	// TODO use regular context -> external toolfv  v
 	@Property({ type: 'string', nullable: true })
 	contextExternalToolId: string | undefined;
 }

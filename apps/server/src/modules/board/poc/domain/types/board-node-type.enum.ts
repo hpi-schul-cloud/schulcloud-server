@@ -11,7 +11,7 @@ export enum BoardNodeType {
 	EXTERNAL_TOOL = 'external-tool',
 	COLLABORATIVE_TEXT_EDITOR = 'collaborative-text-editor',
 
-	// MEDIA_BOARD = 'media-board',
-	// MEDIA_LINE = 'media-line',
-	// MEDIA_EXTERNAL_TOOL_ELEMENT = 'media-external-tool-element',
+	MEDIA_BOARD = 'media-board',
+	MEDIA_LINE = 'media-line',
+	MEDIA_EXTERNAL_TOOL_ELEMENT = 'media-external-tool-element',
 }
