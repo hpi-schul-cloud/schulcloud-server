@@ -18,17 +18,13 @@ export class UsersAdminService {
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		const response = await this.usersAdminRepo.getUsersWithNestedData(roleId, schoolId, schoolYearId, params);
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
-		response[0].data = response[0].data.map((user) => {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-			return { ...user, isEditable: !!user.systemId };
-		});
-
-		const userResponse = response[0] as UserListResponse;
-
-		return new UserListResponse(userResponse);
+		const usersResponse = (await this.usersAdminRepo.getUsersWithNestedData(
+			roleId,
+			schoolId,
+			schoolYearId,
+			params
+		)) as UserListResponse[];
+		return new UserListResponse(usersResponse[0]);
 	}
 
 	async getUserWithNestedData(

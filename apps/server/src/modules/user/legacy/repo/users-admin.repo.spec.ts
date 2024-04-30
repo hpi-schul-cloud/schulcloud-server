@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -19,10 +21,12 @@ describe('users admin repo', () => {
 	let adminAccount: AccountEntity;
 	let studentAccount1: AccountEntity;
 	let studentAccount2: AccountEntity;
+	let foreignAccount: AccountEntity;
 
 	let adminUser: User;
 	let studentUser1: User;
 	let studentUser2: User;
+	let foreignUser: User;
 
 	let studentRole: Role;
 	let currentYear: SchoolYearEntity;
@@ -81,6 +85,8 @@ describe('users admin repo', () => {
 			},
 		});
 
+		foreignUser = userFactory.buildWithId({ firstName: 'Zebra', school, roles: [studentRole] });
+
 		const studentClass = classEntityFactory.buildWithId({
 			name: 'Group A',
 			schoolId: school.id,
@@ -98,12 +104,13 @@ describe('users admin repo', () => {
 		adminAccount = mapUserToAccount(adminUser);
 		studentAccount1 = mapUserToAccount(studentUser1);
 		studentAccount2 = mapUserToAccount(studentUser2);
+		foreignAccount = accountFactory.buildWithId({ userId: foreignUser.id, systemId: new ObjectId() });
 
 		em.persist(school);
 		em.persist(currentYear);
 		em.persist([adminRoles, studentRole]);
-		em.persist([adminUser, studentUser1, studentUser2]);
-		em.persist([adminAccount, studentAccount1, studentAccount2]);
+		em.persist([adminUser, studentUser1, studentUser2, foreignUser]);
+		em.persist([adminAccount, studentAccount1, studentAccount2, foreignAccount]);
 		em.persist(studentClass);
 		await em.flush();
 	};
@@ -170,8 +177,8 @@ describe('users admin repo', () => {
 			const userListResponse = response as UserListResponse[];
 			const data = userListResponse[0].data;
 
-			expect(userListResponse[0].total).toBe(2);
-			expect(data.length).toBe(2);
+			expect(userListResponse[0].total).toBe(3);
+			expect(data.length).toBe(3);
 			expect(data[0]._id.toString()).toBe(studentUser1._id.toString());
 			expect(data[1]._id.toString()).toBe(studentUser2._id.toString());
 		});
@@ -197,8 +204,8 @@ describe('users admin repo', () => {
 			const userListResponse = response as UserListResponse[];
 			const data = userListResponse[0].data;
 
-			expect(userListResponse[0].total).toBe(2);
-			expect(data.length).toBe(2);
+			expect(userListResponse[0].total).toBe(3);
+			expect(data.length).toBe(3);
 		});
 	});
 
@@ -222,8 +229,8 @@ describe('users admin repo', () => {
 			const userListResponse = response as UserListResponse[];
 			const data = userListResponse[0].data;
 
-			expect(userListResponse[0].total).toBe(2);
-			expect(data.length).toBe(2);
+			expect(userListResponse[0].total).toBe(3);
+			expect(data.length).toBe(3);
 		});
 	});
 
@@ -293,7 +300,15 @@ describe('users admin repo', () => {
 			const data = userListResponse[0].data;
 
 			expect(data.length).toBe(0);
-			expect(userListResponse[0].total).toBe(2);
+			expect(userListResponse[0].total).toBe(3);
 		});
+	});
+
+	it('should return users with isEditable field', async () => {
+		const result = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, {});
+
+		expect(result[0].data[0].isEditable).toBe(true);
+		expect(result[0].data[1].isEditable).toBe(true);
+		expect(result[0].data[2].isEditable).toBe(false);
 	});
 });

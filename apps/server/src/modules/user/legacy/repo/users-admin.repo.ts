@@ -71,7 +71,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 				'preferences.registrationMailSend',
 				'lastLoginSystemChange',
 				'outdatedSince',
-				'systemId',
+				'isEditable',
 			],
 			skip: params?.$skip ?? params?.skip,
 			limit: params?.$limit ?? params?.limit,
