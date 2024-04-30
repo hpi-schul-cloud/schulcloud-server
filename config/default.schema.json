@@ -1213,6 +1213,11 @@
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
 		},
+		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board web socket feature."
+		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
 			"default": false,

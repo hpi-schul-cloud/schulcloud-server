@@ -152,6 +152,15 @@
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
+		},
+		"board-collaboration": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/board-collaboration.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
 		}
 	}
 }
