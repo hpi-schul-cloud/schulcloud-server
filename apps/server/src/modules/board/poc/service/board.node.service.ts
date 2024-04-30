@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode } from '../domain';
 import { BoardNodeRepo } from '../repo';
 
@@ -34,5 +35,31 @@ export class BoardNodeService {
 		targetParent.addChild(child, targetPosition);
 
 		await this.boardNodeRepo.flush();
+	}
+
+	async findByClassAndId<S, T extends AnyBoardNode>(
+		Constructor: { new (props: S): T },
+		id: EntityId,
+		depth?: number
+	): Promise<T> {
+		const boardNode = await this.boardNodeRepo.findById(id, depth);
+		if (!(boardNode instanceof Constructor)) {
+			throw new NotFoundException(`There is no '${Constructor.name}' with this id`);
+		}
+
+		return boardNode;
+	}
+
+	async findParent(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode | undefined> {
+		const parentNode = child.parentId ? await this.boardNodeRepo.findById(child.parentId, depth) : undefined;
+
+		return parentNode;
+	}
+
+	async findRoot(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode> {
+		const rootId = [...child.ancestorIds, child.id][0];
+		const rootNode = await this.boardNodeRepo.findById(rootId, depth);
+
+		return rootNode;
 	}
 }

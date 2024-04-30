@@ -1,4 +1,5 @@
 export * from './board-node.do';
+export * from './board-node-authorizable.do';
 export * from './colaborative-text-editor.do';
 export * from './card.do';
 export * from './column.do';

@@ -1,6 +1,8 @@
 import { EntityId } from '@shared/domain/types';
 import { BoardNode } from './board-node.do';
-import type { SubmissionItemProps } from './types';
+import { FileElement, isFileElement } from './file-element.do';
+import { isRichTextElement, RichTextElement } from './rich-text-element.do';
+import type { AnyBoardNode, SubmissionItemProps } from './types';
 
 export class SubmissionItem extends BoardNode<SubmissionItemProps> {
 	get completed(): boolean {
@@ -23,3 +25,9 @@ export class SubmissionItem extends BoardNode<SubmissionItemProps> {
 		return false;
 	}
 }
+
+export const isSubmissionItem = (reference: unknown): reference is SubmissionItem =>
+	reference instanceof SubmissionItem;
+
+export const isSubmissionItemContent = (element: AnyBoardNode): element is RichTextElement | FileElement =>
+	isRichTextElement(element) || isFileElement(element);

@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from '../mapper';
 import {
-	BoardDoRule,
+	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -34,7 +34,7 @@ describe('RuleManager', () => {
 	let teamRule: DeepMocked<TeamRule>;
 	let submissionRule: DeepMocked<SubmissionRule>;
 	let schoolExternalToolRule: DeepMocked<SchoolExternalToolRule>;
-	let boardDoRule: DeepMocked<BoardDoRule>;
+	let boardDoRule: DeepMocked<BoardNodeRule>;
 	let contextExternalToolRule: DeepMocked<ContextExternalToolRule>;
 	let userLoginMigrationRule: DeepMocked<UserLoginMigrationRule>;
 	let schoolRule: DeepMocked<SchoolRule>;
@@ -58,7 +58,7 @@ describe('RuleManager', () => {
 				{ provide: TeamRule, useValue: createMock<TeamRule>() },
 				{ provide: SubmissionRule, useValue: createMock<SubmissionRule>() },
 				{ provide: SchoolExternalToolRule, useValue: createMock<SchoolExternalToolRule>() },
-				{ provide: BoardDoRule, useValue: createMock<BoardDoRule>() },
+				{ provide: BoardNodeRule, useValue: createMock<BoardNodeRule>() },
 				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 				{ provide: UserLoginMigrationRule, useValue: createMock<UserLoginMigrationRule>() },
 				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
@@ -77,7 +77,7 @@ describe('RuleManager', () => {
 		teamRule = await module.get(TeamRule);
 		submissionRule = await module.get(SubmissionRule);
 		schoolExternalToolRule = await module.get(SchoolExternalToolRule);
-		boardDoRule = await module.get(BoardDoRule);
+		boardDoRule = await module.get(BoardNodeRule);
 		contextExternalToolRule = await module.get(ContextExternalToolRule);
 		userLoginMigrationRule = await module.get(UserLoginMigrationRule);
 		schoolRule = await module.get(SchoolRule);

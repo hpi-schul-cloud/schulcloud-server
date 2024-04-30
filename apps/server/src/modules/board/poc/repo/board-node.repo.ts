@@ -1,6 +1,6 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, getBoardNodeType } from '../domain';
@@ -22,19 +22,6 @@ export class BoardNodeRepo {
 		return boardNode;
 	}
 
-	async findByClassAndId<S, T extends AnyBoardNode>(
-		Constructor: { new (props: S): T },
-		id: EntityId,
-		depth?: number
-	): Promise<T> {
-		const boardNode = await this.findById(id, depth);
-		if (!(boardNode instanceof Constructor)) {
-			throw new NotFoundException(`There is no '${Constructor.name}' with this id`);
-		}
-
-		return boardNode;
-	}
-
 	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
@@ -51,6 +38,7 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
+	// TODO maybe we don't need that method
 	async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 		const sortedPaths = entities.map((e) => e.path).sort();
@@ -139,7 +127,7 @@ export class BoardNodeRepo {
 			$or: pathQueries,
 		});
 
-		// this is for finding tha ancestors of a descendant
+		// this is for finding the ancestors of a descendant
 		// we use this to group the descendants by ancestor
 		// TODO we probably need a more efficient way to do the grouping
 		const matchAncestors = (descendant: BoardNodeEntity): BoardNodeEntity[] => {

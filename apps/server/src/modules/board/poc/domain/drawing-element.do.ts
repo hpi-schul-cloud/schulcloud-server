@@ -14,3 +14,6 @@ export class DrawingElement extends BoardNode<DrawingElementProps> {
 		return false;
 	}
 }
+
+export const isDrawingElement = (reference: unknown): reference is DrawingElement =>
+	reference instanceof DrawingElement;

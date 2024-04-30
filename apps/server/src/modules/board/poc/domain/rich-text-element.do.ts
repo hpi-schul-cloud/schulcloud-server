@@ -22,3 +22,6 @@ export class RichTextElement extends BoardNode<RichTextElementProps> {
 		return false;
 	}
 }
+
+export const isRichTextElement = (reference: unknown): reference is RichTextElement =>
+	reference instanceof RichTextElement;

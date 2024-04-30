@@ -7,26 +7,24 @@ import { FileElement } from './file-element.do';
 import { DrawingElement } from './drawing-element.do';
 import type { AnyBoardNode } from './types/any-board-node';
 import { BoardNodeType } from './types/board-node-type.enum';
-
-// export type BoardNodeTypeToClass<T extends BoardNodeType> = T extends BoardNodeType.COLUMN_BOARD
-// 	? ColumnBoard
-// 	: T extends BoardNodeType.COLUMN
-// 	? Column
-// 	: T extends BoardNodeType.CARD
-// 	? Card
-// 	: T extends BoardNodeType.RICH_TEXT_ELEMENT
-// 	? RichTextElement
-// 	: never;
+import { SubmissionItem } from './submission-item.do';
+import { SubmissionContainerElement } from './submission-container-element.do';
+import { ExternalToolElement } from './external-tool-element.do';
+import { CollaborativeTextEditor } from './colaborative-text-editor.do';
 
 // register node types
 const BoardNodeTypeToConstructor = {
 	[BoardNodeType.COLUMN_BOARD]: ColumnBoard,
 	[BoardNodeType.COLUMN]: Column,
 	[BoardNodeType.CARD]: Card,
-	[BoardNodeType.RICH_TEXT_ELEMENT]: RichTextElement,
-	[BoardNodeType.LINK_ELEMENT]: LinkElement,
 	[BoardNodeType.FILE_ELEMENT]: FileElement,
+	[BoardNodeType.LINK_ELEMENT]: LinkElement,
+	[BoardNodeType.RICH_TEXT_ELEMENT]: RichTextElement,
 	[BoardNodeType.DRAWING_ELEMENT]: DrawingElement,
+	[BoardNodeType.SUBMISSION_CONTAINER_ELEMENT]: SubmissionContainerElement,
+	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
+	[BoardNodeType.EXTERNAL_TOOL]: ExternalToolElement,
+	[BoardNodeType.COLLABORATIVE_TEXT_EDITOR]: CollaborativeTextEditor,
 } as const;
 
 export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>

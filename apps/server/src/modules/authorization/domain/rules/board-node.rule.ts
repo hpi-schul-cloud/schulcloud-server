@@ -1,56 +1,62 @@
 import { Injectable } from '@nestjs/common';
+import { User } from '@shared/domain/entity/user.entity';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
+	BoardNodeAuthorizable,
+	BoardRoles,
 	ColumnBoard,
 	isDrawingElement,
 	isSubmissionItem,
 	isSubmissionItemContent,
 	SubmissionItem,
-} from '@shared/domain/domainobject';
-import { BoardDoAuthorizable, BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject/board/types';
-import { User } from '@shared/domain/entity/user.entity';
-import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+	UserWithBoardRoles,
+} from '@modules/board/poc/domain';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 
 @Injectable()
-export class BoardDoRule implements Rule {
+export class BoardNodeRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, boardDoAuthorizable: unknown): boolean {
-		const isMatched = boardDoAuthorizable instanceof BoardDoAuthorizable;
+	public isApplicable(user: User, boardNodeAuthorizable: unknown): boolean {
+		const isMatched = boardNodeAuthorizable instanceof BoardNodeAuthorizable;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, boardDoAuthorizable: BoardDoAuthorizable, context: AuthorizationContext): boolean {
+	public hasPermission(
+		user: User,
+		boardNodeAuthorizable: BoardNodeAuthorizable,
+		context: AuthorizationContext
+	): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		if (!hasPermission) {
 			return false;
 		}
 
-		const userWithBoardRoles = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
+		const userWithBoardRoles = boardNodeAuthorizable.users.find(({ userId }) => userId === user.id);
 		if (!userWithBoardRoles) {
 			return false;
 		}
 
 		if (
-			boardDoAuthorizable.rootDo instanceof ColumnBoard &&
-			!boardDoAuthorizable.rootDo.isVisible &&
+			boardNodeAuthorizable.rootNode instanceof ColumnBoard &&
+			!boardNodeAuthorizable.rootNode.isVisible &&
 			!this.isBoardEditor(userWithBoardRoles)
 		) {
 			return false;
 		}
 
-		if (this.shouldProcessSubmissionItem(boardDoAuthorizable)) {
-			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardDoAuthorizable, context);
+		if (this.shouldProcessSubmissionItem(boardNodeAuthorizable)) {
+			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardNodeAuthorizable, context);
 		}
 
-		if (this.shouldProcessDrawingElementFile(boardDoAuthorizable, context)) {
+		if (this.shouldProcessDrawingElementFile(boardNodeAuthorizable, context)) {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
 
-		if (this.shouldProcessDrawingElement(boardDoAuthorizable)) {
+		if (this.shouldProcessDrawingElement(boardNodeAuthorizable)) {
 			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
 		}
 
@@ -70,18 +76,18 @@ export class BoardDoRule implements Rule {
 	}
 
 	private shouldProcessDrawingElementFile(
-		boardDoAuthorizable: BoardDoAuthorizable,
+		boardNodeAuthorizable: BoardNodeAuthorizable,
 		context: AuthorizationContext
 	): boolean {
 		const requiresFileStoragePermission =
 			context.requiredPermissions.includes(Permission.FILESTORAGE_CREATE) ||
 			context.requiredPermissions.includes(Permission.FILESTORAGE_VIEW);
 
-		return isDrawingElement(boardDoAuthorizable.boardDo) && requiresFileStoragePermission;
+		return isDrawingElement(boardNodeAuthorizable.boardNode) && requiresFileStoragePermission;
 	}
 
-	private shouldProcessDrawingElement(boardDoAuthorizable: BoardDoAuthorizable): boolean {
-		return isDrawingElement(boardDoAuthorizable.boardDo);
+	private shouldProcessDrawingElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
+		return isDrawingElement(boardNodeAuthorizable.boardNode);
 	}
 
 	private hasPermissionForDrawingElementFile(userWithBoardRoles: UserWithBoardRoles): boolean {
@@ -101,35 +107,35 @@ export class BoardDoRule implements Rule {
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
-	private shouldProcessSubmissionItem(boardDoAuthorizable: BoardDoAuthorizable): boolean {
-		return isSubmissionItem(boardDoAuthorizable.boardDo) || isSubmissionItem(boardDoAuthorizable.parentDo);
+	private shouldProcessSubmissionItem(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
+		return isSubmissionItem(boardNodeAuthorizable.boardNode) || isSubmissionItem(boardNodeAuthorizable.parentNode);
 	}
 
 	private hasPermissionForSubmissionItem(
 		user: User,
 		userWithBoardRoles: UserWithBoardRoles,
-		boardDoAuthorizable: BoardDoAuthorizable,
+		boardNodeAuthorizable: BoardNodeAuthorizable,
 		context: AuthorizationContext
 	): boolean {
 		// permission for elements under a submission item, are handled by the parent submission item
-		if (isSubmissionItem(boardDoAuthorizable.parentDo)) {
-			if (!isSubmissionItemContent(boardDoAuthorizable.boardDo)) {
+		if (isSubmissionItem(boardNodeAuthorizable.parentNode)) {
+			if (!isSubmissionItemContent(boardNodeAuthorizable.boardNode)) {
 				return false;
 			}
-			boardDoAuthorizable.boardDo = boardDoAuthorizable.parentDo;
-			boardDoAuthorizable.parentDo = undefined;
+			boardNodeAuthorizable.boardNode = boardNodeAuthorizable.parentNode;
+			boardNodeAuthorizable.parentNode = undefined;
 		}
 
-		if (!isSubmissionItem(boardDoAuthorizable.boardDo)) {
+		if (!isSubmissionItem(boardNodeAuthorizable.boardNode)) {
 			/* istanbul ignore next */
 			throw new Error('BoardDoAuthorizable.boardDo is not a submission item');
 		}
 
 		if (context.action === Action.write) {
-			return this.hasSubmissionItemWritePermission(userWithBoardRoles, boardDoAuthorizable.boardDo);
+			return this.hasSubmissionItemWritePermission(userWithBoardRoles, boardNodeAuthorizable.boardNode);
 		}
 
-		return this.hasSubmissionItemReadPermission(userWithBoardRoles, boardDoAuthorizable.boardDo);
+		return this.hasSubmissionItemReadPermission(userWithBoardRoles, boardNodeAuthorizable.boardNode);
 	}
 
 	private hasSubmissionItemWritePermission(

@@ -22,3 +22,5 @@ export class FileElement extends BoardNode<FileElementProps> {
 		return false;
 	}
 }
+
+export const isFileElement = (reference: unknown): reference is FileElement => reference instanceof FileElement;
