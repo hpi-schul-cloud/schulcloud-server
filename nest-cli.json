@@ -143,6 +143,15 @@
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
+		},
+		"cc-export-import": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/common-cartridge-export-import.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
 		}
 	}
 }
