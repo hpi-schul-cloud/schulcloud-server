@@ -6,3 +6,4 @@ export * from './external-user.dto';
 export * from './oauth-data.dto';
 export * from './external-group.dto';
 export * from './external-group-user.dto';
+export { ExternalLicenseDto } from './external-license.dto';
