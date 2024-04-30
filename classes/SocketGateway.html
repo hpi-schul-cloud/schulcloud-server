@@ -1,0 +1,1844 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >SocketGateway</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/board/gateway/socket.gateway.ts</code>
+        </p>
+
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#afterInit" >afterInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ensureUserInRoom" >ensureUserInRoom</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getCurrentUser" >getCurrentUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getRootIdForId" >getRootIdForId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleBoardVisibility" >handleBoardVisibility</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleChangeBoardTitle" >handleChangeBoardTitle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleChangeColumnTitle" >handleChangeColumnTitle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleCreateCard" >handleCreateCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleCreateColumn" >handleCreateColumn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleDeleteBoard" >handleDeleteBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleDeleteColumn" >handleDeleteColumn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleFetchBoard" >handleFetchBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleMoveCard" >handleMoveCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleMoveColumn" >handleMoveColumn</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, authorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:35</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardUc</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardUc.html" target="_self" >BoardUc</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>columnUc</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnUc.html" target="_self" >ColumnUc</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authorizableService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterInit"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>afterInit</b></span>
+                        <a href="#afterInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ensureUserInRoom"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>ensureUserInRoom</b></span>
+                        <a href="#ensureUserInRoom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ensureUserInRoom(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:242</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCurrentUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getCurrentUser</b></span>
+                        <a href="#getCurrentUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCurrentUser(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRootIdForId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getRootIdForId</b></span>
+                        <a href="#getRootIdForId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getRootIdForId(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="253"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:253</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleBoardVisibility"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleBoardVisibility</b></span>
+                        <a href="#handleBoardVisibility"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleBoardVisibility(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateBoardVisibilityMessageParams.html" target="_self">UpdateBoardVisibilityMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;update-board-visibility-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:207</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateBoardVisibilityMessageParams.html" target="_self" >UpdateBoardVisibilityMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleChangeBoardTitle"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleChangeBoardTitle</b></span>
+                        <a href="#handleChangeBoardTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleChangeBoardTitle(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateBoardTitleMessageParams.html" target="_self">UpdateBoardTitleMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;update-board-title-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateBoardTitleMessageParams.html" target="_self" >UpdateBoardTitleMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleChangeColumnTitle"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleChangeColumnTitle</b></span>
+                        <a href="#handleChangeColumnTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleChangeColumnTitle(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateColumnTitleMessageParams.html" target="_self">UpdateColumnTitleMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;update-column-title-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:192</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateColumnTitleMessageParams.html" target="_self" >UpdateColumnTitleMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleCreateCard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleCreateCard</b></span>
+                        <a href="#handleCreateCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleCreateCard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateCardMessageParams.html" target="_self">CreateCardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;create-card-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateCardMessageParams.html" target="_self" >CreateCardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleCreateColumn"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleCreateColumn</b></span>
+                        <a href="#handleCreateColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleCreateColumn(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateColumnMessageParams.html" target="_self">CreateColumnMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;create-column-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateColumnMessageParams.html" target="_self" >CreateColumnMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleDeleteBoard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleDeleteBoard</b></span>
+                        <a href="#handleDeleteBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleDeleteBoard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteBoardMessageParams.html" target="_self">DeleteBoardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-board-request&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteBoardMessageParams.html" target="_self" >DeleteBoardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleDeleteColumn"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleDeleteColumn</b></span>
+                        <a href="#handleDeleteColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleDeleteColumn(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteColumnMessageParams.html" target="_self">DeleteColumnMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-column-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:222</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteColumnMessageParams.html" target="_self" >DeleteColumnMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleFetchBoard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleFetchBoard</b></span>
+                        <a href="#handleFetchBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleFetchBoard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/FetchBoardMessageParams.html" target="_self">FetchBoardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;fetch-board-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:145</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/FetchBoardMessageParams.html" target="_self" >FetchBoardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleMoveCard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleMoveCard</b></span>
+                        <a href="#handleMoveCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleMoveCard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveCardMessageParams.html" target="_self">MoveCardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;move-card-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:162</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/MoveCardMessageParams.html" target="_self" >MoveCardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleMoveColumn"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleMoveColumn</b></span>
+                        <a href="#handleMoveColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleMoveColumn(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveColumnMessageParams.html" target="_self">MoveColumnMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;move-column-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="177"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/socket.gateway.ts:177</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/MoveColumnMessageParams.html" target="_self" >MoveColumnMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import { UseGuards } from &#x27;@nestjs/common&#x27;;
+import { SubscribeMessage, WebSocketGateway, WsException } from &#x27;@nestjs/websockets&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { WsJwtAuthGuard } from &#x27;@src/modules/authentication/guard/ws-jwt-auth.guard&#x27;;
+import { BoardResponseMapper } from &#x27;../controller/mapper&#x27;;
+import { BoardDoAuthorizableService } from &#x27;../service&#x27;;
+import { BoardUc, ColumnUc } from &#x27;../uc&#x27;;
+import {
+	CreateCardMessageParams,
+	DeleteColumnMessageParams,
+	MoveCardMessageParams,
+	UpdateColumnTitleMessageParams,
+} from &#x27;./dto&#x27;;
+import { CreateColumnMessageParams } from &#x27;./dto/create-column.message.param&#x27;;
+import { DeleteBoardMessageParams } from &#x27;./dto/delete-board.message.param&#x27;;
+import { FetchBoardMessageParams } from &#x27;./dto/fetch-board.message.param&#x27;;
+import { MoveColumnMessageParams } from &#x27;./dto/move-column.message.param&#x27;;
+import { UpdateBoardTitleMessageParams } from &#x27;./dto/update-board-title.message.param&#x27;;
+import { UpdateBoardVisibilityMessageParams } from &#x27;./dto/update-board-visibility.message.param&#x27;;
+import { Socket } from &#x27;./types&#x27;;
+
+@WebSocketGateway({
+	path: &#x27;/collaboration&#x27;,
+	cors: {
+		origin: &#x27;http://localhost:4000&#x27;,
+		methods: &#x27;GET,HEAD,PUT,PATCH,POST,DELETE&#x27;,
+		preflightContinue: false,
+		optionsSuccessStatus: 204,
+		credentials: true,
+		// transports: [&#x27;websocket&#x27;],
+	},
+})
+@UseGuards(WsJwtAuthGuard)
+export class SocketGateway {
+	// TODO: use loggables instead of legacy logger
+	constructor(
+		private readonly logger: LegacyLogger,
+		private readonly orm: MikroORM,
+		private readonly boardUc: BoardUc,
+		private readonly columnUc: ColumnUc,
+		private readonly authorizableService: BoardDoAuthorizableService // to be removed
+	) {}
+
+	private getCurrentUser(client: Socket) {
+		const { user } &#x3D; client.handshake;
+		if (!user) throw new WsException(&#x27;Not Authenticated.&#x27;);
+		return user;
+	}
+
+	public afterInit(): void {
+		this.logger.log(&#x27;Socket gateway initialized&#x27;);
+	}
+
+	@SubscribeMessage(&#x27;delete-board-request&#x27;)
+	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
+			await this.boardUc.deleteBoard(userId, data.boardId);
+
+			client.to(room).emit(&#x27;delete-board-success&#x27;, data);
+			client.emit(&#x27;delete-board-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;delete-board-failure&#x27;, new Error(&#x27;Failed to delete board&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;update-board-title-request&#x27;)
+	@UseRequestContext()
+	async handleChangeBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit(&#x27;update-board-title-success&#x27;, data);
+			client.emit(&#x27;update-board-title-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;update-board-title-failure&#x27;, new Error(&#x27;Failed to update board title&#x27;));
+		}
+	}
+
+	// @SubscribeMessage(&#x27;update-card-request&#x27;)
+	// handleUpdateCard(client: Socket, data: unknown) {
+	// 	this.logger.log(&#x60;Message received from client id: ${client.id}&#x60;);
+	// 	this.logger.debug(&#x60;Payload: ${JSON.stringify(data)}&#x60;);
+	// 	client.broadcast.emit(&#x27;update-card-success&#x27;, data);
+	// 	client.emit(&#x27;update-card-success&#x27;, data);
+	// }
+
+	// @SubscribeMessage(&#x27;delete-card-request&#x27;)
+	// handleDeleteCard(client: Socket, data: unknown) {
+	// 	this.logger.log(&#x60;Message received from client id: ${client.id}&#x60;);
+	// 	this.logger.debug(&#x60;Payload: ${JSON.stringify(data)}&#x60;);
+	// 	client.broadcast.emit(&#x27;delete-card-success&#x27;, data);
+	// 	client.emit(&#x27;delete-card-success&#x27;, data);
+	// }
+
+	@SubscribeMessage(&#x27;create-card-request&#x27;)
+	@UseRequestContext()
+	async handleCreateCard(client: Socket, data: CreateCardMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const card &#x3D; await this.columnUc.createCard(userId, data.columnId);
+			const responsePayload &#x3D; {
+				...data,
+				newCard: card.getProps(),
+			};
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
+			client.to(room).emit(&#x27;create-card-success&#x27;, responsePayload);
+			client.emit(&#x27;create-card-success&#x27;, responsePayload);
+		} catch (err) {
+			client.emit(&#x27;create-card-failure&#x27;, new Error(&#x27;Failed to create card&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;create-column-request&#x27;)
+	@UseRequestContext()
+	async handleCreateColumn(client: Socket, data: CreateColumnMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const column &#x3D; await this.boardUc.createColumn(userId, data.boardId);
+			const responsePayload &#x3D; {
+				...data,
+				newColumn: column.getProps(),
+			};
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit(&#x27;create-column-success&#x27;, responsePayload);
+			client.emit(&#x27;create-column-success&#x27;, responsePayload);
+
+			// payload needs to be returned to allow the client to do sequential operation
+			// of createColumn and move the card into that column
+			return responsePayload;
+		} catch (err) {
+			client.emit(&#x27;create-column-failure&#x27;, new Error(&#x27;Failed to create column&#x27;));
+			return {};
+		}
+	}
+
+	@SubscribeMessage(&#x27;fetch-board-request&#x27;)
+	@UseRequestContext()
+	async handleFetchBoard(client: Socket, data: FetchBoardMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const board &#x3D; await this.boardUc.findBoard(userId, data.boardId);
+
+			const responsePayload &#x3D; BoardResponseMapper.mapToResponse(board);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit(&#x27;fetch-board-success&#x27;, responsePayload);
+			client.emit(&#x27;fetch-board-success&#x27;, responsePayload);
+		} catch (err) {
+			client.emit(&#x27;fetch-board-failure&#x27;, new Error(&#x27;Failed to fetch board&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;move-card-request&#x27;)
+	@UseRequestContext()
+	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit(&#x27;move-card-success&#x27;, data);
+			client.emit(&#x27;move-card-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;move-card-failure&#x27;, new Error(&#x27;Failed to move card&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;move-column-request&#x27;)
+	@UseRequestContext()
+	async handleMoveColumn(client: Socket, data: MoveColumnMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.targetBoardId);
+			client.to(room).emit(&#x27;move-column-success&#x27;, data);
+			client.emit(&#x27;move-column-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;move-column-failure&#x27;, new Error(&#x27;Failed to move column&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;update-column-title-request&#x27;)
+	@UseRequestContext()
+	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
+			client.to(room).emit(&#x27;update-column-title-success&#x27;, data);
+			client.emit(&#x27;update-column-title-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;update-column-title-failure&#x27;, new Error(&#x27;Failed to update column title&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;update-board-visibility-request&#x27;)
+	@UseRequestContext()
+	async handleBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
+			client.to(room).emit(&#x27;update-board-visibility-success&#x27;, data);
+			client.emit(&#x27;update-board-visibility-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;update-board-visibility-failure&#x27;, new Error(&#x27;Failed to update board visibility&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;delete-column-request&#x27;)
+	@UseRequestContext()
+	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
+			await this.columnUc.deleteColumn(userId, data.columnId);
+
+			client.to(room).emit(&#x27;delete-column-success&#x27;, data);
+			client.emit(&#x27;delete-column-success&#x27;, data);
+		} catch (err) {
+			client.emit(&#x27;delete-column-failure&#x27;, new Error(&#x27;Failed to delete column&#x27;));
+		}
+	}
+
+	// @SubscribeMessage(&#x27;reload-board-request&#x27;)
+	// handleReloadBoard(client: Socket, data: DeleteColumnMessageParams) {
+	// 	this.logger.log(&#x60;Message received from client id: ${client.id}&#x60;);
+	// 	this.logger.debug(&#x60;Payload: ${JSON.stringify(data)}&#x60;);
+	// 	client.broadcast.emit(&#x27;reload-board-success&#x27;, data);
+	// }
+
+	private async ensureUserInRoom(client: Socket, id: string) {
+		const rootId &#x3D; await this.getRootIdForId(id);
+		const room &#x3D; &#x60;board_${rootId}&#x60;;
+		await client.join(room);
+		return room;
+	}
+
+	// private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
+	// 	return anyDo.ancestorIds[0];
+	// }
+
+	private async getRootIdForId(id: string) {
+		const authorizable &#x3D; await this.authorizableService.findById(id);
+		const rootId &#x3D; authorizable.rootDo.id;
+
+		return rootId;
+	}
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SocketGateway.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

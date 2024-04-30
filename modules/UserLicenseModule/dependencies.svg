@@ -24,13 +24,13 @@
 <title>cluster_UserLicenseModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="55,-70 55,-268 441,-268 441,-70 55,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_UserLicenseModule_exports</title>
-<polygon fill="none" stroke="black" points="178,-208 178,-260 326,-260 326,-208 178,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_UserLicenseModule_providers</title>
 <polygon fill="none" stroke="black" points="63,-78 63,-130 433,-130 433,-78 63,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_UserLicenseModule_exports</title>
+<polygon fill="none" stroke="black" points="178,-208 178,-260 326,-260 326,-208 178,-208"/>
 </g>
 <!-- UserLicenseService  -->
 <g id="node1" class="node">

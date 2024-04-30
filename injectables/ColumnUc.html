@@ -304,8 +304,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -446,7 +446,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -478,8 +478,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -551,7 +551,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -583,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -644,7 +644,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -936,7 +936,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { Card, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
+import { Card, Column, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { BoardDoAuthorizableService, CardService, ColumnService } from &#x27;../service&#x27;;
@@ -956,22 +956,26 @@ export class ColumnUc extends BaseUc {
 		this.logger.setContext(ColumnUc.name);
 	}
 
-	async deleteColumn(userId: EntityId, columnId: EntityId): Promise&lt;void&gt; {
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise&lt;Column&gt; {
 		this.logger.debug({ action: &#x27;deleteColumn&#x27;, userId, columnId });
 
 		const column &#x3D; await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.delete(column);
+
+		return column;
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise&lt;void&gt; {
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise&lt;Column&gt; {
 		this.logger.debug({ action: &#x27;updateColumnTitle&#x27;, userId, columnId, title });
 
 		const column &#x3D; await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.updateTitle(column, title);
+
+		return column;
 	}
 
 	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise&lt;Card&gt; {
@@ -985,7 +989,7 @@ export class ColumnUc extends BaseUc {
 		return card;
 	}
 
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise&lt;void&gt; {
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise&lt;Card&gt; {
 		this.logger.debug({ action: &#x27;moveCard&#x27;, userId, cardId, targetColumnId, toPosition: targetPosition });
 
 		const card &#x3D; await this.cardService.findById(cardId);
@@ -995,6 +999,7 @@ export class ColumnUc extends BaseUc {
 		await this.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
+		return card;
 	}
 }
 </code></pre>

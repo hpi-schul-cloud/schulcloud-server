@@ -348,8 +348,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="112"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:112</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:116</a></div>
                         </td>
                     </tr>
 
@@ -510,8 +510,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -640,7 +640,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -834,8 +834,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -907,7 +907,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -939,8 +939,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -1000,7 +1000,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1032,8 +1032,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="134"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:134</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -1093,7 +1093,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1449,22 +1449,25 @@ export class BoardUc extends BaseUc {
 		return board.context;
 	}
 
-	async deleteBoard(userId: EntityId, boardId: EntityId): Promise&lt;void&gt; {
+	async deleteBoard(userId: EntityId, boardId: EntityId): Promise&lt;ColumnBoard&gt; {
 		this.logger.debug({ action: &#x27;deleteBoard&#x27;, userId, boardId });
 
 		const board &#x3D; await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.delete(board);
+
+		return board;
 	}
 
-	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise&lt;void&gt; {
+	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise&lt;ColumnBoard&gt; {
 		this.logger.debug({ action: &#x27;updateBoardTitle&#x27;, userId, boardId, title });
 
 		const board &#x3D; await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateTitle(board, title);
+		return board;
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise&lt;Column&gt; {
@@ -1482,7 +1485,7 @@ export class BoardUc extends BaseUc {
 		columnId: EntityId,
 		targetBoardId: EntityId,
 		targetPosition: number
-	): Promise&lt;void&gt; {
+	): Promise&lt;Column&gt; {
 		this.logger.debug({ action: &#x27;moveColumn&#x27;, userId, columnId, targetBoardId, targetPosition });
 
 		const column &#x3D; await this.columnService.findById(columnId);
@@ -1492,6 +1495,7 @@ export class BoardUc extends BaseUc {
 		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
+		return column;
 	}
 
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise&lt;CopyStatus&gt; {
@@ -1516,11 +1520,12 @@ export class BoardUc extends BaseUc {
 		return copyStatus;
 	}
 
-	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise&lt;void&gt; {
+	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise&lt;ColumnBoard&gt; {
 		const board &#x3D; await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateBoardVisibility(board, isVisible);
+		return board;
 	}
 }
 </code></pre>

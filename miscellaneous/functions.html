@@ -116,6 +116,9 @@
                             <a href="#bootstrap" title="apps/server/src/apps/admin-api-server.app.ts" ><b>bootstrap</b>&nbsp;&nbsp;&nbsp;(apps/.../admin-api-server.app.ts)</a>
                         </li>
                         <li>
+                            <a href="#bootstrap" title="apps/server/src/apps/board-collaboration.app.ts" ><b>bootstrap</b>&nbsp;&nbsp;&nbsp;(apps/.../board-collaboration.app.ts)</a>
+                        </li>
+                        <li>
                             <a href="#bootstrap" title="apps/server/src/apps/files-storage-consumer.app.ts" ><b>bootstrap</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage-consumer.app.ts)</a>
                         </li>
                         <li>
@@ -257,6 +260,9 @@
                             <a href="#getResolvedValues" title="apps/server/src/shared/common/utils/promise.ts" ><b>getResolvedValues</b>&nbsp;&nbsp;&nbsp;(apps/.../promise.ts)</a>
                         </li>
                         <li>
+                            <a href="#getSocketApiClient" title="apps/server/src/shared/testing/test-socket-api-client.ts" ><b>getSocketApiClient</b>&nbsp;&nbsp;&nbsp;(apps/.../test-socket-api-client.ts)</a>
+                        </li>
+                        <li>
                             <a href="#hasDuplicateName" title="apps/server/src/modules/files-storage/helper/file-name.ts" ><b>hasDuplicateName</b>&nbsp;&nbsp;&nbsp;(apps/.../file-name.ts)</a>
                         </li>
                         <li>
@@ -346,6 +352,9 @@
                         <li>
                             <a href="#unmarkForDelete" title="apps/server/src/modules/files-storage/helper/file-record.ts" ><b>unmarkForDelete</b>&nbsp;&nbsp;&nbsp;(apps/.../file-record.ts)</a>
                         </li>
+                        <li>
+                            <a href="#waitForEvent" title="apps/server/src/shared/testing/test-socket-api-client.ts" ><b>waitForEvent</b>&nbsp;&nbsp;&nbsp;(apps/.../test-socket-api-client.ts)</a>
+                        </li>
                     </ul>
                 </td>
             </tr>
@@ -417,6 +426,30 @@
         </tbody>
     </table>
 </section>    <h3>apps/server/src/apps/admin-api-server.app.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="bootstrap"></a>
+                    <span class="name">
+                        <span ><b>bootstrap</b></span>
+                        <a href="#bootstrap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>bootstrap()</code>
+                </td>
+            </tr>
+
+
+
+
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/apps/board-collaboration.app.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -3054,6 +3087,147 @@ with all characters encoded again.</p>
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>PromiseFulfilledResult&lt;T&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/testing/test-socket-api-client.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSocketApiClient"></a>
+                    <span class="name">
+                        <span ><b>getSocketApiClient</b></span>
+                        <a href="#getSocketApiClient"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSocketApiClient(app: INestApplication, user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>app</td>
+                                            <td>
+                                                        <code>INestApplication</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="waitForEvent"></a>
+                    <span class="name">
+                        <span ><b>waitForEvent</b></span>
+                        <a href="#waitForEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>waitForEvent(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, eventName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>eventName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;&gt;</code>
 
                         </div>
                             <div class="io-description">
