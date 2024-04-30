@@ -236,6 +236,7 @@ describe('ToolLaunchService', () => {
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
 						isIncompleteOnScopeContext: false,
+						isIncompleteOperationalOnScopeContext: false,
 						isDeactivated: true,
 					})
 				);
@@ -253,7 +254,7 @@ describe('ToolLaunchService', () => {
 				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
 
 				await expect(func).rejects.toThrow(
-					new ToolStatusOutdatedLoggableException(userId, contextExternalToolId, true, true, true)
+					new ToolStatusOutdatedLoggableException(userId, contextExternalToolId, true, true, false, false, true)
 				);
 			});
 		});

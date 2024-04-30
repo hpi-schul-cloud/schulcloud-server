@@ -8,6 +8,8 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 		private readonly toolId: EntityId,
 		private readonly isOutdatedOnScopeSchool: boolean,
 		private readonly isOutdatedOnScopeContext: boolean,
+		private readonly isIncompleteOnScopeContext: boolean,
+		private readonly isIncompleteOperationalOnScopeContext: boolean,
 		private readonly isDeactivated: boolean
 	) {
 		super();
@@ -15,6 +17,7 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
+			// TODO refactor exception to status not launchable
 			type: 'TOOL_STATUS_OUTDATED',
 			message: 'The status of the tool is outdated and cannot be launched by the user.',
 			stack: this.stack,
@@ -23,6 +26,8 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 				toolId: this.toolId,
 				isOutdatedOnScopeSchool: this.isOutdatedOnScopeSchool,
 				isOutdatedOnScopeContext: this.isOutdatedOnScopeContext,
+				isIncompleteOnScopeContext: this.isIncompleteOnScopeContext,
+				isIncompleteOperationalOnScopeContext: this.isIncompleteOperationalOnScopeContext,
 				isDeactivated: this.isDeactivated,
 			},
 		};

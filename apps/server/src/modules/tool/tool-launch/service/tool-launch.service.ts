@@ -96,12 +96,19 @@ export class ToolLaunchService {
 			contextExternalTool
 		);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
+		if (
+			status.isOutdatedOnScopeSchool ||
+			status.isOutdatedOnScopeContext ||
+			status.isDeactivated ||
+			status.isIncompleteOnScopeContext
+		) {
 			throw new ToolStatusOutdatedLoggableException(
 				userId,
 				contextExternalTool.id ?? '',
 				status.isOutdatedOnScopeSchool,
 				status.isOutdatedOnScopeContext,
+				status.isIncompleteOnScopeContext,
+				status.isIncompleteOperationalOnScopeContext,
 				status.isDeactivated
 			);
 		}

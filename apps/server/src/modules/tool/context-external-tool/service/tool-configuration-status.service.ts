@@ -50,11 +50,10 @@ export class ToolConfigurationStatusService {
 				)
 			) {
 				configurationStatus.isIncompleteOnScopeContext = true;
-			} else if (
-				contextParameterErrors.some(
-					(error: ValidationError) => error instanceof ToolParameterOptionalValueMissingLoggableException
-				)
-			) {
+			} else if (this.isIncompleteOperational(contextParameterErrors) && !this.isOutdated(contextParameterErrors)) {
+				configurationStatus.isIncompleteOperationalOnScopeContext = true;
+				configurationStatus.isOutdatedOnScopeContext = false;
+			} else if (this.isIncompleteOperational(contextParameterErrors) && this.isOutdated(contextParameterErrors)) {
 				configurationStatus.isIncompleteOperationalOnScopeContext = true;
 			}
 		}
@@ -63,10 +62,22 @@ export class ToolConfigurationStatusService {
 	}
 
 	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
-		if (externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated)) {
-			return true;
-		}
+		return !!(externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated));
+	}
 
-		return false;
+	private isIncompleteOperational(errors: ValidationError[]) {
+		return errors.some((error: ValidationError) => error instanceof ToolParameterOptionalValueMissingLoggableException);
+	}
+
+	private isOutdated(contextParameterErrors: ValidationError[]): boolean {
+		const parameterWithoutOptional: ValidationError[] = contextParameterErrors.filter(
+			(error: ValidationError) => !this.isOptional(error)
+		);
+
+		return parameterWithoutOptional.length > 0;
+	}
+
+	isOptional(error: ValidationError): boolean {
+		return error instanceof ToolParameterOptionalValueMissingLoggableException;
 	}
 }
