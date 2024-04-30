@@ -10,21 +10,21 @@ import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { ColumnBoardCopyService } from '../service/column-board-copy.service';
-import { BaseUc } from './base.uc';
+import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 @Injectable()
-export class BoardUc extends BaseUc {
+export class BoardUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo
 	) {
-		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
 	}
 
@@ -50,7 +50,7 @@ export class BoardUc extends BaseUc {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 
 		return board;
 	}
@@ -59,7 +59,7 @@ export class BoardUc extends BaseUc {
 		this.logger.debug({ action: 'findBoardContext', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 
 		return board.context;
 	}
@@ -68,7 +68,7 @@ export class BoardUc extends BaseUc {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.delete(board);
 	}
@@ -77,7 +77,7 @@ export class BoardUc extends BaseUc {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateTitle(board, title);
 	}
@@ -86,7 +86,7 @@ export class BoardUc extends BaseUc {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		const column = await this.columnService.create(board);
 		return column;
@@ -103,8 +103,8 @@ export class BoardUc extends BaseUc {
 		const column = await this.columnService.findById(columnId);
 		const targetBoard = await this.columnBoardService.findById(targetBoardId);
 
-		await this.checkPermission(userId, column, Action.write);
-		await this.checkPermission(userId, targetBoard, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, Action.write);
+		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
 	}
@@ -116,7 +116,7 @@ export class BoardUc extends BaseUc {
 		const board = await this.columnBoardService.findById(boardId);
 		const course = await this.courseRepo.findById(board.context.id);
 
-		await this.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 		this.authorizationService.checkPermission(user, course, {
 			action: Action.write,
 			requiredPermissions: [],
@@ -133,7 +133,7 @@ export class BoardUc extends BaseUc {
 
 	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<void> {
 		const board = await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateBoardVisibility(board, isVisible);
 	}

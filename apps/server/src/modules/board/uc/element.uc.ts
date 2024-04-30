@@ -1,5 +1,5 @@
-import { Action, AuthorizationService } from '@modules/authorization';
-import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Action } from '@modules/authorization';
+import { ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyContentElementDo,
 	isSubmissionContainerElement,
@@ -11,19 +11,17 @@ import { Logger } from '@src/core/logger';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
-import { BaseUc } from './base.uc';
+import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 @Injectable()
-export class ElementUc extends BaseUc {
+export class ElementUc {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
 		private readonly logger: Logger
 	) {
-		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ElementUc.name);
 	}
 
@@ -33,7 +31,7 @@ export class ElementUc extends BaseUc {
 		content: AnyElementContentBody
 	): Promise<AnyContentElementDo> {
 		const element = await this.elementService.findById(elementId);
-		await this.checkPermission(userId, element, Action.write);
+		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 
 		await this.elementService.update(element, content);
 		return element;
@@ -41,14 +39,14 @@ export class ElementUc extends BaseUc {
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
 		const element = await this.elementService.findById(elementId);
-		await this.checkPermission(userId, element, Action.write);
+		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 
 		await this.elementService.delete(element);
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
 		const element = await this.elementService.findById(elementId);
-		await this.checkPermission(userId, element, Action.read);
+		await this.boardPermissionService.checkPermission(userId, element, Action.read);
 	}
 
 	async createSubmissionItem(
@@ -77,10 +75,10 @@ export class ElementUc extends BaseUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainerElement, Action.read);
+		await this.boardPermissionService.checkPermission(userId, submissionContainerElement, Action.read);
 
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
-		if (this.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
+		if (this.boardPermissionService.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
 			throw new ForbiddenException();
 		}
 

@@ -3,20 +3,18 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Card, ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { BoardDoAuthorizableService, CardService, ColumnService } from '../service';
-import { BaseUc } from './base.uc';
+import { CardService, ColumnService } from '../service';
+import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 @Injectable()
-export class ColumnUc extends BaseUc {
+export class ColumnUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly cardService: CardService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger
 	) {
-		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ColumnUc.name);
 	}
 
@@ -24,7 +22,7 @@ export class ColumnUc extends BaseUc {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
-		await this.checkPermission(userId, column, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, Action.write);
 
 		await this.columnService.delete(column);
 	}
@@ -33,7 +31,7 @@ export class ColumnUc extends BaseUc {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
 		const column = await this.columnService.findById(columnId);
-		await this.checkPermission(userId, column, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, Action.write);
 
 		await this.columnService.updateTitle(column, title);
 	}
@@ -42,7 +40,7 @@ export class ColumnUc extends BaseUc {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
-		await this.checkPermission(userId, column, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, Action.write);
 
 		const card = await this.cardService.create(column, requiredEmptyElements);
 
@@ -55,8 +53,8 @@ export class ColumnUc extends BaseUc {
 		const card = await this.cardService.findById(cardId);
 		const targetColumn = await this.columnService.findById(targetColumnId);
 
-		await this.checkPermission(userId, card, Action.write);
-		await this.checkPermission(userId, targetColumn, Action.write);
+		await this.boardPermissionService.checkPermission(userId, card, Action.write);
+		await this.boardPermissionService.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
 	}

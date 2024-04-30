@@ -22,19 +22,18 @@ import {
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
-import { BaseUc } from './base.uc';
+import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 @Injectable()
-export class SubmissionItemUc extends BaseUc {
+export class SubmissionItemUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardPermissionService: BoardNodePermissionService,
 		protected readonly elementService: ContentElementService,
 		protected readonly submissionItemService: SubmissionItemService
-	) {
-		super(authorizationService, boardDoAuthorizableService);
-	}
+	) {}
 
 	async findSubmissionItems(
 		userId: EntityId,
@@ -45,7 +44,7 @@ export class SubmissionItemUc extends BaseUc {
 			throw new NotFoundException('Could not find a submission container with this id');
 		}
 
-		await this.checkPermission(userId, submissionContainerElement, Action.read);
+		await this.boardPermissionService.checkPermission(userId, submissionContainerElement, Action.read);
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
 
@@ -55,7 +54,7 @@ export class SubmissionItemUc extends BaseUc {
 		let users = boardDoAuthorizable.users.filter((user) => user.roles.includes(BoardRoles.READER));
 
 		// board readers can only see their own submission item
-		if (this.isUserBoardReader(userId, boardDoAuthorizable.users)) {
+		if (this.boardPermissionService.isUserBoardReader(userId, boardDoAuthorizable.users)) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
 			users = [];
 		}
@@ -70,7 +69,7 @@ export class SubmissionItemUc extends BaseUc {
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
-		await this.checkPermission(userId, submissionItem, Action.write);
+		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
 		await this.submissionItemService.update(submissionItem, completed);
 
@@ -79,7 +78,7 @@ export class SubmissionItemUc extends BaseUc {
 
 	async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-		await this.checkPermission(userId, submissionItem, Action.write);
+		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
 		await this.submissionItemService.delete(submissionItem);
 	}
@@ -97,11 +96,11 @@ export class SubmissionItemUc extends BaseUc {
 
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
-		if (!this.isUserBoardReader(userId, boardDoAuthorizable.users)) {
+		if (!this.boardPermissionService.isUserBoardReader(userId, boardDoAuthorizable.users)) {
 			throw new ForbiddenException();
 		}
 
-		await this.checkPermission(userId, submissionItem, Action.write);
+		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
 		const element = await this.elementService.create(submissionItem, type);
 

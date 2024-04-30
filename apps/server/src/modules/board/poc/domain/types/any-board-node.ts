@@ -26,5 +26,4 @@ export type AnyBoardNode =
 	| LinkElement
 	| RichTextElement
 	| SubmissionContainerElement
-	| SubmissionItem
 	| SubmissionItem;

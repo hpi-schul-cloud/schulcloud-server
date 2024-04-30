@@ -4,19 +4,19 @@ import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType } from '@shar
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
-import { BaseUc } from './base.uc';
+import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 @Injectable()
-export class CardUc extends BaseUc {
+export class CardUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly authorizationService: AuthorizationService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: LegacyLogger
 	) {
-		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(CardUc.name);
 	}
 
@@ -33,7 +33,7 @@ export class CardUc extends BaseUc {
 		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
 
 		const card = await this.cardService.findById(cardId);
-		await this.checkPermission(userId, card, Action.write);
+		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
 		await this.cardService.updateHeight(card, height);
 	}
@@ -42,7 +42,7 @@ export class CardUc extends BaseUc {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
 		const card = await this.cardService.findById(cardId);
-		await this.checkPermission(userId, card, Action.write);
+		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
 		await this.cardService.updateTitle(card, title);
 	}
@@ -51,7 +51,7 @@ export class CardUc extends BaseUc {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const card = await this.cardService.findById(cardId);
-		await this.checkPermission(userId, card, Action.write);
+		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
 		await this.cardService.delete(card);
 	}
@@ -67,7 +67,7 @@ export class CardUc extends BaseUc {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);
-		await this.checkPermission(userId, card, Action.write);
+		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
 		const element = await this.elementService.create(card, type);
 		if (toPosition !== undefined && typeof toPosition === 'number') {
@@ -88,8 +88,8 @@ export class CardUc extends BaseUc {
 		const element = await this.elementService.findById(elementId);
 		const targetCard = await this.cardService.findById(targetCardId);
 
-		await this.checkPermission(userId, element, Action.write);
-		await this.checkPermission(userId, targetCard, Action.write);
+		await this.boardPermissionService.checkPermission(userId, element, Action.write);
+		await this.boardPermissionService.checkPermission(userId, targetCard, Action.write);
 
 		await this.elementService.move(element, targetCard, targetPosition);
 	}
