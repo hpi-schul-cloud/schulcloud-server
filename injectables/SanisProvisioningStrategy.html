@@ -189,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService)</code>
+<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, schulconnexLicenseProvisioningService: <a href="../injectables/SchulconnexLicenseProvisioningService.html" target="_self">SchulconnexLicenseProvisioningService</a>, responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService, schulconnexRestClient: <a href="../classes/SchulconnexRestClient.html" target="_self">SchulconnexRestClient</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:39</a></div>
                             </td>
                         </tr>
 
@@ -284,6 +284,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>schulconnexLicenseProvisioningService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchulconnexLicenseProvisioningService.html" target="_self" >SchulconnexLicenseProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>responseMapper</td>
                                                   
                                                         <td>
@@ -300,6 +312,30 @@
                                                   
                                                         <td>
                                                                     <code>HttpService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schulconnexRestClient</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/SchulconnexRestClient.html" target="_self" >SchulconnexRestClient</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ConfigService&lt;ProvisioningConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -343,8 +379,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="115"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:115</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -406,15 +442,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkResponseValidation(response: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>, groups: <a href="../interfaces/Group.html" target="_self">SanisResponseValidationGroups[]</a>)</code>
+                    <code>checkResponseValidation(response: SanisResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[], groups?: <a href="../interfaces/Group.html" target="_self">SanisResponseValidationGroups[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -437,7 +473,7 @@
                                         <tr>
                                                 <td>response</td>
                                             <td>
-                                                            <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                                        <code>SanisResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[]</code>
                                             </td>
 
                                             <td>
@@ -453,7 +489,7 @@
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -462,7 +498,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -501,7 +537,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:55</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:69</a></code>
 </div>
                         </td>
                     </tr>
@@ -574,7 +610,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:51</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:65</a></code>
 </div>
                         </td>
                     </tr>
@@ -620,7 +656,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:27</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:32</a></code>
 </div>
                         </td>
                     </tr>
@@ -696,7 +732,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/SchulconnexProvisioningStrategy.html#source" target="_self" >SchulconnexProvisioningStrategy:49</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/SchulconnexProvisioningStrategy.html#source" target="_self" >SchulconnexProvisioningStrategy:58</a></code>
 </div>
                         </td>
                     </tr>
@@ -784,7 +820,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/SchulconnexProvisioningStrategy.html#source" target="_self" >SchulconnexProvisioningStrategy:87</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/SchulconnexProvisioningStrategy.html#source" target="_self" >SchulconnexProvisioningStrategy:96</a></code>
 </div>
                         </td>
                     </tr>
@@ -837,10 +873,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SanisResponse, SanisResponseValidationGroups } from &#x27;@infra/schulconnex-client/response&#x27;;
-import { GroupService } from &#x27;@modules/group&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	SanisResponse,
+	SanisResponseValidationGroups,
+	SchulconnexLizenzInfoResponse,
+} from &#x27;@infra/schulconnex-client/response&#x27;;
+import { SchulconnexRestClient } from &#x27;@infra/schulconnex-client/schulconnex-rest-client&#x27;;
+import { GroupService } from &#x27;@modules/group/service/group.service&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ValidationErrorLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
@@ -851,15 +893,18 @@ import { firstValueFrom } from &#x27;rxjs&#x27;;
 import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
 import {
 	ExternalGroupDto,
+	ExternalLicenseDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from &#x27;../../dto&#x27;;
+import { ProvisioningConfig } from &#x27;../../provisioning.config&#x27;;
 import { SchulconnexProvisioningStrategy } from &#x27;../oidc&#x27;;
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from &#x27;../oidc/service&#x27;;
@@ -874,8 +919,11 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		protected readonly groupService: GroupService,
+		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
 		private readonly responseMapper: SanisResponseMapper,
-		private readonly httpService: HttpService
+		private readonly httpService: HttpService,
+		private readonly schulconnexRestClient: SchulconnexRestClient,
+		protected readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;
 	) {
 		super(
 			provisioningFeatures,
@@ -883,7 +931,9 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			schulconnexUserProvisioningService,
 			schulconnexGroupProvisioningService,
 			schulconnexCourseSyncService,
-			groupService
+			schulconnexLicenseProvisioningService,
+			groupService,
+			configService
 		);
 	}
 
@@ -906,27 +956,43 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			},
 		};
 
-		const axiosResponse: AxiosResponse&lt;SanisResponse&gt; &#x3D; await firstValueFrom(
+		const sanisAxiosResponse: AxiosResponse&lt;SanisResponse&gt; &#x3D; await firstValueFrom(
 			this.httpService.get(input.system.provisioningUrl, axiosConfig)
 		);
 
-		const response: SanisResponse &#x3D; plainToClass(SanisResponse, axiosResponse.data);
+		const sanisResponse: SanisResponse &#x3D; plainToClass(SanisResponse, sanisAxiosResponse.data);
 
-		await this.checkResponseValidation(response, [
+		await this.checkResponseValidation(sanisResponse, [
 			SanisResponseValidationGroups.USER,
 			SanisResponseValidationGroups.SCHOOL,
 		]);
 
-		const externalUser: ExternalUserDto &#x3D; this.responseMapper.mapToExternalUserDto(axiosResponse.data);
+		const externalUser: ExternalUserDto &#x3D; this.responseMapper.mapToExternalUserDto(sanisAxiosResponse.data);
 		this.addTeacherRoleIfAdmin(externalUser);
 
-		const externalSchool: ExternalSchoolDto &#x3D; this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
+		const externalSchool: ExternalSchoolDto &#x3D; this.responseMapper.mapToExternalSchoolDto(sanisAxiosResponse.data);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
 		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
-			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
+			await this.checkResponseValidation(sanisResponse, [SanisResponseValidationGroups.GROUPS]);
 
-			externalGroups &#x3D; this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+			externalGroups &#x3D; this.responseMapper.mapToExternalGroupDtos(sanisAxiosResponse.data);
+		}
+
+		let externalLicenses: ExternalLicenseDto[] | undefined;
+		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;)) {
+			const schulconnexLizenzInfoAxiosResponse: SchulconnexLizenzInfoResponse[] &#x3D;
+				await this.schulconnexRestClient.getLizenzInfo(input.accessToken, {
+					overrideUrl: this.configService.get(&#x27;PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL&#x27;),
+				});
+
+			const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] &#x3D; plainToClass(
+				SchulconnexLizenzInfoResponse,
+				schulconnexLizenzInfoAxiosResponse
+			);
+			await this.checkResponseValidation(schulconnexLizenzInfoResponses);
+
+			externalLicenses &#x3D; SanisResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
 		}
 
 		const oauthData: OauthDataDto &#x3D; new OauthDataDto({
@@ -934,17 +1000,29 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			externalSchool,
 			externalUser,
 			externalGroups,
+			externalLicenses,
 		});
 
 		return oauthData;
 	}
 
-	private async checkResponseValidation(response: SanisResponse, groups: SanisResponseValidationGroups[]) {
-		const validationErrors: ValidationError[] &#x3D; await validate(response, {
-			always: true,
-			forbidUnknownValues: false,
-			groups,
-		});
+	private async checkResponseValidation(
+		response: SanisResponse | SchulconnexLizenzInfoResponse | SchulconnexLizenzInfoResponse[],
+		groups?: SanisResponseValidationGroups[]
+	): Promise&lt;void&gt; {
+		const responsesArray &#x3D; Array.isArray(response) ? response : [response];
+
+		const validationPromises: Promise&lt;ValidationError[]&gt;[] &#x3D; responsesArray.map((item) &#x3D;&gt;
+			validate(item, {
+				always: true,
+				forbidUnknownValues: false,
+				groups,
+			})
+		);
+
+		const validationResults: ValidationError[][] &#x3D; await Promise.all(validationPromises);
+
+		const validationErrors: ValidationError[] &#x3D; validationResults.flat();
 
 		if (validationErrors.length) {
 			throw new ValidationErrorLoggableException(validationErrors);

@@ -167,6 +167,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#getLizenzInfo" >getLizenzInfo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getPersonenInfo" >getPersonenInfo</a>
                             </li>
                             <li>
@@ -343,8 +348,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -356,6 +361,88 @@
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLizenzInfo"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLizenzInfo</b></span>
+                        <a href="#getLizenzInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLizenzInfo(accessToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>accessToken</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SchulconnexLizenzInfoResponse.html" target="_self" >Promise&lt;SchulconnexLizenzInfoResponse[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -535,8 +622,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +724,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -674,7 +761,7 @@ import QueryString from &#x27;qs&#x27;;
 import { lastValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { SchulconnexConfigurationMissingLoggable } from &#x27;./loggable&#x27;;
 import { SchulconnexPersonenInfoParams } from &#x27;./request&#x27;;
-import { SanisResponse } from &#x27;./response&#x27;;
+import { SanisResponse, SchulconnexLizenzInfoResponse } from &#x27;./response&#x27;;
 import { SchulconnexApiInterface } from &#x27;./schulconnex-api.interface&#x27;;
 import { SchulconnexRestClientOptions } from &#x27;./schulconnex-rest-client-options&#x27;;
 
@@ -710,6 +797,20 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 			url,
 			token.accessToken,
 			this.options.personenInfoTimeoutInMs
+		);
+
+		return response;
+	}
+
+	public async getLizenzInfo(
+		accessToken: string,
+		options?: { overrideUrl: string }
+	): Promise&lt;SchulconnexLizenzInfoResponse[]&gt; {
+		const url: URL &#x3D; new URL(options?.overrideUrl ?? &#x60;${this.SCHULCONNEX_API_BASE_URL}/lizenz-info&#x60;);
+
+		const response: Promise&lt;SchulconnexLizenzInfoResponse[]&gt; &#x3D; this.getRequest&lt;SchulconnexLizenzInfoResponse[]&gt;(
+			url,
+			accessToken
 		);
 
 		return response;

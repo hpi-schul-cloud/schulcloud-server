@@ -143,6 +143,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Optional</span>
+                                <a href="#externalLicenses" >externalLicenses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#externalSchool" >externalSchool</a>
                             </li>
                             <li>
@@ -175,7 +179,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -238,7 +242,34 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalLicenses"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>externalLicenses</b></span>
+                        <a href="#externalLicenses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/ExternalLicenseDto.html" target="_self" >ExternalLicenseDto[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -265,7 +296,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -291,7 +322,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -317,7 +348,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/provisioning/dto/oauth-data.dto.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -336,10 +367,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalUserDto } from &#x27;./external-user.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalGroupDto } from &#x27;./external-group.dto&#x27;;
+import { ExternalLicenseDto } from &#x27;./external-license.dto&#x27;;
 import { ExternalSchoolDto } from &#x27;./external-school.dto&#x27;;
+import { ExternalUserDto } from &#x27;./external-user.dto&#x27;;
 import { ProvisioningSystemDto } from &#x27;./provisioning-system.dto&#x27;;
-import { ExternalGroupDto } from &#x27;./external-group.dto&#x27;;
 
 export class OauthDataDto {
 	system: ProvisioningSystemDto;
@@ -350,11 +382,14 @@ export class OauthDataDto {
 
 	externalGroups?: ExternalGroupDto[];
 
+	externalLicenses?: ExternalLicenseDto[];
+
 	constructor(props: OauthDataDto) {
 		this.system &#x3D; props.system;
 		this.externalUser &#x3D; props.externalUser;
 		this.externalSchool &#x3D; props.externalSchool;
 		this.externalGroups &#x3D; props.externalGroups;
+		this.externalLicenses &#x3D; props.externalLicenses;
 	}
 }
 </code></pre>

@@ -349,8 +349,8 @@ Customizations:</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="155"
-                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:155</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -440,10 +440,11 @@ import { VideoConferenceApiModule } from &#x27;@modules/video-conference/video-c
 import { DynamicModule, Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AlertModule } from &#x27;@modules/alert/alert.module&#x27;;
+import { UserLicenseModule } from &#x27;../user-license&#x27;;
 import { ServerConfigController, ServerController, ServerUc } from &#x27;./api&#x27;;
 import { SERVER_CONFIG_TOKEN, serverConfig } from &#x27;./server.config&#x27;;
 
@@ -500,6 +501,7 @@ const serverModules &#x3D; [
 	MediaBoardApiModule,
 	CollaborativeTextEditorApiModule,
 	AlertModule,
+	UserLicenseModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {

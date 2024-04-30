@@ -460,7 +460,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulconnexClientModule } from &#x27;@infra/schulconnex-client&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { SchulconnexClientModule } from &#x27;@infra/schulconnex-client&#x27;;
 import { AccountModule } from &#x27;@modules/account&#x27;;
 import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolModule } from &#x27;@modules/legacy-school&#x27;;
@@ -486,7 +487,13 @@ import { UserImportConfigModule } from &#x27;./user-import-config.module&#x27;;
 		HttpModule,
 		UserModule,
 		OauthModule,
-		SchulconnexClientModule,
+		SchulconnexClientModule.register({
+			apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
+			tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
+			clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
+			clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
+			personenInfoTimeoutInMs: Configuration.get(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;) as number,
+		}),
 		UserLoginMigrationModule,
 	],
 	controllers: [ImportUserController],

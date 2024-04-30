@@ -2040,11 +2040,11 @@ import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
 import type { SchoolConfig } from &#x27;@modules/school&#x27;;
 import type { SharingConfig } from &#x27;@modules/sharing&#x27;;
 import { getTldrawClientConfig, type TldrawClientConfig } from &#x27;@modules/tldraw-client&#x27;;
-import { ToolConfiguration, type IToolFeatures } from &#x27;@modules/tool&#x27;;
+import { type IToolFeatures, ToolConfiguration } from &#x27;@modules/tool&#x27;;
 import type { UserConfig } from &#x27;@modules/user&#x27;;
-import { UserImportConfiguration, type IUserImportFeatures } from &#x27;@modules/user-import&#x27;;
+import { type IUserImportFeatures, UserImportConfiguration } from &#x27;@modules/user-import&#x27;;
 import type { UserLoginMigrationConfig } from &#x27;@modules/user-login-migration&#x27;;
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from &#x27;@modules/video-conference&#x27;;
+import { type IVideoConferenceSettings, VideoConferenceConfiguration } from &#x27;@modules/video-conference&#x27;;
 import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import type { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
@@ -2257,6 +2257,8 @@ const config: ServerConfig &#x3D; {
 		&#x27;FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED&#x27;
 	) as boolean,
 	ALERT_CACHE_INTERVAL_MIN: Configuration.get(&#x27;ALERT_CACHE_INTERVAL_MIN&#x27;) as number,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;) as boolean,
+	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get(&#x27;PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL&#x27;) as string,
 };
 
 export const serverConfig &#x3D; () &#x3D;&gt; config;

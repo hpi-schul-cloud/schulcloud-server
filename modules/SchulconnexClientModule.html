@@ -149,8 +149,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-client.module.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-client.module.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -201,25 +201,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthAdapterService, OauthModule } from &#x27;@modules/oauth&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthAdapterService } from &#x27;@modules/oauth/service&#x27;;
 import { HttpModule, HttpService } from &#x27;@nestjs/axios&#x27;;
-import { DynamicModule, Global, Module } from &#x27;@nestjs/common&#x27;;
+import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
 import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { SchulconnexRestClient } from &#x27;./schulconnex-rest-client&#x27;;
 import { SchulconnexRestClientOptions } from &#x27;./schulconnex-rest-client-options&#x27;;
 
-@Global()
-/**
- * @Global is used here to make sure that the module is only instantiated once, with the configuration and can be used in every module.
- * Otherwise, you need to import the module with configuration in every module where you want to use it.
- */
 @Module({})
 export class SchulconnexClientModule {
 	static register(options: SchulconnexRestClientOptions): DynamicModule {
 		return {
-			imports: [HttpModule, OauthModule, LoggerModule],
+			imports: [HttpModule, LoggerModule],
 			module: SchulconnexClientModule,
 			providers: [
+				OauthAdapterService,
 				{
 					provide: SchulconnexRestClient,
 					useFactory: (httpService: HttpService, oauthAdapterService: OauthAdapterService, logger: Logger) &#x3D;&gt;

@@ -788,6 +788,12 @@
                             <a href="#mediaLineNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/media-line-node.factory.ts" ><b>mediaLineNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-line-node.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#mediaUserLicenseEntityFactory" title="apps/server/src/modules/user-license/testing/media-user-license-entity.factory.ts" ><b>mediaUserLicenseEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-user-license-entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaUserLicenseFactory" title="apps/server/src/modules/user-license/testing/media-user-license.factory.ts" ><b>mediaUserLicenseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-user-license.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#metaTagExtractorConfig" title="apps/server/src/modules/meta-tag-extractor/meta-tag-extractor.config.ts" ><b>metaTagExtractorConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../meta-tag-extractor.config.ts)</a>
                         </li>
                         <li>
@@ -1005,6 +1011,9 @@
                         </li>
                         <li>
                             <a href="#schoolYearFactory" title="apps/server/src/shared/testing/factory/schoolyear.factory.ts" ><b>schoolYearFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyear.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schulconnexLizenzInfoResponseFactory" title="apps/server/src/infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory.ts" ><b>schulconnexLizenzInfoResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-lizenz-info-response-factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schulconnexResponseFactory" title="apps/server/src/infra/schulconnex-client/testing/schulconnex-response-factory.ts" ><b>schulconnexResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-response-factory.ts)</a>
@@ -1981,6 +1990,8 @@
 	GroupEntity,
 	RegistrationPinEntity,
 	TldrawDrawing,
+	UserLicenseEntity,
+	MediaUserLicenseEntity,
 ]</code>
                     </td>
                 </tr>
@@ -5095,6 +5106,8 @@ This allows adding console commands to execute provider methods.</p>
 		&#x27;FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED&#x27;
 	) as boolean,
 	ALERT_CACHE_INTERVAL_MIN: Configuration.get(&#x27;ALERT_CACHE_INTERVAL_MIN&#x27;) as number,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;) as boolean,
+	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get(&#x27;PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL&#x27;) as string,
 }</code>
                     </td>
                 </tr>
@@ -6438,6 +6451,7 @@ must use</p>
 	MediaBoardApiModule,
 	CollaborativeTextEditorApiModule,
 	AlertModule,
+	UserLicenseModule,
 ]</code>
                     </td>
                 </tr>
@@ -14324,6 +14338,76 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/user-license/testing/media-user-license-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaUserLicenseEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaUserLicenseEntityFactory</b></span>
+                        <a href="#mediaUserLicenseEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaUserLicenseEntity, MediaUserLicenseEntityProps&gt;(
+	MediaUserLicenseEntity,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			user: userFactory.build(),
+			type: UserLicenseType.MEDIA_LICENSE,
+			mediumId: &#x60;medium-${sequence}&#x60;,
+			mediaSourceId: &#x60;media-source-${sequence}&#x60;,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/user-license/testing/media-user-license.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaUserLicenseFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaUserLicenseFactory</b></span>
+                        <a href="#mediaUserLicenseFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaUserLicense, MediaUserLicenseProps&gt;(
+	MediaUserLicense,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			userId: new ObjectId().toHexString(),
+			type: UserLicenseType.MEDIA_LICENSE,
+			mediumId: &#x60;medium-${sequence}&#x60;,
+			mediaSourceId: &#x60;media-source-${sequence}&#x60;,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/meta-tag-extractor/meta-tag-extractor.config.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -18891,6 +18975,40 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 
 	return { name, startDate, endDate };
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schulconnexLizenzInfoResponseFactory"></a>
+                    <span class="name">
+                        <span ><b>schulconnexLizenzInfoResponseFactory</b></span>
+                        <a href="#schulconnexLizenzInfoResponseFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;SchulconnexLizenzInfoResponse[]&gt;(() &#x3D;&gt; [
+	{
+		target: {
+			uid: &#x27;bildungscloud&#x27;,
+		},
+		permission: [
+			{
+				action: [SchulconnexLizenzInfoActionType.EXECUTE],
+			},
+		],
+	},
+])</code>
                     </td>
                 </tr>
 
