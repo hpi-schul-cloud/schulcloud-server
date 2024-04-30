@@ -10,7 +10,7 @@ import { AuthenticationApiModule } from '@modules/authentication/authentication-
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
-import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor';
+import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
@@ -40,6 +40,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { AlertModule } from '@modules/alert/alert.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -95,6 +96,7 @@ const serverModules = [
 	MeApiModule,
 	MediaBoardApiModule,
 	CollaborativeTextEditorApiModule,
+	AlertModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
