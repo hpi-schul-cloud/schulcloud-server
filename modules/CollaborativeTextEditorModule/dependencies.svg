@@ -24,71 +24,71 @@
 <title>cluster_CollaborativeTextEditorModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 594,-268 594,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_CollaborativeTextEditorModule_imports</title>
+<polygon fill="none" stroke="black" points="308,-78 308,-130 586,-130 586,-78 308,-78"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_CollaborativeTextEditorModule_exports</title>
-<polygon fill="none" stroke="black" points="107,-208 107,-260 321,-260 321,-208 107,-208"/>
+<polygon fill="none" stroke="black" points="259,-208 259,-260 473,-260 473,-208 259,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_CollaborativeTextEditorModule_providers</title>
-<polygon fill="none" stroke="black" points="302,-78 302,-130 586,-130 586,-78 302,-78"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_CollaborativeTextEditorModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 294,-130 294,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 300,-130 300,-78 16,-78"/>
 </g>
 <!-- EtherpadClientModule -->
 <g id="node1" class="node">
 <title>EtherpadClientModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="286.31,-122 283.31,-126 262.31,-126 259.31,-122 141.69,-122 141.69,-86 286.31,-86 286.31,-122"/>
-<text text-anchor="middle" x="214" y="-99.8" font-family="Times,serif" font-size="14.00">EtherpadClientModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="578.31,-122 575.31,-126 554.31,-126 551.31,-122 433.69,-122 433.69,-86 578.31,-86 578.31,-122"/>
+<text text-anchor="middle" x="506" y="-99.8" font-family="Times,serif" font-size="14.00">EtherpadClientModule</text>
 </g>
 <!-- CollaborativeTextEditorModule -->
 <g id="node3" class="node">
 <title>CollaborativeTextEditorModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="312.41,-187 309.41,-191 288.41,-191 285.41,-187 115.59,-187 115.59,-151 312.41,-151 312.41,-187"/>
-<text text-anchor="middle" x="214" y="-164.8" font-family="Times,serif" font-size="14.00">CollaborativeTextEditorModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="464.41,-187 461.41,-191 440.41,-191 437.41,-187 267.59,-187 267.59,-151 464.41,-151 464.41,-187"/>
+<text text-anchor="middle" x="366" y="-164.8" font-family="Times,serif" font-size="14.00">CollaborativeTextEditorModule</text>
 </g>
 <!-- EtherpadClientModule&#45;&gt;CollaborativeTextEditorModule -->
 <g id="edge1" class="edge">
 <title>EtherpadClientModule&#45;&gt;CollaborativeTextEditorModule</title>
-<path fill="none" stroke="black" d="M214,-122.11C214,-122.11 214,-140.99 214,-140.99"/>
-<polygon fill="black" stroke="black" points="210.5,-140.99 214,-150.99 217.5,-140.99 210.5,-140.99"/>
+<path fill="none" stroke="black" d="M449.02,-122.11C449.02,-122.11 449.02,-140.99 449.02,-140.99"/>
+<polygon fill="black" stroke="black" points="445.52,-140.99 449.02,-150.99 452.52,-140.99 445.52,-140.99"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="415.98,-122 412.98,-126 391.98,-126 388.98,-122 316.02,-122 316.02,-86 415.98,-86 415.98,-122"/>
+<text text-anchor="middle" x="366" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;CollaborativeTextEditorModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;CollaborativeTextEditorModule</title>
-<path fill="none" stroke="black" d="M119.89,-122.11C119.89,-122.11 119.89,-140.99 119.89,-140.99"/>
-<polygon fill="black" stroke="black" points="116.39,-140.99 119.89,-150.99 123.39,-140.99 116.39,-140.99"/>
+<path fill="none" stroke="black" d="M366,-122.11C366,-122.11 366,-140.99 366,-140.99"/>
+<polygon fill="black" stroke="black" points="362.5,-140.99 366,-150.99 369.5,-140.99 362.5,-140.99"/>
 </g>
 <!-- CollaborativeTextEditorService  -->
 <g id="node4" class="node">
 <title>CollaborativeTextEditorService </title>
-<polygon fill="#fb8072" stroke="black" points="313.33,-252 114.67,-252 114.67,-216 313.33,-216 313.33,-252"/>
-<text text-anchor="middle" x="214" y="-229.8" font-family="Times,serif" font-size="14.00">CollaborativeTextEditorService </text>
+<polygon fill="#fb8072" stroke="black" points="465.33,-252 266.67,-252 266.67,-216 465.33,-216 465.33,-252"/>
+<text text-anchor="middle" x="366" y="-229.8" font-family="Times,serif" font-size="14.00">CollaborativeTextEditorService </text>
 </g>
 <!-- CollaborativeTextEditorModule&#45;&gt;CollaborativeTextEditorService  -->
 <g id="edge3" class="edge">
 <title>CollaborativeTextEditorModule&#45;&gt;CollaborativeTextEditorService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M214,-187.11C214,-187.11 214,-205.99 214,-205.99"/>
-<polygon fill="black" stroke="black" points="210.5,-205.99 214,-215.99 217.5,-205.99 210.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M366,-187.11C366,-187.11 366,-205.99 366,-205.99"/>
+<polygon fill="black" stroke="black" points="362.5,-205.99 366,-215.99 369.5,-205.99 362.5,-205.99"/>
 </g>
 <!-- CollaborativeTextEditorService -->
 <g id="node5" class="node">
 <title>CollaborativeTextEditorService</title>
-<ellipse fill="#fdb462" stroke="black" cx="444" cy="-104" rx="134.28" ry="18"/>
-<text text-anchor="middle" x="444" y="-99.8" font-family="Times,serif" font-size="14.00">CollaborativeTextEditorService</text>
+<ellipse fill="#fdb462" stroke="black" cx="158" cy="-104" rx="134.28" ry="18"/>
+<text text-anchor="middle" x="158" y="-99.8" font-family="Times,serif" font-size="14.00">CollaborativeTextEditorService</text>
 </g>
 <!-- CollaborativeTextEditorService&#45;&gt;CollaborativeTextEditorModule -->
 <g id="edge4" class="edge">
 <title>CollaborativeTextEditorService&#45;&gt;CollaborativeTextEditorModule</title>
-<path fill="none" stroke="black" d="M309.59,-104C302.3,-104 297.88,-104 297.88,-104 297.88,-104 297.88,-140.89 297.88,-140.89"/>
-<polygon fill="black" stroke="black" points="294.38,-140.89 297.88,-150.89 301.38,-140.89 294.38,-140.89"/>
+<path fill="none" stroke="black" d="M280.09,-111.71C280.09,-111.71 280.09,-140.99 280.09,-140.99"/>
+<polygon fill="black" stroke="black" points="276.59,-140.99 280.09,-150.99 283.59,-140.99 276.59,-140.99"/>
 </g>
 </g>
 </svg>
