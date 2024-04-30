@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 export interface BoardCollaborationConfig {

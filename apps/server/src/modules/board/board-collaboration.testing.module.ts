@@ -12,11 +12,16 @@ import { AuthenticationApiModule } from '../authentication/authentication-api.mo
 import { AuthorizationModule } from '../authorization';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
+import { config as boardCollaborationConfig } from './board-collaboration.config';
+
+const config = () => {
+	return { ...serverConfig(), ...boardCollaborationConfig() };
+};
 
 @Module({
 	imports: [
 		CoreModule,
-		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		RabbitMQWrapperModule,
 		ConsoleWriterModule,
 		MongoMemoryDatabaseModule.forRoot({
