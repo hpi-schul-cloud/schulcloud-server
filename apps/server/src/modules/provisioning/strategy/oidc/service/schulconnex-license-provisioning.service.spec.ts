@@ -61,12 +61,12 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				};
 				const externalLicenses: ExternalLicenseDto[] = [newExternalLicense];
 
-				const existingMediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(1, {
-					mediumId: existingExternalLicense.mediumId,
-					mediaSourceId: existingExternalLicense.mediaSourceId,
-				});
+				const existingMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+				existingMediaUserLicense.mediumId = existingExternalLicense.mediumId;
+				existingMediaUserLicense.mediaSourceId = existingExternalLicense.mediaSourceId;
+				existingMediaUserLicense.userId = user.id;
 
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValue(existingMediaUserLicenses);
+				userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([existingMediaUserLicense]);
 
 				return { user, externalLicenses, newExternalLicense };
 			};
@@ -98,6 +98,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				};
 
 				const existingMediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(1, {
+					userId: user.id,
 					mediumId: 'toDeleteMediumId',
 					mediaSourceId: 'toDeleteMediaSourceId',
 				});

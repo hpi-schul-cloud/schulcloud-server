@@ -1,10 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { cleanupCollections, userFactory } from '@shared/testing';
 import { MediaUserLicense } from '../domain';
-import { MediaUserLicenseEntity, UserLicenseType } from '../entity';
+import { MediaUserLicenseEntity, UserLicenseEntity, UserLicenseType } from '../entity';
 import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';
 import { UserLicenseRepo } from './user-license.repo';
 
@@ -35,7 +36,11 @@ describe(UserLicenseRepo.name, () => {
 		describe('when query is empty', () => {
 			const setup = async () => {
 				const user: UserEntity = userFactory.build();
-				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({ user });
+				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({
+					user,
+					mediumId: 'mediumId',
+					mediaSourceId: 'sourceId',
+				});
 
 				await em.persistAndFlush([user, mediaUserLicense]);
 
@@ -116,6 +121,23 @@ describe(UserLicenseRepo.name, () => {
 						type: UserLicenseType.MEDIA_LICENSE,
 					}),
 				]);
+			});
+		});
+
+		describe('when entity type is unknown', () => {
+			const setup = async () => {
+				const unknownEntity: UserLicenseEntity = mediaUserLicenseEntityFactory.build();
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				unknownEntity.type = 'shouldNeverHappen';
+
+				await em.persistAndFlush([unknownEntity]);
+			};
+
+			it('should throw InternalServerErrorException', async () => {
+				await setup();
+
+				await expect(repo.findUserLicenses({})).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});

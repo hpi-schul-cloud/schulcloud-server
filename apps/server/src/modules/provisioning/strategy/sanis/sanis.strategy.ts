@@ -81,27 +81,43 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			},
 		};
 
-		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
+		const sanisAxiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
 			this.httpService.get(input.system.provisioningUrl, axiosConfig)
 		);
 
-		const response: SanisResponse = plainToClass(SanisResponse, axiosResponse.data);
+		const sanisResponse: SanisResponse = plainToClass(SanisResponse, sanisAxiosResponse.data);
 
-		await this.checkResponseValidation(response, [
+		await this.checkResponseValidation(sanisResponse, [
 			SanisResponseValidationGroups.USER,
 			SanisResponseValidationGroups.SCHOOL,
 		]);
 
-		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(axiosResponse.data);
+		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(sanisAxiosResponse.data);
 		this.addTeacherRoleIfAdmin(externalUser);
 
-		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
+		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(sanisAxiosResponse.data);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
 		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
-			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
+			await this.checkResponseValidation(sanisResponse, [SanisResponseValidationGroups.GROUPS]);
 
-			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+			externalGroups = this.responseMapper.mapToExternalGroupDtos(sanisAxiosResponse.data);
+		}
+
+		let externalLicenses: ExternalLicenseDto[] | undefined;
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			const schulconnexLizenzInfoAxiosResponse: SchulconnexLizenzInfoResponse[] =
+				await this.schulconnexRestClient.getLizenzInfo(input.accessToken, {
+					overrideUrl: this.configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL'),
+				});
+
+			const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] = plainToClass(
+				SchulconnexLizenzInfoResponse,
+				schulconnexLizenzInfoAxiosResponse
+			);
+			await this.checkResponseValidation(schulconnexLizenzInfoResponses);
+
+			externalLicenses = SanisResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
 		}
 
 		let externalLicenses: ExternalLicenseDto[] | undefined;
