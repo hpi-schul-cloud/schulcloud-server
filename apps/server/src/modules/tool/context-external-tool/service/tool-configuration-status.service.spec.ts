@@ -11,8 +11,8 @@ import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
 	ToolParameterMandatoryValueMissingLoggableException,
+	ToolParameterOptionalValueMissingLoggableException,
 } from '../../common/domain';
-import { ToolParameterOptionalValueMissingLoggableException } from '../../common/domain/error/tool-parameter-optional-value-missing-loggable-exception';
 import { CommonToolValidationService } from '../../common/service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 

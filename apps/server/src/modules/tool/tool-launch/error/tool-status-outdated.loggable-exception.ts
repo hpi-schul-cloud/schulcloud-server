@@ -17,7 +17,6 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			// TODO refactor exception to status not launchable
 			type: 'TOOL_STATUS_OUTDATED',
 			message: 'The status of the tool is outdated and cannot be launched by the user.',
 			stack: this.stack,

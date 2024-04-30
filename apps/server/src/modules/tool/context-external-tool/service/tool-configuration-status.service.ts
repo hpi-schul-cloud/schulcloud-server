@@ -3,8 +3,8 @@ import { ValidationError } from '@shared/common';
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterMandatoryValueMissingLoggableException,
+	ToolParameterOptionalValueMissingLoggableException,
 } from '../../common/domain';
-import { ToolParameterOptionalValueMissingLoggableException } from '../../common/domain/error/tool-parameter-optional-value-missing-loggable-exception';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';

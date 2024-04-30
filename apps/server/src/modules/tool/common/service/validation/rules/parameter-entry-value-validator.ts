@@ -4,8 +4,8 @@ import {
 	CustomParameter,
 	CustomParameterEntry,
 	ToolParameterMandatoryValueMissingLoggableException,
+	ToolParameterOptionalValueMissingLoggableException,
 } from '../../../domain';
-import { ToolParameterOptionalValueMissingLoggableException } from '../../../domain/error/tool-parameter-optional-value-missing-loggable-exception';
 import { ParameterEntryValidator } from './parameter-entry-validator';
 
 export class ParameterEntryValueValidator implements ParameterEntryValidator {
