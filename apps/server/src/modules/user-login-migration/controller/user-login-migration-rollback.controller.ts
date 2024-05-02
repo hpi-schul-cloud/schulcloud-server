@@ -22,7 +22,7 @@ export class UserLoginMigrationRollbackController {
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in' })
 	@ApiNoContentResponse({ description: 'The user has been successfully rolled back' })
-	@ApiNotFoundResponse({ description: "The user's School has no migration" })
+	@ApiNotFoundResponse({ description: "The user's school has no migration" })
 	@ApiUnprocessableEntityResponse({ description: 'The user has not migrated yet' })
 	public async migrateUserLogin(
 		@CurrentUser() currentUser: ICurrentUser,

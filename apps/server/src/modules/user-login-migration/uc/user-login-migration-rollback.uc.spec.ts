@@ -68,7 +68,7 @@ describe(UserLoginMigrationRollbackUc.name, () => {
 				]);
 			});
 
-			it('should roll the user back', async () => {
+			it('should rollback a user', async () => {
 				const { user, targetUserId } = setup();
 
 				await uc.rollbackUser(user.id, targetUserId);
@@ -101,7 +101,7 @@ describe(UserLoginMigrationRollbackUc.name, () => {
 				await expect(uc.rollbackUser(user.id, targetUserId)).rejects.toThrow(error);
 			});
 
-			it('should not roll a user back', async () => {
+			it('should not rollback a user', async () => {
 				const { user, targetUserId } = setup();
 
 				await expect(uc.rollbackUser(user.id, targetUserId)).rejects.toThrow();
