@@ -21,9 +21,9 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { Socket } from './types';
 
 @WebSocketGateway({
-	path: '/collaboration',
+	path: '/board-collaboration',
 	cors: {
-		origin: 'http://localhost:4000',
+		origin: 'http://localhost:4000', // WIP: use env variable
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		preflightContinue: false,
 		optionsSuccessStatus: 204,
