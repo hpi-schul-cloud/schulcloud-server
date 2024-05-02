@@ -2,6 +2,7 @@ import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService
 import { ProvisioningConfig } from '@modules/provisioning';
 import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicenseService } from '@modules/user-license/service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
@@ -21,6 +22,7 @@ export class ToolLaunchUc {
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly authorizationService: AuthorizationService,
 		private readonly userLicenseService: UserLicenseService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly configService: ConfigService<ProvisioningConfig, true>
 	) {}
 
@@ -52,7 +54,7 @@ export class ToolLaunchUc {
 
 		if (
 			externalTool.medium?.mediumId &&
-			!this.userLicenseService.hasLicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
+			!this.mediaUserLicenseService.hasLicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
 		) {
 			throw new MissingMediaLicenseLoggableException(externalTool.medium, userId, contextExternalTool.id);
 		}

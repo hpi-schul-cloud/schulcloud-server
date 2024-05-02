@@ -4,6 +4,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicenseService } from '@modules/user-license/service';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -40,6 +41,7 @@ describe(MediaAvailableLineUc.name, () => {
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let userLicenseService: DeepMocked<UserLicenseService>;
+	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -71,6 +73,10 @@ describe(MediaAvailableLineUc.name, () => {
 					provide: UserLicenseService,
 					useValue: createMock<UserLicenseService>(),
 				},
+				{
+					provide: MediaUserLicenseService,
+					useValue: createMock<MediaUserLicenseService>(),
+				},
 			],
 		}).compile();
 
@@ -81,6 +87,7 @@ describe(MediaAvailableLineUc.name, () => {
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
 		userLicenseService = module.get(UserLicenseService);
+		mediaUserLicenseService = module.get(MediaUserLicenseService);
 	});
 
 	afterAll(async () => {
@@ -256,6 +263,14 @@ describe(MediaAvailableLineUc.name, () => {
 					};
 				};
 
+				it('should not check license', async () => {
+					const { user, mediaBoard } = setup();
+
+					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).not.toHaveBeenCalled();
+				});
+
 				it('should return media line', async () => {
 					const { user, mediaBoard, mediaAvailableLineElement } = setup();
 
@@ -295,6 +310,7 @@ describe(MediaAvailableLineUc.name, () => {
 					mediaUserlicense.mediumId = 'mediumId';
 
 					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -319,6 +335,14 @@ describe(MediaAvailableLineUc.name, () => {
 						mediaAvailableLineElement,
 					};
 				};
+
+				it('should check license', async () => {
+					const { user, mediaBoard } = setup();
+
+					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
+				});
 
 				it('should return the available line', async () => {
 					const { user, mediaBoard, mediaAvailableLineElement } = setup();
@@ -353,6 +377,7 @@ describe(MediaAvailableLineUc.name, () => {
 					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
 					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);

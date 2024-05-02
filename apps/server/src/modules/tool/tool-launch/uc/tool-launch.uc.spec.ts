@@ -5,6 +5,7 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicenseService } from '@modules/user-license/service';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -32,7 +33,8 @@ describe('ToolLaunchUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let userlicenseService: DeepMocked<UserLicenseService>;
+	let userLicenseService: DeepMocked<UserLicenseService>;
+	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
 	beforeEach(async () => {
@@ -60,6 +62,10 @@ describe('ToolLaunchUc', () => {
 					useValue: createMock<UserLicenseService>(),
 				},
 				{
+					provide: MediaUserLicenseService,
+					useValue: createMock<MediaUserLicenseService>(),
+				},
+				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
@@ -71,7 +77,8 @@ describe('ToolLaunchUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
-		userlicenseService = module.get(UserLicenseService);
+		userLicenseService = module.get(UserLicenseService);
+		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		configService = module.get(ConfigService);
 	});
 
@@ -182,10 +189,9 @@ describe('ToolLaunchUc', () => {
 						openNewTab: true,
 						properties: [],
 					});
-					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
-					userlicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
@@ -205,7 +211,7 @@ describe('ToolLaunchUc', () => {
 
 					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-					expect(userlicenseService.hasLicenseForExternalTool).not.toHaveBeenCalled();
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).not.toHaveBeenCalled();
 				});
 
 				it('should return launch request', async () => {
@@ -238,8 +244,8 @@ describe('ToolLaunchUc', () => {
 
 					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
-					userlicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userlicenseService.hasLicenseForExternalTool.mockReturnValue(true);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
@@ -259,7 +265,7 @@ describe('ToolLaunchUc', () => {
 
 					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-					expect(userlicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
 				});
 
 				it('should return launch request', async () => {
@@ -292,8 +298,8 @@ describe('ToolLaunchUc', () => {
 
 					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
-					userlicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userlicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();

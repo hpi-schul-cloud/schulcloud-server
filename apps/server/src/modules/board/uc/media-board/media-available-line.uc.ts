@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicenseService } from '@modules/user-license/service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -19,7 +20,8 @@ export class MediaAvailableLineUc {
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
-		private readonly userLicenseService: UserLicenseService
+		private readonly userLicenseService: UserLicenseService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -75,15 +77,11 @@ export class MediaAvailableLineUc {
 		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMediumId = tool[0]?.medium?.mediumId;
 			if (externalToolMediumId) {
-				return this.hasLicenseForExternalTool(externalToolMediumId, mediaUserLicenses);
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMediumId, mediaUserLicenses);
 			}
 			return true;
 		});
 
 		return matchedTools;
-	}
-
-	private hasLicenseForExternalTool(externalToolMediumId: string, mediaUserLicenses: MediaUserLicense[]): boolean {
-		return mediaUserLicenses.some((license: MediaUserLicense) => license.mediumId === externalToolMediumId);
 	}
 }
