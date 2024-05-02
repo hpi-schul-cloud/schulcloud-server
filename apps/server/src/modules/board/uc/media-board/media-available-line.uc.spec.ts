@@ -2,6 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
+import { MediaUserLicenseService } from '@modules/user-license/service';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -24,7 +27,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 import { MediaAvailableLineUc } from './media-available-line.uc';
@@ -38,6 +40,8 @@ describe(MediaAvailableLineUc.name, () => {
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
+	let userLicenseService: DeepMocked<UserLicenseService>;
+	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -65,6 +69,14 @@ describe(MediaAvailableLineUc.name, () => {
 					provide: MediaBoardService,
 					useValue: createMock<MediaBoardService>(),
 				},
+				{
+					provide: UserLicenseService,
+					useValue: createMock<UserLicenseService>(),
+				},
+				{
+					provide: MediaUserLicenseService,
+					useValue: createMock<MediaUserLicenseService>(),
+				},
 			],
 		}).compile();
 
@@ -74,6 +86,8 @@ describe(MediaAvailableLineUc.name, () => {
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
+		userLicenseService = module.get(UserLicenseService);
+		mediaUserLicenseService = module.get(MediaUserLicenseService);
 	});
 
 	afterAll(async () => {
@@ -88,6 +102,7 @@ describe(MediaAvailableLineUc.name, () => {
 		describe('when the user request the available line', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(true);
+				configService.get.mockReturnValueOnce(false);
 
 				const user: User = userFactory.build();
 				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
@@ -204,9 +219,195 @@ describe(MediaAvailableLineUc.name, () => {
 			});
 		});
 
+		describe('when licensing feature flag is enabled', () => {
+			describe('when tool has no mediumId', () => {
+				const setup = () => {
+					configService.get.mockReturnValue(true);
+
+					const user: User = userFactory.build();
+					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
+					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
+						.withElement(mediaAvailableLineElement)
+						.build();
+					const externalTool1: ExternalTool = externalToolFactory.build();
+					const externalTool2: ExternalTool = externalToolFactory.build();
+					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
+					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
+					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+
+					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([
+						schoolExternalTool1,
+						schoolExternalTool2,
+					]);
+					mediaAvailableLineService.getAvailableExternalToolsForSchool.mockResolvedValueOnce([
+						externalTool1,
+						externalTool2,
+					]);
+					mediaAvailableLineService.matchTools.mockReturnValueOnce([
+						[externalTool1, schoolExternalTool1],
+						[externalTool2, schoolExternalTool2],
+					]);
+					mediaAvailableLineService.createMediaAvailableLine.mockReturnValueOnce(mediaAvailableLine);
+
+					return {
+						user,
+						mediaBoard,
+						mediaAvailableLineElement,
+					};
+				};
+
+				it('should not check license', async () => {
+					const { user, mediaBoard } = setup();
+
+					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).not.toHaveBeenCalled();
+				});
+
+				it('should return media line', async () => {
+					const { user, mediaBoard, mediaAvailableLineElement } = setup();
+
+					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(line).toEqual({
+						elements: [
+							{
+								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
+								name: mediaAvailableLineElement.name,
+								description: mediaAvailableLineElement.description,
+								logoUrl: mediaAvailableLineElement.logoUrl,
+							},
+						],
+					});
+				});
+			});
+
+			describe('when license exist', () => {
+				const setup = () => {
+					configService.get.mockReturnValue(true);
+
+					const user: User = userFactory.build();
+					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
+					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
+						.withElement(mediaAvailableLineElement)
+						.build();
+					const externalTool1: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
+					const externalTool2: ExternalTool = externalToolFactory.build();
+					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
+					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
+					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
+					mediaUserlicense.mediumId = 'mediumId';
+
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
+
+					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([
+						schoolExternalTool1,
+						schoolExternalTool2,
+					]);
+					mediaAvailableLineService.getAvailableExternalToolsForSchool.mockResolvedValueOnce([
+						externalTool1,
+						externalTool2,
+					]);
+					mediaAvailableLineService.matchTools.mockReturnValueOnce([
+						[externalTool1, schoolExternalTool1],
+						[externalTool2, schoolExternalTool2],
+					]);
+					mediaAvailableLineService.createMediaAvailableLine.mockReturnValueOnce(mediaAvailableLine);
+
+					return {
+						user,
+						mediaBoard,
+						mediaAvailableLineElement,
+					};
+				};
+
+				it('should check license', async () => {
+					const { user, mediaBoard } = setup();
+
+					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
+				});
+
+				it('should return the available line', async () => {
+					const { user, mediaBoard, mediaAvailableLineElement } = setup();
+
+					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(line).toEqual({
+						elements: [
+							{
+								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
+								name: mediaAvailableLineElement.name,
+								description: mediaAvailableLineElement.description,
+								logoUrl: mediaAvailableLineElement.logoUrl,
+							},
+						],
+					});
+				});
+			});
+
+			describe('when license does not exist', () => {
+				const setup = () => {
+					configService.get.mockReturnValue(true);
+
+					const user: User = userFactory.build();
+					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory.build();
+					const externalTool1: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
+					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
+					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+
+					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool1]);
+					mediaAvailableLineService.getAvailableExternalToolsForSchool.mockResolvedValueOnce([externalTool1]);
+					mediaAvailableLineService.matchTools.mockReturnValueOnce([[externalTool1, schoolExternalTool1]]);
+					mediaAvailableLineService.createMediaAvailableLine.mockReturnValueOnce(mediaAvailableLine);
+
+					return {
+						user,
+						mediaBoard,
+					};
+				};
+
+				it('should show empty avalable line', async () => {
+					const { user, mediaBoard } = setup();
+
+					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(line).toEqual({
+						elements: [],
+					});
+				});
+			});
+		});
+
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				configService.get.mockReturnValue(false);
 
 				const userId = new ObjectId().toHexString();
 				const mediaBoardId = new ObjectId().toHexString();
