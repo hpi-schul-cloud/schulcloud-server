@@ -209,9 +209,10 @@ describe('BoardNode', () => {
 		const setup = () => {
 			const parent = columnFactory.build();
 			const child = cardFactory.build();
+			const extraChild = cardFactory.build();
 			parent.addChild(child);
 
-			return { parent, child };
+			return { parent, child, extraChild };
 		};
 
 		it('should update the ancestor list', () => {
@@ -244,6 +245,15 @@ describe('BoardNode', () => {
 			parent.removeChild(child);
 
 			expect(child.path).toEqual(ROOT_PATH);
+		});
+
+		it('should update child position', () => {
+			const { parent, child, extraChild } = setup();
+			parent.addChild(extraChild);
+
+			parent.removeChild(child);
+
+			expect(parent.children.map((n) => n.position)).toEqual([0]);
 		});
 	});
 

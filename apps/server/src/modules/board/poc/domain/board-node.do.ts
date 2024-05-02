@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
@@ -44,8 +44,12 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	addChild(child: AnyBoardNode, position?: number): void {
+		if (!this.canHaveChild(child)) {
+			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
+		}
+
 		const { children } = this.props;
-		// TODO check isAllowedAsChild
+
 		position = position ?? children.length;
 		if (position < 0 || position > children.length) {
 			throw new BadRequestException(`Invalid child position '${position}'`);
@@ -70,6 +74,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 
 	removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);
+		this.props.children.forEach((c, pos) => c.updatePosition(pos));
 		child.resetPath();
 	}
 
