@@ -1,9 +1,7 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action } from '@modules/authorization';
 import {
 	BadRequestException,
 	ForbiddenException,
-	forwardRef,
-	Inject,
 	Injectable,
 	NotFoundException,
 	UnprocessableEntityException,
@@ -27,12 +25,10 @@ import { BoardNodePermissionService } from '../poc/service/board-node-permission
 @Injectable()
 export class SubmissionItemUc {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly boardPermissionService: BoardNodePermissionService,
-		protected readonly elementService: ContentElementService,
-		protected readonly submissionItemService: SubmissionItemService
+		private readonly elementService: ContentElementService,
+		private readonly submissionItemService: SubmissionItemService
 	) {}
 
 	async findSubmissionItems(
