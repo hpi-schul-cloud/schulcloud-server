@@ -4,6 +4,7 @@ import {
 	ApiForbiddenResponse,
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
+	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -19,6 +20,7 @@ export class UserLoginMigrationRollbackController {
 
 	@Post('/users/:userId/rollback-migration')
 	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Rollback a user from a user login migration' })
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in' })
 	@ApiNoContentResponse({ description: 'The user has been successfully rolled back' })
