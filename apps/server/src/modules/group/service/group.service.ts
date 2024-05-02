@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, type UserDO } from '@shared/domain/domainobject';
-import { IFindQuery } from '@shared/domain/interface';
+import { IFindOptions, IFindQuery, IGroupFilter } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Group, GroupDeletedEvent, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
@@ -79,6 +79,18 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		);
 
 		return group;
+	}
+
+	public async findGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findGroups(filter, options);
+
+		return groups;
+	}
+
+	public async findAvailableGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findAvailableGroups(filter, options);
+
+		return groups;
 	}
 
 	public async save(group: Group): Promise<Group> {

@@ -1,9 +1,10 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Group } from '@modules/group';
 import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
-import { IFindQuery } from '@shared/domain/interface';
+import { IFindOptions, IGroupFilter } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
@@ -86,13 +87,22 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() params: GroupParams
 	): Promise<GroupListResponse> {
-		const query: IFindQuery = { pagination, nameQuery: params.nameQuery };
+		const options: IFindOptions<Group> = { pagination };
+		// set userId and schoolId in UC?
+		const filter: IGroupFilter = {
+			userId: currentUser.userId,
+			schoolId: currentUser.schoolId,
+			nameQuery: params.nameQuery,
+			availableGroupsForCourseSync: params.availableGroupsForCourseSync,
+		};
+
 		const groups: Page<ResolvedGroupDto> = await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
-			query,
-			params.availableGroupsForCourseSync
+			filter,
+			options
 		);
+
 		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;

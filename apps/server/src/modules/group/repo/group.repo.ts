@@ -4,7 +4,7 @@ import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { Page, type UserDO } from '@shared/domain/domainobject';
-import { IFindQuery } from '@shared/domain/interface';
+import { IFindOptions, IFindQuery, IGroupFilter } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
@@ -54,6 +54,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObject;
 	}
 
+	// TODO N21-1860 delete when refactored to findGroups()
 	public async findByUserAndGroupTypes(
 		user: UserDO,
 		groupTypes?: GroupTypes[],
@@ -83,6 +84,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return page;
 	}
 
+	// TODO N21-1860 delete
 	public async findAvailableByUser(user: UserDO, query?: IFindQuery): Promise<Page<Group>> {
 		const pipelineStage: unknown[] = [{ $match: { users: { $elemMatch: { user: new ObjectId(user.id) } } } }];
 		const availableGroups: Page<Group> = await this.findAvailableGroup(
@@ -95,6 +97,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return availableGroups;
 	}
 
+	// TODO N21-1860 delete when refactored to findGroups()
 	public async findBySchoolIdAndGroupTypes(
 		school: School,
 		groupTypes?: GroupTypes[],
@@ -124,6 +127,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return page;
 	}
 
+	// TODO N21-1860 delete
 	public async findAvailableBySchoolId(school: School, query?: IFindQuery): Promise<Page<Group>> {
 		const pipelineStage: unknown[] = [{ $match: { organization: new ObjectId(school.id) } }];
 
@@ -137,6 +141,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return availableGroups;
 	}
 
+	// TODO N21-1860 delete when refactored to findGroups(), pass optional systemId or use interface in provisioningOptionsService
 	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
 		schoolId: EntityId,
 		systemId: EntityId,
@@ -156,6 +161,92 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
+	public async findGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		const scope: GroupScope = new GroupScope();
+		scope.byUserId(filter.userId);
+		scope.byOrganizationId(filter.schoolId);
+		scope.bySystemId(filter.systemId);
+
+		if (filter.groupTypes) {
+			const groupEntityTypes = filter.groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+			scope.byTypes(groupEntityTypes);
+		}
+
+		const escapedName = filter.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			scope.byNameQuery(escapedName);
+		}
+
+		const [entities, total] = await this.em.findAndCount(GroupEntity, scope.query, {
+			offset: options?.pagination?.skip,
+			limit: options?.pagination?.limit,
+			orderBy: { name: QueryOrder.ASC },
+		});
+
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+
+		const page: Page<Group> = new Page<Group>(domainObjects, total);
+
+		return page;
+	}
+
+	public async findAvailableGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		let nameRegexFilter = {};
+
+		const escapedName = filter.nameQuery?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			nameRegexFilter = { name: { $regex: escapedName, $options: 'i' } };
+		}
+		const pipeline: unknown[] = [
+			{ $match: { users: { $elemMatch: { user: new ObjectId(filter.userId) } } } },
+			{ $match: { organization: new ObjectId(filter.schoolId) } },
+			{ $match: nameRegexFilter },
+			{
+				$lookup: {
+					from: 'courses',
+					localField: '_id',
+					foreignField: 'syncedWithGroup',
+					as: 'syncedCourses',
+				},
+			},
+			{ $match: { syncedCourses: { $size: 0 } } },
+			{ $sort: { name: 1 } },
+		];
+
+		if (options?.pagination?.limit) {
+			pipeline.push({
+				$facet: {
+					total: [{ $count: 'count' }],
+					data: [{ $skip: options.pagination.skip }, { $limit: options.pagination.limit }],
+				},
+			});
+		} else {
+			pipeline.push({
+				$facet: {
+					total: [{ $count: 'count' }],
+					data: [{ $skip: options?.pagination?.skip }],
+				},
+			});
+		}
+
+		const mongoEntitiesFacet = (await this.em.aggregate(GroupEntity, pipeline)) as [
+			{ total: [{ count: number }]; data: GroupEntity[] }
+		];
+
+		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
+
+		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: GroupEntity) =>
+			this.em.map(GroupEntity, entity)
+		);
+
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+
+		const page: Page<Group> = new Page<Group>(domainObjects, total);
+
+		return page;
+	}
+
+	// TODO N21-1860 delete
 	private async findAvailableGroup(
 		pipelineStage: unknown[],
 		skip = 0,

@@ -14,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
-import { IFindQuery, Permission, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, IGroupFilter, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
@@ -367,8 +367,8 @@ export class GroupUc {
 	public async getAllGroups(
 		userId: EntityId,
 		schoolId: EntityId,
-		query?: IFindQuery,
-		availableGroupsForCourseSync?: boolean
+		filter: IGroupFilter,
+		options?: IFindOptions<Group>
 	): Promise<Page<ResolvedGroupDto>> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
@@ -379,9 +379,9 @@ export class GroupUc {
 
 		let groups: Page<Group>;
 		if (canSeeFullList) {
-			groups = await this.getGroupsForSchool(school, query, availableGroupsForCourseSync);
+			groups = await this.getGroupsForSchool(filter, options);
 		} else {
-			groups = await this.getGroupsForUser(userId, query, availableGroupsForCourseSync);
+			groups = await this.getGroupsForUser(filter, options);
 		}
 
 		const resolvedGroups: ResolvedGroupDto[] = await Promise.all(
@@ -398,32 +398,25 @@ export class GroupUc {
 		return page;
 	}
 
-	private async getGroupsForSchool(
-		school: School,
-		query?: IFindQuery,
-		availableGroupsForCourseSync?: boolean
-	): Promise<Page<Group>> {
+	private async getGroupsForSchool(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		filter.userId = undefined;
 		let foundGroups: Page<Group>;
-		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			foundGroups = await this.groupService.findAvailableGroupsBySchoolId(school, query);
+		if (filter.availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+			foundGroups = await this.groupService.findAvailableGroups(filter, options);
 		} else {
-			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(school, undefined, query);
+			foundGroups = await this.groupService.findGroups(filter, options);
 		}
 
 		return foundGroups;
 	}
 
-	private async getGroupsForUser(
-		userId: EntityId,
-		query?: IFindQuery,
-		availableGroupsForCourseSync?: boolean
-	): Promise<Page<Group>> {
+	private async getGroupsForUser(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+		filter.schoolId = undefined;
 		let foundGroups: Page<Group>;
-		const user: UserDO = await this.userService.findById(userId);
-		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			foundGroups = await this.groupService.findAvailableGroupsByUser(user, query);
+		if (filter.availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+			foundGroups = await this.groupService.findAvailableGroups(filter, options);
 		} else {
-			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, undefined, query);
+			foundGroups = await this.groupService.findGroups(filter, options);
 		}
 
 		return foundGroups;
