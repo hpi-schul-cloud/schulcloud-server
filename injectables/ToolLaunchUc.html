@@ -134,6 +134,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkUserHasLicenseForExternalTool" >checkUserHasLicenseForExternalTool</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#getToolLaunchRequest" >getToolLaunchRequest</a>
                             </li>
@@ -155,12 +160,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userLicenseService: <a href="../injectables/UserLicenseService.html" target="_self">UserLicenseService</a>, mediaUserLicenseService: <a href="../injectables/MediaUserLicenseService.html" target="_self">MediaUserLicenseService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -225,6 +230,42 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>userLicenseService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserLicenseService.html" target="_self" >UserLicenseService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaUserLicenseService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaUserLicenseService.html" target="_self" >MediaUserLicenseService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ConfigService&lt;ProvisioningConfig | &gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -239,6 +280,88 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkUserHasLicenseForExternalTool"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkUserHasLicenseForExternalTool</b></span>
+                        <a href="#checkUserHasLicenseForExternalTool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkUserHasLicenseForExternalTool(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contextExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -261,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +450,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
+import { MissingMediaLicenseLoggableException } from &#x27;@modules/tool/tool-launch/error&#x27;;
+import { MediaUserLicense, UserLicenseService } from &#x27;@modules/user-license&#x27;;
+import { MediaUserLicenseService } from &#x27;@modules/user-license/service&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
@@ -343,7 +471,10 @@ export class ToolLaunchUc {
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userLicenseService: UserLicenseService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;ToolLaunchRequest&gt; {
@@ -355,10 +486,29 @@ export class ToolLaunchUc {
 
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
+		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;)) {
+			await this.checkUserHasLicenseForExternalTool(contextExternalTool, userId);
+		}
+
 		const toolLaunchData: ToolLaunchData &#x3D; await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
 		const launchRequest: ToolLaunchRequest &#x3D; this.toolLaunchService.generateLaunchRequest(toolLaunchData);
 
 		return launchRequest;
+	}
+
+	private async checkUserHasLicenseForExternalTool(contextExternalTool: ContextExternalTool, userId: EntityId) {
+		const schoolExternalToolId: EntityId &#x3D; contextExternalTool.schoolToolRef.schoolToolId;
+
+		const { externalTool } &#x3D; await this.toolLaunchService.loadToolHierarchy(schoolExternalToolId);
+
+		const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.userLicenseService.getMediaUserLicensesForUser(userId);
+
+		if (
+			externalTool.medium?.mediumId &amp;&amp;
+			!this.mediaUserLicenseService.hasLicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
+		) {
+			throw new MissingMediaLicenseLoggableException(externalTool.medium, userId, contextExternalTool.id);
+		}
 	}
 }
 </code></pre>

@@ -160,7 +160,7 @@
                                 <a href="#isToolStatusLaunchableOrThrow" >isToolStatusLaunchableOrThrow</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#loadToolHierarchy" >loadToolHierarchy</a>
                             </li>
@@ -549,7 +549,7 @@
                 <td class="col-md-4">
                     <a name="loadToolHierarchy"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>loadToolHierarchy</b></span>
                         <a href="#loadToolHierarchy"><span class="icon ion-ios-link"></span></a>
@@ -725,7 +725,7 @@ export class ToolLaunchService {
 		return launchData;
 	}
 
-	private async loadToolHierarchy(
+	public async loadToolHierarchy(
 		schoolExternalToolId: string
 	): Promise&lt;{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }&gt; {
 		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(schoolExternalToolId);
