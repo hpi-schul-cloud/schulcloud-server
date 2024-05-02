@@ -3,7 +3,11 @@ import {
 	SanisResponse,
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
-import { SanisErreichbarkeitenResponse, SchulconnexCommunicationType } from '@infra/schulconnex-client/response';
+import {
+	SanisErreichbarkeitenResponse,
+	SchulconnexCommunicationType,
+	SchulconnexLizenzInfoResponse,
+} from '@infra/schulconnex-client/response';
 import { SanisGroupRole } from '@infra/schulconnex-client/response/sanis-group-role';
 import { SanisGroupType } from '@infra/schulconnex-client/response/sanis-group-type';
 import { SanisRole } from '@infra/schulconnex-client/response/sanis-role';
@@ -12,7 +16,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
-import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import {
+	ExternalGroupDto,
+	ExternalGroupUserDto,
+	ExternalLicenseDto,
+	ExternalSchoolDto,
+	ExternalUserDto,
+} from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
@@ -159,5 +169,17 @@ export class SanisResponseMapper {
 		});
 
 		return mapped;
+	}
+
+	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
+		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos.map(
+			(license: SchulconnexLizenzInfoResponse) =>
+				new ExternalLicenseDto({
+					mediumId: license.target.uid,
+					mediaSourceId: license.target.partOf,
+				})
+		);
+
+		return externalLicenseDtos;
 	}
 }

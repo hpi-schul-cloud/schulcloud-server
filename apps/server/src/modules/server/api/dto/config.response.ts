@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerConfig } from '../..';
-import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
@@ -112,6 +112,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
@@ -226,6 +229,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
+		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
 		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
 		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;

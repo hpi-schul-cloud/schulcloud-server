@@ -8,7 +8,7 @@ import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPersonenInfoParams } from './request';
-import { SanisResponse } from './response';
+import { SanisResponse, SchulconnexLizenzInfoResponse } from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
@@ -44,6 +44,20 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 			url,
 			token.accessToken,
 			this.options.personenInfoTimeoutInMs
+		);
+
+		return response;
+	}
+
+	public async getLizenzInfo(
+		accessToken: string,
+		options?: { overrideUrl: string }
+	): Promise<SchulconnexLizenzInfoResponse[]> {
+		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/lizenz-info`);
+
+		const response: Promise<SchulconnexLizenzInfoResponse[]> = this.getRequest<SchulconnexLizenzInfoResponse[]>(
+			url,
+			accessToken
 		);
 
 		return response;

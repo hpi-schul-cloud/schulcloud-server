@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AccountModule } from '@modules/account';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
@@ -8,6 +9,8 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
+import { UserLicenseModule } from '../user-license';
 import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
 import {
@@ -19,6 +22,7 @@ import {
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
@@ -35,6 +39,14 @@ import {
 		LoggerModule,
 		GroupModule,
 		LearnroomModule,
+		SchulconnexClientModule.register({
+			apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
+			tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
+			clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
+			clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
+			personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
+		}),
+		UserLicenseModule,
 	],
 	providers: [
 		ProvisioningService,
@@ -43,6 +55,7 @@ import {
 		SchulconnexUserProvisioningService,
 		SchulconnexGroupProvisioningService,
 		SchulconnexCourseSyncService,
+		SchulconnexLicenseProvisioningService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
