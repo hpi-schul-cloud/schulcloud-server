@@ -1,5 +1,4 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { ProvisioningConfig } from '@modules/provisioning';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
@@ -19,7 +18,6 @@ export class MediaAvailableLineUc {
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly licenseConfigService: ConfigService<ProvisioningConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly userLicenseService: UserLicenseService
 	) {}
@@ -37,27 +35,17 @@ export class MediaAvailableLineUc {
 		const availableExternalTools: ExternalTool[] =
 			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);
 
-		const matchedTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
+		let matchedTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
 			availableExternalTools,
 			schoolExternalToolsForAvailableMediaLine
 		);
 
-		let matchedAndlicensedTools: [ExternalTool, SchoolExternalTool][] = [];
-		if (this.licenseConfigService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
-
-			matchedAndlicensedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
-				const externalTool: ExternalTool = tool[0];
-				if (externalTool?.medium?.mediumId) {
-					return this.userLicenseService.haslicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses);
-				}
-				return true;
-			});
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			matchedTools = await this.filterUnlicensedTools(userId, matchedTools);
 		}
 
-		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
-			matchedAndlicensedTools.length ? matchedAndlicensedTools : matchedTools
-		);
+		const mediaAvailableLine: MediaAvailableLine =
+			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
 
 		return mediaAvailableLine;
 	}
@@ -76,5 +64,26 @@ export class MediaAvailableLineUc {
 		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}
+	}
+
+	private async filterUnlicensedTools(
+		userId: EntityId,
+		matchedTools: [ExternalTool, SchoolExternalTool][]
+	): Promise<[ExternalTool, SchoolExternalTool][]> {
+		const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
+
+		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
+			const externalToolMediumId = tool[0]?.medium?.mediumId;
+			if (externalToolMediumId) {
+				return this.hasLicenseForExternalTool(externalToolMediumId, mediaUserLicenses);
+			}
+			return true;
+		});
+
+		return matchedTools;
+	}
+
+	private hasLicenseForExternalTool(externalToolMediumId: string, mediaUserLicenses: MediaUserLicense[]): boolean {
+		return mediaUserLicenses.some((license: MediaUserLicense) => license.mediumId === externalToolMediumId);
 	}
 }

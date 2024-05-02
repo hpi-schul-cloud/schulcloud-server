@@ -1,6 +1,6 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ProvisioningConfig } from '@modules/provisioning';
-import { MissingLicenseLoggableException } from '@modules/tool/tool-launch/error';
+import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -34,7 +34,7 @@ export class ToolLaunchUc {
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			await this.checkLicenseForExternal(contextExternalTool, userId);
+			await this.checkUserHasLicenseForExternalTool(contextExternalTool, userId);
 		}
 
 		const toolLaunchData: ToolLaunchData = await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
@@ -43,7 +43,7 @@ export class ToolLaunchUc {
 		return launchRequest;
 	}
 
-	private async checkLicenseForExternal(contextExternalTool: ContextExternalTool, userId: EntityId) {
+	private async checkUserHasLicenseForExternalTool(contextExternalTool: ContextExternalTool, userId: EntityId) {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool } = await this.toolLaunchService.loadToolHierarchy(schoolExternalToolId);
@@ -52,9 +52,9 @@ export class ToolLaunchUc {
 
 		if (
 			externalTool.medium?.mediumId &&
-			!this.userLicenseService.haslicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
+			!this.userLicenseService.hasLicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
 		) {
-			throw new MissingLicenseLoggableException(externalTool.medium, userId, contextExternalTool.id);
+			throw new MissingMediaLicenseLoggableException(externalTool.medium, userId, contextExternalTool.id);
 		}
 	}
 }

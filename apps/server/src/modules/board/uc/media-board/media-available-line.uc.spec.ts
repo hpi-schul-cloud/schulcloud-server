@@ -230,11 +230,7 @@ describe(MediaAvailableLineUc.name, () => {
 					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
 					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
-					mediaUserlicense.mediumId = 'mediumId';
-
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userLicenseService.haslicenseForExternalTool.mockReturnValue(true);
+					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -259,14 +255,6 @@ describe(MediaAvailableLineUc.name, () => {
 						mediaAvailableLineElement,
 					};
 				};
-
-				it('should not check license', async () => {
-					const { user, mediaBoard } = setup();
-
-					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
-
-					expect(userLicenseService.haslicenseForExternalTool).not.toHaveBeenCalled();
-				});
 
 				it('should return media line', async () => {
 					const { user, mediaBoard, mediaAvailableLineElement } = setup();
@@ -307,7 +295,6 @@ describe(MediaAvailableLineUc.name, () => {
 					mediaUserlicense.mediumId = 'mediumId';
 
 					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userLicenseService.haslicenseForExternalTool.mockReturnValue(true);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -332,14 +319,6 @@ describe(MediaAvailableLineUc.name, () => {
 						mediaAvailableLineElement,
 					};
 				};
-
-				it('should check license', async () => {
-					const { user, mediaBoard } = setup();
-
-					await uc.getMediaAvailableLine(user.id, mediaBoard.id);
-
-					expect(userLicenseService.haslicenseForExternalTool).toHaveBeenCalled();
-				});
 
 				it('should return the available line', async () => {
 					const { user, mediaBoard, mediaAvailableLineElement } = setup();
@@ -374,7 +353,6 @@ describe(MediaAvailableLineUc.name, () => {
 					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
 					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userLicenseService.haslicenseForExternalTool.mockReturnValue(false);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);

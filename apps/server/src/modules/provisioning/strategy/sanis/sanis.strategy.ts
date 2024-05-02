@@ -120,17 +120,6 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			externalLicenses = SanisResponseMapper.mapToExternalLicenses(schulconnexLizenzInfoResponses);
 		}
 
-		let externalLicenses: ExternalLicenseDto[] | undefined;
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			const lizenzInfoResponses: SchulconnexLizenzInfoResponse[] = await this.schulconnexRestClient.getLizenzInfo(
-				input.accessToken,
-				{ overrideUrl: this.configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') }
-			);
-			await this.checkResponseValidation(lizenzInfoResponses);
-
-			externalLicenses = SanisResponseMapper.mapToExternalLicenses(lizenzInfoResponses);
-		}
-
 		const oauthData: OauthDataDto = new OauthDataDto({
 			system: input.system,
 			externalSchool,

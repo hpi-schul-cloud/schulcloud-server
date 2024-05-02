@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { MissingLicenseLoggableException } from '@modules/tool/tool-launch/error';
+import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -205,7 +205,7 @@ describe('ToolLaunchUc', () => {
 
 					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-					expect(userlicenseService.haslicenseForExternalTool).not.toHaveBeenCalled();
+					expect(userlicenseService.hasLicenseForExternalTool).not.toHaveBeenCalled();
 				});
 
 				it('should return launch request', async () => {
@@ -239,7 +239,7 @@ describe('ToolLaunchUc', () => {
 					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
 					userlicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userlicenseService.haslicenseForExternalTool.mockReturnValue(true);
+					userlicenseService.hasLicenseForExternalTool.mockReturnValue(true);
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
@@ -259,7 +259,7 @@ describe('ToolLaunchUc', () => {
 
 					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-					expect(userlicenseService.haslicenseForExternalTool).toHaveBeenCalled();
+					expect(userlicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
 				});
 
 				it('should return launch request', async () => {
@@ -293,7 +293,7 @@ describe('ToolLaunchUc', () => {
 					Configuration.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
 					userlicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
-					userlicenseService.haslicenseForExternalTool.mockReturnValue(false);
+					userlicenseService.hasLicenseForExternalTool.mockReturnValue(false);
 
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
@@ -308,12 +308,12 @@ describe('ToolLaunchUc', () => {
 					};
 				};
 
-				it('should throw MissingLicenseLoggableException', async () => {
+				it('should throw MissingMediaLicenseLoggableException', async () => {
 					const { user, contextExternalToolId } = setup();
 
 					const toolLaunchRequest: Promise<ToolLaunchRequest> = uc.getToolLaunchRequest(user.id, contextExternalToolId);
 
-					await expect(toolLaunchRequest).rejects.toThrow(MissingLicenseLoggableException);
+					await expect(toolLaunchRequest).rejects.toThrow(MissingMediaLicenseLoggableException);
 				});
 			});
 		});
