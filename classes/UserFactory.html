@@ -167,6 +167,9 @@
                                 <a href="#asStudent" >asStudent</a>
                             </li>
                             <li>
+                                <a href="#asSuperhero" >asSuperhero</a>
+                            </li>
+                            <li>
                                 <a href="#asTeacher" >asTeacher</a>
                             </li>
                             <li>
@@ -294,8 +297,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -358,8 +361,72 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>additionalPermissions</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>[]</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="asSuperhero"></a>
+                    <span class="name">
+                        <span ><b>asSuperhero</b></span>
+                        <a href="#asSuperhero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>asSuperhero(additionalPermissions: <a href="../undefineds/Permission.html" target="_self">Permission[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -422,8 +489,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -486,8 +553,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -546,8 +613,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -1623,7 +1690,13 @@ import {
 import { Permission, RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import _ from &#x27;lodash&#x27;;
-import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from &#x27;../user-role-permissions&#x27;;
+import {
+	adminPermissions,
+	studentPermissions,
+	superheroPermissions,
+	teacherPermissions,
+	userPermissions,
+} from &#x27;../user-role-permissions&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { roleFactory } from &#x27;./role.factory&#x27;;
 import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
@@ -1690,6 +1763,15 @@ class UserFactory extends BaseFactory&lt;User, UserProperties&gt; {
 	asAdmin(additionalPermissions: Permission[] &#x3D; []): this {
 		const permissions &#x3D; _.union(userPermissions, adminPermissions, additionalPermissions);
 		const role &#x3D; roleFactory.buildWithId({ permissions, name: RoleName.ADMINISTRATOR });
+
+		const params: DeepPartial&lt;UserProperties&gt; &#x3D; { roles: [role] };
+
+		return this.params(params);
+	}
+
+	asSuperhero(additionalPermissions: Permission[] &#x3D; []): this {
+		const permissions &#x3D; _.union(userPermissions, superheroPermissions, additionalPermissions);
+		const role &#x3D; roleFactory.buildWithId({ permissions, name: RoleName.SUPERHERO });
 
 		const params: DeepPartial&lt;UserProperties&gt; &#x3D; { roles: [role] };
 
