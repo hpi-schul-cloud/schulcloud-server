@@ -68,7 +68,7 @@ export class MediaElementUc {
 
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.boardNodePermissionService.checkPermission(user.id, line, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findByDescendant(line);
 
@@ -106,8 +106,7 @@ export class MediaElementUc {
 
 		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		await this.boardNodePermissionService.checkPermission(user.id, element, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
 
 		await this.mediaElementService.delete(element);
 	}

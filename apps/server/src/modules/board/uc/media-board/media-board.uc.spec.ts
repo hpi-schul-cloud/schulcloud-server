@@ -166,7 +166,7 @@ describe(MediaBoardUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
 				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 				mediaLineService.create.mockResolvedValueOnce(mediaLine);
 
@@ -182,7 +182,7 @@ describe(MediaBoardUc.name, () => {
 
 				await uc.createLine(user.id, mediaBoard.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user, mediaBoard, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
 			});
 
 			it('should return a new media line', async () => {

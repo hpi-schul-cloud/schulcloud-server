@@ -1,9 +1,8 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { MediaBoard, MediaLine } from '@shared/domain/domainobject';
-import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { MediaBoardService, MediaLineService } from '../../service';
@@ -12,7 +11,6 @@ import { BoardNodePermissionService } from '../../poc/service';
 @Injectable()
 export class MediaLineUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaLineService: MediaLineService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
@@ -29,8 +27,7 @@ export class MediaLineUc {
 
 		const targetBoard: MediaBoard = await this.mediaBoardService.findById(targetBoardId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		await this.boardNodePermissionService.checkPermission(user.id, targetBoard, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, targetBoard, Action.write);
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
 
@@ -42,8 +39,7 @@ export class MediaLineUc {
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		await this.boardNodePermissionService.checkPermission(user.id, line, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
 		await this.mediaLineService.updateTitle(line, title);
 	}
@@ -53,8 +49,7 @@ export class MediaLineUc {
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		await this.boardNodePermissionService.checkPermission(user.id, line, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
 		await this.mediaLineService.delete(line);
 	}

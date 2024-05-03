@@ -285,7 +285,6 @@ describe(MediaElementUc.name, () => {
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaElementService.findById.mockResolvedValueOnce(mediaElement);
 
 				return {

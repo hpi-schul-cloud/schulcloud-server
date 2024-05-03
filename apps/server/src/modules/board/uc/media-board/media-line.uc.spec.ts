@@ -1,27 +1,21 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action } from '@modules/authorization';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import {
-	boardDoAuthorizableFactory,
-	mediaBoardFactory,
-	mediaLineFactory,
-	setupEntities,
-	userFactory as userEntityFactory,
-} from '@shared/testing';
+import { mediaBoardFactory, mediaLineFactory, setupEntities, userFactory as userEntityFactory } from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 import { MediaLineUc } from './media-line.uc';
+import { BoardNodePermissionService } from '../../poc/service';
 
 describe(MediaLineUc.name, () => {
 	let module: TestingModule;
 	let uc: MediaLineUc;
 
-	let authorizationService: DeepMocked<AuthorizationService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let mediaLineService: DeepMocked<MediaLineService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
 	beforeAll(async () => {
@@ -30,10 +24,6 @@ describe(MediaLineUc.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				MediaLineUc,
-				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
-				},
 				{
 					provide: MediaBoardService,
 					useValue: createMock<MediaBoardService>(),
@@ -54,10 +44,9 @@ describe(MediaLineUc.name, () => {
 		}).compile();
 
 		uc = module.get(MediaLineUc);
-		authorizationService = module.get(AuthorizationService);
 		mediaBoardService = module.get(MediaBoardService);
 		mediaLineService = module.get(MediaLineService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodePermissionService = module.get(BoardNodePermissionService);
 		configService = module.get(ConfigService);
 	});
 
@@ -75,11 +64,8 @@ describe(MediaLineUc.name, () => {
 				const user = userEntityFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 
@@ -87,20 +73,15 @@ describe(MediaLineUc.name, () => {
 					user,
 					mediaBoard,
 					mediaLine,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, mediaBoard, boardDoAuthorizable } = setup();
+				const { user, mediaLine, mediaBoard } = setup();
 
 				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.write);
 			});
 
 			it('should move the line', async () => {
@@ -142,30 +123,23 @@ describe(MediaLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
 					mediaLine,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, boardDoAuthorizable } = setup();
+				const { user, mediaLine } = setup();
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user, mediaLine, Action.write);
 			});
 
 			it('should rename the line', async () => {
@@ -205,30 +179,19 @@ describe(MediaLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 
-				return {
-					user,
-					mediaLine,
-					boardDoAuthorizable,
-				};
+				return { user, mediaLine };
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, boardDoAuthorizable } = setup();
+				const { user, mediaLine } = setup();
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user, mediaLine, Action.write);
 			});
 
 			it('should delete the line', async () => {

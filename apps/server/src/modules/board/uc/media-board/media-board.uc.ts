@@ -48,9 +48,7 @@ export class MediaBoardUc {
 
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-
-		await this.boardNodePermissionService.checkPermission(user.id, board, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
 		const line: MediaLine = await this.mediaLineService.create(board);
 
