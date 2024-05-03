@@ -14,6 +14,9 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		private readonly boardContextService: BoardContextService
 	) {}
 
+	/**
+	 * @deprecated
+	 */
 	async findById(id: EntityId): Promise<BoardNodeAuthorizable> {
 		const boardNode = await this.boardNodeRepo.findById(id, 1);
 

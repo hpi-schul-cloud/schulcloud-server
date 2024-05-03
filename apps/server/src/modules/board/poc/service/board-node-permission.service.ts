@@ -1,4 +1,4 @@
-import { AnyBoardDo, BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject';
+import { BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Permission } from '@shared/domain/interface';
 import { ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -11,21 +11,21 @@ export class BoardNodePermissionService {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardNodeAuthorizableService
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
 	async checkPermission(userId: EntityId, boardNode: AnyBoardNode, action: Action): Promise<void> {
 		const requiredPermissions: Permission[] = [];
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardNodeAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardNode);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
 		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
 	}
 
 	// TODO
 	async checkBoardEditor(userId: EntityId, boardNode: AnyBoardNode): Promise<void> {
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardNode);
-		if (this.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
+		if (this.isUserBoardEditor(userId, boardNodeAuthorizable.users)) {
 			throw new ForbiddenException();
 		}
 	}
