@@ -4,7 +4,7 @@ import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, Unauthor
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, IGroupFilter } from '@shared/domain/interface';
+import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
@@ -88,19 +88,13 @@ export class GroupController {
 		@Query() params: GroupParams
 	): Promise<GroupListResponse> {
 		const options: IFindOptions<Group> = { pagination };
-		// set userId and schoolId in UC?
-		const filter: IGroupFilter = {
-			userId: currentUser.userId,
-			schoolId: currentUser.schoolId,
-			nameQuery: params.nameQuery,
-			availableGroupsForCourseSync: params.availableGroupsForCourseSync,
-		};
 
 		const groups: Page<ResolvedGroupDto> = await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
-			filter,
-			options
+			options,
+			params.nameQuery,
+			params.availableGroupsForCourseSync
 		);
 
 		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
