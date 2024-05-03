@@ -1,5 +1,5 @@
-import { Action, AuthorizationService } from '@modules/authorization';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Action } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
 import { Card, ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
@@ -9,7 +9,6 @@ import { BoardNodePermissionService } from '../poc/service/board-node-permission
 @Injectable()
 export class ColumnUc {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly cardService: CardService,
 		private readonly columnService: ColumnService,

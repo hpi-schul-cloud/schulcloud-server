@@ -33,8 +33,8 @@ export class ElementUc {
 		const element = await this.elementService.findById(elementId);
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 
-		await this.elementService.update(element, content);
-		return element;
+		const updatedElement = await this.elementService.update(element, content);
+		return updatedElement;
 	}
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {

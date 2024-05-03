@@ -8,16 +8,14 @@ import { LegacyLogger } from '@src/core/logger';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardService, ColumnService } from '../service';
-import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { ColumnBoardCopyService } from '../service/column-board-copy.service';
 import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 @Injectable()
 export class BoardUc {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		@Inject(forwardRef(() => AuthorizationService)) // TODO is this needed?
+		private readonly authorizationService: AuthorizationService,
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
