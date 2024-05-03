@@ -1,4 +1,4 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService, Action } from '@modules/authorization';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -8,13 +8,14 @@ import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
+import { MediaAvailableLineService, MediaBoardService } from '../../service';
+import { BoardNodePermissionService } from '../../poc/service/board-node-permission.service';
 
 @Injectable()
 export class MediaAvailableLineUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService
@@ -25,7 +26,9 @@ export class MediaAvailableLineUc {
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findById(boardId);
 
-		const user: User = await this.checkUsersPermissions(userId, mediaBoard);
+		await this.boardNodePermissionService.checkPermission(userId, mediaBoard, Action.read);
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
@@ -42,16 +45,6 @@ export class MediaAvailableLineUc {
 			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
 
 		return mediaAvailableLine;
-	}
-
-	private async checkUsersPermissions(userId: EntityId, mediaBoard: MediaBoard): Promise<User> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
-
-		return user;
 	}
 
 	private checkFeatureEnabled(): void {

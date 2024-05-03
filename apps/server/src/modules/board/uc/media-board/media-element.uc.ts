@@ -1,4 +1,4 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ContextExternalToolWithId } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
@@ -16,7 +16,8 @@ import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
+import { MediaBoardService, MediaElementService, MediaLineService } from '../../service';
+import { BoardNodePermissionService } from '../../poc/service';
 
 @Injectable()
 export class MediaElementUc {
@@ -24,7 +25,7 @@ export class MediaElementUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly mediaLineService: MediaLineService,
 		private readonly mediaElementService: MediaElementService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly schoolExternalToolService: SchoolExternalToolService
@@ -41,10 +42,8 @@ export class MediaElementUc {
 		const targetLine: MediaLine = await this.mediaLineService.findById(targetLineId);
 
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			targetLine
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.boardNodePermissionService.checkPermission(user.id, targetLine, Action.write);
 
 		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
 
@@ -68,8 +67,8 @@ export class MediaElementUc {
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
 
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.boardNodePermissionService.checkPermission(user.id, line, Action.write);
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findByDescendant(line);
 
@@ -108,10 +107,7 @@ export class MediaElementUc {
 		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
 
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			element
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(user.id, element, Action.write);
 
 		await this.mediaElementService.delete(element);
 	}

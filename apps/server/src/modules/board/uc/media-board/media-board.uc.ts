@@ -1,17 +1,13 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import {
-	BoardDoAuthorizable,
-	BoardExternalReferenceType,
-	type MediaBoard,
-	type MediaLine,
-} from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
+import { MediaBoardService, MediaLineService } from '../../service';
+import { BoardNodePermissionService } from '../../poc/service';
 
 @Injectable()
 export class MediaBoardUc {
@@ -19,7 +15,7 @@ export class MediaBoardUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaLineService: MediaLineService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
 
@@ -53,8 +49,8 @@ export class MediaBoardUc {
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.boardNodePermissionService.checkPermission(user.id, board, Action.write);
 
 		const line: MediaLine = await this.mediaLineService.create(board);
 

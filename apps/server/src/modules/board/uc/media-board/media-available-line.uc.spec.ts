@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import {
-	BoardDoAuthorizable,
 	MediaAvailableLine,
 	MediaAvailableLineElement,
 	MediaBoard,
@@ -14,7 +13,6 @@ import {
 } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
-	boardDoAuthorizableFactory,
 	externalToolFactory,
 	mediaAvailableLineElementFactory,
 	mediaAvailableLineFactory,
@@ -26,15 +24,16 @@ import {
 } from '@shared/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
+import { MediaAvailableLineService, MediaBoardService } from '../../service';
 import { MediaAvailableLineUc } from './media-available-line.uc';
+import { BoardNodePermissionService } from '../../poc/service';
 
 describe(MediaAvailableLineUc.name, () => {
 	let module: TestingModule;
 	let uc: MediaAvailableLineUc;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
@@ -50,8 +49,8 @@ describe(MediaAvailableLineUc.name, () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodePermissionService,
+					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
 					provide: MediaAvailableLineService,
@@ -70,7 +69,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 		uc = module.get(MediaAvailableLineUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodePermissionService = module.get(BoardNodePermissionService);
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
@@ -100,11 +99,10 @@ describe(MediaAvailableLineUc.name, () => {
 				const externalTool2: ExternalTool = externalToolFactory.build();
 				const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
 				const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
-				const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+
 				mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool1,
 					schoolExternalTool2,
@@ -145,7 +143,7 @@ describe(MediaAvailableLineUc.name, () => {
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
-				expect(boardDoAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(mediaBoard);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.read);
 			});
 
 			it('should call the service to get the unused available school external tools', async () => {

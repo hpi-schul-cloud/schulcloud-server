@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolWithId } from '@modules//tool/context-external-tool/domain';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { ConfigService } from '@nestjs/config';
@@ -8,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { MediaExternalToolElement } from '@shared/domain/domainobject';
 import {
-	boardDoAuthorizableFactory,
 	contextExternalToolFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -19,8 +18,9 @@ import {
 } from '@shared/testing';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
+import { MediaBoardService, MediaElementService, MediaLineService } from '../../service';
 import { MediaElementUc } from './media-element.uc';
+import { BoardNodePermissionService } from '../../poc/service';
 
 describe(MediaElementUc.name, () => {
 	let module: TestingModule;
@@ -29,7 +29,7 @@ describe(MediaElementUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let mediaLineService: DeepMocked<MediaLineService>;
 	let mediaElementService: DeepMocked<MediaElementService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
@@ -53,8 +53,8 @@ describe(MediaElementUc.name, () => {
 					useValue: createMock<MediaElementService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodePermissionService,
+					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
 					provide: ConfigService,
@@ -75,7 +75,7 @@ describe(MediaElementUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		mediaLineService = module.get(MediaLineService);
 		mediaElementService = module.get(MediaElementService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodePermissionService = module.get(BoardNodePermissionService);
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
@@ -95,10 +95,8 @@ describe(MediaElementUc.name, () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
 				mediaElementService.findById.mockResolvedValueOnce(mediaElement);
@@ -107,20 +105,15 @@ describe(MediaElementUc.name, () => {
 					user,
 					mediaElement,
 					mediaLine,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, mediaElement, boardDoAuthorizable } = setup();
+				const { user, mediaLine, mediaElement } = setup();
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
 			});
 
 			it('should move the element', async () => {
@@ -169,11 +162,9 @@ describe(MediaElementUc.name, () => {
 				const contextExternalTool: ContextExternalToolWithId = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.buildWithId() as ContextExternalToolWithId;
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaBoardService.findByDescendant.mockResolvedValueOnce(mediaBoard);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -185,7 +176,6 @@ describe(MediaElementUc.name, () => {
 					user,
 					mediaElement,
 					mediaLine,
-					boardDoAuthorizable,
 					mediaBoard,
 					schoolExternalTool,
 					contextExternalTool,
@@ -193,15 +183,11 @@ describe(MediaElementUc.name, () => {
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, mediaElement, boardDoAuthorizable } = setup();
+				const { user, mediaLine, mediaElement } = setup();
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
 			});
 
 			it('should check if element exists already on board', async () => {
@@ -240,11 +226,9 @@ describe(MediaElementUc.name, () => {
 				const contextExternalTool: ContextExternalToolWithId = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.buildWithId() as ContextExternalToolWithId;
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
 				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaBoardService.findByDescendant.mockResolvedValueOnce(mediaBoard);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -254,7 +238,6 @@ describe(MediaElementUc.name, () => {
 					user,
 					mediaElement,
 					mediaLine,
-					boardDoAuthorizable,
 					mediaBoard,
 					schoolExternalTool,
 					contextExternalTool,
@@ -300,30 +283,23 @@ describe(MediaElementUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				mediaElementService.findById.mockResolvedValueOnce(mediaElement);
 
 				return {
 					user,
 					mediaElement,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaElement, boardDoAuthorizable } = setup();
+				const { user, mediaElement } = setup();
 
 				await uc.deleteElement(user.id, mediaElement.id);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaElement, Action.write);
 			});
 
 			it('should delete the element', async () => {
