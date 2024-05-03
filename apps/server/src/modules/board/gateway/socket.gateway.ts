@@ -266,7 +266,7 @@ export class SocketGateway {
 		}
 	}
 
-	// @SubscribeMessage('reload-board-request')
+	// @SubscribeMessage('reload-board-request') ?
 	// handleReloadBoard(client: Socket, data: DeleteColumnMessageParams) {
 	// 	this.logger.log(`Message received from client id: ${client.id}`);
 	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
