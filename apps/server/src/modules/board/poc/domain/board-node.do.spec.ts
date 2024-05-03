@@ -177,6 +177,14 @@ describe('BoardNode', () => {
 				expect(parent.children.map((n) => n.position)).toEqual([0, 1]);
 			});
 		});
+
+		describe('when child is not allowed to add', () => {
+			it('should throw an error', () => {
+				const { parent, child } = setup();
+
+				expect(() => child.addChild(parent)).toThrowError();
+			});
+		});
 	});
 
 	describe('constructor', () => {
