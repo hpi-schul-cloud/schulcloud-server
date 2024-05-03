@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
@@ -23,7 +24,7 @@ import { Socket } from './types';
 @WebSocketGateway({
 	path: '/board-collaboration',
 	cors: {
-		origin: 'http://localhost:4000', // WIP: use env variable
+		origin: `${(Configuration.get('HOST') as string) ?? 'http://localhost'}`.replace(/:\d+$/, ':4000'),
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		preflightContinue: false,
 		optionsSuccessStatus: 204,
