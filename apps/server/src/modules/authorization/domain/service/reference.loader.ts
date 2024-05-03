@@ -1,5 +1,4 @@
-import { BoardDoAuthorizableService } from '@modules/board';
-
+import { BoardNodeAuthorizableService } from '@modules/board/poc/service/board-node-authorizable.service';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -19,7 +18,7 @@ import {
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
-	| BoardDoAuthorizableService
+	| BoardNodeAuthorizableService
 	| ContextExternalToolAuthorizableService
 	| CourseGroupRepo
 	| CourseRepo
@@ -50,7 +49,7 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });

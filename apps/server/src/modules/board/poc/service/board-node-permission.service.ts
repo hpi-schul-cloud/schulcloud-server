@@ -4,14 +4,14 @@ import { Permission } from '@shared/domain/interface';
 import { ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Action, AuthorizationService } from '../../../authorization';
 import { AnyBoardNode } from '../domain';
-import { BoardDoAuthorizableService } from '../../service';
+import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 
 @Injectable()
 export class BoardNodePermissionService {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService
+		private readonly boardDoAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
 	async checkPermission(userId: EntityId, boardNode: AnyBoardNode, action: Action): Promise<void> {
@@ -23,8 +23,8 @@ export class BoardNodePermissionService {
 	}
 
 	// TODO
-	async checkBoardEditor(userId: EntityId, anyBoardDo: AnyBoardDo): Promise<void> {
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(anyBoardDo);
+	async checkBoardEditor(userId: EntityId, boardNode: AnyBoardNode): Promise<void> {
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardNode);
 		if (this.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
 			throw new ForbiddenException();
 		}
