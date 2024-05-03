@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
@@ -13,6 +12,7 @@ import {
 	MoveCardMessageParams,
 	UpdateColumnTitleMessageParams,
 } from './dto';
+import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
@@ -21,17 +21,7 @@ import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
 import { Socket } from './types';
 
-@WebSocketGateway({
-	path: '/board-collaboration',
-	cors: {
-		origin: `${(Configuration.get('HOST') as string) ?? 'http://localhost'}`.replace(/:\d+$/, ':4000'),
-		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-		preflightContinue: false,
-		optionsSuccessStatus: 204,
-		credentials: true,
-		// transports: ['websocket'],
-	},
-})
+@WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class SocketGateway {
 	// TODO: use loggables instead of legacy logger
