@@ -40,7 +40,7 @@ export const getBoardNodeType = <T extends AnyBoardNode>(boardNode: T): BoardNod
 		return boardNode instanceof Constructor;
 	});
 	if (type === undefined) {
-		throw new Error();
+		throw new Error(`Cannot get type of board node class '${boardNode.constructor.name}'`);
 	}
 	return type as BoardNodeType;
 };

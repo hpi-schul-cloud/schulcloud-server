@@ -1,15 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../domain';
 
 @Injectable()
 export class BoardContextService {
-	constructor(@Inject() private readonly courseRepo: CourseRepo) {}
+	constructor(private readonly courseRepo: CourseRepo) {}
 
 	async getUsersWithBoardRoles(rootNode: AnyBoardNode): Promise<UserWithBoardRoles[]> {
 		if (!('context' in rootNode)) {
-			throw new Error(`Board root id '${rootNode.id}' doesn't provide a context`);
+			return [];
 		}
 
 		let usersWithRoles: UserWithBoardRoles[] = [];
