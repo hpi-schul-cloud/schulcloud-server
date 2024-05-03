@@ -3,6 +3,7 @@ import { BoardModule } from '@modules/board';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
+import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -36,6 +37,7 @@ import { ToolModule } from './tool.module';
 		LearnroomModule,
 		BoardModule,
 		SchoolModule,
+		UserLicenseModule,
 	],
 	controllers: [
 		ToolLaunchController,
