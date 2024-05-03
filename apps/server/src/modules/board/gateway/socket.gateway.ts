@@ -5,7 +5,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { BoardResponseMapper } from '../controller/mapper';
 import { BoardDoAuthorizableService } from '../service';
-import { BoardUc, ColumnUc } from '../uc';
+import { BoardUc, CardUc, ColumnUc } from '../uc';
 import {
 	CreateCardMessageParams,
 	DeleteColumnMessageParams,
@@ -14,10 +14,13 @@ import {
 } from './dto';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
+import { DeleteCardMessageParams } from './dto/delete-card.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { MoveColumnMessageParams } from './dto/move-column.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
+import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
+import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { Socket } from './types';
 
 @WebSocketGateway({
@@ -39,6 +42,7 @@ export class SocketGateway {
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
+		private readonly cardUc: CardUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -53,6 +57,7 @@ export class SocketGateway {
 	}
 
 	@SubscribeMessage('delete-board-request')
+	@UseRequestContext()
 	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
@@ -81,21 +86,50 @@ export class SocketGateway {
 		}
 	}
 
-	// @SubscribeMessage('update-card-request')
-	// handleUpdateCard(client: Socket, data: unknown) {
-	// 	this.logger.log(`Message received from client id: ${client.id}`);
-	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-	// 	client.broadcast.emit('update-card-success', data);
-	// 	client.emit('update-card-success', data);
-	// }
+	@SubscribeMessage('update-card-title-request')
+	@UseRequestContext()
+	async handleUpdateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-	// @SubscribeMessage('delete-card-request')
-	// handleDeleteCard(client: Socket, data: unknown) {
-	// 	this.logger.log(`Message received from client id: ${client.id}`);
-	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-	// 	client.broadcast.emit('delete-card-success', data);
-	// 	client.emit('delete-card-success', data);
-	// }
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('update-card-title-success', data);
+			client.emit('update-card-title-success', data);
+		} catch (err) {
+			client.emit('update-card-title-failure', new Error('Failed to update card title'));
+		}
+	}
+
+	@SubscribeMessage('update-card-height-request')
+	@UseRequestContext()
+	async handleUpdateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.cardUc.updateCardHeight(userId, data.cardId, data.height);
+
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('update-card-height-success', data);
+			client.emit('update-card-height-success', data);
+		} catch (err) {
+			client.emit('update-card-height-failure', new Error('Failed to update card height'));
+		}
+	}
+
+	@SubscribeMessage('delete-card-request')
+	@UseRequestContext()
+	async handleDeleteCard(client: Socket, data: DeleteCardMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.cardUc.deleteCard(userId, data.cardId);
+
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('delete-card-success', data);
+			client.emit('delete-card-success', data);
+		} catch (err) {
+			client.emit('delete-card-failure', new Error('Failed to update card height'));
+		}
+	}
 
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
