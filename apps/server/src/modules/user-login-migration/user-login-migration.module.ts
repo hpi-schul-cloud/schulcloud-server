@@ -9,6 +9,7 @@ import {
 	MigrationCheckService,
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
+	UserLoginMigrationRollbackService,
 	UserLoginMigrationService,
 	UserMigrationService,
 } from './service';
@@ -22,6 +23,7 @@ import {
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
 		UserLoginMigrationRevertService,
+		UserLoginMigrationRollbackService,
 	],
 	exports: [
 		UserMigrationService,
@@ -29,6 +31,7 @@ import {
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRevertService,
+		UserLoginMigrationRollbackService,
 	],
 })
 export class UserLoginMigrationModule {}
