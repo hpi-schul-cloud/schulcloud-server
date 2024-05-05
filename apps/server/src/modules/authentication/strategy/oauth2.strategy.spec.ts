@@ -13,6 +13,7 @@ import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { SchoolInMigrationLoggableException } from '../loggable';
 
 import { Oauth2Strategy } from './oauth2.strategy';
+import { UserAccountDeactivatedException } from '../loggable/user-account-deactivated-exception';
 
 describe('Oauth2Strategy', () => {
 	let module: TestingModule;
@@ -141,6 +142,25 @@ describe('Oauth2Strategy', () => {
 					});
 
 				await expect(func).rejects.toThrow(new UnauthorizedException('no account found'));
+			});
+
+			it('should throw an UserAccountDeactivated exception', async () => {
+				setup();
+				const account: Account = new Account({
+					id: 'accountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'username',
+					deactivatedAt: new Date(),
+				});
+				accountService.findByUserId.mockResolvedValue(account);
+
+				const func = async () =>
+					strategy.validate({
+						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
+					});
+
+				await expect(func).rejects.toThrow(new UserAccountDeactivatedException());
 			});
 		});
 	});

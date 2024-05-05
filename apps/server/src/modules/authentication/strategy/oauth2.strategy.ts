@@ -8,7 +8,7 @@ import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { SchoolInMigrationLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
-import { DeactivatedUserAccountException } from '../loggable/blocked-user-exception';
+import { UserAccountDeactivatedException } from '../loggable/user-account-deactivated-exception';
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
@@ -33,7 +33,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		}
 
 		if (account.deactivatedAt != null && account.deactivatedAt.getDate() <= Date.now()) {
-			throw new DeactivatedUserAccountException();
+			throw new UserAccountDeactivatedException();
 		}
 
 		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
