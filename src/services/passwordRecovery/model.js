@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const passwordRecoverySchema = new Schema({
-	account: { type: Schema.Types.ObjectId, ref: 'account' },
+	account: { type: String, required: true },
 	changed: { type: Boolean, default: false },
 	token: { type: String, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },

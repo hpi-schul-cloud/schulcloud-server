@@ -1,12 +1,15 @@
 import { Group, GroupService } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
+import { ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './service';
@@ -19,7 +22,9 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
-		protected readonly groupService: GroupService
+		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
+		protected readonly groupService: GroupService,
+		protected readonly configService: ConfigService<ProvisioningConfig, true>
 	) {
 		super();
 	}
@@ -41,6 +46,10 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 
 		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
 			await this.provisionGroups(data, school);
+		}
+
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
+			await this.schulconnexLicenseProvisioningService.provisionExternalLicenses(user.id, data.externalLicenses);
 		}
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });

@@ -545,6 +545,11 @@
 			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
 		},
+		"ALERT_CACHE_INTERVAL_MIN": {
+			"type": "number",
+			"default": 1,
+			"description": "Time between updating alerts (in minutes)"
+		},
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
@@ -1167,6 +1172,11 @@
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
 		},
+		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board web socket feature."
+		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1595,6 +1605,12 @@
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
+			"required": [
+				"API_URL",
+				"TOKEN_ENDPOINT",
+				"CLIENT_ID",
+				"CLIENT_SECRET"
+			],
 			"properties": {
 				"API_URL": {
 					"type": "string",
@@ -1660,6 +1676,17 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the provisioning of other groupusers"
+		},
+		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the storing and checking media license of users"
+		},
+		"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": {
+			"type": "string",
+			"default": "",
+			"description": "URL for fetching lizenz info from moin.schule schulconnex",
+			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
 		}
 	},
 	"required": []
