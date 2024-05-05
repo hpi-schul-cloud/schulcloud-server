@@ -12,7 +12,6 @@ import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
-import { DeactivatedUserAccountException } from '../loggable/blocked-user-exception';
 
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {

@@ -6,8 +6,8 @@ export class DeactivatedUserAccountException extends BusinessError implements Lo
 	constructor() {
 		super(
 			{
-				type: 'DEACTIVATED_USER_ACCOUNT',
-				title: 'Login failed because user accout is deactivated',
+				type: 'USER_ACCOUNT_DEACTIVATED',
+				title: 'Login failed because user account is deactivated',
 				defaultMessage: 'Login failed because user account is deactivated',
 			},
 			HttpStatus.UNAUTHORIZED
