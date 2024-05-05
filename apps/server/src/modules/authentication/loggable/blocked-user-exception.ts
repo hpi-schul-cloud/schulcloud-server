@@ -2,13 +2,13 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 
-export class BlockedUserException extends BusinessError implements Loggable {
+export class DeactivatedUserAccountException extends BusinessError implements Loggable {
 	constructor() {
 		super(
 			{
-				type: 'BLOCKED_USER',
-				title: 'Login failed because user is blocked',
-				defaultMessage: 'Login failed because user is blocked',
+				type: 'DEACTIVATED_USER_ACCOUNT',
+				title: 'Login failed because user accout is deactivated',
+				defaultMessage: 'Login failed because user account is deactivated',
 			},
 			HttpStatus.UNAUTHORIZED
 		);
