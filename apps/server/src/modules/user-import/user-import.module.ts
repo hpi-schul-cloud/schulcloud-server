@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { AccountModule } from '@modules/account';
 import { AuthorizationModule } from '@modules/authorization';
@@ -24,7 +25,13 @@ import { UserImportConfigModule } from './user-import-config.module';
 		HttpModule,
 		UserModule,
 		OauthModule,
-		SchulconnexClientModule,
+		SchulconnexClientModule.register({
+			apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
+			tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
+			clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
+			clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
+			personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
+		}),
 		UserLoginMigrationModule,
 	],
 	controllers: [ImportUserController],

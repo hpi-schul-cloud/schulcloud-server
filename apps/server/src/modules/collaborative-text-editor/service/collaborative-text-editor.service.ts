@@ -45,6 +45,12 @@ export class CollaborativeTextEditorService {
 		};
 	}
 
+	async deleteCollaborativeTextEditorByParentId(parentId: string): Promise<void> {
+		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
+
+		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
+	}
+
 	private removeDuplicateSessions(sessions: string[]): string[] {
 		const uniqueSessions = [...new Set(sessions)];
 
