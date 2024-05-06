@@ -23,7 +23,8 @@ export class ContextExternalToolConfigurationStatusResponse {
 
 	@ApiProperty({
 		type: Boolean,
-		description: 'True, if a optional parameter on the context external tool is missing a value',
+		description:
+			'True, if a optional parameter on the context external tool is missing a value. This is happening, when course is copied.',
 	})
 	isIncompleteOperationalOnScopeContext: boolean;
 

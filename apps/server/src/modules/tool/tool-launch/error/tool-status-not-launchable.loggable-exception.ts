@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class ToolStatusOutdatedLoggableException extends BadRequestException implements Loggable {
+export class ToolStatusNotLaunchableLoggableException extends BadRequestException implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
 		private readonly toolId: EntityId,
@@ -17,8 +17,8 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'TOOL_STATUS_OUTDATED',
-			message: 'The status of the tool is outdated and cannot be launched by the user.',
+			type: 'TOOL_STATUS_NOT_LAUNCHABLE',
+			message: 'The status of the tool cannot be launched by the user.',
 			stack: this.stack,
 			data: {
 				userId: this.userId,
