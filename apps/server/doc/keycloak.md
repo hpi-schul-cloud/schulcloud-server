@@ -18,9 +18,11 @@ docker run \
   --name erwinidm \
   -p 8080:8080 \
   -p 8443:8443 \
-  -v "$PWD/backup/idm/keycloak:/tmp/realms" \
+  -e KEYCLOAK_ADMIN=keycloak
+  -e KEYCLOAK_ADMIN_PASSWORD=keycloak
+  -v "$PWD/backup/idm/keycloak:/opt/keycloak/data/import" \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
-  "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
+  "--import-realm"
 ```
 
 **PowerShell:**
@@ -30,9 +32,11 @@ docker run `
   --name erwinidm `
   -p 8080:8080 `
   -p 8443:8443 `
-  -v "$PWD/backup/idm/keycloak:/tmp/realms" `
+  -e KEYCLOAK_ADMIN=keycloak `
+  -e KEYCLOAK_ADMIN_PASSWORD=keycloak `
+  -v "$PWD/backup/idm/keycloak:/opt/keycloak/data/import" `
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest `
-  "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
+  "--import-realm"
 ```
 
 ### Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering

@@ -15,11 +15,11 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
-import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
@@ -81,6 +81,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_LOGIN_LINK_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
@@ -135,6 +136,7 @@ const config: ServerConfig = {
 		'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED'
 	) as boolean,
 	FEATURE_COLUMN_BOARD_SHARE: Configuration.get('FEATURE_COLUMN_BOARD_SHARE') as boolean,
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SOCKET_ENABLED') as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
@@ -232,6 +234,8 @@ const config: ServerConfig = {
 		'FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED'
 	) as boolean,
 	ALERT_CACHE_INTERVAL_MIN: Configuration.get('ALERT_CACHE_INTERVAL_MIN') as number,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
+	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
 };
 
 export const serverConfig = () => config;
