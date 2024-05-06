@@ -1,12 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { AnyBoardNode, CardProps } from './types';
-import { CollaborativeTextEditor } from './collaborative-text-editor.do';
-import { DrawingElement } from './drawing-element.do';
-import { ExternalToolElement } from './external-tool-element.do';
-import { FileElement } from './file-element.do';
-import { LinkElement } from './link-element.do';
-import { RichTextElement } from './rich-text-element.do';
-import { SubmissionContainerElement } from './submission-container-element.do';
+import { AnyBoardNode, CardProps, isContentElement } from './types';
 
 export class Card extends BoardNode<CardProps> {
 	get title(): string | undefined {
@@ -26,14 +19,6 @@ export class Card extends BoardNode<CardProps> {
 	}
 
 	canHaveChild(childNode: AnyBoardNode): boolean {
-		return (
-			childNode instanceof CollaborativeTextEditor ||
-			childNode instanceof DrawingElement ||
-			childNode instanceof ExternalToolElement ||
-			childNode instanceof FileElement ||
-			childNode instanceof LinkElement ||
-			childNode instanceof RichTextElement ||
-			childNode instanceof SubmissionContainerElement
-		);
+		return isContentElement(childNode);
 	}
 }

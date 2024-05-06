@@ -15,3 +15,6 @@ export class SubmissionContainerElement extends BoardNode<SubmissionContainerEle
 		return childNode instanceof SubmissionItem;
 	}
 }
+
+export const isSubmissionContainerElement = (reference: unknown): reference is SubmissionContainerElement =>
+	reference instanceof SubmissionContainerElement;

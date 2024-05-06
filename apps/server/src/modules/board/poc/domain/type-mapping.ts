@@ -1,7 +1,7 @@
 import type { AnyBoardNode } from './types/any-board-node';
 import { BoardNodeType } from './types/board-node-type.enum';
 import { Card } from './card.do';
-import { CollaborativeTextEditor } from './collaborative-text-editor.do';
+import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { Column } from './column.do';
 import { ColumnBoard } from './colum-board.do';
 import { DrawingElement } from './drawing-element.do';
@@ -16,7 +16,7 @@ import { SubmissionItem } from './submission-item.do';
 // register node types
 const BoardNodeTypeToConstructor = {
 	[BoardNodeType.CARD]: Card,
-	[BoardNodeType.COLLABORATIVE_TEXT_EDITOR]: CollaborativeTextEditor,
+	[BoardNodeType.COLLABORATIVE_TEXT_EDITOR]: CollaborativeTextEditorElement,
 	[BoardNodeType.COLUMN]: Column,
 	[BoardNodeType.COLUMN_BOARD]: ColumnBoard,
 	[BoardNodeType.DRAWING_ELEMENT]: DrawingElement,

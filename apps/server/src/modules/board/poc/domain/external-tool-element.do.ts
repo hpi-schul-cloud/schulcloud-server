@@ -14,3 +14,6 @@ export class ExternalToolElement extends BoardNode<ExternalToolElementProps> {
 		return false;
 	}
 }
+
+export const isExternalToolElement = (reference: unknown): reference is ExternalToolElement =>
+	reference instanceof ExternalToolElement;

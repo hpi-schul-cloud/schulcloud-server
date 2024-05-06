@@ -30,7 +30,7 @@ export interface CardProps extends BoardNodeProps {
 	height: number;
 }
 
-export interface CollaborativeTextEditorProps extends BoardNodeProps {}
+export interface CollaborativeTextEditorElementProps extends BoardNodeProps {}
 
 export interface DrawingElementProps extends BoardNodeProps {
 	description: string;
@@ -83,7 +83,7 @@ export type MediaBoardNodeProps = MediaBoardProps | MediaExternalToolElementProp
 
 export type AnyBoardNodeProps =
 	| CardProps
-	| CollaborativeTextEditorProps
+	| CollaborativeTextEditorElementProps
 	| ColumnBoardProps
 	| ColumnProps
 	| DrawingElementProps

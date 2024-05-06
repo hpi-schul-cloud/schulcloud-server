@@ -1,4 +1,5 @@
 export * from './any-board-node';
+export * from './any-content-element';
 export * from './board-external-reference';
 export * from './board-layout.enum';
 export * from './board-node-props';

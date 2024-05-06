@@ -38,3 +38,5 @@ export class LinkElement extends BoardNode<LinkElementProps> {
 		return false;
 	}
 }
+
+export const isLinkElement = (reference: unknown): reference is LinkElement => reference instanceof LinkElement;
