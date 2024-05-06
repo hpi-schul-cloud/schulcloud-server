@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-migration-systems-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-migration-systems
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: api-migration-systems
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  replicas: {{ API_MIGRATION_SYSTEMS_REPLICAS|default("1", true) }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: api-migration-systems
+  template:
+    metadata:
+      labels:
+        app: api-migration-systems
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: api-migration-systems
+        app.kubernetes.io/component: server
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: api-migration-systems
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3030
+          name: api
+          protocol: TCP
+        - containerPort: 9090
+          name: api-metrics
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        readinessProbe:
+          httpGet:
+            path: /internal/health
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        # liveless if unsatisfactory reply
+        livenessProbe:
+          httpGet:
+            path: /internal/health
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: /internal/health
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold:  36
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: {{ API_MIGRATION_SYSTEMS_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ API_MIGRATION_SYSTEMS_MEMORY_LIMITS|default("2Gi", true) }}
+          requests:
+            cpu: {{ API_MIGRATION_SYSTEMS_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ API_MIGRATION_SYSTEMS_MEMORY_REQUESTS|default("150Mi", true) }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - api-migration-systems
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - api-migration-systems
+              topologyKey: "topology.kubernetes.io/zone"
+{% endif %}
