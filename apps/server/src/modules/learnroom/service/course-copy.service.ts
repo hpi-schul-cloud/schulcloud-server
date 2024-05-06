@@ -71,9 +71,7 @@ export class CourseCopyService {
 
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
-
 		const courseStatus = this.deriveCourseStatus(originalCourse, finishedCourseCopy, boardStatus);
-
 		return courseStatus;
 	}
 
