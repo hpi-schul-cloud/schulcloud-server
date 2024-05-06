@@ -147,7 +147,7 @@
 		"cc-export-import": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/common-cartridge-export-import.app",
+			"entryFile": "apps/common-cartridge-export-import.app"
 		},
 		"board-collaboration": {
 			"type": "application",
