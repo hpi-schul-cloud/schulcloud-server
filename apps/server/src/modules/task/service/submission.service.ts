@@ -1,6 +1,6 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
 import { Submission } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
@@ -20,7 +20,7 @@ import {
 } from '@modules/deletion';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class SubmissionService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly submissionRepo: SubmissionRepo,

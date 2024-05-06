@@ -47,6 +47,15 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
+	async getFromDbHowManyAreInProcess(threshold: number): Promise<number> {
+		const modificationThreshold = new Date(Date.now() - threshold);
+		const scope = new DeletionRequestScope().byStatusPending(modificationThreshold);
+
+		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+
+		return numberItemsWithStatusPending;
+	}
+
 	async update(deletionRequest: DeletionRequest): Promise<void> {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
 		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);

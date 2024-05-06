@@ -24,20 +24,20 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 		this.config = [
-			'account',
+			// 'account',
 			'class',
 			'courseGroup',
 			'course',
 			'dashboard',
-			'file',
-			'fileRecords',
+			// 'file',
+			// 'fileRecords',
 			'lessons',
 			'pseudonyms',
-			'rocketChatUser',
-			'task',
+			// 'rocketChatUser',
+			// 'task',
 			'teams',
-			'user',
-			'submissions',
+			// 'user',
+			// 'submissions',
 			'news',
 		];
 	}
@@ -70,15 +70,43 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	async executeDeletionRequests(limit?: number): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 
-		const deletionRequestToExecution: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(
-			limit
-		);
+		const maxAmoutOfTasksWeDoConcurrently = 5;
+		const callsDelayMilliseconds = 10000;
+		let tasks: DeletionRequest[] = [];
 
-		await Promise.all(
-			deletionRequestToExecution.map(async (req) => {
-				await this.executeDeletionRequest(req);
-			})
-		);
+		do {
+			// eslint-disable-next-line no-await-in-loop
+			const numberItemsWithStatusPending = await this.getFromDbHowManyAreInProcess();
+			const amountWillingToTake = maxAmoutOfTasksWeDoConcurrently - numberItemsWithStatusPending;
+			this.logger.debug({
+				action: 'numberItemsWithStatusPending, amountWillingToTake',
+				numberItemsWithStatusPending,
+				amountWillingToTake,
+			});
+			// eslint-disable-next-line no-await-in-loop
+			if (amountWillingToTake > 0) {
+				// eslint-disable-next-line no-await-in-loop
+				tasks = await this.deletionRequestService.findAllItemsToExecute(amountWillingToTake);
+				// tasks = getAmountOfTasksFromDeletionRequestsAndMarkAsProcessing(amountWillingToTake);
+
+				const numberOfTasks = tasks.length;
+
+				this.logger.debug({ action: 'number of tasks to delete', numberOfTasks });
+				const promises = tasks.map(async (req) => {
+					await this.executeDeletionRequest(req);
+				});
+				// eslint-disable-next-line no-await-in-loop
+				await Promise.all(promises);
+			}
+			// short interval to give time for deletion process to do their work
+			if (callsDelayMilliseconds && callsDelayMilliseconds > 0) {
+				// eslint-disable-next-line no-await-in-loop
+				await new Promise((resolve) => {
+					this.logger.debug({ action: 'sleeping' });
+					setTimeout(resolve, callsDelayMilliseconds);
+				});
+			}
+		} while (tasks.length > 0);
 	}
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
@@ -107,6 +135,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	}
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
+		this.logger.debug({ action: 'executeDeletionRequest', deletionRequest });
 		try {
 			await this.eventBus.publish(new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId));
 			await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
@@ -114,5 +143,11 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
+	}
+
+	private async getFromDbHowManyAreInProcess(): Promise<number> {
+		const numberItemsWithStatusPending: number = await this.deletionRequestService.getFromDbHowManyAreInProcess();
+
+		return numberItemsWithStatusPending;
 	}
 }

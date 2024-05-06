@@ -21,4 +21,12 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 
 		return this;
 	}
+
+	byStatusPending(filteringDate: Date): this {
+		this.addQuery({
+			$and: [{ status: [StatusModel.PENDING] }, { updatedAt: { $lt: filteringDate } }],
+		});
+
+		return this;
+	}
 }

@@ -5,7 +5,7 @@ import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
 import {
 	UserDeletedEvent,
 	DeletionService,
@@ -22,7 +22,7 @@ import {
 import { SubmissionService } from './submission.service';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class TaskService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly taskRepo: TaskRepo,

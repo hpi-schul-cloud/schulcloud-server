@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat';
 import {
 	UserDeletedEvent,
@@ -20,7 +20,7 @@ import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class RocketChatUserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly rocketChatUserRepo: RocketChatUserRepo,

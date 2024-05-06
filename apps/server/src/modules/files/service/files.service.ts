@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, IEventHandler } from '@nestjs/cqrs';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -18,7 +18,7 @@ import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
+// @EventsHandler(UserDeletedEvent)
 export class FilesService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(private readonly repo: FilesRepo, private readonly logger: Logger, private readonly eventBus: EventBus) {
 		this.logger.setContext(FilesService.name);
