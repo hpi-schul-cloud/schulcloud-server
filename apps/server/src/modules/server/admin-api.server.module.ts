@@ -1,5 +1,4 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { DynamicModule, Module } from '@nestjs/common';
 import { FileEntity } from '@modules/files/entity';
 import { ConfigModule } from '@nestjs/config';
@@ -12,7 +11,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
 import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
-import { EtherpadClientModule } from '@src/infra/etherpadClient';
+import { EtherpadClientModule } from '@src/infra/etherpad-client';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
 
@@ -22,10 +22,8 @@ const serverModules = [
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
 	EtherpadClientModule.register({
-		apiUri: Configuration.get('ETHERPAD_URI') as string,
-		apiKey: Configuration.get('ETHERPAD_API_KEY') as string,
-		cookieExpirationInSeconds: Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS') as number,
-		cookieReleaseThreshold: Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD') as number,
+		apiKey: Configuration.has('ETHERPAD_API_KEY') ? (Configuration.get('ETHERPAD_API_KEY') as string) : undefined,
+		basePath: Configuration.has('ETHERPAD_URI') ? (Configuration.get('ETHERPAD_URI') as string) : undefined,
 	}),
 ];
 

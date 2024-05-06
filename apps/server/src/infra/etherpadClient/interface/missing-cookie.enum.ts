@@ -1,4 +1,0 @@
-export enum MissingCookie {
-	COOKIE_RELEASE_THRESHOLD,
-	COOKIE_EXPIRATION,
-}

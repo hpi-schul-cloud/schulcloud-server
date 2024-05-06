@@ -4,12 +4,14 @@ import { AxiosResponse } from 'axios';
 import {
 	InlineResponse200,
 	InlineResponse2001,
+	InlineResponse20013,
 	InlineResponse2002,
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
 	InlineResponse2006Data,
 } from './etherpad-api-client';
+<<<<<<< Updated upstream
 import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
 import {
 	AuthorId,
@@ -21,6 +23,10 @@ import {
 	PadId,
 	SessionId,
 } from './interface';
+=======
+import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
+import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
+>>>>>>> Stashed changes
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -28,7 +34,8 @@ export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
-		private readonly authorApi: AuthorApi
+		private readonly authorApi: AuthorApi,
+		private readonly padApi: PadApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
@@ -43,6 +50,25 @@ export class EtherpadClientAdapter {
 	private async tryCreateAuthor(userId: string, username: string): Promise<AxiosResponse<InlineResponse2003>> {
 		try {
 			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { userId }, error);
+		}
+	}
+
+	public async listPadsOfAuthor(userId: EntityId): Promise<PadId[]> {
+		const response = await this.tryGetPadsOfAuthor(userId);
+		const pads = this.handleResponse<InlineResponse2002>(response, { userId });
+
+		const padIds = Object.keys(pads as object);
+
+		return padIds;
+	}
+
+	private async tryGetPadsOfAuthor(userId: string): Promise<AxiosResponse<InlineResponse2002>> {
+		try {
+			const response = await this.authorApi.listPadsOfAuthorUsingGET(userId);
 
 			return response;
 		} catch (error) {
@@ -206,6 +232,7 @@ export class EtherpadClientAdapter {
 		}
 	}
 
+<<<<<<< Updated upstream
 	public async deleteGroup(groupId: GroupId): Promise<void> {
 		const response = await this.tryDeleteGroup(groupId);
 		this.handleEtherpadResponse<InlineResponse2001>(response, { groupId });
@@ -222,6 +249,62 @@ export class EtherpadClientAdapter {
 	}
 
 	private handleEtherpadResponse<T extends EtherpadResponse>(
+=======
+	public async listAuthorsOfPad(padId: EntityId): Promise<AuthorId[]> {
+		const response = await this.tryGetAuthorsOfPad(padId);
+		const authors = this.handleResponse<InlineResponse20013>(response, { padId });
+
+		const authorIds = Object.keys(authors as object);
+
+		return authorIds;
+	}
+
+	private async tryGetAuthorsOfPad(padId: string): Promise<AxiosResponse<InlineResponse20013>> {
+		try {
+			const response = await this.padApi.listAuthorsOfPadUsingGET(padId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
+		}
+	}
+
+	public async deleteSession(sessionId: EntityId): Promise<InlineResponse2001 | undefined> {
+		const response = await this.tryDeleteSession(sessionId);
+		const responseData = this.handleResponse<InlineResponse2001>(response, { sessionId });
+
+		return responseData;
+	}
+
+	private async tryDeleteSession(sessionId: string): Promise<AxiosResponse<InlineResponse2001>> {
+		try {
+			const response = await this.sessionApi.deleteSessionUsingGET(sessionId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
+		}
+	}
+
+	public async deletePad(padId: EntityId): Promise<InlineResponse2001 | undefined> {
+		const response = await this.tryDeletePad(padId);
+		const responseData = this.handleResponse<InlineResponse2001>(response, { padId });
+
+		return responseData;
+	}
+
+	private async tryDeletePad(sessionId: string): Promise<AxiosResponse<InlineResponse2001>> {
+		try {
+			const response = await this.padApi.deletePadUsingGET(sessionId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
+		}
+	}
+
+	private handleResponse<T extends EtherpadResponse>(
+>>>>>>> Stashed changes
 		axiosResponse: AxiosResponse<T>,
 		payload: EtherpadParams
 	): T['data'] {
