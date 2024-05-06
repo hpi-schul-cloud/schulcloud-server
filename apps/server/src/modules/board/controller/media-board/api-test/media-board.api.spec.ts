@@ -1,5 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { MediaUserLicenseEntity } from '@modules/user-license/entity';
+import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
@@ -11,9 +16,6 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
-import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
-import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaAvailableLineResponse, type MediaBoardResponse, MediaLineResponse } from '../dto';
 
 const baseRouteName = '/media-boards';
@@ -466,6 +468,96 @@ describe('Media Board (API)', () => {
 					message: 'Forbidden',
 					title: 'Feature Disabled',
 					type: 'FEATURE_DISABLED',
+				});
+			});
+		});
+
+		describe('when a licensing feature is enabled', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const externalTool = externalToolEntityFactory.build();
+				const licensedUnusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'mediumId' } });
+				const unusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'notLicensedByUser' } });
+				const schoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: externalTool,
+					school: studentUser.school,
+				});
+				const licensedUnusedSchoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: licensedUnusedExternalTool,
+					school: studentUser.school,
+				});
+				const unusedSchoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: unusedExternalTool,
+					school: studentUser.school,
+				});
+				const contextExternalTool = contextExternalToolEntityFactory.build({
+					schoolTool: schoolExternalTool,
+				});
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
+				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+					parent: mediaLine,
+					contextExternalTool,
+				});
+
+				const userLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({
+					user: studentUser,
+					mediumId: 'mediumId',
+				});
+
+				await em.persistAndFlush([
+					studentAccount,
+					studentUser,
+					externalTool,
+					licensedUnusedExternalTool,
+					unusedExternalTool,
+					schoolExternalTool,
+					licensedUnusedSchoolExternalTool,
+					unusedSchoolExternalTool,
+					contextExternalTool,
+					mediaBoard,
+					mediaLine,
+					mediaElement,
+					userLicense,
+				]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+					licensedUnusedExternalTool,
+					licensedUnusedSchoolExternalTool,
+				};
+			};
+
+			it('should return the available media line with only the licensed element', async () => {
+				const { studentClient, mediaBoard, licensedUnusedExternalTool, licensedUnusedSchoolExternalTool } =
+					await setup();
+
+				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual<MediaAvailableLineResponse>({
+					elements: [
+						{
+							schoolExternalToolId: licensedUnusedSchoolExternalTool.id,
+							name: licensedUnusedExternalTool.name,
+							description: licensedUnusedExternalTool.description,
+						},
+					],
 				});
 			});
 		});
