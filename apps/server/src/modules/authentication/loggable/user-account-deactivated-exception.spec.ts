@@ -1,9 +1,9 @@
-import { UserAccountDeactivatedException } from './user-account-deactivated-exception';
+import { UserAccountDeactivatedLoggableException } from './user-account-deactivated-exception';
 
-describe(UserAccountDeactivatedException.name, () => {
+describe(UserAccountDeactivatedLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new UserAccountDeactivatedException();
+			const exception = new UserAccountDeactivatedLoggableException();
 
 			return {
 				exception,

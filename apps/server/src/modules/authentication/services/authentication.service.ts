@@ -10,7 +10,7 @@ import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 import { LoginDto } from '../uc/dto';
-import { UserAccountDeactivatedException } from '../loggable/user-account-deactivated-exception';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 @Injectable()
 export class AuthenticationService {
@@ -34,8 +34,8 @@ export class AuthenticationService {
 		if (!account) {
 			throw new UnauthorizedLoggableException(username, systemId);
 		}
-		if (account.deactivatedAt != null && account.deactivatedAt.getDate() <= Date.now()) {
-			throw new UserAccountDeactivatedException();
+		if (account.deactivatedAt != null && account.deactivatedAt.getTime() <= Date.now()) {
+			throw new UserAccountDeactivatedLoggableException();
 		}
 
 		return account;
