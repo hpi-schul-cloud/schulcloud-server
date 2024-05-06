@@ -8,16 +8,13 @@ const isAtLeastPartialSuccessfull = (status) => status === CopyStatusEnum.PARTIA
 @Injectable()
 export class CopyHelperService {
 	deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		const elementsStatuses = elements.map((el) => el.status);
-
 		for (const element of elements) {
 			if (element.elements?.length) {
 				element.status = this.deriveStatusFromElements(element.elements);
-			} else {
-				return element.status;
 			}
 		}
 
+		const elementsStatuses = elements.map((el) => el.status);
 		const filtered = elementsStatuses.filter((status) => status !== CopyStatusEnum.NOT_DOING);
 
 		if (filtered.length > 0) {

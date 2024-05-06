@@ -149,12 +149,6 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
-			elements: [
-				{
-					type: CopyElementType.CONTENT,
-					status: CopyStatusEnum.FAIL,
-				},
-			],
 		});
 		this.copyMap.set(original.id, copy);
 
