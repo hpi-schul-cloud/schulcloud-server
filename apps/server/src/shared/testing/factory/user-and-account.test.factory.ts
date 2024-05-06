@@ -1,9 +1,9 @@
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 import _ from 'lodash';
-import { AccountEntity } from '@modules/account/entity/account.entity';
 import { accountFactory } from './account.factory';
 import { userFactory } from './user.factory';
 
@@ -71,5 +71,17 @@ export class UserAndAccountTestFactory {
 		const account = UserAndAccountTestFactory.buildAccount(user, params);
 
 		return { adminAccount: account, adminUser: user };
+	}
+
+	public static buildSuperhero(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { superheroAccount: AccountEntity; superheroUser: User } {
+		const user = userFactory
+			.asSuperhero(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { superheroAccount: account, superheroUser: user };
 	}
 }

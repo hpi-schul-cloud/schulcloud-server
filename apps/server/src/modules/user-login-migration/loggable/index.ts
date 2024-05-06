@@ -12,4 +12,6 @@ export * from './school-migration-database-operation-failed.loggable-exception';
 export * from './invalid-user-login-migration.loggable-exception';
 export * from './identical-user-login-migration-system.loggable-exception';
 export * from './moin-schule-system-not-found.loggable-exception';
+export { UserNotMigratedLoggableException } from './user-not-migrated.loggable-exception';
+export { UserMigrationRollbackSuccessfulLoggable } from './user-migration-rollback-successful.loggable';
 export * from './debug';

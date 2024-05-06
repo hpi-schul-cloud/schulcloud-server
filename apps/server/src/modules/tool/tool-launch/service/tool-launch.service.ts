@@ -71,7 +71,7 @@ export class ToolLaunchService {
 		return launchData;
 	}
 
-	private async loadToolHierarchy(
+	public async loadToolHierarchy(
 		schoolExternalToolId: string
 	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);

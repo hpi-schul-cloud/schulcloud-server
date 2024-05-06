@@ -54,7 +54,7 @@ export const userPermissions = [
 	Permission.COURSE_VIEW,
 	Permission.LERNSTORE_VIEW,
 	Permission.GROUP_VIEW,
-] as Permission[];
+];
 
 export const studentPermissions = [
 	...userPermissions,
@@ -63,7 +63,7 @@ export const studentPermissions = [
 	Permission.TEAM_CREATE,
 	Permission.JOIN_MEETING,
 	Permission.TOOL_CREATE_ETHERPAD,
-] as Permission[];
+];
 
 const sharedAdminPermissions = [
 	Permission.ACCOUNT_CREATE,
@@ -103,7 +103,7 @@ export const teacherPermissions = [
 	Permission.TOPIC_EDIT,
 	Permission.START_MEETING,
 	Permission.CONTEXT_TOOL_ADMIN,
-] as Permission[];
+];
 
 export const adminPermissions = [
 	...userPermissions,
@@ -143,4 +143,6 @@ export const adminPermissions = [
 	Permission.SCHOOL_TOOL_ADMIN,
 	Permission.GROUP_FULL_ADMIN,
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
-] as Permission[];
+];
+
+export const superheroPermissions = [Permission.USER_LOGIN_MIGRATION_ROLLBACK];
