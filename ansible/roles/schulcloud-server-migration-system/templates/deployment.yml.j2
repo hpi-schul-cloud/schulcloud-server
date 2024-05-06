@@ -13,7 +13,7 @@ metadata:
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
-  replicas: {{ API_MIGRATION_SYSTEMS_REPLICAS|default("1", true) }}
+  replicas: {{ API_MIGRATION_SYSTEMS_REPLICAS }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -81,11 +81,11 @@ spec:
           periodSeconds: 5
         resources:
           limits:
-            cpu: {{ API_MIGRATION_SYSTEMS_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_MIGRATION_SYSTEMS_MEMORY_LIMITS|default("2Gi", true) }}
+            cpu: {{ API_MIGRATION_SYSTEMS_CPU_LIMITS }}
+            memory: {{ API_MIGRATION_SYSTEMS_MEMORY_LIMITS }}
           requests:
-            cpu: {{ API_MIGRATION_SYSTEMS_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_MIGRATION_SYSTEMS_MEMORY_REQUESTS|default("150Mi", true) }}
+            cpu: {{ API_MIGRATION_SYSTEMS_CPU_REQUESTS }}
+            memory: {{ API_MIGRATION_SYSTEMS_MEMORY_REQUESTS }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:

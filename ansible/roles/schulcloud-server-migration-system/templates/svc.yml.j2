@@ -8,11 +8,11 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ PORT_SERVER }}
+    - port: 3030
       targetPort: 3030
       protocol: TCP
       name: api
-    - port: {{ PORT_METRICS_SERVER }}
+    - port: 9090
       targetPort: 9090
       protocol: TCP
       name: api-metrics
