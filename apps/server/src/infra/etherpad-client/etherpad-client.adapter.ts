@@ -11,8 +11,7 @@ import {
 	InlineResponse2006,
 	InlineResponse2006Data,
 } from './etherpad-api-client';
-<<<<<<< Updated upstream
-import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
+import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import {
 	AuthorId,
 	EtherpadErrorType,
@@ -23,10 +22,6 @@ import {
 	PadId,
 	SessionId,
 } from './interface';
-=======
-import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
-import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from './interface';
->>>>>>> Stashed changes
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -59,7 +54,7 @@ export class EtherpadClientAdapter {
 
 	public async listPadsOfAuthor(userId: EntityId): Promise<PadId[]> {
 		const response = await this.tryGetPadsOfAuthor(userId);
-		const pads = this.handleResponse<InlineResponse2002>(response, { userId });
+		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { userId });
 
 		const padIds = Object.keys(pads as object);
 
@@ -232,7 +227,6 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-<<<<<<< Updated upstream
 	public async deleteGroup(groupId: GroupId): Promise<void> {
 		const response = await this.tryDeleteGroup(groupId);
 		this.handleEtherpadResponse<InlineResponse2001>(response, { groupId });
@@ -248,11 +242,9 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private handleEtherpadResponse<T extends EtherpadResponse>(
-=======
 	public async listAuthorsOfPad(padId: EntityId): Promise<AuthorId[]> {
 		const response = await this.tryGetAuthorsOfPad(padId);
-		const authors = this.handleResponse<InlineResponse20013>(response, { padId });
+		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
 
 		const authorIds = Object.keys(authors as object);
 
@@ -271,7 +263,7 @@ export class EtherpadClientAdapter {
 
 	public async deleteSession(sessionId: EntityId): Promise<InlineResponse2001 | undefined> {
 		const response = await this.tryDeleteSession(sessionId);
-		const responseData = this.handleResponse<InlineResponse2001>(response, { sessionId });
+		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
 
 		return responseData;
 	}
@@ -288,7 +280,7 @@ export class EtherpadClientAdapter {
 
 	public async deletePad(padId: EntityId): Promise<InlineResponse2001 | undefined> {
 		const response = await this.tryDeletePad(padId);
-		const responseData = this.handleResponse<InlineResponse2001>(response, { padId });
+		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { padId });
 
 		return responseData;
 	}
@@ -303,8 +295,7 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private handleResponse<T extends EtherpadResponse>(
->>>>>>> Stashed changes
+	private handleEtherpadResponse<T extends EtherpadResponse>(
 		axiosResponse: AxiosResponse<T>,
 		payload: EtherpadParams
 	): T['data'] {
