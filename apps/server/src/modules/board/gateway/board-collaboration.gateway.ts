@@ -23,7 +23,7 @@ import { Socket } from './types';
 
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
-export class SocketGateway {
+export class BoardCollaborationGateway {
 	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly logger: LegacyLogger,
@@ -44,7 +44,7 @@ export class SocketGateway {
 	}
 
 	@SubscribeMessage('delete-board-request')
-	async handleDeleteBoard(client: Socket, data: DeleteBoardMessageParams) {
+	async deleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const room = await this.ensureUserInRoom(client, data.boardId);
@@ -59,7 +59,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('update-board-title-request')
 	@UseRequestContext()
-	async handleChangeBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
+	async updateBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
@@ -90,7 +90,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
-	async handleCreateCard(client: Socket, data: CreateCardMessageParams) {
+	async createCard(client: Socket, data: CreateCardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const card = await this.columnUc.createCard(userId, data.columnId);
@@ -109,7 +109,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
-	async handleCreateColumn(client: Socket, data: CreateColumnMessageParams) {
+	async createColumn(client: Socket, data: CreateColumnMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const column = await this.boardUc.createColumn(userId, data.boardId);
@@ -133,7 +133,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('fetch-board-request')
 	@UseRequestContext()
-	async handleFetchBoard(client: Socket, data: FetchBoardMessageParams) {
+	async fetchBoard(client: Socket, data: FetchBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const board = await this.boardUc.findBoard(userId, data.boardId);
@@ -150,7 +150,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('move-card-request')
 	@UseRequestContext()
-	async handleMoveCard(client: Socket, data: MoveCardMessageParams) {
+	async moveCard(client: Socket, data: MoveCardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
@@ -165,7 +165,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('move-column-request')
 	@UseRequestContext()
-	async handleMoveColumn(client: Socket, data: MoveColumnMessageParams) {
+	async moveColumn(client: Socket, data: MoveColumnMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
@@ -180,7 +180,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('update-column-title-request')
 	@UseRequestContext()
-	async handleChangeColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
+	async updateColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
@@ -195,7 +195,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('update-board-visibility-request')
 	@UseRequestContext()
-	async handleBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
+	async updateBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
@@ -210,7 +210,7 @@ export class SocketGateway {
 
 	@SubscribeMessage('delete-column-request')
 	@UseRequestContext()
-	async handleDeleteColumn(client: Socket, data: DeleteColumnMessageParams) {
+	async deleteColumn(client: Socket, data: DeleteColumnMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const room = await this.ensureUserInRoom(client, data.columnId);
