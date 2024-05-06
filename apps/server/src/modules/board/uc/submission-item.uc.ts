@@ -1,32 +1,27 @@
 import { Action } from '@modules/authorization';
-import {
-	BadRequestException,
-	ForbiddenException,
-	Injectable,
-	NotFoundException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BoardRoles,
 	ContentElementType,
 	FileElement,
 	isFileElement,
 	isRichTextElement,
-	isSubmissionContainerElement,
-	isSubmissionItem,
 	RichTextElement,
-	SubmissionItem,
 	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
-import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
+import { ContentElementService, SubmissionItemService } from '../service';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardNodePermissionService } from '../poc/service';
+import { SubmissionContainerElement, SubmissionItem, isSubmissionItem } from '../poc/domain';
+import { BoardNodeRepo } from '../poc/repo';
 
 @Injectable()
 export class SubmissionItemUc {
 	constructor(
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly boardPermissionService: BoardNodePermissionService,
+		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService
 	) {}
@@ -35,16 +30,18 @@ export class SubmissionItemUc {
 		userId: EntityId,
 		submissionContainerId: EntityId
 	): Promise<{ submissionItems: SubmissionItem[]; users: UserWithBoardRoles[] }> {
-		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
-		if (!isSubmissionContainerElement(submissionContainerElement)) {
-			throw new NotFoundException('Could not find a submission container with this id');
-		}
+		const submissionContainerElement = await this.boardNodeService.findByClassAndId(
+			SubmissionContainerElement,
+			submissionContainerId
+		);
 
 		await this.boardPermissionService.checkPermission(userId, submissionContainerElement, Action.read);
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
 
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(
+			submissionContainerElement
+		);
 
 		// only board readers can create submission items
 		let users = boardDoAuthorizable.users.filter((user) => user.roles.includes(BoardRoles.READER));
@@ -63,20 +60,21 @@ export class SubmissionItemUc {
 		submissionItemId: EntityId,
 		completed: boolean
 	): Promise<SubmissionItem> {
-		const submissionItem = await this.submissionItemService.findById(submissionItemId);
+		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
 
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
-		await this.submissionItemService.update(submissionItem, completed);
+		submissionItem.completed = completed;
+		await this.boardNodeRepo.persistAndFlush(submissionItem);
 
 		return submissionItem;
 	}
 
 	async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
-		const submissionItem = await this.submissionItemService.findById(submissionItemId);
+		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
-		await this.submissionItemService.delete(submissionItem);
+		await this.boardNodeRepo.removeAndFlush(submissionItem);
 	}
 
 	async createElement(
@@ -88,9 +86,9 @@ export class SubmissionItemUc {
 			throw new BadRequestException();
 		}
 
-		const submissionItem = await this.submissionItemService.findById(submissionItemId);
+		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
 
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
+		const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
 
 		if (!this.boardPermissionService.isUserBoardReader(userId, boardDoAuthorizable.users)) {
 			throw new ForbiddenException();
@@ -98,6 +96,7 @@ export class SubmissionItemUc {
 
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
+		// TODO
 		const element = await this.elementService.create(submissionItem, type);
 
 		if (!isFileElement(element) && !isRichTextElement(element)) {

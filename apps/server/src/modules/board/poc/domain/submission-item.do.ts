@@ -21,8 +21,8 @@ export class SubmissionItem extends BoardNode<SubmissionItemProps> {
 		this.props.userId = value;
 	}
 
-	canHaveChild(): boolean {
-		return false;
+	canHaveChild(childNode: AnyBoardNode): boolean {
+		return isRichTextElement(childNode) || isFileElement(childNode);
 	}
 }
 

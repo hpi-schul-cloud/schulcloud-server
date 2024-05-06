@@ -50,6 +50,21 @@ export class BoardNodeService {
 		return boardNode;
 	}
 
+	async findByClassAndIds<S, T extends AnyBoardNode>(
+		Constructor: { new (props: S): T },
+		ids: EntityId[],
+		depth?: number
+	): Promise<T[]> {
+		const boardNodes = await this.boardNodeRepo.findByIds(ids, depth);
+		const filteredNodes = boardNodes.filter((node) => node instanceof Constructor);
+
+		if (filteredNodes.length !== ids.length) {
+			throw new NotFoundException(`There is no '${Constructor.name}' with these ids`);
+		}
+
+		return filteredNodes as T[];
+	}
+
 	async findParent(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode | undefined> {
 		const parentNode = child.parentId ? await this.boardNodeRepo.findById(child.parentId, depth) : undefined;
 
