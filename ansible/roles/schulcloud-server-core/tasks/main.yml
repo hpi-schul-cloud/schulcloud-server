@@ -201,8 +201,8 @@
       namespace: "{{ NAMESPACE }}"
       template: preview-generator-scaled-object.yml.j2
     when:
-      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
-      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
+     - KEDA_ENABLED is defined and KEDA_ENABLED|bool
+     - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
   - name: admin api server deployment
     kubernetes.core.k8s:
@@ -224,8 +224,8 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-onepassword.yml.j2
     when:
-      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
+     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+     - WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: TlDraw server deployment
     kubernetes.core.k8s:
