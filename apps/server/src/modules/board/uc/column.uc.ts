@@ -4,7 +4,6 @@ import { ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CardService } from '../service';
 import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 import { Card, Column } from '../poc/domain';
 import { BoardNodeService } from '../poc/service';
@@ -16,7 +15,6 @@ export class ColumnUc {
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly cardService: CardService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ColumnUc.name);
@@ -62,6 +60,11 @@ export class ColumnUc {
 
 		column.addChild(card);
 		this.boardNodeRepo.persist(column);
+
+		// TODO
+		// for await (const requiredEmptyElement of requiredEmptyElements) {
+		//	await this.contentElementService.create(card, requiredEmptyElement);
+		// }
 
 		await this.boardNodeRepo.flush();
 

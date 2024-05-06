@@ -9,9 +9,8 @@ import { CopyStatus } from '@src/modules/copy-helper';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardCopyService } from '../service/column-board-copy.service';
-import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
+import { BoardNodeService, BoardNodePermissionService } from '../poc/service';
 import { BoardNodeRepo } from '../poc/repo';
-import { BoardNodeService } from '../poc/service';
 import { ColumnBoard, Column } from '../poc/domain';
 
 @Injectable()
