@@ -223,14 +223,6 @@ export class SocketGateway {
 		}
 	}
 
-	// TODO
-	@SubscribeMessage('reload-board-request')
-	handleReloadBoard(client: Socket, data: DeleteColumnMessageParams) {
-		this.logger.log(`Message received from client id: ${client.id}`);
-		this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-		client.broadcast.emit('reload-board-success', data);
-	}
-
 	private async ensureUserInRoom(client: Socket, id: string) {
 		const rootId = await this.getRootIdForId(id);
 		const room = `board_${rootId}`;
