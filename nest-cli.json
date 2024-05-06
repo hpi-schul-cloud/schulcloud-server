@@ -123,7 +123,7 @@
 			"entryFile": "apps/h5p-library-management.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
-			        "tsConfigPath": "apps/server/tsconfig.app.json"
+				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
 		"admin-api-server": {
@@ -148,6 +148,11 @@
 			"type": "application",
 			"root": "apps/server",
 			"entryFile": "apps/common-cartridge-export-import.app",
+		},
+		"board-collaboration": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/board-collaboration.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"

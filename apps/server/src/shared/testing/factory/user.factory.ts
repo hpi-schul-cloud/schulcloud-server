@@ -11,7 +11,13 @@ import {
 import { Permission, RoleName } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
-import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from '../user-role-permissions';
+import {
+	adminPermissions,
+	studentPermissions,
+	superheroPermissions,
+	teacherPermissions,
+	userPermissions,
+} from '../user-role-permissions';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
 import { schoolEntityFactory } from './school-entity.factory';
@@ -78,6 +84,15 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 	asAdmin(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, adminPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.ADMINISTRATOR });
+
+		const params: DeepPartial<UserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	asSuperhero(additionalPermissions: Permission[] = []): this {
+		const permissions = _.union(userPermissions, superheroPermissions, additionalPermissions);
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.SUPERHERO });
 
 		const params: DeepPartial<UserProperties> = { roles: [role] };
 

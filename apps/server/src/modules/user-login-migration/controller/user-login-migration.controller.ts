@@ -28,13 +28,13 @@ import {
 	UserLoginMigrationUc,
 } from '../uc';
 import {
+	SchoolIdParams,
+	UserLoginMigrationMandatoryParams,
 	UserLoginMigrationResponse,
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
-import { SchoolIdParams } from './dto/request/school-id.params';
-import { UserLoginMigrationMandatoryParams } from './dto/request/user-login-migration-mandatory.params';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
