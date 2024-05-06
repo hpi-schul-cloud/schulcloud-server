@@ -47,9 +47,8 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	async getFromDbHowManyAreInProcess(threshold: number): Promise<number> {
-		const modificationThreshold = new Date(Date.now() - threshold);
-		const scope = new DeletionRequestScope().byStatusPending(modificationThreshold);
+	async countPendingDeletionRequests(): Promise<number> {
+		const scope = new DeletionRequestScope().byStatusPending();
 
 		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
 

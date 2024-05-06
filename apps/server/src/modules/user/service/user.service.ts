@@ -21,7 +21,7 @@ import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType } from '@shared/domain/interface';
@@ -36,7 +36,7 @@ import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 
 @Injectable()
-// @EventsHandler(UserDeletedEvent)
+@EventsHandler(UserDeletedEvent)
 export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly userRepo: UserRepo,

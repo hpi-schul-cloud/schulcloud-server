@@ -30,12 +30,6 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
-		console.log('news go sleep');
-		await new Promise((resolve) => {
-			console.log('sleeping in news');
-			setTimeout(resolve, 125000);
-		});
-		console.log('news wake up');
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 

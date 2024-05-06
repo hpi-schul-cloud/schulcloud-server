@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
-import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import {
 	UserDeletedEvent,
 	DeletionService,
@@ -19,7 +19,7 @@ import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { CopyFileDto, FileDto } from '../dto';
 
 @Injectable()
-// @EventsHandler(UserDeletedEvent)
+@EventsHandler(UserDeletedEvent)
 export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private logger: LegacyLogger,

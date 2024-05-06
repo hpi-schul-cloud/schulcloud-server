@@ -1380,6 +1380,16 @@
 					"type": "number",
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
+				},
+				"MAX_AMOUNT_OF_DELETIONREQUESTS_DO_CONCURENTLY": {
+					"type": "number",
+					"default": 10,
+					"description": "max amount of deletion requests proccessed concurently"
+				},
+				"DELETION_DELAY_MILLISECONDS": {
+					"type": "number",
+					"default": 10000,
+					"description": "deley in milliseconds to give time modules to perform deletion proccess"
 				}
 			},
 			"default": {}

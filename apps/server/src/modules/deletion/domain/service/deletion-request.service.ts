@@ -48,9 +48,8 @@ export class DeletionRequestService {
 		return itemsToDelete;
 	}
 
-	async getFromDbHowManyAreInProcess(): Promise<number> {
-		const threshold = 60000;
-		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.getFromDbHowManyAreInProcess(threshold);
+	async countPendingDeletionRequests(): Promise<number> {
+		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.countPendingDeletionRequests();
 
 		return numberItemsWithStatusPending;
 	}
