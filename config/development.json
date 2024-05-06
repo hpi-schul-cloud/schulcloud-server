@@ -93,6 +93,5 @@
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p"
 	},
-	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo",
-	"FEATURE_NEW_LAYOUT_ENABLED": true
+	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo"
 }
