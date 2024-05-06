@@ -56,7 +56,11 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetPadsOfAuthor(userId);
 		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { userId });
 
-		const padIds = Object.keys(pads as object);
+		if (!this.isObject(pads)) {
+			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
+		}
+
+		const padIds = pads?.padIDs as PadId[];
 
 		return padIds;
 	}
@@ -246,7 +250,11 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetAuthorsOfPad(padId);
 		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
 
-		const authorIds = Object.keys(authors as object);
+		if (!this.isObject(authors)) {
+			throw new InternalServerErrorException('Etherpad listAuthorsOfPad response is not an object');
+		}
+
+		const authorIds = authors?.authorIDs as AuthorId[];
 
 		return authorIds;
 	}
@@ -270,7 +278,7 @@ export class EtherpadClientAdapter {
 
 	private async tryDeleteSession(sessionId: string): Promise<AxiosResponse<InlineResponse2001>> {
 		try {
-			const response = await this.sessionApi.deleteSessionUsingGET(sessionId);
+			const response = await this.sessionApi.deleteSessionUsingPOST(sessionId);
 
 			return response;
 		} catch (error) {
@@ -287,7 +295,7 @@ export class EtherpadClientAdapter {
 
 	private async tryDeletePad(sessionId: string): Promise<AxiosResponse<InlineResponse2001>> {
 		try {
-			const response = await this.padApi.deletePadUsingGET(sessionId);
+			const response = await this.padApi.deletePadUsingPOST(sessionId);
 
 			return response;
 		} catch (error) {
