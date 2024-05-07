@@ -85,10 +85,10 @@ export class ElementUc {
 		await this.boardPermissionService.checkPermission(userId, submissionContainerElement, Action.read);
 
 		// TODO move this in service
-		const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(
 			submissionContainerElement
 		);
-		if (this.boardPermissionService.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
+		if (this.boardPermissionService.isUserBoardEditor(userId, boardNodeAuthorizable.users)) {
 			throw new ForbiddenException();
 		}
 

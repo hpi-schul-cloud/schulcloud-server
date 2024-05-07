@@ -6,7 +6,7 @@ import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardContextService } from './board-context.service';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
-import { BoardNodeService } from './board.node.service';
+import { BoardNodeService } from './board-node.service';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;

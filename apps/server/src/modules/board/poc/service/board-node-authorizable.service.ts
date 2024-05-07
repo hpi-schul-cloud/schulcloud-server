@@ -4,7 +4,7 @@ import { type AuthorizationLoaderService } from '@src/modules/authorization';
 import { AnyBoardNode, BoardNodeAuthorizable } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardContextService } from './board-context.service';
-import { BoardNodeService } from './board.node.service';
+import { BoardNodeService } from './board-node.service';
 
 @Injectable()
 export class BoardNodeAuthorizableService implements AuthorizationLoaderService {
