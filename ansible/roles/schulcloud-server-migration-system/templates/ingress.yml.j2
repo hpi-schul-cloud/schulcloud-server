@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-migration-systems-ingress
+  namespace: {{ NAMESPACE }}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABLED|default("false") }}"
+    nginx.ingress.kubernetes.io/proxy-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
+    nginx.org/client-max-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
+    # The following properties added with BC-3606.
+    # The header size of the request is too big. For e.g. state and the permanent growing jwt.
+    # Nginx throws away the Location header, resulting in the 502 Bad Gateway.
+    nginx.ingress.kubernetes.io/client-header-buffer-size: 100k
+    nginx.ingress.kubernetes.io/http2-max-header-size: 96k
+    nginx.ingress.kubernetes.io/large-client-header-buffers: 4 100k
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 96k
+{% if CLUSTER_ISSUER is defined %}
+    cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
+{% endif %}
+
+spec:
+  ingressClassName: {{ INGRESS_CLASS }}
+{% if CLUSTER_ISSUER is defined or (TLS_ENABLED is defined and TLS_ENABLED|bool) %}
+  tls:
+  - hosts:
+      - {{ DOMAIN }}
+{% if CLUSTER_ISSUER is defined %}
+    secretName: {{ DOMAIN }}-tls
+{% endif %}
+{% endif %}
+  rules:
+  - host: {{ DOMAIN }}
+    http:
+      paths:
+      - path: /api/v3/user/import/
+        backend:
+          service:
+            name: api-migration-systems-svc
+            port:
+              number: 3030
+        pathType: Prefix
