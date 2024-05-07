@@ -656,6 +656,9 @@
                             <a href="#HealthEntities" title="apps/server/src/modules/health/health.entities.ts" ><b>HealthEntities</b>&nbsp;&nbsp;&nbsp;(apps/.../health.entities.ts)</a>
                         </li>
                         <li>
+                            <a href="#host" title="apps/server/src/modules/board/gateway/dto/board-collaboration-config.ts" ><b>host</b>&nbsp;&nbsp;&nbsp;(apps/.../board-collaboration-config.ts)</a>
+                        </li>
+                        <li>
                             <a href="#imports" title="apps/server/src/infra/rabbitmq/rabbitmq.module.ts" ><b>imports</b>&nbsp;&nbsp;&nbsp;(apps/.../rabbitmq.module.ts)</a>
                         </li>
                         <li>
@@ -702,6 +705,9 @@
                         </li>
                         <li>
                             <a href="#isFileElementResponse" title="apps/server/src/modules/board/controller/dto/element/any-content-element.response.ts" ><b>isFileElementResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../any-content-element.response.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#isLocalhost" title="apps/server/src/modules/board/gateway/dto/board-collaboration-config.ts" ><b>isLocalhost</b>&nbsp;&nbsp;&nbsp;(apps/.../board-collaboration-config.ts)</a>
                         </li>
                         <li>
                             <a href="#isRichTextElementResponse" title="apps/server/src/modules/board/controller/dto/element/any-content-element.response.ts" ><b>isRichTextElementResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../any-content-element.response.ts)</a>
@@ -837,6 +843,9 @@
                         </li>
                         <li>
                             <a href="#oneDay" title="apps/server/src/shared/testing/factory/course.factory.ts" ><b>oneDay</b>&nbsp;&nbsp;&nbsp;(apps/.../course.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#origin" title="apps/server/src/modules/board/gateway/dto/board-collaboration-config.ts" ><b>origin</b>&nbsp;&nbsp;&nbsp;(apps/.../board-collaboration-config.ts)</a>
                         </li>
                         <li>
                             <a href="#overallHealthDescription" title="apps/server/src/modules/health/uc/health.uc.ts" ><b>overallHealthDescription</b>&nbsp;&nbsp;&nbsp;(apps/.../health.uc.ts)</a>
@@ -5247,6 +5256,7 @@ This allows adding console commands to execute provider methods.</p>
 	ALERT_CACHE_INTERVAL_MIN: Configuration.get(&#x27;ALERT_CACHE_INTERVAL_MIN&#x27;) as number,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;) as boolean,
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get(&#x27;PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL&#x27;) as string,
+	BOARD_COLLABORATION_URI: Configuration.get(&#x27;BOARD_COLLABORATION_URI&#x27;) as string,
 	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get(&#x27;FEATURE_NEW_LAYOUT_ENABLED&#x27;) as boolean,
 }</code>
                     </td>
@@ -13128,6 +13138,69 @@ it should ensure an empty result</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[HealthCheckEntity]</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/board/gateway/dto/board-collaboration-config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="host"></a>
+                    <span class="name">
+                        <span ><b>host</b></span>
+                        <a href="#host"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;HOST&#x27;) as string</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLocalhost"></a>
+                    <span class="name">
+                        <span ><b>isLocalhost</b></span>
+                        <a href="#isLocalhost"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>host.includes(&#x27;localhost&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="origin"></a>
+                    <span class="name">
+                        <span ><b>origin</b></span>
+                        <a href="#origin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>isLocalhost ? &#x27;http://localhost:4000&#x27; : host</code>
                     </td>
                 </tr>
 

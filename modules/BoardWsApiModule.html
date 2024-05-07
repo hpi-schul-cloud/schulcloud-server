@@ -275,12 +275,12 @@ import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationModule } from &#x27;../authorization&#x27;;
 import { BoardModule } from &#x27;./board.module&#x27;;
-import { SocketGateway } from &#x27;./gateway/socket.gateway&#x27;;
+import { BoardCollaborationGateway } from &#x27;./gateway/board-collaboration.gateway&#x27;;
 import { BoardUc, ColumnUc } from &#x27;./uc&#x27;;
 
 @Module({
 	imports: [BoardModule, forwardRef(() &#x3D;&gt; AuthorizationModule), LoggerModule],
-	providers: [SocketGateway, ColumnUc, BoardUc, CourseRepo],
+	providers: [BoardCollaborationGateway, ColumnUc, BoardUc, CourseRepo],
 	exports: [],
 })
 export class BoardWsApiModule {}

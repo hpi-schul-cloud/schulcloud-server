@@ -593,13 +593,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardWsApiModule.html" data-type="entity-link" >BoardWsApiModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-f3bbfd7b36074247c45764b538d77bf797bade8db2aeba57d4738622075ccc2f126ab267ec4738dc3f068d79f5e226d2615d859db24e56b679fedda83c3aa22c"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-f3bbfd7b36074247c45764b538d77bf797bade8db2aeba57d4738622075ccc2f126ab267ec4738dc3f068d79f5e226d2615d859db24e56b679fedda83c3aa22c"' }>
+                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-f3bbfd7b36074247c45764b538d77bf797bade8db2aeba57d4738622075ccc2f126ab267ec4738dc3f068d79f5e226d2615d859db24e56b679fedda83c3aa22c"' :
-                                        'id="xs-injectables-links-module-BoardWsApiModule-f3bbfd7b36074247c45764b538d77bf797bade8db2aeba57d4738622075ccc2f126ab267ec4738dc3f068d79f5e226d2615d859db24e56b679fedda83c3aa22c"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' :
+                                        'id="xs-injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' }>
                                         <li class="link">
                                             <a href="injectables/BoardUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardUc</a>
                                         </li>
@@ -4160,6 +4160,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/BBBJoinConfigBuilder.html" data-type="entity-link" >BBBJoinConfigBuilder</a>
                             </li>
                             <li class="link">
+                                <a href="classes/BoardCollaborationConfiguration.html" data-type="entity-link" >BoardCollaborationConfiguration</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/BoardCollaborationGateway.html" data-type="entity-link" >BoardCollaborationGateway</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/BoardColumnBoardResponse.html" data-type="entity-link" >BoardColumnBoardResponse</a>
                             </li>
                             <li class="link">
@@ -6477,9 +6483,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SingleFileParams.html" data-type="entity-link" >SingleFileParams</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SocketGateway.html" data-type="entity-link" >SocketGateway</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SortExternalToolParams.html" data-type="entity-link" >SortExternalToolParams</a>
