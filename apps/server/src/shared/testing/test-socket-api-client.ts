@@ -38,7 +38,7 @@ export async function getSocketApiClient(app: INestApplication, user: User) {
 
 	const ioClient = io(url, {
 		autoConnect: false,
-		path: '/collaboration',
+		path: '/board-collaboration',
 		transports: ['websocket', 'polling'],
 		extraHeaders: {
 			Cookie: `jwt=${jwt}`,
