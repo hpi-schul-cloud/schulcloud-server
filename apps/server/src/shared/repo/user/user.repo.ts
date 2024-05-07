@@ -1,8 +1,8 @@
-import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
+import { EntityDictionary, QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
@@ -57,41 +57,34 @@ export class UserRepo extends BaseRepo<User> {
 		filters?: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
+		const { pagination, order } = options || {};
 		const { _id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 
-		const existingMatch = { deletedAt: null };
-		const permittedMatch = { schoolId };
-
-		const queryFilterMatch: { $or?: unknown[] } = {};
-		if (filters?.name && StringValidator.isNotEmptyString(filters.name, true)) {
-			const escapedName = filters.name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			// TODO make db agnostic
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				queryFilterMatch.$or = [
-					{
-						firstName: {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							$regex: escapedName,
-							$options: 'i',
-						},
+		const nameFilterQuery: { $or?: unknown[] } = {};
+		const escapedName: string | undefined = filters?.name
+			?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '')
+			.trim();
+		if (StringValidator.isNotEmptyString(escapedName, true)) {
+			nameFilterQuery.$or = [
+				{
+					firstName: {
+						$regex: escapedName,
+						$options: 'i',
 					},
-					{
-						lastName: {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							$regex: escapedName,
-							$options: 'i',
-						},
+				},
+				{
+					lastName: {
+						$regex: escapedName,
+						$options: 'i',
 					},
-				];
-			}
+				},
+			];
 		}
 
 		const pipeline: unknown[] = [
-			{ $match: existingMatch },
-			{ $match: permittedMatch },
+			{ $match: { schoolId, deletedAt: null } },
+			{ $match: nameFilterQuery },
 			{
 				$lookup: {
 					from: 'importusers',
@@ -107,7 +100,6 @@ export class UserRepo extends BaseRepo<User> {
 					},
 				},
 			},
-			{ $match: queryFilterMatch },
 			{
 				$project: {
 					importusers: 0,
@@ -115,57 +107,55 @@ export class UserRepo extends BaseRepo<User> {
 			},
 		];
 
-		const countPipeline = [...pipeline];
-		countPipeline.push({ $group: { _id: null, count: { $sum: 1 } } });
-		const total = (await this._em.aggregate(User, countPipeline)) as { count: number }[];
-		const count = total.length > 0 ? total[0].count : 0;
-		const { pagination, order } = options || {};
-
 		if (order) {
-			const orderQuery: QueryOrderMap<ImportUser> = {};
+			const orderQuery: QueryOrderMap<User> = {};
 			if (order.firstName) {
-				switch (order.firstName) {
-					case SortOrder.desc:
-						orderQuery.firstName = QueryOrderNumeric.DESC;
-						break;
-					case SortOrder.asc:
-					default:
-						orderQuery.firstName = QueryOrderNumeric.ASC;
-						break;
-				}
+				orderQuery.firstName = this.mapSortOrderToNumeric(order.firstName);
 			}
 			if (order.lastName) {
-				switch (order.lastName) {
-					case SortOrder.desc:
-						orderQuery.lastName = QueryOrderNumeric.DESC;
-						break;
-					case SortOrder.asc:
-					default:
-						orderQuery.lastName = QueryOrderNumeric.ASC;
-						break;
-				}
+				orderQuery.lastName = this.mapSortOrderToNumeric(order.lastName);
 			}
 			pipeline.push({ $sort: orderQuery });
 		}
 
+		const paginationPipeline: unknown[] = [];
+
 		if (pagination?.skip) {
-			pipeline.push({ $skip: pagination.skip });
+			paginationPipeline.push({ $skip: pagination.skip });
 		}
 		if (pagination?.limit) {
-			pipeline.push({ $limit: pagination.limit });
+			paginationPipeline.push({ $limit: pagination.limit });
 		}
 
-		const userDocuments = await this._em.aggregate(User, pipeline);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users = userDocuments.map((userDocument) => {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const { createdAt, updatedAt, ...newUserDocument } = userDocument;
-
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			return this._em.map(User, newUserDocument);
+		pipeline.push({
+			$facet: {
+				total: [{ $count: 'count' }],
+				data: paginationPipeline,
+			},
 		});
+
+		const usersFacet = (await this._em.aggregate(User, pipeline)) as [
+			{ total: [{ count: number }]; data: EntityDictionary<User>[] }
+		];
+
+		const count: number = usersFacet[0]?.total[0]?.count ?? 0;
+		const users: User[] = usersFacet[0].data.map(
+			(userEntity: EntityDictionary<User>): User => this._em.map(User, userEntity)
+		);
+
 		await this._em.populate(users, ['roles']);
+
 		return [users, count];
+	}
+
+	private mapSortOrderToNumeric(sortOrder: SortOrder): QueryOrderNumeric {
+		switch (sortOrder) {
+			case SortOrder.desc:
+				return QueryOrderNumeric.DESC;
+			case SortOrder.asc:
+			default:
+				return QueryOrderNumeric.ASC;
+		}
 	}
 
 	async findByEmail(email: string): Promise<User[]> {
