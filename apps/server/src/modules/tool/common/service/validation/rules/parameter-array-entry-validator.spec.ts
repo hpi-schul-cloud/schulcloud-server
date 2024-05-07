@@ -4,7 +4,7 @@ import {
 	CustomParameter,
 	CustomParameterEntry,
 	ToolParameterRequiredLoggableException,
-	ToolParameterValueMissingLoggableException,
+	ToolParameterMandatoryValueMissingLoggableException,
 } from '../../../domain';
 import { ParameterArrayEntryValidator } from './parameter-array-entry-validator';
 
@@ -83,7 +83,7 @@ describe(ParameterArrayEntryValidator.name, () => {
 
 				const result: ValidationError[] = new ParameterArrayEntryValidator().validate(entries, declarations, undefined);
 
-				expect(result[0]).toBeInstanceOf(ToolParameterValueMissingLoggableException);
+				expect(result[0]).toBeInstanceOf(ToolParameterMandatoryValueMissingLoggableException);
 			});
 		});
 	});

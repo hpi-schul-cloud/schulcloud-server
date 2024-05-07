@@ -267,6 +267,30 @@
 		}
 	},
 	{
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358140061"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358140061"
+			}
+		},
+		"tool": {
+			"$oid": "65fc0fcda519d4a3b71193e0"
+		},
+		"school": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"schoolParameters": [],
+		"toolVersion": 1,
+		"status": {
+			"isDeactivated": false,
+			"isOutdatedOnScopeSchool": false
+		}
+	},
+	{
 		"_id": {
 			"$oid": "65fd74c4d1c1ddf3bb2b05de"
 		},
