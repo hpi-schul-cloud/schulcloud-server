@@ -1692,6 +1692,11 @@
 			"type": "string",
 			"default": "ws://localhost:4450",
 			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_NEW_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new layout feature"
 		}
 	},
 	"required": []
