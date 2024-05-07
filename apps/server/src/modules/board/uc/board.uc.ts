@@ -1,17 +1,14 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardExternalReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyStatus } from '@src/modules/copy-helper';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateBoardBodyParams } from '../controller/dto';
+import { BoardExternalReference, BoardNodeFactory, Column, ColumnBoard } from '../poc/domain';
+import { BoardNodePermissionService, BoardNodeService } from '../poc/service';
 import { ColumnBoardCopyService } from '../service/column-board-copy.service';
-import { BoardNodeService, BoardNodePermissionService } from '../poc/service';
-import { BoardNodeRepo } from '../poc/repo';
-import { ColumnBoard, Column } from '../poc/domain';
 
 @Injectable()
 export class BoardUc {
@@ -23,7 +20,7 @@ export class BoardUc {
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo,
-		private readonly boardNodeRepo: BoardNodeRepo
+		private readonly boardNodeFactory: BoardNodeFactory
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
@@ -39,24 +36,13 @@ export class BoardUc {
 			requiredPermissions: [Permission.COURSE_EDIT],
 		});
 
-		const context: BoardExternalReference = { type: params.parentType, id: params.parentId };
-
-		const board = new ColumnBoard({
-			id: new ObjectId().toHexString(),
-			path: '',
-			level: 0,
-			position: 0,
+		const board = this.boardNodeFactory.buildColumnBoard({
+			context: { type: params.parentType, id: params.parentId },
 			title: params.title,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			context,
-			isVisible: false,
 			layout: params.layout,
 		});
 
-		this.boardNodeRepo.persist(board);
-		await this.boardNodeRepo.flush();
+		await this.boardNodeService.addRoot(board);
 
 		return board;
 	}
@@ -85,7 +71,7 @@ export class BoardUc {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
-		await this.boardNodeRepo.removeAndFlush(board);
+		await this.boardNodeService.delete(board);
 	}
 
 	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<void> {
@@ -103,20 +89,9 @@ export class BoardUc {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
-		const column = new Column({
-			id: new ObjectId().toHexString(),
-			path: '',
-			level: 1,
-			position: 0,
-			title: '',
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-		this.boardNodeRepo.persist(column);
+		const column = this.boardNodeFactory.buildColumn();
 
-		board.addChild(column);
-		await this.boardNodeRepo.persistAndFlush(board);
+		await this.boardNodeService.addToParent(board, column);
 
 		return column;
 	}
@@ -129,13 +104,13 @@ export class BoardUc {
 	): Promise<void> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 
-		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
-		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId, 0);
+		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId, 0);
 
 		await this.boardPermissionService.checkPermission(userId, column, Action.write);
 		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
 
-		await this.boardNodeService.move(column, targetBoard, targetPosition);
+		await this.boardNodeService.move(columnId, targetBoardId, targetPosition);
 	}
 
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {

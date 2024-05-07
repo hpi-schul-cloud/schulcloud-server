@@ -1,9 +1,7 @@
-import type { AnyBoardNode } from './types/any-board-node';
-import { BoardNodeType } from './types/board-node-type.enum';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
-import { Column } from './column.do';
 import { ColumnBoard } from './colum-board.do';
+import { Column } from './column.do';
 import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
@@ -12,6 +10,8 @@ import { MediaBoard, MediaExternalToolElement, MediaLine } from './media-board';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
+import type { AnyBoardNode } from './types/any-board-node';
+import { BoardNodeType } from './types/board-node-type.enum';
 
 // register node types
 const BoardNodeTypeToConstructor = {

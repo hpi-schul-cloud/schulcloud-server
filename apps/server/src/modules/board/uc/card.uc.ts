@@ -1,13 +1,10 @@
 import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, AnyContentElementDo, ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { CardService, ContentElementService } from '../service';
 
-import { Card } from '../poc/domain';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardNodePermissionService } from '../poc/service';
-import { BoardNodeRepo } from '../poc/repo';
+import { AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../poc/domain';
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../poc/service';
 
 @Injectable()
 export class CardUc {
@@ -17,8 +14,7 @@ export class CardUc {
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly elementService: ContentElementService,
+		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CardUc.name);
@@ -74,7 +70,7 @@ export class CardUc {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
-		await this.boardNodeRepo.removeAndFlush(card);
+		await this.boardNodeService.delete(card);
 	}
 
 	// --- elements ---
@@ -84,18 +80,15 @@ export class CardUc {
 		cardId: EntityId,
 		type: ContentElementType,
 		toPosition?: number
-	): Promise<AnyContentElementDo> {
+	): Promise<AnyContentElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
-		// TODO
-		const element = await this.elementService.create(card, type);
+		const element = this.boardNodeFactory.buildContentElement(type);
 
-		if (toPosition !== undefined && typeof toPosition === 'number') {
-			await this.boardNodeService.move(element, card, toPosition);
-		}
+		await this.boardNodeService.addToParent(card, element, toPosition);
 
 		return element;
 	}
@@ -107,14 +100,13 @@ export class CardUc {
 		targetPosition: number
 	): Promise<void> {
 		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
-		// TODO
-		const element = await this.boardNodeService.findByClassAndId(elementId);
 
-		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId);
+		const element = await this.boardNodeService.findContentElementById(elementId, 0);
+		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId, 0);
 
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 		await this.boardPermissionService.checkPermission(userId, targetCard, Action.write);
 
-		await this.boardNodeService.move(element, targetCard, targetPosition);
+		await this.boardNodeService.move(elementId, targetCardId, targetPosition);
 	}
 }

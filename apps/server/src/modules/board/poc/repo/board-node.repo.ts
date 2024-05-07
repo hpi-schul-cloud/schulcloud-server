@@ -82,14 +82,18 @@ export class BoardNodeRepo {
 		return this.persist(boardNode).flush();
 	}
 
-	remove(boardNode: AnyBoardNode): BoardNodeRepo {
-		this.em.remove(this.getProps(boardNode));
-		boardNode.children.forEach((child) => this.remove(child));
+	remove(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes = Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) => {
+			this.em.remove(this.getProps(bn));
+			bn.children.forEach((child) => this.remove(child));
+		});
 
 		return this;
 	}
 
-	async removeAndFlush(boardNode: AnyBoardNode): Promise<void> {
+	async removeAndFlush(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		await this.remove(boardNode).flush();
 	}
 

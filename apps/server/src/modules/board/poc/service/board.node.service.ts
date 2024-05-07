@@ -1,15 +1,25 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode } from '../domain';
+import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement } from '../domain';
 import { BoardNodeRepo } from '../repo';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
 type WithHeight<T> = Extract<T, { height: unknown }>;
+type WithCompleted<T> = Extract<T, { completed: unknown }>;
 
 @Injectable()
 export class BoardNodeService {
-	constructor(@Inject(BoardNodeRepo) private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
+
+	async addRoot(boardNode: ColumnBoard): Promise<void> {
+		await this.boardNodeRepo.persistAndFlush(boardNode);
+	}
+
+	async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position = 0): Promise<void> {
+		parent.addChild(child, position);
+		await this.boardNodeRepo.persistAndFlush(parent);
+	}
 
 	async updateTitle<T extends WithTitle<AnyBoardNode>>(node: T, title: T['title']) {
 		node.title = title;
@@ -26,15 +36,30 @@ export class BoardNodeService {
 		await this.boardNodeRepo.persistAndFlush(node);
 	}
 
-	async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
-		// TODO optimize performance
-		const parentId = child.ancestorIds[child.ancestorIds.length - 1];
-		const parentNode = await this.boardNodeRepo.findById(parentId, 1);
+	async updateCompleted<T extends WithCompleted<AnyBoardNode>>(node: T, completed: T['completed']) {
+		node.completed = completed;
+		await this.boardNodeRepo.persistAndFlush(node);
+	}
 
-		parentNode.removeChild(child);
+	async move(childId: EntityId, targetParentId: EntityId, targetPosition?: number): Promise<void> {
+		const child = await this.findById(childId);
+		const parent = await this.findParent(child, 1);
+		const targetParent = await this.findById(targetParentId, 1);
+
+		// TODO should we make sure child and targetParent belonging to the same board?
+
+		if (parent) {
+			parent.removeChild(child);
+		}
 		targetParent.addChild(child, targetPosition);
 
 		await this.boardNodeRepo.flush();
+	}
+
+	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
+		const boardNode = this.boardNodeRepo.findById(id, depth);
+
+		return boardNode;
 	}
 
 	async findByClassAndId<S, T extends AnyBoardNode>(
@@ -65,6 +90,16 @@ export class BoardNodeService {
 		return filteredNodes as T[];
 	}
 
+	async findContentElementById(id: EntityId, depth?: number): Promise<AnyContentElement> {
+		const boardNode = await this.boardNodeRepo.findById(id, depth);
+
+		if (!isContentElement(boardNode)) {
+			throw new NotFoundException(`There is no content element with this id`);
+		}
+
+		return boardNode;
+	}
+
 	async findParent(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode | undefined> {
 		const parentNode = child.parentId ? await this.boardNodeRepo.findById(child.parentId, depth) : undefined;
 
@@ -72,9 +107,12 @@ export class BoardNodeService {
 	}
 
 	async findRoot(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode> {
-		const rootId = [...child.ancestorIds, child.id][0];
-		const rootNode = await this.boardNodeRepo.findById(rootId, depth);
+		const rootNode = await this.boardNodeRepo.findById(child.rootId, depth);
 
 		return rootNode;
+	}
+
+	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+		await this.boardNodeRepo.removeAndFlush(boardNode);
 	}
 }

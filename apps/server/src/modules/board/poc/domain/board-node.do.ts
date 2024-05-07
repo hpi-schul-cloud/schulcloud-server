@@ -35,6 +35,14 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return parentIds;
 	}
 
+	isRoot() {
+		return this.ancestorIds.length === 0;
+	}
+
+	get rootId(): EntityId {
+		return this.isRoot() ? this.id : this.ancestorIds[0];
+	}
+
 	get path(): string {
 		return this.props.path;
 	}

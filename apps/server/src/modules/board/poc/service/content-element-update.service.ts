@@ -25,10 +25,13 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 } from '../domain';
+import { BoardNodeRepo } from '../repo';
 
 @Injectable()
 export class ContentElementUpdateService {
-	updateContent(element: AnyContentElement, content: AnyElementContentBody): void {
+	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
+
+	async updateContent(element: AnyContentElement, content: AnyElementContentBody): Promise<void> {
 		// TODO refactor if ... else to e.g. discriminated union
 		if (isFileElement(element) && content instanceof FileContentBody) {
 			this.updateFileElement(element, content);
@@ -45,6 +48,8 @@ export class ContentElementUpdateService {
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
+
+		await this.boardNodeRepo.persistAndFlush(element);
 	}
 
 	updateFileElement(element: FileElement, content: FileContentBody): void {

@@ -283,4 +283,54 @@ describe('BoardNode', () => {
 			expect(parent.hasChild(extraChild)).toBe(true);
 		});
 	});
+
+	describe('isRoot', () => {
+		const setup = () => {
+			const parent = columnFactory.build({ children: cardFactory.buildList(1) });
+			const child = parent.children[0];
+
+			return { parent, child };
+		};
+
+		describe(`when there's no parent`, () => {
+			it('should return true', () => {
+				const { parent } = setup();
+
+				expect(parent.isRoot()).toBe(true);
+			});
+		});
+
+		describe(`when having a parent`, () => {
+			it('should return false', () => {
+				const { child } = setup();
+
+				expect(child.isRoot()).toBe(false);
+			});
+		});
+	});
+
+	describe('rootId', () => {
+		const setup = () => {
+			const parent = columnFactory.build({ children: cardFactory.buildList(1) });
+			const child = parent.children[0];
+
+			return { parent, child };
+		};
+
+		describe(`when there's no parent`, () => {
+			it('should return the own id', () => {
+				const { parent } = setup();
+
+				expect(parent.rootId).toBe(parent.id);
+			});
+		});
+
+		describe(`when having a parent`, () => {
+			it('should return the id of the parent', () => {
+				const { parent, child } = setup();
+
+				expect(child.rootId).toBe(parent.id);
+			});
+		});
+	});
 });

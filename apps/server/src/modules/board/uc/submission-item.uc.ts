@@ -1,19 +1,20 @@
 import { Action } from '@modules/authorization';
 import { BadRequestException, ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import {
+	BoardNodeFactory,
 	BoardRoles,
 	ContentElementType,
 	FileElement,
 	isFileElement,
 	isRichTextElement,
+	isSubmissionItem,
 	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
 	UserWithBoardRoles,
-} from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
-import { ContentElementService, SubmissionItemService } from '../service';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardNodePermissionService } from '../poc/service';
-import { SubmissionContainerElement, SubmissionItem, isSubmissionItem } from '../poc/domain';
-import { BoardNodeRepo } from '../poc/repo';
+} from '../poc/domain';
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../poc/service';
 
 @Injectable()
 export class SubmissionItemUc {
@@ -21,9 +22,7 @@ export class SubmissionItemUc {
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardPermissionService: BoardNodePermissionService,
-		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly elementService: ContentElementService,
-		private readonly submissionItemService: SubmissionItemService
+		private readonly boardNodeFactory: BoardNodeFactory
 	) {}
 
 	async findSubmissionItems(
@@ -64,8 +63,7 @@ export class SubmissionItemUc {
 
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
-		submissionItem.completed = completed;
-		await this.boardNodeRepo.persistAndFlush(submissionItem);
+		await this.boardNodeService.updateCompleted(submissionItem, completed);
 
 		return submissionItem;
 	}
@@ -74,7 +72,7 @@ export class SubmissionItemUc {
 		const submissionItem = await this.boardNodeService.findByClassAndId(SubmissionItem, submissionItemId);
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
-		await this.boardNodeRepo.removeAndFlush(submissionItem);
+		await this.boardNodeService.delete(submissionItem);
 	}
 
 	async createElement(
@@ -96,10 +94,11 @@ export class SubmissionItemUc {
 
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
-		// TODO
-		const element = await this.elementService.create(submissionItem, type);
+		const element = this.boardNodeFactory.buildContentElement(type);
 
-		if (!isFileElement(element) && !isRichTextElement(element)) {
+		await this.boardNodeService.addToParent(submissionItem, element);
+
+		if (!isFileElement(element) || !isRichTextElement(element)) {
 			throw new UnprocessableEntityException();
 		}
 
