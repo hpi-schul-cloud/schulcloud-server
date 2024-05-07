@@ -79,8 +79,9 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		let tasks: DeletionRequest[] = [];
 
 		do {
-			// eslint-disable-next-line no-await-in-loop
-			const numberOfDeletionRequestsWithStatusPending = await this.countPendingDeletionRequests();
+			const numberOfDeletionRequestsWithStatusPending =
+				// eslint-disable-next-line no-await-in-loop
+				await this.deletionRequestService.countPendingDeletionRequests();
 			const numberOfDeletionRequestsToProccess =
 				maxAmoutOfDeletionRequestsDoConcurrently - numberOfDeletionRequestsWithStatusPending;
 			this.logger.debug({
@@ -144,11 +145,5 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
-	}
-
-	private async countPendingDeletionRequests(): Promise<number> {
-		const numberItemsWithStatusPending: number = await this.deletionRequestService.countPendingDeletionRequests();
-
-		return numberItemsWithStatusPending;
 	}
 }
