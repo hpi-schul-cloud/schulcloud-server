@@ -1690,7 +1690,7 @@
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
-			"default": "",
+			"default": "ws://localhost:4450",
 			"description": "URL for connecting to the WebSocketServer"
 		}
 	},
