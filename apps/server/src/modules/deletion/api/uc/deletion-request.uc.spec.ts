@@ -7,7 +7,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
-import { UserDeletedEvent } from '../../domain/event';
+// import { UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionRequestService, DeletionLogService } from '../../domain/service';
 import { deletionRequestFactory, deletionLogFactory, deletionTestConfig } from '../../domain/testing';
@@ -22,7 +22,7 @@ describe(DeletionRequestUc.name, () => {
 	let uc: DeletionRequestUc;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
-	let eventBus: DeepMocked<EventBus>;
+	// let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,7 +53,7 @@ describe(DeletionRequestUc.name, () => {
 		uc = module.get(DeletionRequestUc);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
-		eventBus = module.get(EventBus);
+		// eventBus = module.get(EventBus);
 		await setupEntities();
 	});
 
@@ -140,13 +140,13 @@ describe(DeletionRequestUc.name, () => {
 
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
-			const setup = () => {
-				const deletionRequest = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+			// const setup = () => {
+			// 	const deletionRequest = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				return {
-					deletionRequest,
-				};
-			};
+			// 	return {
+			// 		deletionRequest,
+			// 	};
+			// };
 			it('should call deletionRequestService.countPendingDeletionRequests', async () => {
 				deletionRequestService.countPendingDeletionRequests.mockResolvedValueOnce(2);
 				await uc.executeDeletionRequests();
