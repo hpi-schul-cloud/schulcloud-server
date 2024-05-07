@@ -8,6 +8,7 @@ export class SubmissionContainerElement extends BoardNode<SubmissionContainerEle
 	}
 
 	set dueDate(value: Date | undefined) {
+		// TODO check if should be null instead of undefined
 		this.props.dueDate = value ?? undefined;
 	}
 

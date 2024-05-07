@@ -11,7 +11,12 @@ import {
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ContentElementService, SubmissionItemService } from '../service';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardNodePermissionService } from '../poc/service';
+import {
+	BoardNodeAuthorizableService,
+	BoardNodeService,
+	BoardNodePermissionService,
+	ContentElementCreateService,
+} from '../poc/service';
 import { SubmissionContainerElement, SubmissionItem, isSubmissionItem } from '../poc/domain';
 import { BoardNodeRepo } from '../poc/repo';
 
@@ -22,7 +27,7 @@ export class SubmissionItemUc {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly elementService: ContentElementService,
+		private readonly contentElementCreateService: ContentElementCreateService,
 		private readonly submissionItemService: SubmissionItemService
 	) {}
 
@@ -96,12 +101,14 @@ export class SubmissionItemUc {
 
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
-		// TODO
-		const element = await this.elementService.create(submissionItem, type);
+		const element = this.contentElementCreateService.build(type);
 
 		if (!isFileElement(element) && !isRichTextElement(element)) {
 			throw new UnprocessableEntityException();
 		}
+		this.boardNodeRepo.persist(element);
+		submissionItem.addChild(element);
+		await this.boardNodeRepo.persistAndFlush(submissionItem);
 
 		return element;
 	}

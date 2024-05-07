@@ -28,7 +28,7 @@ import {
 
 @Injectable()
 export class ContentElementUpdateService {
-	updateContent(element: AnyContentElement, content: AnyElementContentBody): void {
+	update(element: AnyContentElement, content: AnyElementContentBody): void {
 		// TODO refactor if ... else to e.g. discriminated union
 		if (isFileElement(element) && content instanceof FileContentBody) {
 			this.updateFileElement(element, content);

@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode } from '../domain';
+import { AnyBoardNode, AnyContentElement, isContentElement } from '../domain';
 import { BoardNodeRepo } from '../repo';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
@@ -26,6 +26,7 @@ export class BoardNodeService {
 		await this.boardNodeRepo.persistAndFlush(node);
 	}
 
+	// TODO use by id instead of Node
 	async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
 		// TODO optimize performance
 		const parentId = child.ancestorIds[child.ancestorIds.length - 1];
@@ -63,6 +64,14 @@ export class BoardNodeService {
 		}
 
 		return filteredNodes as T[];
+	}
+
+	async findContentElement(id: EntityId): Promise<AnyContentElement> {
+		const element = await this.boardNodeRepo.findById(id);
+		if (!isContentElement(element)) {
+			throw new NotFoundException('Element not found');
+		}
+		return element;
 	}
 
 	async findParent(child: AnyBoardNode, depth?: number): Promise<AnyBoardNode | undefined> {

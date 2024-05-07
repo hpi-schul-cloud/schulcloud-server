@@ -1,12 +1,16 @@
 import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, AnyContentElementDo, ContentElementType } from '@shared/domain/domainobject';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { CardService, ContentElementService } from '../service';
 
-import { Card } from '../poc/domain';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardNodePermissionService } from '../poc/service';
+import { AnyContentElement, Card } from '../poc/domain';
+import {
+	BoardNodeAuthorizableService,
+	BoardNodeService,
+	BoardNodePermissionService,
+	ContentElementCreateService,
+} from '../poc/service';
 import { BoardNodeRepo } from '../poc/repo';
 
 @Injectable()
@@ -18,7 +22,7 @@ export class CardUc {
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeRepo: BoardNodeRepo,
-		private readonly elementService: ContentElementService,
+		private readonly contentElementCreateService: ContentElementCreateService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CardUc.name);
@@ -84,14 +88,16 @@ export class CardUc {
 		cardId: EntityId,
 		type: ContentElementType,
 		toPosition?: number
-	): Promise<AnyContentElementDo> {
+	): Promise<AnyContentElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		await this.boardPermissionService.checkPermission(userId, card, Action.write);
 
-		// TODO
-		const element = await this.elementService.create(card, type);
+		const element = this.contentElementCreateService.build(type);
+		this.boardNodeRepo.persist(element);
+		card.addChild(element);
+		await this.boardNodeRepo.persistAndFlush(card);
 
 		if (toPosition !== undefined && typeof toPosition === 'number') {
 			await this.boardNodeService.move(element, card, toPosition);
@@ -107,9 +113,8 @@ export class CardUc {
 		targetPosition: number
 	): Promise<void> {
 		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
-		// TODO
-		const element = await this.boardNodeService.findByClassAndId(elementId);
 
+		const element = await this.boardNodeService.findContentElement(elementId);
 		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId);
 
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);

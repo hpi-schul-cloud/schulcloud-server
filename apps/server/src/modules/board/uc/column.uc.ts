@@ -6,7 +6,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 import { Card, Column } from '../poc/domain';
-import { BoardNodeService } from '../poc/service';
+import { BoardNodeService, ContentElementCreateService } from '../poc/service';
 import { BoardNodeRepo } from '../poc/repo';
 
 @Injectable()
@@ -15,6 +15,7 @@ export class ColumnUc {
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly contentElementCreateService: ContentElementCreateService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ColumnUc.name);
@@ -38,7 +39,6 @@ export class ColumnUc {
 		await this.boardNodeService.updateTitle(column, title);
 	}
 
-	// TODO requiredEmptyElements
 	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
@@ -61,10 +61,11 @@ export class ColumnUc {
 		column.addChild(card);
 		this.boardNodeRepo.persist(column);
 
-		// TODO
-		// for await (const requiredEmptyElement of requiredEmptyElements) {
-		//	await this.contentElementService.create(card, requiredEmptyElement);
-		// }
+		requiredEmptyElements?.forEach((requiredEmptyElement) => {
+			const element = this.contentElementCreateService.build(requiredEmptyElement);
+			this.boardNodeRepo.persist(element);
+			card.addChild(element);
+		});
 
 		await this.boardNodeRepo.flush();
 
