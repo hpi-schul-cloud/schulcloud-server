@@ -422,6 +422,50 @@
 	},
 	{
 		"_id": {
+			"$oid": "65fc0fcda519d4a3b71193e0"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1701358084733"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1701358362888"
+			}
+		},
+		"name": "CY Test Tool Optional Protected Parameter",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [
+			{
+				"name": "search",
+				"displayName": "Suchparameter",
+				"description": "Danch wird gesucht",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false,
+				"isProtected": false
+			},
+			{
+				"name": "protected",
+				"displayName": "geschützter Parameter",
+				"description": "Dieser parameter wird nicht mitkopiert",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": true,
+				"isProtected": true
+			}
+		],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false
+	},
+	{
+		"_id": {
 			"$oid": "65f958bdd8b35469f14032b1"
 		},
 		"config_type": "oauth2",
