@@ -93,7 +93,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >ToolParameterValueMissingLoggableException</li>
+  <li class="breadcrumb-item" >ToolParameterOptionalValueMissingLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/common/domain/error/tool-parameter-value-missing.loggable-exception.ts</code>
+            <code>apps/server/src/modules/tool/common/domain/error/tool-parameter-optional-value-missing-loggable-exception.ts</code>
         </p>
 
 
@@ -217,7 +217,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-value-missing.loggable-exception.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-optional-value-missing-loggable-exception.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -521,7 +521,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-value-missing.loggable-exception.ts:23</a></div>
+                                    class="link-to-prism">apps/server/src/modules/tool/common/domain/error/tool-parameter-optional-value-missing-loggable-exception.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -592,19 +592,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { BusinessError } from &#x27;@shared/common&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { CustomParameter } from &#x27;../custom-parameter.do&#x27;;
 
-export class ToolParameterValueMissingLoggableException extends BusinessError implements Loggable {
+export class ToolParameterOptionalValueMissingLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly validatableToolId: EntityId | undefined, private readonly parameter: CustomParameter) {
 		super(
 			{
-				type: &#x27;TOOL_PARAMETER_VALUE_MISSING&#x27;,
-				title: &#x27;Missing tool parameter value&#x27;,
-				defaultMessage: &#x27;The parameter has no value.&#x27;,
+				type: &#x27;VALUE_MISSING_ON_OPTIONAL_TOOL_PARAMETER&#x27;,
+				title: &#x27;Missing value on optional tool parameter&#x27;,
+				defaultMessage: &#x27;The optional parameter has no value.&#x27;,
 			},
 			HttpStatus.BAD_REQUEST,
 			{
@@ -616,8 +616,8 @@ export class ToolParameterValueMissingLoggableException extends BusinessError im
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: this.message,
 			type: this.type,
+			message: this.message,
 			stack: this.stack,
 			data: {
 				parameterName: this.parameter.name,
@@ -664,7 +664,7 @@ export class ToolParameterValueMissingLoggableException extends BusinessError im
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'ToolParameterValueMissingLoggableException.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ToolParameterOptionalValueMissingLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

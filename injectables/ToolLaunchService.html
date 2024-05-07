@@ -657,12 +657,12 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalToolConfigurationStatus } from &#x27;../../common/domain&#x27;;
 import { ToolConfigType } from &#x27;../../common/enum&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { ToolConfigurationStatusService } from &#x27;../../context-external-tool/service/tool-configuration-status.service&#x27;;
+import { ToolConfigurationStatusService } from &#x27;../../context-external-tool/service&#x27;;
 import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
-import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
+import { ExternalToolService } from &#x27;../../external-tool&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
-import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
-import { ToolStatusOutdatedLoggableException } from &#x27;../error&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool&#x27;;
+import { ToolStatusNotLaunchableLoggableException } from &#x27;../error&#x27;;
 import { ToolLaunchMapper } from &#x27;../mapper&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
 import {
@@ -750,12 +750,19 @@ export class ToolLaunchService {
 			contextExternalTool
 		);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
-			throw new ToolStatusOutdatedLoggableException(
+		if (
+			status.isOutdatedOnScopeSchool ||
+			status.isOutdatedOnScopeContext ||
+			status.isDeactivated ||
+			status.isIncompleteOnScopeContext
+		) {
+			throw new ToolStatusNotLaunchableLoggableException(
 				userId,
 				contextExternalTool.id ?? &#x27;&#x27;,
 				status.isOutdatedOnScopeSchool,
 				status.isOutdatedOnScopeContext,
+				status.isIncompleteOnScopeContext,
+				status.isIncompleteOperationalOnScopeContext,
 				status.isDeactivated
 			);
 		}

@@ -6776,6 +6776,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ToolParameterDuplicateLoggableException.html" data-type="entity-link" >ToolParameterDuplicateLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ToolParameterMandatoryValueMissingLoggableException.html" data-type="entity-link" >ToolParameterMandatoryValueMissingLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ToolParameterOptionalValueMissingLoggableException.html" data-type="entity-link" >ToolParameterOptionalValueMissingLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ToolParameterRequiredLoggableException.html" data-type="entity-link" >ToolParameterRequiredLoggableException</a>
                             </li>
                             <li class="link">
@@ -6786,9 +6792,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ToolParameterUnknownLoggableException.html" data-type="entity-link" >ToolParameterUnknownLoggableException</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ToolParameterValueMissingLoggableException.html" data-type="entity-link" >ToolParameterValueMissingLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ToolParameterValueRegexLoggableException.html" data-type="entity-link" >ToolParameterValueRegexLoggableException</a>
@@ -6806,7 +6809,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ToolReferenceResponse.html" data-type="entity-link" >ToolReferenceResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ToolStatusOutdatedLoggableException.html" data-type="entity-link" >ToolStatusOutdatedLoggableException</a>
+                                <a href="classes/ToolStatusNotLaunchableLoggableException.html" data-type="entity-link" >ToolStatusNotLaunchableLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ToolStatusResponseMapper.html" data-type="entity-link" >ToolStatusResponseMapper</a>
