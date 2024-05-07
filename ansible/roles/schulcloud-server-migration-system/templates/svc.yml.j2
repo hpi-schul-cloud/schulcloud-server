@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-migration-systems-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-migration-systems
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3030
+      targetPort: 3030
+      protocol: TCP
+      name: api
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+      name: api-metrics
+  selector:
+    app: api-migration-systems
