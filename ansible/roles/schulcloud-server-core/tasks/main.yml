@@ -223,7 +223,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-onepassword.yml.j2
-    when:
+    when: 
      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
