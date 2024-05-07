@@ -226,12 +226,19 @@
       template: admin-api-server-svc.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
+  - name: admin api server service monitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc-monitor.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: TlDraw server Secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-onepassword.yml.j2
-    when: 
+    when:
      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
