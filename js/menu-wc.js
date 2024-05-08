@@ -6053,6 +6053,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RequestInfo.html" data-type="entity-link" >RequestInfo</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RequestTimeoutLoggableException.html" data-type="entity-link" >RequestTimeoutLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/RequiredError.html" data-type="entity-link" >RequiredError</a>
                             </li>
                             <li class="link">

@@ -168,6 +168,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#byName" >byName</a>
+                            </li>
+                            <li>
                                 <a href="#bySchoolId" >bySchoolId</a>
                             </li>
                             <li>
@@ -178,6 +181,9 @@
                             </li>
                             <li>
                                 <a href="#whereLastLoginSystemChangeSmallerThan" >whereLastLoginSystemChangeSmallerThan</a>
+                            </li>
+                            <li>
+                                <a href="#withDeleted" >withDeleted</a>
                             </li>
                             <li>
                                 <a href="#withOutdatedSince" >withOutdatedSince</a>
@@ -324,6 +330,73 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="byName"></a>
+                    <span class="name">
+                        <span ><b>byName</b></span>
+                        <a href="#byName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byName(name?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>name</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/UserScope.html" target="_self" >UserScope</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="bySchoolId"></a>
                     <span class="name">
                         <span ><b>bySchoolId</b></span>
@@ -333,7 +406,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>bySchoolId(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
+<code>bySchoolId(schoolId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -364,11 +437,11 @@
                                         <tr>
                                                 <td>schoolId</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -578,6 +651,73 @@
                                                 <td>date</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/UserScope.html" target="_self" >UserScope</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withDeleted"></a>
+                    <span class="name">
+                        <span ><b>withDeleted</b></span>
+                        <a href="#withDeleted"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withDeleted(deleted?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>deleted</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                             </td>
 
                                             <td>
@@ -825,7 +965,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { User } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { Scope } from &#x27;@shared/repo&#x27;;
+import { MongoPatterns, Scope } from &#x27;@shared/repo&#x27;;
 
 export class UserScope extends Scope&lt;User&gt; {
 	isOutdated(isOutdated?: boolean): UserScope {
@@ -858,9 +998,24 @@ export class UserScope extends Scope&lt;User&gt; {
 		return this;
 	}
 
-	bySchoolId(schoolId: EntityId | undefined): UserScope {
+	bySchoolId(schoolId?: EntityId): UserScope {
 		if (schoolId !&#x3D;&#x3D; undefined) {
 			this.addQuery({ school: schoolId });
+		}
+		return this;
+	}
+
+	byName(name?: string): UserScope {
+		if (name !&#x3D;&#x3D; undefined) {
+			const escapedName &#x3D; name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, &#x27;&#x27;).trim();
+			this.addQuery({ $or: [{ firstName: new RegExp(escapedName, &#x27;i&#x27;) }, { lastName: new RegExp(escapedName, &#x27;i&#x27;) }] });
+		}
+		return this;
+	}
+
+	withDeleted(deleted?: boolean): UserScope {
+		if (!deleted) {
+			this.addQuery({ deletedAt: { $exists: false } });
 		}
 		return this;
 	}

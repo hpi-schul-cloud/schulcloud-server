@@ -77,7 +77,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -87,9 +87,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >TimeoutInterceptor</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >RequestTimeoutLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -113,39 +117,30 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/common/interceptor/timeout.interceptor.ts</code>
+            <code>apps/server/src/shared/common/loggable-exception/request-timeout.loggable-exception.ts</code>
         </p>
 
 
+
             <p class="comment">
-                <h3>Description</h3>
+                <h3>Extends</h3>
             </p>
             <p class="comment">
-                <p>This interceptor leaves the request execution after a given timeout in ms.
-This will not stop the running services behind the controller.</p>
-
+                            <code><a href="../miscellaneous/functions.html#RequestTimeout" target="_self" >RequestTimeoutException</a></code>
             </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                <a href="#defaultConfigKey" >defaultConfigKey</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -156,7 +151,7 @@ This will not stop the running services behind the controller.</p>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#intercept" >intercept</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -176,12 +171,12 @@ This will not stop the running services behind the controller.</p>
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: ConfigService)</code>
+<code>constructor(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/shared/common/loggable-exception/request-timeout.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -199,10 +194,10 @@ This will not stop the running services behind the controller.</p>
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>configService</td>
+                                                        <td>url</td>
                                                   
                                                         <td>
-                                                                    <code>ConfigService</code>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -219,6 +214,7 @@ This will not stop the running services behind the controller.</p>
         </table>
 </section>
 
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -228,24 +224,24 @@ This will not stop the running services behind the controller.</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="intercept"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                        <span ><b>intercept</b></span>
-                        <a href="#intercept"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>intercept(context: ExecutionContext, next: CallHandler)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/shared/common/loggable-exception/request-timeout.loggable-exception.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -253,144 +249,48 @@ This will not stop the running services behind the controller.</p>
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>context</td>
-                                            <td>
-                                                        <code>ExecutionContext</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>next</td>
-                                            <td>
-                                                        <code>CallHandler</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ErrorLogMessage" target="_self" >ErrorLogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="defaultConfigKey"></a>
-                    <span class="name">
-                        <span ><b>defaultConfigKey</b></span>
-                        <a href="#defaultConfigKey"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>&#x27;INCOMING_REQUEST_TIMEOUT&#x27;</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:16</a></div>
-                        </td>
-                    </tr>
 
 
-        </tbody>
-    </table>
-</section>
+
+
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from &#x27;@nestjs/common&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { Reflector } from &#x27;@nestjs/core&#x27;;
-import { Observable, throwError, TimeoutError } from &#x27;rxjs&#x27;;
-import { catchError, timeout } from &#x27;rxjs/operators&#x27;;
-import { TypeGuard } from &#x27;../guards&#x27;;
-import { RequestTimeoutLoggableException } from &#x27;../loggable-exception&#x27;;
-import { InterceptorConfig } from &#x27;./interfaces&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RequestTimeoutException } from &#x27;@nestjs/common&#x27;;
+import { Loggable } from &#x27;@src/core/logger/interfaces&#x27;;
+import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
 
-/**
- * This interceptor leaves the request execution after a given timeout in ms.
- * This will not stop the running services behind the controller.
- */
-@Injectable()
-export class TimeoutInterceptor implements NestInterceptor {
-	defaultConfigKey: keyof InterceptorConfig &#x3D; &#x27;INCOMING_REQUEST_TIMEOUT&#x27;;
+export class RequestTimeoutLoggableException extends RequestTimeoutException implements Loggable {
+	constructor(private readonly url: string) {
+		super();
+	}
 
-	constructor(private readonly configService: ConfigService) {}
+	getLogMessage(): ErrorLogMessage {
+		const message: ErrorLogMessage &#x3D; {
+			type: &#x27;REQUEST_TIMEOUT&#x27;,
+			stack: this.stack,
+			data: {
+				url: this.url,
+			},
+		};
 
-	intercept(context: ExecutionContext, next: CallHandler): Observable&lt;any&gt; {
-		const reflector &#x3D; new Reflector();
-		const requestTimeoutEnvironmentName &#x3D;
-			reflector.get&lt;string&gt;(&#x27;requestTimeoutEnvironmentName&#x27;, context.getHandler()) ||
-			reflector.get&lt;string&gt;(&#x27;requestTimeoutEnvironmentName&#x27;, context.getClass());
-
-		// type of requestTimeoutEnvironmentName is always invalid and can be different
-		const timeoutMS &#x3D; this.configService.getOrThrow&lt;number&gt;(requestTimeoutEnvironmentName || this.defaultConfigKey);
-
-		TypeGuard.checkNumber(timeoutMS);
-
-		const { url } &#x3D; context.switchToHttp().getRequest&lt;Request&gt;();
-
-		return next.handle().pipe(
-			timeout(timeoutMS),
-			catchError((err: Error) &#x3D;&gt; {
-				if (err instanceof TimeoutError) {
-					return throwError(() &#x3D;&gt; new RequestTimeoutLoggableException(url));
-				}
-				return throwError(() &#x3D;&gt; err);
-			})
-		);
+		return message;
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -425,8 +325,8 @@ export class TimeoutInterceptor implements NestInterceptor {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'TimeoutInterceptor.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'RequestTimeoutLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

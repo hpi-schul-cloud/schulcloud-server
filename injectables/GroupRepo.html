@@ -1515,7 +1515,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData, EntityName, QueryOrder } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData, EntityDictionary, EntityName, QueryOrder } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { School } from &#x27;@modules/school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
@@ -1718,12 +1718,12 @@ export class GroupRepo extends BaseDomainObjectRepo&lt;Group, GroupEntity&gt; {
 		}
 
 		const mongoEntitiesFacet &#x3D; (await this.em.aggregate(GroupEntity, pipeline)) as [
-			{ total: [{ count: number }]; data: GroupEntity[] }
+			{ total: [{ count: number }]; data: EntityDictionary&lt;GroupEntity&gt;[] }
 		];
 
 		const total: number &#x3D; mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
 
-		const entities: GroupEntity[] &#x3D; mongoEntitiesFacet[0].data.map((entity: GroupEntity) &#x3D;&gt;
+		const entities: GroupEntity[] &#x3D; mongoEntitiesFacet[0].data.map((entity: EntityDictionary&lt;GroupEntity&gt;) &#x3D;&gt;
 			this.em.map(GroupEntity, entity)
 		);
 

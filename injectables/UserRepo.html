@@ -165,6 +165,10 @@
                                 <a href="#findByIdOrNull" >findByIdOrNull</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findForImportUser" >findForImportUser</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findUnsynchronizedUserIds" >findUnsynchronizedUserIds</a>
@@ -173,10 +177,6 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findUserBySchoolAndName" >findUserBySchoolAndName</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findWithoutImportUser" >findWithoutImportUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -264,8 +264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:179</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -333,8 +333,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -402,8 +402,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -484,8 +484,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="223"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:223</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -559,7 +559,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:17</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:15</a></code>
 </div>
                         </td>
                     </tr>
@@ -645,8 +645,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -713,6 +713,99 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findForImportUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findForImportUser</b></span>
+                        <a href="#findForImportUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findForImportUser(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, filters?: <a href="../interfaces/NameMatch.html" target="_self">NameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>filters</td>
+                                            <td>
+                                                            <code><a href="../interfaces/NameMatch.html" target="_self" >NameMatch</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../classes/User.html" target="_self" >IFindOptions&lt;User&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;Counted&lt;User[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findUnsynchronizedUserIds"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -732,8 +825,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="245"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:245</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:145</a></div>
                         </td>
                     </tr>
 
@@ -802,8 +895,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="217"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:217</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -877,101 +970,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findWithoutImportUser"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findWithoutImportUser</b></span>
-                        <a href="#findWithoutImportUser"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findWithoutImportUser(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, filters?: <a href="../interfaces/NameMatch.html" target="_self">NameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:55</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-description"><p>used for importusers module to request users not referenced in importusers</p>
-</div>
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>filters</td>
-                                            <td>
-                                                            <code><a href="../interfaces/NameMatch.html" target="_self" >NameMatch</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                            <code><a href="../classes/User.html" target="_self" >IFindOptions&lt;User&gt;</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;Counted&lt;User[]&gt;&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="flush"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -990,8 +988,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="213"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:213</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -1029,8 +1027,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="187"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:187</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -1099,8 +1097,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="197"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:197</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -1166,8 +1164,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="209"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:209</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -1236,8 +1234,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="235"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:235</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -1528,7 +1526,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:13</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:11</a></div>
                                 </td>
                             </tr>
 
@@ -1539,15 +1537,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { QueryOrderMap, QueryOrderNumeric } from &#x27;@mikro-orm/core&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { StringValidator } from &#x27;@shared/common&#x27;;
-import { ImportUser, Role, SchoolEntity, User } from &#x27;@shared/domain/entity&#x27;;
-import { IFindOptions, SortOrder } from &#x27;@shared/domain/interface&#x27;;
+import { Role, SchoolEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
 import { Counted, EntityId, NameMatch } from &#x27;@shared/domain/types&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
-import { MongoPatterns } from &#x27;../mongo.patterns&#x27;;
+import { UserScope } from &#x27;./user.scope&#x27;;
 
 @Injectable()
 export class UserRepo extends BaseRepo&lt;User&gt; {
@@ -1590,123 +1586,25 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 		return resultUser ?? Promise.reject();
 	}
 
-	/**
-	 * used for importusers module to request users not referenced in importusers
-	 */
-	async findWithoutImportUser(
+	async findForImportUser(
 		school: SchoolEntity,
 		filters?: NameMatch,
 		options?: IFindOptions&lt;User&gt;
 	): Promise&lt;Counted&lt;User[]&gt;&gt; {
-		const { _id: schoolId } &#x3D; school;
+		const { pagination, order } &#x3D; options || {};
+		const { id: schoolId } &#x3D; school;
 		if (!ObjectId.isValid(schoolId)) throw new Error(&#x27;invalid school id&#x27;);
 
-		const existingMatch &#x3D; { deletedAt: null };
-		const permittedMatch &#x3D; { schoolId };
+		const scope: UserScope &#x3D; new UserScope().bySchoolId(schoolId).byName(filters?.name).withDeleted(false);
 
-		const queryFilterMatch: { $or?: unknown[] } &#x3D; {};
-		if (filters?.name &amp;&amp; StringValidator.isNotEmptyString(filters.name, true)) {
-			const escapedName &#x3D; filters.name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, &#x27;&#x27;).trim();
-			// TODO make db agnostic
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				queryFilterMatch.$or &#x3D; [
-					{
-						firstName: {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							$regex: escapedName,
-							$options: &#x27;i&#x27;,
-						},
-					},
-					{
-						lastName: {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							$regex: escapedName,
-							$options: &#x27;i&#x27;,
-						},
-					},
-				];
-			}
-		}
-
-		const pipeline: unknown[] &#x3D; [
-			{ $match: existingMatch },
-			{ $match: permittedMatch },
-			{
-				$lookup: {
-					from: &#x27;importusers&#x27;,
-					localField: &#x27;_id&#x27;,
-					foreignField: &#x27;match_userId&#x27;,
-					as: &#x27;importusers&#x27;,
-				},
-			},
-			{
-				$match: {
-					importusers: {
-						$size: 0,
-					},
-				},
-			},
-			{ $match: queryFilterMatch },
-			{
-				$project: {
-					importusers: 0,
-				},
-			},
-		];
-
-		const countPipeline &#x3D; [...pipeline];
-		countPipeline.push({ $group: { _id: null, count: { $sum: 1 } } });
-		const total &#x3D; (await this._em.aggregate(User, countPipeline)) as { count: number }[];
-		const count &#x3D; total.length &gt; 0 ? total[0].count : 0;
-		const { pagination, order } &#x3D; options || {};
-
-		if (order) {
-			const orderQuery: QueryOrderMap&lt;ImportUser&gt; &#x3D; {};
-			if (order.firstName) {
-				switch (order.firstName) {
-					case SortOrder.desc:
-						orderQuery.firstName &#x3D; QueryOrderNumeric.DESC;
-						break;
-					case SortOrder.asc:
-					default:
-						orderQuery.firstName &#x3D; QueryOrderNumeric.ASC;
-						break;
-				}
-			}
-			if (order.lastName) {
-				switch (order.lastName) {
-					case SortOrder.desc:
-						orderQuery.lastName &#x3D; QueryOrderNumeric.DESC;
-						break;
-					case SortOrder.asc:
-					default:
-						orderQuery.lastName &#x3D; QueryOrderNumeric.ASC;
-						break;
-				}
-			}
-			pipeline.push({ $sort: orderQuery });
-		}
-
-		if (pagination?.skip) {
-			pipeline.push({ $skip: pagination.skip });
-		}
-		if (pagination?.limit) {
-			pipeline.push({ $limit: pagination.limit });
-		}
-
-		const userDocuments &#x3D; await this._em.aggregate(User, pipeline);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users &#x3D; userDocuments.map((userDocument) &#x3D;&gt; {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const { createdAt, updatedAt, ...newUserDocument } &#x3D; userDocument;
-
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			return this._em.map(User, newUserDocument);
+		const countedUsers &#x3D; await this._em.findAndCount(User, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+			populate: [&#x27;roles&#x27;],
 		});
-		await this._em.populate(users, [&#x27;roles&#x27;]);
-		return [users, count];
+
+		return countedUsers;
 	}
 
 	async findByEmail(email: string): Promise&lt;User[]&gt; {
