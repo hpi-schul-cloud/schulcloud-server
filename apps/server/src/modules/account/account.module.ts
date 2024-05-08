@@ -1,7 +1,6 @@
 import { IdentityManagementModule } from '@infra/identity-management';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PermissionService } from '@shared/domain/service';
 import { LegacySystemRepo, UserRepo } from '@shared/repo';
 
 import { CqrsModule } from '@nestjs/cqrs';
@@ -26,7 +25,6 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 	providers: [
 		UserRepo,
 		LegacySystemRepo,
-		PermissionService,
 		AccountRepo,
 		AccountServiceDb,
 		AccountServiceIdm,

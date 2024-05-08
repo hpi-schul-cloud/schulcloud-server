@@ -10,7 +10,8 @@ import {
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
-	ToolParameterValueMissingLoggableException,
+	ToolParameterMandatoryValueMissingLoggableException,
+	ToolParameterOptionalValueMissingLoggableException,
 } from '../../common/domain';
 import { CommonToolValidationService } from '../../common/service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
@@ -77,6 +78,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -131,6 +133,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: false,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -185,6 +188,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -239,6 +243,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
@@ -260,7 +265,7 @@ describe(ToolConfigurationStatusService.name, () => {
 			});
 		});
 
-		describe('when validation of ContextExternalTool throws at least 1 missing value errors', () => {
+		describe('when validation of ContextExternalTool throws at least 1 missing value on mandatory parameter errors', () => {
 			const setup = () => {
 				const customParameter = customParameterFactory.build();
 				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
@@ -273,8 +278,9 @@ describe(ToolConfigurationStatusService.name, () => {
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([
-					new ToolParameterValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterMandatoryValueMissingLoggableException(undefined, customParameter),
 					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
 				]);
 
 				return {
@@ -297,6 +303,94 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: true,
+					isIncompleteOperationalOnScopeContext: false,
+					isDeactivated: false,
+				});
+			});
+		});
+
+		describe('when validation of ContextExternalTool throws at least 1 missing value on optional parameter errors', () => {
+			const setup = () => {
+				const customParameter = customParameterFactory.build();
+				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
+				]);
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return incomplete operational as tool status', () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: true,
+					isDeactivated: false,
+				});
+			});
+		});
+
+		describe('when validation of ContextExternalTool throws only missing value on optional parameter errors', () => {
+			const setup = () => {
+				const customParameter = customParameterFactory.build();
+				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+				]);
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return incomplete operational as tool status', () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: true,
 					isDeactivated: false,
 				});
 			});
@@ -336,6 +430,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: true,
 				});
 			});
@@ -374,6 +469,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: true,
 				});
 			});
@@ -412,6 +508,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					isOutdatedOnScopeSchool: true,
 					isOutdatedOnScopeContext: true,
 					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
 				});
 			});
