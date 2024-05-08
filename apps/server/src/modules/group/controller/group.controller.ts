@@ -6,7 +6,7 @@ import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
-import { GroupUc } from '../uc';
+import { ClassGroupUc, GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
 	ClassCallerParams,
@@ -25,7 +25,7 @@ import { GroupResponseMapper } from './mapper';
 @Authenticate('jwt')
 @Controller('groups')
 export class GroupController {
-	constructor(private readonly groupUc: GroupUc) {}
+	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
 
 	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
@@ -39,7 +39,7 @@ export class GroupController {
 		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
-		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
+		const board: Page<ClassInfoDto> = await this.classGroupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
