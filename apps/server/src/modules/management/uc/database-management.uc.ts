@@ -2,13 +2,13 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
+import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
-import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 
@@ -280,8 +280,21 @@ export class DatabaseManagementUc {
 	 * Updates the indexes in the database based on definitions in entities
 	 */
 	async syncIndexes(): Promise<void> {
-		await this.createUserSearchIndex();
+		await Promise.all([this.createUserSearchIndex(), await this.createTSPOptions()]);
 		return this.databaseManagementService.syncIndexes();
+	}
+
+	private async createTSPOptions() {
+		const usersCollection = this.databaseManagementService.getDatabaseCollection('users');
+
+		await usersCollection.createIndex(
+			{ 'sourceOptions.tspUid': 1 },
+			{
+				name: 'sourceOptions.tspUid',
+				unique: true,
+				partialFilterExpression: { 'sourceOptions.tspUid': { $exists: true } },
+			}
+		);
 	}
 
 	private async createUserSearchIndex(): Promise<void> {
