@@ -21,7 +21,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { Role, SchoolYearEntity, User } from '@shared/domain/entity';
-import { IFindQuery, Permission, SortOrder } from '@shared/domain/interface';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import {
 	groupFactory,
 	roleDtoFactory,
@@ -34,7 +34,7 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, GroupTypes } from '../domain';
+import { Group, GroupTypes, IGroupFilter } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
@@ -230,11 +230,9 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
+				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce(
-					new Page<Group>([group, groupWithSystem], 2)
-				);
+				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.findById.mockResolvedValue(system);
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
 					if (userId === teacherUser.id) {
@@ -411,16 +409,12 @@ describe('GroupUc', () => {
 					});
 				});
 
-				it('should call group service with allowed group types', async () => {
+				it('should call group service with userId and no pagination', async () => {
 					const { teacherUser } = setup();
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[], IFindQuery]>(
-						expect.any(UserDO),
-						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
-						{ pagination: { skip: 0 } }
-					);
+					expect(groupService.findGroups).toHaveBeenCalledWith<[IGroupFilter]>({ userId: teacherUser.id });
 				});
 			});
 
@@ -652,9 +646,7 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				classService.findClassesForSchool.mockResolvedValueOnce([...clazzes, clazz]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce(
-					new Page<Group>([group, groupWithSystem], 2)
-				);
+				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -781,16 +773,12 @@ describe('GroupUc', () => {
 					});
 				});
 
-				it('should call group service with allowed group types', async () => {
-					const { teacherUser, school } = setup();
+				it('should call group service with schoolId and no pagination', async () => {
+					const { teacherUser } = setup();
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[School, GroupTypes[]]>(school, [
-						GroupTypes.CLASS,
-						GroupTypes.COURSE,
-						GroupTypes.OTHER,
-					]);
+					expect(groupService.findGroups).toHaveBeenCalledWith<[IGroupFilter]>({ schoolId: teacherUser.school.id });
 				});
 			});
 
@@ -948,7 +936,7 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz]);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(new Page<Group>([group], 1));
+				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group], 1));
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
@@ -1217,10 +1205,8 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				groupService.findAvailableGroupsBySchoolId.mockResolvedValue(new Page<Group>([availableGroupInSchool], 1));
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValue(
-					new Page<Group>([groupInSchool, availableGroupInSchool], 2)
-				);
+				groupService.findAvailableGroups.mockResolvedValue(new Page<Group>([availableGroupInSchool], 1));
+				groupService.findGroups.mockResolvedValue(new Page<Group>([groupInSchool, availableGroupInSchool], 2));
 				userService.findByIdOrNull.mockResolvedValue(userDto);
 				roleService.findById.mockResolvedValue(userRole);
 
@@ -1328,7 +1314,7 @@ describe('GroupUc', () => {
 				it('should return all available groups for course sync', async () => {
 					const { user, availableGroupInSchool, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, undefined, true);
+					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
 
 					expect(response).toMatchObject({
 						data: [
@@ -1391,10 +1377,8 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.hasAllPermissions.mockReturnValue(false);
-				groupService.findAvailableGroupsByUser.mockResolvedValue(new Page<Group>([availableTeachersGroup], 1));
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(
-					new Page<Group>([teachersGroup, availableTeachersGroup], 2)
-				);
+				groupService.findAvailableGroups.mockResolvedValue(new Page<Group>([availableTeachersGroup], 1));
+				groupService.findGroups.mockResolvedValue(new Page<Group>([teachersGroup, availableTeachersGroup], 2));
 				userService.findByIdOrNull.mockResolvedValue(userDto);
 				roleService.findById.mockResolvedValue(userRole);
 
@@ -1502,7 +1486,7 @@ describe('GroupUc', () => {
 				it('should return all available groups for course sync the teacher is part of', async () => {
 					const { user, availableTeachersGroup, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, undefined, true);
+					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
 
 					expect(response).toMatchObject({
 						data: [
