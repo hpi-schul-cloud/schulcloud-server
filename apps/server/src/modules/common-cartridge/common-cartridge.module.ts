@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import { config } from '../files-storage/files-storage.config';
 
 @Module({
-	imports: [CoreModule, LoggerModule],
+	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))],
 })
 export class CommonCartridgeModule {}

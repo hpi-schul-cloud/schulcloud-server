@@ -103,7 +103,7 @@
 		"nest:start:tldraw-console": "nest start tldraw-console --",
 		"nest:start:tldraw-console:dev": "nest start tldraw-console --watch --",
 		"nest:start:tldraw-console:debug": "nest start tldraw-console --debug --watch --",
-		"nest:start:course-export-import":"nest start course-export-import --",
+		"nest:start:course-export-import":"node dist/apps/server/apps/course-export-import.app",
 		"nest:start:course-export-import:dev":"nest start course-export-import --watch --",
 		"nest:start:course-export-import:debug":"nest start course-export-import --debug --watch --",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",

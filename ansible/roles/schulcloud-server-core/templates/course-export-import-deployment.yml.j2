@@ -47,7 +47,7 @@ spec:
             name: course-export-import-configmap
         - secretRef:
             name: course-export-import-secret
-        command: ['npm', 'run', 'nest:start:course-export-import-amqp:prod']
+        command: ['npm', 'run', 'nest:start:course-export-import']
         resources:
           limits:
             cpu: {{ COURSE_EXPORT_IMPORT_CPU_LIMITS|default("2000m", true) }}
