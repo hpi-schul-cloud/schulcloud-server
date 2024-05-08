@@ -70,6 +70,7 @@
 		"nest:start:board-collaboration": "nest start board-collaboration",
 		"nest:start:board-collaboration:dev": "nest start board-collaboration --watch --",
 		"nest:start:board-collaboration:debug": "nest start board-collaboration --debug --watch",
+		"nest:start:board-collaboration:prod": "node dist/apps/server/apps/board-collaboration.app",
 		"nest:start:management:dev": "nest start management --watch",
 		"nest:start:management:debug": "nest start management --debug --watch",
 		"nest:start:management:prod": "node dist/apps/server/apps/management.app",
