@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement } from '../domain';
+import type { AnyBoardDo } from '@shared/domain/domainobject';
+import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement, MediaBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
@@ -12,7 +13,7 @@ type WithCompleted<T> = Extract<T, { completed: unknown }>;
 export class BoardNodeService {
 	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
 
-	async addRoot(boardNode: ColumnBoard): Promise<void> {
+	async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
 		await this.boardNodeRepo.persistAndFlush(boardNode);
 	}
 

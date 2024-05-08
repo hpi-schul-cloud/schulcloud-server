@@ -1,4 +1,5 @@
-import type { AnyMediaBoardNode, MediaLineProps } from '../types';
+import type { AnyMediaBoardNode } from './types';
+import type { MediaLineProps } from '../types';
 import { MediaExternalToolElement } from './media-external-tool-element.do';
 import { BoardNode } from '../board-node.do';
 
