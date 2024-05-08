@@ -139,6 +139,16 @@
                                 <a href="#deleteGroup" >deleteGroup</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deletePad" >deletePad</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteSession" >deleteSession</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#findSessionId" >findSessionId</a>
                             </li>
@@ -183,6 +193,16 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#listAuthorsOfPad" >listAuthorsOfPad</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#listPadsOfAuthor" >listPadsOfAuthor</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#listSessionIdsOfAuthor" >listSessionIdsOfAuthor</a>
                             </li>
                             <li>
@@ -208,7 +228,27 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#tryDeletePad" >tryDeletePad</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#tryDeleteSession" >tryDeleteSession</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#tryGetAuthorsOfPad" >tryGetAuthorsOfPad</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#tryGetOrCreateGroup" >tryGetOrCreateGroup</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#tryGetPadsOfAuthor" >tryGetPadsOfAuthor</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -238,12 +278,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupApi: <a href="../classes/GroupApi.html" target="_self">GroupApi</a>, sessionApi: <a href="../classes/SessionApi.html" target="_self">SessionApi</a>, authorApi: <a href="../classes/AuthorApi.html" target="_self">AuthorApi</a>)</code>
+<code>constructor(groupApi: <a href="../classes/GroupApi.html" target="_self">GroupApi</a>, sessionApi: <a href="../classes/SessionApi.html" target="_self">SessionApi</a>, authorApi: <a href="../classes/AuthorApi.html" target="_self">AuthorApi</a>, padApi: <a href="../classes/PadApi.html" target="_self">PadApi</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -296,6 +336,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>padApi</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/PadApi.html" target="_self" >PadApi</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -333,8 +385,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="209"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:209</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="234"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:234</a></div>
                         </td>
                     </tr>
 
@@ -384,6 +436,146 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deletePad"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deletePad</b></span>
+                        <a href="#deletePad"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deletePad(padId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="289"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:289</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>padId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;InlineResponse2001 | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteSession"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteSession</b></span>
+                        <a href="#deleteSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteSession(sessionId: <a href="../undefineds/SessionId.html" target="_self">SessionId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="272"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:272</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>sessionId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SessionId" target="_self" >SessionId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;InlineResponse2001 | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findSessionId"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -402,8 +594,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="105"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:105</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -496,8 +688,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -578,8 +770,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="165"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:165</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:190</a></div>
                         </td>
                     </tr>
 
@@ -660,8 +852,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="146"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:146</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -730,8 +922,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -836,8 +1028,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="215"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:215</a></div>
                         </td>
                     </tr>
 
@@ -918,8 +1110,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="92"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:92</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -999,8 +1191,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="224"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:224</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="306"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:306</a></div>
                         </td>
                     </tr>
 
@@ -1081,8 +1273,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -1132,6 +1324,146 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="listAuthorsOfPad"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>listAuthorsOfPad</b></span>
+                        <a href="#listAuthorsOfPad"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listAuthorsOfPad(padId: <a href="../undefineds/PadId.html" target="_self">PadId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="249"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:249</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>padId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#PadId" target="_self" >PadId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AuthorId" target="_self" >Promise&lt;AuthorId[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listPadsOfAuthor"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>listPadsOfAuthor</b></span>
+                        <a href="#listPadsOfAuthor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listPadsOfAuthor(authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AuthorId" target="_self" >AuthorId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#PadId" target="_self" >Promise&lt;PadId[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="listSessionIdsOfAuthor"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -1151,8 +1483,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:143</a></div>
                         </td>
                     </tr>
 
@@ -1221,8 +1553,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -1303,8 +1635,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:205</a></div>
                         </td>
                     </tr>
 
@@ -1385,8 +1717,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -1479,8 +1811,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="214"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:214</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:239</a></div>
                         </td>
                     </tr>
 
@@ -1530,6 +1862,216 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="tryDeletePad"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>tryDeletePad</b></span>
+                        <a href="#tryDeletePad"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryDeletePad(padId: <a href="../undefineds/PadId.html" target="_self">PadId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="296"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:296</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>padId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#PadId" target="_self" >PadId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AxiosResponse&lt;InlineResponse2001&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tryDeleteSession"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>tryDeleteSession</b></span>
+                        <a href="#tryDeleteSession"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryDeleteSession(sessionId: <a href="../undefineds/SessionId.html" target="_self">SessionId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="279"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:279</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>sessionId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SessionId" target="_self" >SessionId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AxiosResponse&lt;InlineResponse2001&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tryGetAuthorsOfPad"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>tryGetAuthorsOfPad</b></span>
+                        <a href="#tryGetAuthorsOfPad"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryGetAuthorsOfPad(padId: <a href="../undefineds/PadId.html" target="_self">PadId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="262"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:262</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>padId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#PadId" target="_self" >PadId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AxiosResponse&lt;InlineResponse20013&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="tryGetOrCreateGroup"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1549,8 +2091,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="155"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:155</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:180</a></div>
                         </td>
                     </tr>
 
@@ -1600,6 +2142,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="tryGetPadsOfAuthor"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>tryGetPadsOfAuthor</b></span>
+                        <a href="#tryGetPadsOfAuthor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>tryGetPadsOfAuthor(authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AuthorId" target="_self" >AuthorId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AxiosResponse&lt;InlineResponse2002&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="tryListPads"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1619,8 +2231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="199"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:199</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="224"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:224</a></div>
                         </td>
                     </tr>
 
@@ -1689,8 +2301,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="136"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:136</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:161</a></div>
                         </td>
                     </tr>
 
@@ -1748,13 +2360,14 @@ import { AxiosResponse } from &#x27;axios&#x27;;
 import {
 	InlineResponse200,
 	InlineResponse2001,
+	InlineResponse20013,
 	InlineResponse2002,
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
 	InlineResponse2006Data,
 } from &#x27;./etherpad-api-client&#x27;;
-import { AuthorApi, GroupApi, SessionApi } from &#x27;./etherpad-api-client/api&#x27;;
+import { AuthorApi, GroupApi, PadApi, SessionApi } from &#x27;./etherpad-api-client/api&#x27;;
 import {
 	AuthorId,
 	EtherpadErrorType,
@@ -1772,7 +2385,8 @@ export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
-		private readonly authorApi: AuthorApi
+		private readonly authorApi: AuthorApi,
+		private readonly padApi: PadApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise&lt;AuthorId&gt; {
@@ -1791,6 +2405,29 @@ export class EtherpadClientAdapter {
 			return response;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { userId }, error);
+		}
+	}
+
+	public async listPadsOfAuthor(authorId: AuthorId): Promise&lt;PadId[]&gt; {
+		const response &#x3D; await this.tryGetPadsOfAuthor(authorId);
+		const pads &#x3D; this.handleEtherpadResponse&lt;InlineResponse2002&gt;(response, { authorId });
+
+		if (!this.isObject(pads)) {
+			throw new InternalServerErrorException(&#x27;Etherpad listPadsOfAuthor response is not an object&#x27;);
+		}
+
+		const padIds &#x3D; pads?.padIDs as PadId[];
+
+		return padIds;
+	}
+
+	private async tryGetPadsOfAuthor(authorId: AuthorId): Promise&lt;AxiosResponse&lt;InlineResponse2002&gt;&gt; {
+		try {
+			const response &#x3D; await this.authorApi.listPadsOfAuthorUsingGET(authorId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
 		}
 	}
 
@@ -1962,6 +2599,63 @@ export class EtherpadClientAdapter {
 			return response;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { groupId }, error);
+		}
+	}
+
+	public async listAuthorsOfPad(padId: PadId): Promise&lt;AuthorId[]&gt; {
+		const response &#x3D; await this.tryGetAuthorsOfPad(padId);
+		const authors &#x3D; this.handleEtherpadResponse&lt;InlineResponse20013&gt;(response, { padId });
+
+		if (!this.isObject(authors)) {
+			throw new InternalServerErrorException(&#x27;Etherpad listAuthorsOfPad response is not an object&#x27;);
+		}
+
+		const authorIds &#x3D; authors?.authorIDs as AuthorId[];
+
+		return authorIds;
+	}
+
+	private async tryGetAuthorsOfPad(padId: PadId): Promise&lt;AxiosResponse&lt;InlineResponse20013&gt;&gt; {
+		try {
+			const response &#x3D; await this.padApi.listAuthorsOfPadUsingGET(padId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
+		}
+	}
+
+	public async deleteSession(sessionId: SessionId): Promise&lt;InlineResponse2001 | undefined&gt; {
+		const response &#x3D; await this.tryDeleteSession(sessionId);
+		const responseData &#x3D; this.handleEtherpadResponse&lt;InlineResponse2001&gt;(response, { sessionId });
+
+		return responseData;
+	}
+
+	private async tryDeleteSession(sessionId: SessionId): Promise&lt;AxiosResponse&lt;InlineResponse2001&gt;&gt; {
+		try {
+			const response &#x3D; await this.sessionApi.deleteSessionUsingPOST(sessionId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
+		}
+	}
+
+	public async deletePad(padId: EntityId): Promise&lt;InlineResponse2001 | undefined&gt; {
+		const response &#x3D; await this.tryDeletePad(padId);
+		const responseData &#x3D; this.handleEtherpadResponse&lt;InlineResponse2001&gt;(response, { padId });
+
+		return responseData;
+	}
+
+	private async tryDeletePad(padId: PadId): Promise&lt;AxiosResponse&lt;InlineResponse2001&gt;&gt; {
+		try {
+			const response &#x3D; await this.padApi.deletePadUsingPOST(padId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
 		}
 	}
 

@@ -202,7 +202,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
-import { AuthorApi, GroupApi, SessionApi } from &#x27;./etherpad-api-client/api&#x27;;
+import { AuthorApi, GroupApi, PadApi, SessionApi } from &#x27;./etherpad-api-client/api&#x27;;
 import { Configuration, ConfigurationParameters } from &#x27;./etherpad-api-client/configuration&#x27;;
 import { EtherpadClientAdapter } from &#x27;./etherpad-client.adapter&#x27;;
 
@@ -235,6 +235,13 @@ export class EtherpadClientModule {
 				useFactory: () &#x3D;&gt; {
 					const configuration &#x3D; new Configuration(config);
 					return new AuthorApi(configuration);
+				},
+			},
+			{
+				provide: PadApi,
+				useFactory: () &#x3D;&gt; {
+					const configuration &#x3D; new Configuration(config);
+					return new PadApi(configuration);
 				},
 			},
 		];

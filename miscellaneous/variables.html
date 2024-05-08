@@ -19904,6 +19904,10 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
+	EtherpadClientModule.register({
+		apiKey: Configuration.has(&#x27;ETHERPAD_API_KEY&#x27;) ? (Configuration.get(&#x27;ETHERPAD_API_KEY&#x27;) as string) : undefined,
+		basePath: Configuration.has(&#x27;ETHERPAD_URI&#x27;) ? (Configuration.get(&#x27;ETHERPAD_URI&#x27;) as string) : undefined,
+	}),
 ]</code>
                     </td>
                 </tr>

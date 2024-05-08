@@ -273,6 +273,8 @@ import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
 import { DeletionApiModule } from &#x27;@modules/deletion/deletion-api.module&#x27;;
 import { LegacySchoolAdminApiModule } from &#x27;@modules/legacy-school/legacy-school-admin.api-module&#x27;;
 import { UserAdminApiModule } from &#x27;@modules/user/user-admin-api.module&#x27;;
+import { EtherpadClientModule } from &#x27;@src/infra/etherpad-client&#x27;;
+import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { serverConfig } from &#x27;./server.config&#x27;;
 import { defaultMikroOrmOptions } from &#x27;./server.module&#x27;;
 
@@ -281,6 +283,10 @@ const serverModules &#x3D; [
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
+	EtherpadClientModule.register({
+		apiKey: Configuration.has(&#x27;ETHERPAD_API_KEY&#x27;) ? (Configuration.get(&#x27;ETHERPAD_API_KEY&#x27;) as string) : undefined,
+		basePath: Configuration.has(&#x27;ETHERPAD_URI&#x27;) ? (Configuration.get(&#x27;ETHERPAD_URI&#x27;) as string) : undefined,
+	}),
 ];
 
 @Module({
