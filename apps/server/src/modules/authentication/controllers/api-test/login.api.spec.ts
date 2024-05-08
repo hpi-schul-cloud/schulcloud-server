@@ -144,6 +144,30 @@ describe('Login Controller (api)', () => {
 				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
 			});
 		});
+		describe('when user login fails cause account is deactivated', () => {
+			const setup = async () => {
+				const newUser: User = userFactory.buildWithId();
+				const deactivatedAccount: AccountEntity = accountFactory.buildWithId({
+					userId: newUser.id,
+					username: newUser.email,
+					password: defaultPasswordHash,
+					deactivatedAt: new Date(),
+				});
+
+				em.persist(newUser);
+				em.persist(deactivatedAccount);
+				await em.flush();
+				return { newUser };
+			};
+			it('should return error response', async () => {
+				const { newUser } = await setup();
+				const params = {
+					username: newUser.email,
+					password: defaultPassword,
+				};
+				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+			});
+		});
 	});
 
 	describe('loginLdap', () => {
@@ -224,6 +248,48 @@ describe('Login Controller (api)', () => {
 				const params: LdapAuthorizationBodyParams = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
+					schoolId: school.id,
+					systemId: system.id,
+				};
+
+				return {
+					params,
+				};
+			};
+
+			it('should return error response', async () => {
+				const { params } = await setup();
+
+				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user login fails because account is deactivated', () => {
+			const setup = async () => {
+				const schoolExternalId = 'mockSchoolExternalId';
+				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: schoolExternalId,
+				});
+				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+
+				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
+
+				const account: AccountEntity = accountFactory.buildWithId({
+					userId: user.id,
+					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
+					systemId: system.id,
+					deactivatedAt: new Date(),
+				});
+
+				await em.persistAndFlush([system, school, studentRoles, user, account]);
+
+				const params: LdapAuthorizationBodyParams = {
+					username: ldapAccountUserName,
+					password: defaultPassword,
 					schoolId: school.id,
 					systemId: system.id,
 				};

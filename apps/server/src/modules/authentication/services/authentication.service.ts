@@ -34,7 +34,7 @@ export class AuthenticationService {
 		if (!account) {
 			throw new UnauthorizedLoggableException(username, systemId);
 		}
-		if (account.deactivatedAt != null && account.deactivatedAt.getTime() <= Date.now()) {
+		if (account.deactivatedAt !== undefined && account.deactivatedAt.getTime() <= Date.now()) {
 			throw new UserAccountDeactivatedLoggableException();
 		}
 

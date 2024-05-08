@@ -32,7 +32,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			throw new UnauthorizedException('no account found');
 		}
 
-		if (account.deactivatedAt != null && account.deactivatedAt.getTime() <= Date.now()) {
+		if (account.deactivatedAt !== undefined && account.deactivatedAt.getTime() <= Date.now()) {
 			throw new UserAccountDeactivatedLoggableException();
 		}
 
