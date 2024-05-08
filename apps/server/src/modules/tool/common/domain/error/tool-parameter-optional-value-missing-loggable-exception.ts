@@ -1,16 +1,16 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { BusinessError } from '@shared/common';
-import { EntityId } from '@shared/domain/types';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { EntityId } from '@shared/domain/types';
 import { CustomParameter } from '../custom-parameter.do';
 
-export class ToolParameterValueMissingLoggableException extends BusinessError implements Loggable {
+export class ToolParameterOptionalValueMissingLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly validatableToolId: EntityId | undefined, private readonly parameter: CustomParameter) {
 		super(
 			{
-				type: 'TOOL_PARAMETER_VALUE_MISSING',
-				title: 'Missing tool parameter value',
-				defaultMessage: 'The parameter has no value.',
+				type: 'VALUE_MISSING_ON_OPTIONAL_TOOL_PARAMETER',
+				title: 'Missing value on optional tool parameter',
+				defaultMessage: 'The optional parameter has no value.',
 			},
 			HttpStatus.BAD_REQUEST,
 			{
@@ -22,8 +22,8 @@ export class ToolParameterValueMissingLoggableException extends BusinessError im
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: this.message,
 			type: this.type,
+			message: this.message,
 			stack: this.stack,
 			data: {
 				parameterName: this.parameter.name,
