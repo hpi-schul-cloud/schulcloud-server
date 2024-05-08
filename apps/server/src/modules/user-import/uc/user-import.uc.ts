@@ -99,7 +99,9 @@ export class UserImportUc {
 
 		// check user is not already assigned
 		const hasMatch = await this.importUserRepo.hasMatch(userMatch);
-		if (hasMatch !== null) throw new UserAlreadyAssignedToImportUserError();
+		if (hasMatch !== null) {
+			throw new UserAlreadyAssignedToImportUserError();
+		}
 
 		importUser.setMatch(userMatch, MatchCreator.MANUAL);
 		await this.importUserRepo.save(importUser);
@@ -166,7 +168,7 @@ export class UserImportUc {
 		this.userImportService.checkFeatureEnabled(school);
 
 		// TODO Change to UserService to fix this workaround
-		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
+		const unmatchedCountedUsers = await this.userRepo.findForImportUser(currentUser.school, query, options);
 
 		return unmatchedCountedUsers;
 	}
