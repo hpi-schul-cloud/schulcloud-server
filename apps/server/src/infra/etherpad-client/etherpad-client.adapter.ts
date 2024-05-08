@@ -52,9 +52,9 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async listPadsOfAuthor(userId: EntityId): Promise<PadId[]> {
-		const response = await this.tryGetPadsOfAuthor(userId);
-		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { userId });
+	public async listPadsOfAuthor(authorId: AuthorId): Promise<PadId[]> {
+		const response = await this.tryGetPadsOfAuthor(authorId);
+		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { authorId });
 
 		if (!this.isObject(pads)) {
 			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
@@ -65,13 +65,13 @@ export class EtherpadClientAdapter {
 		return padIds;
 	}
 
-	private async tryGetPadsOfAuthor(userId: string): Promise<AxiosResponse<InlineResponse2002>> {
+	private async tryGetPadsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2002>> {
 		try {
-			const response = await this.authorApi.listPadsOfAuthorUsingGET(userId);
+			const response = await this.authorApi.listPadsOfAuthorUsingGET(authorId);
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { userId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
 		}
 	}
 
@@ -246,7 +246,7 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async listAuthorsOfPad(padId: EntityId): Promise<AuthorId[]> {
+	public async listAuthorsOfPad(padId: PadId): Promise<AuthorId[]> {
 		const response = await this.tryGetAuthorsOfPad(padId);
 		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
 
@@ -259,7 +259,7 @@ export class EtherpadClientAdapter {
 		return authorIds;
 	}
 
-	private async tryGetAuthorsOfPad(padId: string): Promise<AxiosResponse<InlineResponse20013>> {
+	private async tryGetAuthorsOfPad(padId: PadId): Promise<AxiosResponse<InlineResponse20013>> {
 		try {
 			const response = await this.padApi.listAuthorsOfPadUsingGET(padId);
 
@@ -269,14 +269,14 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async deleteSession(sessionId: EntityId): Promise<InlineResponse2001 | undefined> {
+	public async deleteSession(sessionId: SessionId): Promise<InlineResponse2001 | undefined> {
 		const response = await this.tryDeleteSession(sessionId);
 		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
 
 		return responseData;
 	}
 
-	private async tryDeleteSession(sessionId: string): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryDeleteSession(sessionId: SessionId): Promise<AxiosResponse<InlineResponse2001>> {
 		try {
 			const response = await this.sessionApi.deleteSessionUsingPOST(sessionId);
 
@@ -293,13 +293,13 @@ export class EtherpadClientAdapter {
 		return responseData;
 	}
 
-	private async tryDeletePad(sessionId: string): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryDeletePad(padId: PadId): Promise<AxiosResponse<InlineResponse2001>> {
 		try {
-			const response = await this.padApi.deletePadUsingPOST(sessionId);
+			const response = await this.padApi.deletePadUsingPOST(padId);
 
 			return response;
 		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
 		}
 	}
 
