@@ -30,7 +30,7 @@ async function bootstrap() {
 	await nestApp.init();
 
 	const port = 4450;
-	const basePath = '/api/v3';
+	const basePath = '/board-collaboration';
 
 	nestApp.setGlobalPrefix(basePath);
 	await nestApp.listen(port);

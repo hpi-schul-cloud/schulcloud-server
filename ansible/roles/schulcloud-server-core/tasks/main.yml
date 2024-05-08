@@ -204,7 +204,6 @@
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
-
   - name: admin api server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -276,3 +275,32 @@
       namespace: "{{ NAMESPACE }}"
       template: course-export-import-onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: BoardCollaboration configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-configmap.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-deployment.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-service.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-ingress.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"

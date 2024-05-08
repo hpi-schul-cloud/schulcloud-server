@@ -129,4 +129,52 @@ describe('UserScope', () => {
 			expect(scope.query).toEqual({});
 		});
 	});
+
+	describe('byName', () => {
+		describe('when a name is given', () => {
+			const setup = () => {
+				const name = 'test';
+
+				return {
+					name,
+				};
+			};
+
+			it('should return scope with added query where firstname or lastname match the given string', () => {
+				const { name } = setup();
+
+				scope.byName('test');
+
+				expect(scope.query).toEqual({
+					$or: [{ firstName: new RegExp(name, 'i') }, { lastName: new RegExp(name, 'i') }],
+				});
+			});
+		});
+
+		describe('when no name is given', () => {
+			it('should not add a query', () => {
+				scope.byName();
+
+				expect(scope.query).toEqual({});
+			});
+		});
+	});
+
+	describe('withDeleted', () => {
+		describe('when deleted users are included', () => {
+			it('should not add a query', () => {
+				scope.withDeleted(true);
+
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when deleted users are excluded', () => {
+			it('should add a query that removes deleted users', () => {
+				scope.withDeleted(false);
+
+				expect(scope.query).toEqual({ deletedAt: { $exists: false } });
+			});
+		});
+	});
 });
