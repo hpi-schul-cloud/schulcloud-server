@@ -32,7 +32,7 @@ spec:
   - host: {{ DOMAIN }}
     http:
       paths:
-      - path: /api/v3/user/import/
+      - path: /api/v3/user/import
         backend:
           service:
             name: api-migration-systems-svc

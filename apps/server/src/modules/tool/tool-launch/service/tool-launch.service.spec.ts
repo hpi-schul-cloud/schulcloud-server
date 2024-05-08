@@ -14,7 +14,7 @@ import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool';
 import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { ToolStatusOutdatedLoggableException } from '../error';
+import { ToolStatusNotLaunchableLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
@@ -23,7 +23,7 @@ import {
 	ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
-import { ToolConfigurationStatusService } from '../../context-external-tool/service/tool-configuration-status.service';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -236,6 +236,7 @@ describe('ToolLaunchService', () => {
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
 						isIncompleteOnScopeContext: false,
+						isIncompleteOperationalOnScopeContext: false,
 						isDeactivated: true,
 					})
 				);
@@ -247,13 +248,13 @@ describe('ToolLaunchService', () => {
 				};
 			};
 
-			it('should throw ToolStatusOutdatedLoggableException', async () => {
+			it('should throw ToolStatusNotLaunchableLoggableException', async () => {
 				const { launchParams, userId, contextExternalToolId } = setup();
 
 				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
 
 				await expect(func).rejects.toThrow(
-					new ToolStatusOutdatedLoggableException(userId, contextExternalToolId, true, true, true)
+					new ToolStatusNotLaunchableLoggableException(userId, contextExternalToolId, true, true, false, false, true)
 				);
 			});
 		});
