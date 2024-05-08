@@ -1,19 +1,18 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { InputFormat } from '@shared/domain/types';
 import { ContentElementType } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 
 import {
 	AnyContentElement,
-	FileElement,
-	LinkElement,
+	BoardNodeProps,
+	CollaborativeTextEditorElement,
 	DrawingElement,
 	ExternalToolElement,
+	FileElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
-	BoardNodeProps,
-	// InputFormat,
-	CollaborativeTextEditorElement,
 } from '../domain';
 
 @Injectable()

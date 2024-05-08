@@ -1,8 +1,7 @@
-import type { EntityId } from '@shared/domain/types';
+import type { EntityId, InputFormat } from '@shared/domain/types';
 import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
 import { BoardLayout } from './board-layout.enum';
-import { InputFormat } from './input-format.enum';
 
 export interface BoardNodeProps {
 	id: EntityId;

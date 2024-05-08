@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, InputFormat } from '@shared/domain/types';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -13,14 +13,7 @@ import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
-import {
-	AnyContentElement,
-	BoardExternalReference,
-	BoardLayout,
-	BoardNodeProps,
-	ContentElementType,
-	InputFormat,
-} from './types';
+import { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps, ContentElementType } from './types';
 
 function handleNonExhaustiveSwitch(type: never): never {
 	throw new NotImplementedException(`unknown type '${JSON.stringify(type)}' of element`);

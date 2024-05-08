@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
+import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
 	DrawingContentBody,
@@ -14,7 +15,6 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
-	InputFormat,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
