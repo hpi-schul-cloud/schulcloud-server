@@ -7,7 +7,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
-// import { UserDeletedEvent } from '../../domain/event';
+import { UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionRequestService, DeletionLogService } from '../../domain/service';
 import { deletionRequestFactory, deletionLogFactory, deletionTestConfig } from '../../domain/testing';
@@ -22,7 +22,7 @@ describe(DeletionRequestUc.name, () => {
 	let uc: DeletionRequestUc;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
-	// let eventBus: DeepMocked<EventBus>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -53,7 +53,7 @@ describe(DeletionRequestUc.name, () => {
 		uc = module.get(DeletionRequestUc);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
-		// eventBus = module.get(EventBus);
+		eventBus = module.get(EventBus);
 		await setupEntities();
 	});
 
@@ -139,70 +139,72 @@ describe(DeletionRequestUc.name, () => {
 	});
 
 	describe('executeDeletionRequests', () => {
-		describe('when executing deletionRequests', () => {
-			// const setup = () => {
-			// 	const deletionRequest = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+		describe('when deletionRequests to execute exists', () => {
+			const setup = () => {
+				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 
-			// 	return {
-			// 		deletionRequest,
-			// 	};
-			// };
+				return { deletionRequest };
+			};
 			it('should call deletionRequestService.countPendingDeletionRequests', async () => {
-				deletionRequestService.countPendingDeletionRequests.mockResolvedValueOnce(2);
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+
 				await uc.executeDeletionRequests();
 
 				expect(deletionRequestService.countPendingDeletionRequests).toHaveBeenCalled();
 			});
 
-			// it('should call deletionRequestService.findAllItemsToExecute', async () => {
-			// 	await uc.executeDeletionRequests();
+			it('should call deletionRequestService.findAllItemsToExecute', async () => {
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
 
-			// 	expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
-			// });
+				await uc.executeDeletionRequests();
 
-			// it('should call deletionRequestService.markDeletionRequestAsPending to update status of deletionRequests', async () => {
-			// 	const { deletionRequest } = setup();
+				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
+			});
 
-			// 	deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
+			it('should call deletionRequestService.markDeletionRequestAsPending to update status of deletionRequests', async () => {
+				const { deletionRequest } = setup();
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 
-			// 	await uc.executeDeletionRequests();
+				await uc.executeDeletionRequests();
 
-			// 	expect(deletionRequestService.markDeletionRequestAsPending).toHaveBeenCalledWith(deletionRequest.id);
-			// });
+				expect(deletionRequestService.markDeletionRequestAsPending).toHaveBeenCalledWith(deletionRequest.id);
+			});
 
-			// it('should call eventBus.publish', async () => {
-			// 	const { deletionRequest } = setup();
+			it('should call eventBus.publish', async () => {
+				const { deletionRequest } = setup();
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 
-			// 	deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
+				await uc.executeDeletionRequests();
 
-			// 	await uc.executeDeletionRequests();
-
-			// 	expect(eventBus.publish).toHaveBeenCalledWith(
-			// 		new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId)
-			// 	);
-			// });
+				expect(eventBus.publish).toHaveBeenCalledWith(
+					new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId)
+				);
+			});
 		});
 
-		// describe('when an error occurred', () => {
-		// 	const setup = () => {
-		// 		const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+		describe('when an error occurred', () => {
+			const setup = () => {
+				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-		// 		deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-		// 		eventBus.publish.mockRejectedValueOnce(new Error());
+				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				eventBus.publish.mockRejectedValueOnce(new Error());
 
-		// 		return {
-		// 			deletionRequestToExecute,
-		// 		};
-		// 	};
+				return {
+					deletionRequestToExecute,
+				};
+			};
 
-		// 	it('should throw an arror', async () => {
-		// 		const { deletionRequestToExecute } = setup();
+			it('should throw an arror', async () => {
+				const { deletionRequestToExecute } = setup();
 
-		// 		await uc.executeDeletionRequests();
+				await uc.executeDeletionRequests();
 
-		// 		expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestToExecute.id);
-		// 	});
-		// });
+				expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestToExecute.id);
+			});
+		});
 	});
 
 	describe('findById', () => {
