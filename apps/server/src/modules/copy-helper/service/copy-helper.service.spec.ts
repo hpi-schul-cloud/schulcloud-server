@@ -13,6 +13,21 @@ function createStates(elementStates: CopyStatusEnum[]): CopyStatus[] {
 		return elementState;
 	});
 }
+function createNestedStates(elementStates: CopyStatusEnum[]): CopyStatus {
+	const elementState = elementStates.shift();
+	const element: CopyStatus = {
+		title: `title-${Math.floor(Math.random() * 1000)}-${elementStates.length}`,
+		type: CopyElementType.LEAF,
+		status: CopyStatusEnum.SUCCESS,
+	};
+
+	if (elementState) {
+		element.status = elementState;
+		element.elements = elementStates.length ? [createNestedStates(elementStates)] : [];
+	}
+
+	return element;
+}
 
 describe('copy helper service', () => {
 	let module: TestingModule;
@@ -35,6 +50,23 @@ describe('copy helper service', () => {
 	});
 
 	describe('deriveStatusFromElements', () => {
+		describe('setup cases', () => {
+			it('should run method multiple times for nested structure', () => {
+				const derivedStatusSpy = jest.spyOn(copyHelperService, 'deriveStatusFromElements');
+				const element = createNestedStates([
+					CopyStatusEnum.SUCCESS,
+					CopyStatusEnum.SUCCESS,
+					CopyStatusEnum.SUCCESS,
+					CopyStatusEnum.SUCCESS,
+				]);
+
+				copyHelperService.deriveStatusFromElements([element]);
+
+				expect(derivedStatusSpy).toHaveBeenCalledTimes(4);
+				derivedStatusSpy.mockRestore();
+			});
+		});
+
 		describe('successful cases', () => {
 			it('should return success, if no elements were given', () => {
 				const derivedStatus = copyHelperService.deriveStatusFromElements([]);
@@ -89,6 +121,17 @@ describe('copy helper service', () => {
 			it('should return fail, when it has failing and not doing statuses', () => {
 				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_DOING]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
+
+				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
+			});
+			it('should return fail if the last and only nested child is FAIL ', () => {
+				const element = createNestedStates([
+					CopyStatusEnum.SUCCESS,
+					CopyStatusEnum.SUCCESS,
+					CopyStatusEnum.SUCCESS,
+					CopyStatusEnum.FAIL,
+				]);
+				const derivedStatus = copyHelperService.deriveStatusFromElements([element]);
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
 			});
