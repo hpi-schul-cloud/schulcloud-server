@@ -511,12 +511,12 @@ describe('recursive board copy visitor', () => {
 			expect(copy.id).not.toEqual(original.id);
 		});
 
-		it('should show status successful', async () => {
+		it('should show status partial', async () => {
 			const { original, fileCopyService } = setup();
 
 			const result = await service.copy({ original, fileCopyService });
 
-			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+			expect(result.status).toEqual(CopyStatusEnum.PARTIAL);
 		});
 
 		it('should show type RichTextElement', async () => {
