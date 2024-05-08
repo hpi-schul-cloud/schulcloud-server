@@ -79,7 +79,7 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-card-title-request')
 	@UseRequestContext()
-	async handleUpdateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
+	async updateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
@@ -94,10 +94,10 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-card-height-request')
 	@UseRequestContext()
-	async handleUpdateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
+	async updateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			await this.cardUc.updateCardHeight(userId, data.cardId, data.height);
+			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
 			const room = await this.ensureUserInRoom(client, data.cardId);
 			client.to(room).emit('update-card-height-success', data);
@@ -109,7 +109,7 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('delete-card-request')
 	@UseRequestContext()
-	async handleDeleteCard(client: Socket, data: DeleteCardMessageParams) {
+	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.deleteCard(userId, data.cardId);

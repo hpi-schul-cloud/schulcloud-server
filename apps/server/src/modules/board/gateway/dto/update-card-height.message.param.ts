@@ -7,5 +7,5 @@ export class UpdateCardHeightMessageParams {
 	@IsNumber()
 	@IsInt()
 	@Min(10)
-	height!: number;
+	newHeight!: number;
 }
