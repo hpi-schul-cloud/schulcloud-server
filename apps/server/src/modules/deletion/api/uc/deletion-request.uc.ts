@@ -73,7 +73,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	async executeDeletionRequests(limit?: number): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 		const maxAmoutOfDeletionRequestsDoConcurrently = this.configService.get<number>(
-			'ADMIN_API__MAX_AMOUNT_OF_DELETIONREQUESTS_DO_CONCURENTLY'
+			'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
 		);
 		const callsDelayMilliseconds = this.configService.get<number>('ADMIN_API__DELETION_DELAY_MILLISECONDS');
 		let tasks: DeletionRequest[] = [];
