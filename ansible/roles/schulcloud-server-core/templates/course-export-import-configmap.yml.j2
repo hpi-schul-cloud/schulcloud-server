@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: course-export-import-configmap
+    namespace: {{ NAMESPACE }}
+    labels:
+        app: course-export-import
+data:
+    NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
+    EXIT_ON_ERROR: "true"

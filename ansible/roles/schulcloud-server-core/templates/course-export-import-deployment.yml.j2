@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-export-import-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app:  course-export-import
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: course-export-import
+    app.kubernetes.io/component: files
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+    replicas: {{ COURSE_EXPORT_IMPORT_REPLICAS|default("1", true) }}
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+        maxSurge: 1
+        #maxUnavailable: 1
+    revisionHistoryLimit: 4
+    paused: false
+    template:
+      metadata:
+        labels:
+          app: course-export-import
+          app.kubernetes.io/part-of: schulcloud-verbund
+          app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+          app.kubernetes.io/name: course-export-import
+          app.kubernetes.io/component: files
+          app.kubernetes.io/managed-by: ansible
+          git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+          git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+      spec:
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+          runAsNonRoot: true
+        containers:
+          - name: course-export-import
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:course-export-import-{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - configMapRef:
+                  name: course-export-import-configmap
+            command: ['npm', 'run', 'nest:start:course-export-import:prod']
+            resources:
+              limits:
+                cpu: {{  COURSE_EXPORT_IMPORT_CPU_LIMITS|default("2000m", true) }}
+                memory: {{  COURSE_EXPORT_IMPORT_MEMORY_LIMITS|default("500Mi", true) }}
+              requests:
+                cpu: {{  COURSE_EXPORT_IMPORT_CPU_REQUESTS|default("100m", true) }}
+                memory: {{  COURSE_EXPORT_IMPORT_MEMORY_REQUESTS|default("250Mi", true) }}

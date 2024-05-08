@@ -144,10 +144,13 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"cc-export-import": {
+		"course-export-import": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/common-cartridge-export-import.app"
+			"entryFile": "apps/course-export-import.app",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
 		},
 		"board-collaboration": {
 			"type": "application",

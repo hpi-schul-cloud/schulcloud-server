@@ -256,3 +256,23 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc-monitor.yml.j2
     when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+  
+  - name: course export import deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: course-export-import-deployment.yml.j2
+
+  - name: course export import configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: course-export-import-configmap.yml.j2
+      apply: yes
+  
+  - name: course export import Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: course-export-import-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
