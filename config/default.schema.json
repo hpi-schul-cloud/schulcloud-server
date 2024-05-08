@@ -1698,6 +1698,11 @@
 			"description": "URL for fetching lizenz info from moin.schule schulconnex",
 			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
 		},
+		"BOARD_COLLABORATION_URI": {
+			"type": "string",
+			"default": "ws://localhost:4450",
+			"description": "URL for connecting to the WebSocketServer"
+		},
 		"FEATURE_NEW_LAYOUT_ENABLED": {
 			"type": "boolean",
 			"default": false,
