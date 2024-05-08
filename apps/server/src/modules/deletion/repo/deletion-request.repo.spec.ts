@@ -232,6 +232,47 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
+	describe('countPendingDeletionRequests', () => {
+		describe('when there is no deletionRequest with status pending', () => {
+			it('should return zero', async () => {
+				const result = await repo.countPendingDeletionRequests();
+
+				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when there are deletionRequests with status pending', () => {
+			const setup = async () => {
+				const deletionRequestWithStatusPending: DeletionRequestEntity[] = deletionRequestEntityFactory.buildListWithId(
+					5,
+					{
+						status: StatusModel.PENDING,
+					}
+				);
+
+				const deletionRequestWithStatusRegistered: DeletionRequestEntity[] =
+					deletionRequestEntityFactory.buildListWithId(2, {
+						status: StatusModel.REGISTERED,
+					});
+
+				const expectedNumberDeletionRequestWithStatusPending = deletionRequestWithStatusPending.length;
+
+				await em.persistAndFlush([...deletionRequestWithStatusPending, ...deletionRequestWithStatusRegistered]);
+				em.clear();
+
+				return { expectedNumberDeletionRequestWithStatusPending };
+			};
+
+			it('should count deletionRequests with status pending and return proper number', async () => {
+				const { expectedNumberDeletionRequestWithStatusPending } = await setup();
+
+				const result = await repo.countPendingDeletionRequests();
+
+				expect(result).toEqual(expectedNumberDeletionRequestWithStatusPending);
+			});
+		});
+	});
+
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = async () => {
