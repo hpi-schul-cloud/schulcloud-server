@@ -1,6 +1,6 @@
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { MongoPatterns, Scope } from '@shared/repo';
 
 export class UserScope extends Scope<User> {
 	isOutdated(isOutdated?: boolean): UserScope {
@@ -33,9 +33,24 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
-	bySchoolId(schoolId: EntityId | undefined): UserScope {
+	bySchoolId(schoolId?: EntityId): UserScope {
 		if (schoolId !== undefined) {
 			this.addQuery({ school: schoolId });
+		}
+		return this;
+	}
+
+	byName(name?: string): UserScope {
+		if (name !== undefined) {
+			const escapedName = name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+			this.addQuery({ $or: [{ firstName: new RegExp(escapedName, 'i') }, { lastName: new RegExp(escapedName, 'i') }] });
+		}
+		return this;
+	}
+
+	withDeleted(deleted?: boolean): UserScope {
+		if (!deleted) {
+			this.addQuery({ deletedAt: { $exists: false } });
 		}
 		return this;
 	}

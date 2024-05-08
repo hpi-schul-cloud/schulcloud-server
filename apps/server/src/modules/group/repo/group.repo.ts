@@ -1,4 +1,4 @@
-import { EntityData, EntityName, QueryOrder } from '@mikro-orm/core';
+import { EntityData, EntityDictionary, EntityName, QueryOrder } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { School } from '@modules/school';
 import { Injectable } from '@nestjs/common';
@@ -201,12 +201,12 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		}
 
 		const mongoEntitiesFacet = (await this.em.aggregate(GroupEntity, pipeline)) as [
-			{ total: [{ count: number }]; data: GroupEntity[] }
+			{ total: [{ count: number }]; data: EntityDictionary<GroupEntity>[] }
 		];
 
 		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
 
-		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: GroupEntity) =>
+		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: EntityDictionary<GroupEntity>) =>
 			this.em.map(GroupEntity, entity)
 		);
 
