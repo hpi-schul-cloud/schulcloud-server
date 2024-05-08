@@ -14,10 +14,10 @@ import {
 import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
-import { SocketGateway } from '../socket.gateway';
+import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 
-describe('SocketGateway', () => {
-	let gateway: SocketGateway;
+describe(BoardCollaborationGateway.name, () => {
+	let ws: BoardCollaborationGateway;
 	let app: INestApplication;
 	let ioClient: Socket;
 	let em: EntityManager;
@@ -28,8 +28,8 @@ describe('SocketGateway', () => {
 		}).compile();
 		app = testingModule.createNestApplication();
 
-		em = app.get<EntityManager>(EntityManager);
-		gateway = app.get<SocketGateway>(SocketGateway);
+		em = app.get(EntityManager);
+		ws = app.get(BoardCollaborationGateway);
 
 		await app.listen(0);
 	});
@@ -65,7 +65,7 @@ describe('SocketGateway', () => {
 	};
 
 	it('should be defined', () => {
-		expect(gateway).toBeDefined();
+		expect(ws).toBeDefined();
 	});
 
 	describe('create card', () => {

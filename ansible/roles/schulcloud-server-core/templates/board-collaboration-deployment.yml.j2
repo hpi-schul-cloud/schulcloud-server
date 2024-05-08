@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: board-collaboration-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: board-collaboration
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: board-collaboration
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  replicas: {{ BOARD_COLLABORATION_SERVER_REPLICAS|default("1", true) }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: board-collaboration
+  template:
+    metadata:
+      labels:
+        app: board-collaboration
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: board-collaboration
+        app.kubernetes.io/component: board-collaboration
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: board-collaboration
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4450
+          name: websocket
+          protocol: TCP
+        # - containerPort: 9090
+        #  name: api-metrics
+        #  protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - configMapRef:
+            name: board-collaboration-configmap
+        - secretRef:
+            name: api-secret
+        command: ['npm', 'run', 'nest:start:board-collaboration:prod']
+        resources:
+          limits:
+            cpu: {{ BOARD_COLLABORATION_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ BOARD_COLLABORATION_MEMORY_LIMITS|default("2Gi", true) }}
+          requests:
+            cpu: {{ BOARD_COLLABORATION_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ BOARD_COLLABORATION_MEMORY_REQUESTS|default("150Mi", true) }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - board-collaboration
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - board-collaboration
+              topologyKey: "topology.kubernetes.io/zone"
+{% endif %}

@@ -207,6 +207,9 @@ export class ConfigResponse {
 	FEATURE_MEDIA_SHELF_ENABLED: boolean;
 
 	@ApiProperty()
+	BOARD_COLLABORATION_URI: string;
+
+	@ApiProperty()
 	FEATURE_NEW_LAYOUT_ENABLED: boolean;
 
 	constructor(config: ServerConfig) {
@@ -276,6 +279,7 @@ export class ConfigResponse {
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.enabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED;
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
+		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_NEW_LAYOUT_ENABLED = config.FEATURE_NEW_LAYOUT_ENABLED;
 	}
 }
