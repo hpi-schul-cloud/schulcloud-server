@@ -1,12 +1,10 @@
-import { EntityDictionary, QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StringValidator } from '@shared/common';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { MongoPatterns } from '../mongo.patterns';
+import { UserScope } from './user.scope';
 
 @Injectable()
 export class UserRepo extends BaseRepo<User> {
@@ -49,113 +47,25 @@ export class UserRepo extends BaseRepo<User> {
 		return resultUser ?? Promise.reject();
 	}
 
-	/**
-	 * used for importusers module to request users not referenced in importusers
-	 */
-	async findWithoutImportUser(
+	async findForImportUser(
 		school: SchoolEntity,
 		filters?: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { pagination, order } = options || {};
-		const { _id: schoolId } = school;
+		const { id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 
-		const nameFilterQuery: { $or?: unknown[] } = {};
-		const escapedName: string | undefined = filters?.name
-			?.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '')
-			.trim();
-		if (StringValidator.isNotEmptyString(escapedName, true)) {
-			nameFilterQuery.$or = [
-				{
-					firstName: {
-						$regex: escapedName,
-						$options: 'i',
-					},
-				},
-				{
-					lastName: {
-						$regex: escapedName,
-						$options: 'i',
-					},
-				},
-			];
-		}
+		const scope: UserScope = new UserScope().bySchoolId(schoolId).byName(filters?.name).withDeleted(false);
 
-		const pipeline: unknown[] = [
-			{ $match: { schoolId, deletedAt: null } },
-			{ $match: nameFilterQuery },
-			{
-				$lookup: {
-					from: 'importusers',
-					localField: '_id',
-					foreignField: 'match_userId',
-					as: 'importusers',
-				},
-			},
-			{
-				$match: {
-					importusers: {
-						$size: 0,
-					},
-				},
-			},
-			{
-				$project: {
-					importusers: 0,
-				},
-			},
-		];
-
-		if (order) {
-			const orderQuery: QueryOrderMap<User> = {};
-			if (order.firstName) {
-				orderQuery.firstName = this.mapSortOrderToNumeric(order.firstName);
-			}
-			if (order.lastName) {
-				orderQuery.lastName = this.mapSortOrderToNumeric(order.lastName);
-			}
-			pipeline.push({ $sort: orderQuery });
-		}
-
-		const paginationPipeline: unknown[] = [];
-
-		if (pagination?.skip) {
-			paginationPipeline.push({ $skip: pagination.skip });
-		}
-		if (pagination?.limit) {
-			paginationPipeline.push({ $limit: pagination.limit });
-		}
-
-		pipeline.push({
-			$facet: {
-				total: [{ $count: 'count' }],
-				data: paginationPipeline,
-			},
+		const countedUsers = await this._em.findAndCount(User, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+			populate: ['roles'],
 		});
 
-		const usersFacet = (await this._em.aggregate(User, pipeline)) as [
-			{ total: [{ count: number }]; data: EntityDictionary<User>[] }
-		];
-
-		const count: number = usersFacet[0]?.total[0]?.count ?? 0;
-		const users: User[] = usersFacet[0].data.map(
-			(userEntity: EntityDictionary<User>): User => this._em.map(User, userEntity)
-		);
-
-		await this._em.populate(users, ['roles']);
-
-		return [users, count];
-	}
-
-	private mapSortOrderToNumeric(sortOrder: SortOrder): QueryOrderNumeric {
-		switch (sortOrder) {
-			case SortOrder.desc:
-				return QueryOrderNumeric.DESC;
-			case SortOrder.asc:
-			default:
-				return QueryOrderNumeric.ASC;
-		}
+		return countedUsers;
 	}
 
 	async findByEmail(email: string): Promise<User[]> {
