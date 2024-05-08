@@ -180,8 +180,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/copy-helper/service/copy-helper.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/copy-helper/service/copy-helper.service.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -247,8 +247,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/copy-helper/service/copy-helper.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/copy-helper/service/copy-helper.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -395,6 +395,12 @@ const isAtLeastPartialSuccessfull &#x3D; (status) &#x3D;&gt; status &#x3D;&#x3D;
 @Injectable()
 export class CopyHelperService {
 	deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+		for (const element of elements) {
+			if (element.elements?.length) {
+				element.status &#x3D; this.deriveStatusFromElements(element.elements);
+			}
+		}
+
 		const elementsStatuses &#x3D; elements.map((el) &#x3D;&gt; el.status);
 
 		const filtered &#x3D; elementsStatuses.filter((status) &#x3D;&gt; status !&#x3D;&#x3D; CopyStatusEnum.NOT_DOING);
