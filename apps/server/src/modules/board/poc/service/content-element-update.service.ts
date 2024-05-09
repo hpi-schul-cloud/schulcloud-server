@@ -32,7 +32,7 @@ export class ContentElementUpdateService {
 	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async updateContent(element: AnyContentElement, content: AnyElementContentBody): Promise<void> {
-		// TODO refactor if ... else to e.g. discriminated union
+		// TODO refactor if ... else to e.g. discriminated union or non-exhaustive check
 		if (isFileElement(element) && content instanceof FileContentBody) {
 			this.updateFileElement(element, content);
 		} else if (isLinkElement(element) && content instanceof LinkContentBody) {

@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, getBoardNodeType } from '../domain';
+import { AnyBoardNode, BoardExternalReference, getBoardNodeType } from '../domain';
 import { pathOfChildren, ROOT_PATH } from '../domain/path-utils';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
@@ -25,6 +25,25 @@ export class BoardNodeRepo {
 	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
+		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes = entities.map((props) => {
+			const children = descendantsMap[pathOfChildren(props)];
+			const builder = new TreeBuilder(children);
+			const boardNode = builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
+		const entities = await this.em.find(BoardNodeEntity, {
+			_context: { id: reference.id, type: reference.type },
+		});
+
+		// TODO refactor descendants mapping
 		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
 
 		const boardNodes = entities.map((props) => {

@@ -36,3 +36,5 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		return allowed;
 	}
 }
+
+export const isColumnBoard = (reference: unknown): reference is ColumnBoard => reference instanceof ColumnBoard;

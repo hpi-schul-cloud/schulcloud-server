@@ -22,3 +22,5 @@ export class Card extends BoardNode<CardProps> {
 		return isContentElement(childNode);
 	}
 }
+
+export const isCard = (reference: unknown): reference is Card => reference instanceof Card;

@@ -13,11 +13,8 @@ import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
+import { handleNonExhaustiveSwitch } from './type-mapping';
 import { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps, ContentElementType } from './types';
-
-function handleNonExhaustiveSwitch(type: never): never {
-	throw new NotImplementedException(`unknown type '${JSON.stringify(type)}' of element`);
-}
 
 @Injectable()
 export class BoardNodeFactory {
@@ -41,7 +38,7 @@ export class BoardNodeFactory {
 	}
 
 	buildContentElement(type: ContentElementType): AnyContentElement {
-		let element: AnyContentElement;
+		let element!: AnyContentElement;
 
 		switch (type) {
 			case ContentElementType.FILE:

@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ContentElementType } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 
@@ -10,6 +10,7 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	handleNonExhaustiveSwitch,
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -43,7 +44,7 @@ export class ContentElementCreateService {
 				element = this.buildCollaborativeTextEditor();
 				break;
 			default:
-				throw new NotImplementedException(`unknown type of element`);
+				handleNonExhaustiveSwitch(type);
 		}
 
 		return element;

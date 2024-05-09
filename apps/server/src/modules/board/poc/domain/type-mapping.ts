@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -43,4 +44,8 @@ export const getBoardNodeType = <T extends AnyBoardNode>(boardNode: T): BoardNod
 		throw new Error(`Cannot get type of board node class '${boardNode.constructor.name}'`);
 	}
 	return type as BoardNodeType;
+};
+
+export const handleNonExhaustiveSwitch = (type: never): never => {
+	throw new NotImplementedException(`unknown board node type '${JSON.stringify(type)}'`);
 };
