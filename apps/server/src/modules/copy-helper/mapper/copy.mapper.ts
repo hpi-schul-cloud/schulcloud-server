@@ -5,7 +5,7 @@ import { TaskCopyParentParams } from '@modules/task/types';
 import { LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CopyApiResponse } from '../dto/copy.response';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
+import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 export class CopyMapper {
 	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
@@ -45,20 +45,5 @@ export class CopyMapper {
 		};
 
 		return dto;
-	}
-
-	static mapElementsToTypes(element: CopyStatus, types: CopyElementType[] = []): CopyElementType[] {
-		const indexOfFound = types.indexOf(element.type);
-		if (indexOfFound === -1) {
-			types.push(element.type);
-		}
-
-		if (element.elements) {
-			element.elements.forEach((child) => {
-				this.mapElementsToTypes(child, types);
-			});
-		}
-
-		return types;
 	}
 }
