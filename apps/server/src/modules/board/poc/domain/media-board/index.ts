@@ -7,6 +7,5 @@ export {
 	// isMediaExternalToolElement,
 } from './media-external-tool-element.do';
 
-// TODO
-// export { MediaAvailableLine } from './media-available-line.do';
-// export { MediaAvailableLineElement } from './media-available-line-element.do';
+export { MediaAvailableLine } from './media-available-line.do';
+export { MediaAvailableLineElement } from './media-available-line-element.do';

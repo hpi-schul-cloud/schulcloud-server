@@ -1,33 +1,30 @@
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ContextExternalToolWithId } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import {
-	type AnyMediaContentElementDo,
-	BoardDoAuthorizable,
-	MediaBoard,
-	MediaExternalToolElement,
-	type MediaLine,
-} from '@shared/domain/domainobject';
 import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaElementService, MediaLineService } from '../../service';
-import { BoardNodePermissionService } from '../../poc/service';
+
+import { MediaBoard, MediaExternalToolElement, MediaLine } from '../../poc/domain';
+import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
+import { MediaBoardService } from '../../poc/service/media-board';
+import { AnyMediaBoardNode } from '../../poc/domain/media-board/types/any-media-board-node';
+import { MediaBoardFactory } from '../../poc/domain/media-board/media-board-factory';
 
 @Injectable()
 export class MediaElementUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly mediaLineService: MediaLineService,
-		private readonly mediaElementService: MediaElementService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
+		private readonly mediaBoardFactory: MediaBoardFactory,
 		private readonly schoolExternalToolService: SchoolExternalToolService
 	) {}
 
@@ -39,15 +36,18 @@ export class MediaElementUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const targetLine: MediaLine = await this.mediaLineService.findById(targetLineId);
+		const targetLine: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, targetLineId);
 
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
 
 		await this.boardNodePermissionService.checkPermission(user.id, targetLine, Action.write);
 
-		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
+		const element: MediaExternalToolElement = await this.boardNodeService.findByClassAndId(
+			MediaExternalToolElement,
+			elementId
+		);
 
-		await this.mediaElementService.move(element, targetLine, targetPosition);
+		await this.boardNodeService.move(elementId, targetLineId, targetPosition);
 	}
 
 	private checkFeatureEnabled() {
@@ -64,13 +64,14 @@ export class MediaElementUc {
 	): Promise<MediaExternalToolElement> {
 		this.checkFeatureEnabled();
 
-		const line: MediaLine = await this.mediaLineService.findById(lineId);
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
 		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-		const mediaBoard: MediaBoard = await this.mediaBoardService.findByDescendant(line);
+		const rootId = line.ancestorIds[0];
+		const mediaBoard: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, rootId);
 
 		const schoolExternalTool: SchoolExternalToolWithId = await this.schoolExternalToolService.findById(
 			schoolExternalToolId
@@ -79,13 +80,16 @@ export class MediaElementUc {
 		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
 
 		const createdContexExternalTool: ContextExternalToolWithId =
-			await this.mediaElementService.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
+			await this.mediaBoardService.createContextExternalToolForMediaBoard(
+				user.school.id,
+				schoolExternalTool,
+				mediaBoard
+			);
 
-		const createdElement: AnyMediaContentElementDo = await this.mediaElementService.createExternalToolElement(
-			line,
-			position,
-			createdContexExternalTool
-		);
+		const createdElement: AnyMediaBoardNode = this.mediaBoardFactory.buildExternalToolElement({
+			contextExternalToolId: createdContexExternalTool.id,
+		});
+		await this.mediaBoardService.addToMediaLine(line, createdElement, position);
 
 		return createdElement;
 	}
@@ -94,7 +98,7 @@ export class MediaElementUc {
 		mediaBoard: MediaBoard,
 		schoolExternalTool: SchoolExternalToolWithId
 	): Promise<void> {
-		const exists = await this.mediaElementService.checkElementExists(mediaBoard, schoolExternalTool);
+		const exists = await this.mediaBoardService.checkElementExists(mediaBoard, schoolExternalTool);
 
 		if (exists) {
 			throw new MediaBoardElementAlreadyExistsLoggableException(mediaBoard.id, schoolExternalTool.id);
@@ -103,11 +107,11 @@ export class MediaElementUc {
 
 	public async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
-
-		const element: AnyMediaContentElementDo = await this.mediaElementService.findById(elementId);
+		// TODO in case you have more than one element, implement and use findContentElementById in media-board.service.ts
+		const element = await this.boardNodeService.findByClassAndId(MediaExternalToolElement, elementId);
 
 		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
 
-		await this.mediaElementService.delete(element);
+		await this.boardNodeService.delete(element);
 	}
 }

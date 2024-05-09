@@ -2,20 +2,22 @@ import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modu
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { BoardExternalReferenceType, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { BoardExternalReference, BoardExternalReferenceType, MediaBoard, MediaLine } from '../../poc/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaLineService } from '../../service';
-import { BoardNodePermissionService } from '../../poc/service';
+import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
+import { MediaBoardFactory } from '../../poc/domain/media-board/media-board-factory';
+import { MediaBoardService } from '../../poc/service/media-board';
 
 @Injectable()
 export class MediaBoardUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly mediaBoardService: MediaBoardService,
-		private readonly mediaLineService: MediaLineService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly mediaBoardFactory: MediaBoardFactory,
+		private readonly mediaBoardService: MediaBoardService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
 
@@ -25,19 +27,21 @@ export class MediaBoardUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.read([]));
 
-		const boardIds: EntityId[] = await this.mediaBoardService.findIdsByExternalReference({
+		const boardIds: EntityId[] = await this.boardNodeService.findIdsByExternalReference({
 			type: BoardExternalReferenceType.User,
 			id: user.id,
 		});
 
 		let board: MediaBoard;
 		if (!boardIds.length) {
-			board = await this.mediaBoardService.create({
+			const context: BoardExternalReference = {
 				type: BoardExternalReferenceType.User,
 				id: user.id,
-			});
+			};
+			board = this.mediaBoardFactory.buildMediaBoard({ context });
+			await this.boardNodeService.addRoot(board);
 		} else {
-			board = await this.mediaBoardService.findById(boardIds[0]);
+			board = await this.boardNodeService.findByClassAndId(MediaBoard, boardIds[0]);
 		}
 
 		return board;
@@ -46,11 +50,12 @@ export class MediaBoardUc {
 	public async createLine(userId: EntityId, boardId: EntityId): Promise<MediaLine> {
 		this.checkFeatureEnabled();
 
-		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
 		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		const line: MediaLine = await this.mediaLineService.create(board);
+		const line = this.mediaBoardFactory.buildMediaLine({});
+		await this.mediaBoardService.addToBoard(board, line);
 
 		return line;
 	}
