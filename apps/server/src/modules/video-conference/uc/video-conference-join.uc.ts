@@ -31,24 +31,19 @@ export class VideoConferenceJoinUc {
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
 			role,
-		})
-			.withUserId(currentUserId)
-			.asGuest(isGuest);
+		}).withUserId(currentUserId);
 
 		const videoConference: VideoConferenceDO = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 			scope.id,
 			scope.scope
 		);
 
-		if (videoConference.options.everybodyJoinsAsModerator && !isGuest) {
-			joinBuilder.withRole(BBBRole.MODERATOR);
+		if (isGuest) {
+			joinBuilder.asGuest(true);
 		}
 
-		if (
-			videoConference.options.moderatorMustApproveJoinRequests &&
-			!videoConference.options.everybodyJoinsAsModerator
-		) {
-			joinBuilder.asGuest(true);
+		if (videoConference.options.everybodyJoinsAsModerator && !isGuest) {
+			joinBuilder.withRole(BBBRole.MODERATOR);
 		}
 
 		if (!videoConference.options.moderatorMustApproveJoinRequests && isGuest) {

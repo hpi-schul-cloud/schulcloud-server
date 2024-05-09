@@ -784,6 +784,7 @@
 			"description": "Etherpad feature enabled"
 		},
 		"ETHERPAD_API_KEY": {
+			"default": "",
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
 		},
@@ -828,7 +829,7 @@
 			"default": 28800,
 			"description": "Number of seconds after an etherpad cookie expires."
 		},
-		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+		"ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
@@ -1171,6 +1172,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
+		},
+		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board web socket feature."
 		},
 		"FEATURE_BOARD_LAYOUT_ENABLED": {
 			"type": "boolean",
@@ -1600,6 +1606,12 @@
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
+			"required": [
+				"API_URL",
+				"TOKEN_ENDPOINT",
+				"CLIENT_ID",
+				"CLIENT_SECRET"
+			],
 			"properties": {
 				"API_URL": {
 					"type": "string",
@@ -1665,6 +1677,27 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the provisioning of other groupusers"
+		},
+		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the storing and checking media license of users"
+		},
+		"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": {
+			"type": "string",
+			"default": "",
+			"description": "URL for fetching lizenz info from moin.schule schulconnex",
+			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
+		},
+		"BOARD_COLLABORATION_URI": {
+			"type": "string",
+			"default": "ws://localhost:4450",
+			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_NEW_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new layout feature"
 		}
 	},
 	"required": []

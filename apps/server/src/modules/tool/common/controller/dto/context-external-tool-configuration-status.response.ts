@@ -17,9 +17,16 @@ export class ContextExternalToolConfigurationStatusResponse {
 
 	@ApiProperty({
 		type: Boolean,
-		description: 'True, if a configured parameter on the context external tool is missing a value',
+		description: 'True, if a mandatory parameter on the context external tool is missing a value',
 	})
 	isIncompleteOnScopeContext: boolean;
+
+	@ApiProperty({
+		type: Boolean,
+		description:
+			'True, if a optional parameter on the context external tool is missing a value. This is happening, when course is copied.',
+	})
+	isIncompleteOperationalOnScopeContext: boolean;
 
 	@ApiProperty({
 		type: Boolean,
@@ -31,6 +38,7 @@ export class ContextExternalToolConfigurationStatusResponse {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
 		this.isIncompleteOnScopeContext = props.isIncompleteOnScopeContext;
+		this.isIncompleteOperationalOnScopeContext = props.isIncompleteOperationalOnScopeContext;
 		this.isDeactivated = props.isDeactivated;
 	}
 }

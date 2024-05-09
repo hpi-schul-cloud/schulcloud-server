@@ -15,6 +15,7 @@ export class CopyHelperService {
 		}
 
 		const elementsStatuses = elements.map((el) => el.status);
+
 		const filtered = elementsStatuses.filter((status) => status !== CopyStatusEnum.NOT_DOING);
 
 		if (filtered.length > 0) {

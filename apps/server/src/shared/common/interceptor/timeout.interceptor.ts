@@ -1,10 +1,11 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, RequestTimeoutException } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
-import { InterceptorConfig } from './interfaces';
 import { TypeGuard } from '../guards';
+import { RequestTimeoutLoggableException } from '../loggable-exception';
+import { InterceptorConfig } from './interfaces';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -27,11 +28,13 @@ export class TimeoutInterceptor implements NestInterceptor {
 
 		TypeGuard.checkNumber(timeoutMS);
 
+		const { url } = context.switchToHttp().getRequest<Request>();
+
 		return next.handle().pipe(
 			timeout(timeoutMS),
 			catchError((err: Error) => {
 				if (err instanceof TimeoutError) {
-					return throwError(() => new RequestTimeoutException());
+					return throwError(() => new RequestTimeoutLoggableException(url));
 				}
 				return throwError(() => err);
 			})

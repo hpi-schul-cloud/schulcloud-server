@@ -69,7 +69,7 @@ describe('passwordRecovery service', () => {
 		const result = await passwordRecovery.findOne({
 			account: savedAccount.id,
 		});
-		assert.equal(result.account.toHexString(), savedAccount.id);
+		assert.equal(result.account.toString(), savedAccount.id);
 	});
 
 	it('registered the passwordRecovery service', () => {

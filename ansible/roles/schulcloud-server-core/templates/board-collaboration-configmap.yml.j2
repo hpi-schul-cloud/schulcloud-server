@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: board-collaboration-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: board-collaboration
+data:
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
+  EXIT_ON_ERROR: "true"
