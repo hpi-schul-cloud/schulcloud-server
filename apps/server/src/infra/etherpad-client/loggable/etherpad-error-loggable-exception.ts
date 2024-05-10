@@ -20,6 +20,7 @@ export class EtherpadErrorLoggableException extends InternalServerErrorException
 			data: {
 				userId,
 				parentId,
+				etherpadMessage: this.exceptionOptions.description,
 			},
 		};
 
