@@ -7058,6 +7058,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UsersList.html" data-type="entity-link" >UsersList</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserSourceOptionsEntity.html" data-type="entity-link" >UserSourceOptionsEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UsersSearchQueryParams.html" data-type="entity-link" >UsersSearchQueryParams</a>
                             </li>
                             <li class="link">
@@ -9311,6 +9314,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserSortQuery.html" data-type="entity-link" >UserSortQuery</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserSourceOptionsEntityProps.html" data-type="entity-link" >UserSourceOptionsEntityProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UsersSyncOptions.html" data-type="entity-link" >UsersSyncOptions</a>

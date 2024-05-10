@@ -371,6 +371,7 @@ import { ConsentEntity } from &#x27;./consent&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
 import { SchoolEntity, SchoolRoles } from &#x27;./school.entity&#x27;;
 import { UserParentsEntity } from &#x27;./user-parents.entity&#x27;;
+import { UserSourceOptionsEntity } from &#x27;./user-source-options-entity&#x27;;
 
 export interface UserProperties {
 	email: string;
@@ -392,6 +393,8 @@ export interface UserProperties {
 	parents?: UserParentsEntity[];
 	lastSyncedAt?: Date;
 	consent?: ConsentEntity;
+	source?: string;
+	sourceOptions?: UserSourceOptionsEntity;
 }
 
 interface UserInfo {
@@ -485,6 +488,13 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	lastSyncedAt?: Date;
 
+	@Property({ nullable: true })
+	@Index()
+	source?: string;
+
+	@Embedded(() &#x3D;&gt; UserSourceOptionsEntity, { object: true, nullable: true })
+	sourceOptions?: UserSourceOptionsEntity;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName &#x3D; props.firstName;
@@ -506,6 +516,13 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.parents &#x3D; props.parents;
 		this.lastSyncedAt &#x3D; props.lastSyncedAt;
 		this.consent &#x3D; props.consent;
+		if (props.source !&#x3D;&#x3D; undefined) {
+			this.source &#x3D; props.source;
+		}
+
+		if (props.sourceOptions !&#x3D;&#x3D; undefined) {
+			this.sourceOptions &#x3D; props.sourceOptions;
+		}
 	}
 
 	public resolvePermissions(): string[] {
