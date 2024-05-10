@@ -4,13 +4,14 @@ import { AxiosResponse } from 'axios';
 import {
 	InlineResponse200,
 	InlineResponse2001,
+	InlineResponse20013,
 	InlineResponse2002,
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
 	InlineResponse2006Data,
 } from './etherpad-api-client';
-import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
+import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import {
 	AuthorId,
 	EtherpadErrorType,
@@ -28,7 +29,8 @@ export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
-		private readonly authorApi: AuthorApi
+		private readonly authorApi: AuthorApi,
+		private readonly padApi: PadApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
@@ -47,6 +49,29 @@ export class EtherpadClientAdapter {
 			return response;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { userId }, error);
+		}
+	}
+
+	public async listPadsOfAuthor(authorId: AuthorId): Promise<PadId[]> {
+		const response = await this.tryGetPadsOfAuthor(authorId);
+		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { authorId });
+
+		if (!this.isObject(pads)) {
+			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
+		}
+
+		const padIds = pads?.padIDs as PadId[];
+
+		return padIds;
+	}
+
+	private async tryGetPadsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2002>> {
+		try {
+			const response = await this.authorApi.listPadsOfAuthorUsingGET(authorId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
 		}
 	}
 
@@ -218,6 +243,63 @@ export class EtherpadClientAdapter {
 			return response;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { groupId }, error);
+		}
+	}
+
+	public async listAuthorsOfPad(padId: PadId): Promise<AuthorId[]> {
+		const response = await this.tryGetAuthorsOfPad(padId);
+		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
+
+		if (!this.isObject(authors)) {
+			throw new InternalServerErrorException('Etherpad listAuthorsOfPad response is not an object');
+		}
+
+		const authorIds = authors?.authorIDs as AuthorId[];
+
+		return authorIds;
+	}
+
+	private async tryGetAuthorsOfPad(padId: PadId): Promise<AxiosResponse<InlineResponse20013>> {
+		try {
+			const response = await this.padApi.listAuthorsOfPadUsingGET(padId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
+		}
+	}
+
+	public async deleteSession(sessionId: SessionId): Promise<InlineResponse2001 | undefined> {
+		const response = await this.tryDeleteSession(sessionId);
+		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
+
+		return responseData;
+	}
+
+	private async tryDeleteSession(sessionId: SessionId): Promise<AxiosResponse<InlineResponse2001>> {
+		try {
+			const response = await this.sessionApi.deleteSessionUsingPOST(sessionId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
+		}
+	}
+
+	public async deletePad(padId: EntityId): Promise<InlineResponse2001 | undefined> {
+		const response = await this.tryDeletePad(padId);
+		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { padId });
+
+		return responseData;
+	}
+
+	private async tryDeletePad(padId: PadId): Promise<AxiosResponse<InlineResponse2001>> {
+		try {
+			const response = await this.padApi.deletePadUsingPOST(padId);
+
+			return response;
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { padId }, error);
 		}
 	}
 
