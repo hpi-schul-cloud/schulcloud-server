@@ -67,6 +67,8 @@ describe('user repo', () => {
 					'email',
 					'emailSearchValues',
 					'school',
+					'source',
+					'sourceOptions',
 					'_id',
 					'ldapDn',
 					'externalId',
@@ -213,6 +215,8 @@ describe('user repo', () => {
 					'previousExternalId',
 					'birthday',
 					'consent',
+					'source',
+					'sourceOptions',
 				].sort()
 			);
 		});
