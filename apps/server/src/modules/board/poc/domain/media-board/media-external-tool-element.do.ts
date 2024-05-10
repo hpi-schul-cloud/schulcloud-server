@@ -14,6 +14,5 @@ export class MediaExternalToolElement extends BoardNode<MediaExternalToolElement
 
 // export type MediaExternalToolElementInitProps = Omit<MediaExternalToolElementProps, keyof BoardCompositeProps>;
 
-// export function isMediaExternalToolElement(reference: unknown): reference is MediaExternalToolElement {
-//	return reference instanceof MediaExternalToolElement;
-// }
+export const isMediaExternalToolElement = (reference: unknown): reference is MediaExternalToolElement =>
+	reference instanceof MediaExternalToolElement;

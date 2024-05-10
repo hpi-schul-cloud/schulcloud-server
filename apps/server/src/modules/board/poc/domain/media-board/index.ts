@@ -4,7 +4,7 @@ export {
 	MediaExternalToolElement,
 	// TODO check this
 	// MediaExternalToolElementInitProps,
-	// isMediaExternalToolElement,
+	isMediaExternalToolElement,
 } from './media-external-tool-element.do';
 
 export { MediaAvailableLine } from './media-available-line.do';

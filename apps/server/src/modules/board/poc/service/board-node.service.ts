@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import type { AnyBoardDo } from '@shared/domain/domainobject';
 import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement, MediaBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
+import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
@@ -11,7 +11,10 @@ type WithCompleted<T> = Extract<T, { completed: unknown }>;
 
 @Injectable()
 export class BoardNodeService {
-	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly boardNodeDeleteHooksService: BoardNodeDeleteHooksService
+	) {}
 
 	async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
 		await this.boardNodeRepo.persistAndFlush(boardNode);
@@ -115,5 +118,6 @@ export class BoardNodeService {
 
 	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		await this.boardNodeRepo.removeAndFlush(boardNode);
+		await this.boardNodeDeleteHooksService.afterDelete(boardNode);
 	}
 }
