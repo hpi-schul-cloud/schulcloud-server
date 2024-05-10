@@ -464,6 +464,7 @@ export interface DeletionRequestEntityProps {
 @Entity({ tableName: &#x27;deletionrequests&#x27; })
 @Unique({ properties: [&#x27;targetRefId&#x27;, &#x27;targetRefDomain&#x27;] })
 @Index({ properties: [&#x27;createdAt&#x27;] })
+@Index({ properties: [&#x27;updatedAt&#x27;] })
 export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Index({ options: { expireAfterSeconds: SECONDS_OF_90_DAYS } })
