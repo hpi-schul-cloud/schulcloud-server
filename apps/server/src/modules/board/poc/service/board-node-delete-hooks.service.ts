@@ -15,10 +15,9 @@ import {
 	isExternalToolElement,
 	isFileElement,
 	isLinkElement,
-	isMediaExternalToolElement,
 	LinkElement,
-	MediaExternalToolElement,
 } from '../domain';
+import { isMediaExternalToolElement, MediaExternalToolElement } from '../domain/media-board';
 
 @Injectable()
 export class BoardNodeDeleteHooksService {
