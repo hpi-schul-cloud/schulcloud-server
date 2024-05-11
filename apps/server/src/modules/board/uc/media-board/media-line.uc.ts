@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
-import { MediaBoard, MediaLine } from '../../poc/domain/media-board';
 import type { MediaBoardConfig } from '../../media-board.config';
+import { MediaBoard, MediaLine } from '../../poc/domain';
 import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
 
 @Injectable()

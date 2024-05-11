@@ -5,8 +5,13 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardExternalReference, BoardExternalReferenceType } from '../../poc/domain';
-import { MediaBoard, MediaBoardFactory, MediaLine } from '../../poc/domain/media-board';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	MediaBoard,
+	MediaBoardFactory,
+	MediaLine,
+} from '../../poc/domain';
 import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
 import { MediaBoardService } from '../../poc/service/media-board';
 

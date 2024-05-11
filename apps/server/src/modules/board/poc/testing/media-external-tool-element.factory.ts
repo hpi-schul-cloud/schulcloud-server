@@ -1,8 +1,7 @@
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { BaseFactory } from '@shared/testing';
-import { MediaExternalToolElementProps, ROOT_PATH } from '../domain';
-import { MediaExternalToolElement } from '../domain/media-board';
+import { MediaExternalToolElement, MediaExternalToolElementProps, ROOT_PATH } from '../domain';
 
 export const mediaExternalToolElementFactory = BaseFactory.define<
 	MediaExternalToolElement,

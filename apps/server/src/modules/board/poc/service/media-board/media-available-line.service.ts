@@ -8,12 +8,7 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import {
-	MediaAvailableLine,
-	MediaAvailableLineElement,
-	MediaBoard,
-	MediaExternalToolElement,
-} from '../../domain/media-board';
+import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaBoardService } from './media-board.service';
 
 @Injectable()

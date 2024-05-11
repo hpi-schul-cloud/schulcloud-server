@@ -5,16 +5,16 @@ import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { ContextExternalTool, ContextExternalToolWithId, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolRefDO, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
-import { BoardNodeRepo } from '../../repo';
 import {
 	AnyMediaBoardNode,
+	BoardExternalReference,
 	isMediaBoard,
 	isMediaExternalToolElement,
 	MediaBoard,
 	MediaExternalToolElement,
 	MediaLine,
-} from '../../domain/media-board';
-import { BoardExternalReference } from '../../domain';
+} from '../../domain';
+import { BoardNodeRepo } from '../../repo';
 
 @Injectable()
 export class MediaBoardService {

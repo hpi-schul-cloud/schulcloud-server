@@ -19,11 +19,13 @@ import {
 	getBoardNodeType,
 	handleNonExhaustiveSwitch,
 	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '../domain';
-import { MediaBoard, MediaExternalToolElement, MediaLine } from '../domain/media-board';
 
 export interface CopyContext {
 	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]>;

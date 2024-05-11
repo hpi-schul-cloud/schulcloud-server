@@ -9,8 +9,7 @@ import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-
-import { MediaBoard, MediaBoardFactory, MediaExternalToolElement, MediaLine } from '../../poc/domain/media-board';
+import { MediaBoard, MediaBoardFactory, MediaExternalToolElement, MediaLine } from '../../poc/domain';
 import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
 import { MediaBoardService } from '../../poc/service/media-board';
 
