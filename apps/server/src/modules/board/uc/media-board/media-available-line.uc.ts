@@ -1,4 +1,4 @@
-import { AuthorizationService, Action } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -7,10 +7,9 @@ import { MediaAvailableLine } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaAvailableLineService } from '../../service';
-import { BoardNodePermissionService } from '../../poc/service/board-node-permission.service';
-import { BoardNodeService } from '../../poc/service';
 import { MediaBoard } from '../../poc/domain/media-board';
+import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
+import { MediaAvailableLineService } from '../../poc/service/media-board';
 
 @Injectable()
 export class MediaAvailableLineUc {
@@ -32,7 +31,7 @@ export class MediaAvailableLineUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
-			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user.school.id, mediaBoard);
+			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
 
 		const availableExternalTools: ExternalTool[] =
 			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);

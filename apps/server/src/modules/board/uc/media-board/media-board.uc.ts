@@ -4,10 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
-import { BoardExternalReference, BoardExternalReferenceType, MediaBoard, MediaLine } from '../../poc/domain';
 import type { MediaBoardConfig } from '../../media-board.config';
+import { BoardExternalReference, BoardExternalReferenceType } from '../../poc/domain';
+import { MediaBoard, MediaBoardFactory, MediaLine } from '../../poc/domain/media-board';
 import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
-import { MediaBoardFactory } from '../../poc/domain/media-board/media-board-factory';
 import { MediaBoardService } from '../../poc/service/media-board';
 
 @Injectable()
@@ -27,21 +27,19 @@ export class MediaBoardUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.read([]));
 
-		const boardIds: EntityId[] = await this.boardNodeService.findIdsByExternalReference({
+		const context: BoardExternalReference = {
 			type: BoardExternalReferenceType.User,
 			id: user.id,
-		});
+		};
+
+		const existingBoards: MediaBoard[] = await this.mediaBoardService.findByExternalReference(context);
 
 		let board: MediaBoard;
-		if (!boardIds.length) {
-			const context: BoardExternalReference = {
-				type: BoardExternalReferenceType.User,
-				id: user.id,
-			};
+		if (!existingBoards.length) {
 			board = this.mediaBoardFactory.buildMediaBoard({ context });
 			await this.boardNodeService.addRoot(board);
 		} else {
-			board = await this.boardNodeService.findByClassAndId(MediaBoard, boardIds[0]);
+			board = existingBoards[0];
 		}
 
 		return board;
@@ -54,7 +52,7 @@ export class MediaBoardUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		const line = this.mediaBoardFactory.buildMediaLine({});
+		const line = this.mediaBoardFactory.buildMediaLine({ title: '' });
 		await this.mediaBoardService.addToBoard(board, line);
 
 		return line;

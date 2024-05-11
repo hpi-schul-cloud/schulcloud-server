@@ -80,21 +80,6 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 
 	abstract canHaveChild(childNode: AnyBoardNode): boolean;
 
-	getChildrenOfType<U extends AnyBoardNode>(type: new (...args: U[]) => U): U[] {
-		const childrenOfType: U[] = [];
-		const { children } = this.props;
-		for (const child of children) {
-			if (child.children) {
-				childrenOfType.push(...child.getChildrenOfType(type));
-			}
-			if (child instanceof type) {
-				childrenOfType.push(child);
-			}
-		}
-
-		return childrenOfType;
-	}
-
 	removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);
 		this.props.children.forEach((c, pos) => c.updatePosition(pos));

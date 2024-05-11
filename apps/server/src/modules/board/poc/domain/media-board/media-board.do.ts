@@ -14,3 +14,5 @@ export class MediaBoard extends BoardNode<MediaBoardProps> {
 		return allowed;
 	}
 }
+
+export const isMediaBoard = (reference: unknown): reference is MediaBoard => reference instanceof MediaBoard;

@@ -4,7 +4,9 @@ import { EntityId } from '@shared/domain/types';
 
 import { ROOT_PATH } from '../path-utils';
 import { BoardExternalReference, BoardNodeProps } from '../types';
-import { MediaBoard, MediaLine, MediaExternalToolElement } from '.';
+import { MediaBoard } from './media-board.do';
+import { MediaExternalToolElement } from './media-external-tool-element.do';
+import { MediaLine } from './media-line.do';
 
 @Injectable()
 export class MediaBoardFactory {

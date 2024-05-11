@@ -9,7 +9,6 @@ export * from './drawing-element.do';
 export * from './external-tool-element.do';
 export * from './file-element.do';
 export * from './link-element.do';
-export * from './media-board';
 export * from './rich-text-element.do';
 export * from './submission-container-element.do';
 export * from './submission-item.do';
