@@ -1,3 +1,4 @@
+export * from './board-common-tool.service';
 export * from './board-context.service';
 export * from './board-node-authorizable.service';
 export * from './board-node-permission.service';

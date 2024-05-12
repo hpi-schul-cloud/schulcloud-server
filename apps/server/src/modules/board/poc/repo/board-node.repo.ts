@@ -57,6 +57,25 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
+	async findByContextExternalToolIds(contextExternalToolIds: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
+		const entities = await this.em.find(BoardNodeEntity, {
+			contextExternalToolId: { $in: contextExternalToolIds },
+		});
+
+		// TODO refactor descendants mapping
+		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes = entities.map((props) => {
+			const children = descendantsMap[pathOfChildren(props)];
+			const builder = new TreeBuilder(children);
+			const boardNode = builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
 	// TODO maybe we don't need that method
 	async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
