@@ -10,7 +10,10 @@
     `board/repo/board-node.repo.spec.ts` and `board/repo/board-do.repo.spec.ts` 
     to `board/poc/repo/board-node.repo.spec.ts`
 [ ] BoardNode (composite domain object)
-  [+] `canHaveChild()`, see `BoardComposite.isAllowedAsChild()` 
+  [+] `canHaveChild()`, see `BoardComposite.isAllowedAsChild()`
+  [+] `getChildrenOfType`
+      - was only used by media board
+      - moved to `MediaBoardService.findMediaElements`
 [+] Create
   [+] `BoardNodeFactory`
   [+] `BoardNodeService.addRoot`, `BoardNodeService.addToParent`
