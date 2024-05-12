@@ -9,7 +9,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	MediaBoard,
-	MediaBoardFactory,
+	MediaBoardNodeFactory,
 	MediaLine,
 } from '../../poc/domain';
 import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
@@ -21,7 +21,7 @@ export class MediaBoardUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
-		private readonly mediaBoardFactory: MediaBoardFactory,
+		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>
 	) {}
@@ -41,7 +41,7 @@ export class MediaBoardUc {
 
 		let board: MediaBoard;
 		if (!existingBoards.length) {
-			board = this.mediaBoardFactory.buildMediaBoard({ context });
+			board = this.mediaBoardNodeFactory.buildMediaBoard({ context });
 			await this.boardNodeService.addRoot(board);
 		} else {
 			board = existingBoards[0];
@@ -57,7 +57,7 @@ export class MediaBoardUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		const line = this.mediaBoardFactory.buildMediaLine({ title: '' });
+		const line = this.mediaBoardNodeFactory.buildMediaLine({ title: '' });
 		await this.mediaBoardService.addToBoard(board, line);
 
 		return line;

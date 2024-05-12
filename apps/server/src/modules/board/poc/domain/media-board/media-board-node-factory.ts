@@ -9,7 +9,7 @@ import { MediaExternalToolElement } from './media-external-tool-element.do';
 import { MediaLine } from './media-line.do';
 
 @Injectable()
-export class MediaBoardFactory {
+export class MediaBoardNodeFactory {
 	buildMediaBoard(props: { context: BoardExternalReference }): MediaBoard {
 		const mediaBoard = new MediaBoard({ ...this.getBaseProps(), ...props });
 

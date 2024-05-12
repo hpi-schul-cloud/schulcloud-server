@@ -9,7 +9,7 @@ import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoard, MediaBoardFactory, MediaExternalToolElement, MediaLine } from '../../poc/domain';
+import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../poc/domain';
 import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
 import { MediaBoardService } from '../../poc/service/media-board';
 
@@ -21,7 +21,7 @@ export class MediaElementUc {
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
-		private readonly mediaBoardFactory: MediaBoardFactory,
+		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
 		private readonly schoolExternalToolService: SchoolExternalToolService
 	) {}
 
@@ -69,7 +69,7 @@ export class MediaElementUc {
 				mediaBoard
 			);
 
-		const createdElement: MediaExternalToolElement = this.mediaBoardFactory.buildExternalToolElement({
+		const createdElement: MediaExternalToolElement = this.mediaBoardNodeFactory.buildExternalToolElement({
 			contextExternalToolId: createdContexExternalTool.id,
 		});
 		await this.mediaBoardService.addToMediaLine(line, createdElement, position);

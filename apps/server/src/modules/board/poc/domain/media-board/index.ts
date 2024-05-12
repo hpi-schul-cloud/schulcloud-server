@@ -1,5 +1,5 @@
 export { MediaBoard, isMediaBoard } from './media-board.do';
-export { MediaBoardFactory } from './media-board-factory';
+export { MediaBoardNodeFactory } from './media-board-node-factory';
 export { MediaLine } from './media-line.do';
 export {
 	MediaExternalToolElement,
