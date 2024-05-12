@@ -1,40 +1,38 @@
 [ ] BoardNodeRepo additional methods
-  [ ] `findById` - depth
-  [ ] `findByIds`
-  [ ] `getTitlesByIds`
-  [ ] `countBoardUsageForExternalTools`
-  [ ] (`findParentOfId`)
-[ ] refactor unit tests from 
+  [+] `findById` - depth
+  [+] `findByIds`
+  [+] `getTitlesByIds`
+      - `ColumnBoardCopyService.deriveColumnBoardTitle` => refactored to `ColumnBoardTitleService.deriveColumnBoardTitle`
+      - `ColumnBoardService.getBoardObjectTitlesById` => not used  
+  [+] `countBoardUsageForExternalTools`
+      - moved to `service/board-common-tool.service.ts`
+  [ ] refactor unit tests from 
     `board/repo/board-node.repo.spec.ts` and `board/repo/board-do.repo.spec.ts` 
     to `board/poc/repo/board-node.repo.spec.ts`
-[ ] `BoardNode.isAllowedAsChild()`, see `BoardComposite.isAllowedAsChild()`
-
-[ ] recursive delete
-[ ] delete hooks
-
-interface DeleteHandler {
-  async delete(AnyBoardNode);
-}
-
-const node = repo.findById()
-node.delete(deleteHandler: DeleteHandler)
-
-Node {
-  delete(deleteHandler: DeleteHandler) {
-    this.props.children.forEach((child) => child.delete(deleteHandler));
-    // TODO remove from domain object
-    deletHandler.delete(this); // remove from Unit of Work
-  }
-}
-
-Domain Objects
-
-- Card
-  - title?
-  - height
-
-ColumnBoard
-  - title
-  - context
-  - visibility
+[ ] BoardNode (composite domain object)
+  [+] `canHaveChild()`, see `BoardComposite.isAllowedAsChild()` 
+[+] Create
+  [+] `BoardNodeFactory`
+  [+] `BoardNodeService.addRoot`, `BoardNodeService.addToParent`
+  [+] `MediaBoardNodeFactory`
+  [+] `MediaBoardService.addToBoard`, `MediaBoardService.addToMediaLine`
+[ ] Update 
+  [+] `BoardNodeService.update<trait>` methods
+  [+] `ContentElementUpdateService.updateContent`
+[ ] Move
+  [+] `BoardNodeService.move`
+[ ] Delete
+  [+] recursive delete
+  [+] delete hooks
+[ ] Copy
+  [+] board node copy
+  [+] column board copy
+[ ] ColumnBoardService
+  [ ] `findByDescendant`
+      - used by tools `AutoContextNameStrategy` TODO refactor call
+      - moved to `BoardCommonToolService.findByDescendant`
+  [+] `deleteByCourseId`
+      - used by `/src/services/user-group/hooks/courses.js#L190`
+  [+] `deleteByExternalReference`
+      - was used by `UserDeletedEventHandler` => refactored to `findByExternalReference`
 
