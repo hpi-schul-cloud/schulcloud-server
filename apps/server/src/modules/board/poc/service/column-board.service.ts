@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReference, ColumnBoard, isColumnBoard } from '../domain';
+import { EntityId } from '@shared/domain/types';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 
 @Injectable()
@@ -12,5 +13,16 @@ export class ColumnBoardService {
 		const boards = boardNodes.filter((bn) => isColumnBoard(bn));
 
 		return boards as ColumnBoard[];
+	}
+
+	// called from feathers
+	// TODO remove when not needed anymore
+	async deleteByCourseId(courseId: EntityId): Promise<void> {
+		const boardNodes = await this.findByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: courseId,
+		});
+
+		await this.boardNodeRepo.removeAndFlush(boardNodes);
 	}
 }
