@@ -303,8 +303,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -740,7 +740,6 @@ export class RoomsController {
 	): Promise&lt;CopyApiResponse&gt; {
 		const copyStatus &#x3D; await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto &#x3D; CopyMapper.mapToResponse(copyStatus);
-		dto.elementsTypes &#x3D; CopyMapper.mapElementsToTypes(copyStatus);
 		return dto;
 	}
 
