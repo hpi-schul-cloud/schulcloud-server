@@ -44,8 +44,7 @@ export class GroupController {
 			currentUser.schoolId,
 			filterParams.type,
 			callerParams.calledFrom,
-			pagination.skip,
-			pagination.limit,
+			pagination,
 			sortingQuery.sortBy,
 			sortingQuery.sortOrder
 		);

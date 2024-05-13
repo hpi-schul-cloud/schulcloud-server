@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
-import { Permission, SortOrder } from '@shared/domain/interface';
+import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
@@ -39,8 +39,7 @@ export class ClassGroupUc {
 		schoolId: EntityId,
 		schoolYearQueryType?: SchoolYearQueryType,
 		calledFrom?: ClassRequestContext,
-		skip = 0,
-		limit?: number,
+		pagination?: Pagination,
 		sortBy: keyof ClassInfoDto = 'name',
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<ClassInfoDto>> {
@@ -72,7 +71,7 @@ export class ClassGroupUc {
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
 		);
 
-		const pageContent: ClassInfoDto[] = this.applyPagination(combinedClassInfo, skip, limit);
+		const pageContent: ClassInfoDto[] = this.applyPagination(combinedClassInfo, pagination?.skip, pagination?.limit);
 
 		const page: Page<ClassInfoDto> = new Page<ClassInfoDto>(pageContent, combinedClassInfo.length);
 
@@ -289,7 +288,7 @@ export class ClassGroupUc {
 		return systems;
 	}
 
-	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined): ClassInfoDto[] {
+	private applyPagination(combinedClassInfo: ClassInfoDto[], skip = 0, limit?: number): ClassInfoDto[] {
 		let page: ClassInfoDto[];
 
 		if (limit === -1) {
