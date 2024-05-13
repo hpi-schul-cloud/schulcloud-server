@@ -6,7 +6,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../account-config';
-import { Account, AccountSave } from '../domain/account';
+import { Account, AccountSave } from '../domain';
 import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()

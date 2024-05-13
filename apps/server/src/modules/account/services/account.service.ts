@@ -78,11 +78,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		let updateUser = false;
 		let updateAccount = false;
 
-		let accountPassword: string | undefined;
-		let accountUsername: string | undefined;
+		let newAccountPassword: string | undefined;
+		let newAccountUsername: string | undefined;
 
 		if (updateData.passwordNew) {
-			accountPassword = updateData.passwordNew;
+			newAccountPassword = updateData.passwordNew;
 			updateAccount = true;
 		}
 
@@ -90,7 +90,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			const newMail = updateData.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
-			accountUsername = newMail;
+			newAccountUsername = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -116,8 +116,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				const updateProps = new AccountSave({
 					id: account.id,
-					password: accountPassword,
-					username: accountUsername,
+					password: newAccountPassword,
+					username: newAccountUsername,
 				});
 
 				await this.save(updateProps);
