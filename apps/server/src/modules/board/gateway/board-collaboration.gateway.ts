@@ -113,9 +113,9 @@ export class BoardCollaborationGateway {
 	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
+			const room = await this.ensureUserInRoom(client, data.cardId);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
 			client.to(room).emit('delete-card-success', data);
 			client.emit('delete-card-success', data);
 		} catch (err) {

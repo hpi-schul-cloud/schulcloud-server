@@ -468,7 +468,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('delete-card-request', { cardId });
 				const success = await waitForEvent(ioClient, 'delete-card-success');
 
-				expect(success).toEqual(cardNodes[1].title);
+				expect(success).toEqual({ cardId });
 			});
 		});
 
