@@ -21,18 +21,14 @@ import { isEmail, isNotEmpty } from 'class-validator';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
-import { AccountServiceDb } from './account-db.service';
-import { AccountServiceIdm } from './account-idm.service';
-import { AbstractAccountService } from './account.service.abstract';
-import { AccountValidationService } from './account.validation.service';
 import {
-	IdmCallbackLoggableException,
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
 	DeletedUserDataLoggable,
 	DeletingAccountLoggable,
 	DeletingAccountWithUserIdLoggable,
 	DeletingUserDataLoggable,
+	IdmCallbackLoggableException,
 	SavedAccountLoggable,
 	SavingAccountLoggable,
 	UpdatedAccountPasswordLoggable,
@@ -43,6 +39,10 @@ import {
 	UpdatingLastFailedLoginLoggable,
 } from '../loggable';
 import { AccountRepo } from '../repo/account.repo';
+import { AccountServiceDb } from './account-db.service';
+import { AccountServiceIdm } from './account-idm.service';
+import { AbstractAccountService } from './account.service.abstract';
+import { AccountValidationService } from './account.validation.service';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -264,7 +264,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
-		if (!isNotEmpty(accountSave.username)) {
+		// if username is undefined or empty, throw error ✔
+		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
 		}
 

@@ -1,6 +1,6 @@
-import bcrypt from 'bcryptjs';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import bcrypt from 'bcryptjs';
 
 export interface AccountProps extends AuthorizableObject {
 	id: EntityId;
@@ -96,17 +96,18 @@ export class Account extends DomainObject<AccountProps> {
 	}
 
 	public async update(accountSave: AccountSave): Promise<void> {
-		this.props.userId = accountSave.userId;
-		this.props.systemId = accountSave.systemId;
-		this.props.username = accountSave.username;
-		this.props.activated = accountSave.activated;
-		this.props.expiresAt = accountSave.expiresAt;
-		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
+		this.props.userId = accountSave.userId ?? this.props.userId;
+		this.props.systemId = accountSave.systemId ?? this.props.systemId;
+		this.props.username = accountSave.username ?? this.props.username;
+		this.props.activated = accountSave.activated ?? this.props.activated;
+		this.props.expiresAt = accountSave.expiresAt ?? this.props.expiresAt;
+		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin ?? this.props.lasttriedFailedLogin;
+		this.props.credentialHash = accountSave.credentialHash ?? this.props.credentialHash;
+		this.props.token = accountSave.token ?? this.props.token;
+
 		if (accountSave.password) {
 			this.props.password = await this.encryptPassword(accountSave.password);
 		}
-		this.props.credentialHash = accountSave.credentialHash;
-		this.props.token = accountSave.token;
 	}
 
 	private encryptPassword(password: string): Promise<string> {
@@ -114,4 +115,40 @@ export class Account extends DomainObject<AccountProps> {
 	}
 }
 
-export type AccountSave = Omit<Account, 'id'> & Partial<Pick<Account, 'id'>>;
+export class AccountSave {
+	public id: string | undefined;
+
+	public userId: string | undefined;
+
+	public systemId: string | undefined;
+
+	public username: string | undefined;
+
+	public password: string | undefined;
+
+	public lasttriedFailedLogin: Date | undefined;
+
+	public activated: boolean | undefined;
+
+	public idmReferenceId: string | undefined;
+
+	public expiresAt: Date | undefined;
+
+	public token: string | undefined;
+
+	public credentialHash: string | undefined;
+
+	constructor(props: Readonly<AccountSave>) {
+		this.id = props.id;
+		this.userId = props.userId;
+		this.systemId = props.systemId;
+		this.username = props.username;
+		this.password = props.password;
+		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
+		this.activated = props.activated;
+		this.idmReferenceId = props.idmReferenceId;
+		this.expiresAt = props.expiresAt;
+		this.token = props.token;
+		this.credentialHash = props.credentialHash;
+	}
+}
