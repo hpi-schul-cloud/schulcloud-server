@@ -43,7 +43,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: course-export-import
-        image: {{ SCHULCLOUD_SERVER_IMAGE }}:file-export-import-{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
