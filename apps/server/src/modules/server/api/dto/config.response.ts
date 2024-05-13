@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerConfig } from '../..';
-import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
@@ -114,6 +114,9 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 
 	@ApiProperty()
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
 
 	@ApiProperty()
@@ -203,6 +206,12 @@ export class ConfigResponse {
 	@ApiProperty()
 	FEATURE_MEDIA_SHELF_ENABLED: boolean;
 
+	@ApiProperty()
+	BOARD_COLLABORATION_URI: string;
+
+	@ApiProperty()
+	FEATURE_NEW_LAYOUT_ENABLED: boolean;
+
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
@@ -226,6 +235,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
+		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
 		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
 		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
@@ -269,5 +279,7 @@ export class ConfigResponse {
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.enabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED;
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
+		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
+		this.FEATURE_NEW_LAYOUT_ENABLED = config.FEATURE_NEW_LAYOUT_ENABLED;
 	}
 }

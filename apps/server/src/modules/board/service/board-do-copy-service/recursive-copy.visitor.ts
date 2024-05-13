@@ -148,7 +148,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 		});
 		this.copyMap.set(original.id, copy);
 
@@ -287,12 +287,22 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitCollaborativeTextEditorElementAsync(
-		collaborativeTextEditorElement: CollaborativeTextEditorElement
-	): Promise<void> {
-		return Promise.reject(
-			new Error(`Cannot copy element of type: '${collaborativeTextEditorElement.constructor.name}'`)
-		);
+	async visitCollaborativeTextEditorElementAsync(original: CollaborativeTextEditorElement): Promise<void> {
+		const now = new Date();
+		const copy = new CollaborativeTextEditorElement({
+			id: new ObjectId().toHexString(),
+			createdAt: now,
+			updatedAt: now,
+		});
+
+		this.resultMap.set(original.id, {
+			copyEntity: copy,
+			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		});
+		this.copyMap.set(original.id, copy);
+
+		return Promise.resolve();
 	}
 
 	async visitMediaBoardAsync(original: MediaBoard): Promise<void> {

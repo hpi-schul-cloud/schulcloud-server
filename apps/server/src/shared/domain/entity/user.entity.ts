@@ -1,12 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property, wrap } from '@mikro-orm/core';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
-import { SchoolEntity } from './school.entity';
+import { SchoolEntity, SchoolRoles } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
+import { UserSourceOptionsEntity } from './user-source-options-entity';
 
 export interface UserProperties {
 	email: string;
@@ -28,6 +30,8 @@ export interface UserProperties {
 	parents?: UserParentsEntity[];
 	lastSyncedAt?: Date;
 	consent?: ConsentEntity;
+	source?: string;
+	sourceOptions?: UserSourceOptionsEntity;
 }
 
 interface UserInfo {
@@ -121,6 +125,13 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	lastSyncedAt?: Date;
 
+	@Property({ nullable: true })
+	@Index()
+	source?: string;
+
+	@Embedded(() => UserSourceOptionsEntity, { object: true, nullable: true })
+	sourceOptions?: UserSourceOptionsEntity;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -142,11 +153,18 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.parents = props.parents;
 		this.lastSyncedAt = props.lastSyncedAt;
 		this.consent = props.consent;
+		if (props.source !== undefined) {
+			this.source = props.source;
+		}
+
+		if (props.sourceOptions !== undefined) {
+			this.sourceOptions = props.sourceOptions;
+		}
 	}
 
 	public resolvePermissions(): string[] {
 		if (!this.roles.isInitialized(true)) {
-			throw new Error('Roles items are not loaded.');
+			throw new ReferenceNotPopulatedLoggableException('user', 'roles');
 		}
 
 		let permissions: string[] = [];
@@ -157,44 +175,70 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			permissions = [...permissions, ...rolePermissions];
 		});
 
-		const setOfPermission = this.resolveSchoolPermissions(permissions, roles);
+		const setOfPermissions = this.resolveSchoolPermissions(permissions, roles);
 
-		const uniquePermissions = [...setOfPermission];
+		const uniquePermissions = [...setOfPermissions];
 
 		return uniquePermissions;
 	}
 
-	private resolveSchoolPermissions(permissions: string[], roles: Role[]) {
-		const setOfPermission = new Set(permissions);
+	private resolveSchoolPermissions(permissions: string[], roles: Role[]): Set<string> {
+		if (!wrap(this.school).isInitialized()) {
+			throw new ReferenceNotPopulatedLoggableException('user', 'school');
+		}
+
 		const schoolPermissions = this.school.permissions;
+		let setOfPermissions = new Set(permissions);
 
-		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR)) {
-			return setOfPermission;
+		// This exclusion is necessary because of possible double roles (e.g. admin and teacher). Then the higher role should keep its permissions.
+		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
+			return setOfPermissions;
 		}
 
-		if (this.school.permissions) {
-			if (roles.some((role) => role.name === RoleName.STUDENT)) {
-				if (schoolPermissions?.student?.LERNSTORE_VIEW) {
-					setOfPermission.add(Permission.LERNSTORE_VIEW);
-				} else {
-					setOfPermission.delete(Permission.LERNSTORE_VIEW);
-				}
-			}
-
-			if (roles.some((role) => role.name === RoleName.TEACHER)) {
-				const canStudentListByDefault = Configuration.get(
-					'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
-				) as boolean;
-
-				if (schoolPermissions?.teacher?.STUDENT_LIST || canStudentListByDefault) {
-					setOfPermission.add(Permission.STUDENT_LIST);
-				} else {
-					setOfPermission.delete(Permission.STUDENT_LIST);
-				}
-			}
+		if (roles.some((role) => role.name === RoleName.TEACHER)) {
+			setOfPermissions = this.resolveSchoolPermissionsForTeacher(setOfPermissions, schoolPermissions);
 		}
 
-		return setOfPermission;
+		if (roles.some((role) => role.name === RoleName.STUDENT)) {
+			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
+		}
+
+		return setOfPermissions;
+	}
+
+	private resolveSchoolPermissionsForTeacher(
+		setOfPermissions: Set<string>,
+		schoolPermissions?: SchoolRoles
+	): Set<string> {
+		const isEnabledByDefault = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT') as boolean;
+		const isConfigurable = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE') as boolean;
+
+		if (isConfigurable) {
+			if (schoolPermissions?.teacher?.STUDENT_LIST) {
+				setOfPermissions.add(Permission.STUDENT_LIST);
+			} else {
+				setOfPermissions.delete(Permission.STUDENT_LIST);
+			}
+		} else if (isEnabledByDefault) {
+			setOfPermissions.add(Permission.STUDENT_LIST);
+		} else {
+			setOfPermissions.delete(Permission.STUDENT_LIST);
+		}
+
+		return setOfPermissions;
+	}
+
+	private resolveSchoolPermissionsForStudent(
+		setOfPermissions: Set<string>,
+		schoolPermissions?: SchoolRoles
+	): Set<string> {
+		if (schoolPermissions?.student?.LERNSTORE_VIEW === true) {
+			setOfPermissions.add(Permission.LERNSTORE_VIEW);
+		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
+			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
+		}
+
+		return setOfPermissions;
 	}
 
 	public getRoles(): Role[] {

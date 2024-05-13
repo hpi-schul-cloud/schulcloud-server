@@ -1,38 +1,29 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {
 	let rule: SchoolRule;
+	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, SchoolRule],
+			providers: [SchoolRule, { provide: AuthorizationHelper, useValue: createMock<AuthorizationHelper>() }],
 		}).compile();
 
 		rule = await module.get(SchoolRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
-
-	afterEach(() => {
-		jest.resetAllMocks();
-	});
-
-	const permissionA = 'a' as Permission;
-	const permissionB = 'b' as Permission;
 
 	const setupSchoolAndUser = () => {
 		const school = schoolFactory.build();
-		const role = roleFactory.build({ permissions: [permissionA] });
-		const user = userFactory.build({
-			roles: [role],
-			school,
-		});
+		const user = userFactory.build({ school });
 
 		return { school, user };
 	};
@@ -77,7 +68,9 @@ describe('SchoolRule', () => {
 		describe('when user has required permissions and it is her school', () => {
 			const setup = () => {
 				const { user, school } = setupSchoolAndUser();
-				const context = AuthorizationContextBuilder.read([permissionA]);
+				const context = AuthorizationContextBuilder.read([]);
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
 
 				return { user, school, context };
 			};
@@ -94,7 +87,9 @@ describe('SchoolRule', () => {
 		describe('when user does not have required permissions', () => {
 			const setup = () => {
 				const { user, school } = setupSchoolAndUser();
-				const context = AuthorizationContextBuilder.read([permissionB]);
+				const context = AuthorizationContextBuilder.read([]);
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
 
 				return { user, school, context };
 			};
@@ -113,6 +108,8 @@ describe('SchoolRule', () => {
 				const { user } = setupSchoolAndUser();
 				const someOtherSchool = schoolFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
 
 				return { user, someOtherSchool, context };
 			};

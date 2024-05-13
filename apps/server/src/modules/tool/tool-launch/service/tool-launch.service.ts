@@ -3,12 +3,12 @@ import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolConfigurationStatusService } from '../../context-external-tool/service/tool-configuration-status.service';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service';
 import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
+import { ExternalToolService } from '../../external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ToolStatusOutdatedLoggableException } from '../error';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { ToolStatusNotLaunchableLoggableException } from '../error';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import {
@@ -71,7 +71,7 @@ export class ToolLaunchService {
 		return launchData;
 	}
 
-	private async loadToolHierarchy(
+	public async loadToolHierarchy(
 		schoolExternalToolId: string
 	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
@@ -96,12 +96,19 @@ export class ToolLaunchService {
 			contextExternalTool
 		);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
-			throw new ToolStatusOutdatedLoggableException(
+		if (
+			status.isOutdatedOnScopeSchool ||
+			status.isOutdatedOnScopeContext ||
+			status.isDeactivated ||
+			status.isIncompleteOnScopeContext
+		) {
+			throw new ToolStatusNotLaunchableLoggableException(
 				userId,
 				contextExternalTool.id ?? '',
 				status.isOutdatedOnScopeSchool,
 				status.isOutdatedOnScopeContext,
+				status.isIncompleteOnScopeContext,
+				status.isIncompleteOperationalOnScopeContext,
 				status.isDeactivated
 			);
 		}

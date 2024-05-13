@@ -10,7 +10,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
-import { GroupUc } from './uc';
+import { ClassGroupUc, GroupUc } from './uc';
 
 @Module({
 	imports: [
@@ -26,6 +26,6 @@ import { GroupUc } from './uc';
 		LearnroomModule,
 	],
 	controllers: [GroupController],
-	providers: [GroupUc],
+	providers: [GroupUc, ClassGroupUc],
 })
 export class GroupApiModule {}
