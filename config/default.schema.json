@@ -1605,12 +1605,6 @@
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
-			"required": [
-				"API_URL",
-				"TOKEN_ENDPOINT",
-				"CLIENT_ID",
-				"CLIENT_SECRET"
-			],
 			"properties": {
 				"API_URL": {
 					"type": "string",
