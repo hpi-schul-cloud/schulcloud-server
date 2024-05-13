@@ -52,7 +52,6 @@ describe('ClassGroupUc', () => {
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let courseService: DeepMocked<CourseDoService>;
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

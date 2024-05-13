@@ -658,8 +658,17 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					externalGroups,
 					systemId,
 					externalUserId,
+					user,
 				};
 			};
+
+			it('should find groups', async () => {
+				const { externalGroups, systemId, externalUserId, user } = setup();
+
+				await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+
+				expect(groupService.findGroups).toHaveBeenCalledWith({ userId: user.id });
+			});
 
 			it('should not save the group', async () => {
 				const { externalGroups, systemId, externalUserId } = setup();

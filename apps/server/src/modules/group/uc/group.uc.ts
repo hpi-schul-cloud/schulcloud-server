@@ -5,6 +5,7 @@ import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
@@ -29,22 +30,14 @@ export class GroupUc {
 
 	public async getGroup(userId: EntityId, groupId: EntityId): Promise<ResolvedGroupDto> {
 		const group: Group = await this.groupService.findById(groupId);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.checkPermission(userId, group);
+		this.authorizationService.checkPermission(user, group, AuthorizationContextBuilder.read([Permission.GROUP_VIEW]));
 
 		const resolvedUsers: ResolvedGroupUser[] = await this.findUsersForGroup(group);
 		const resolvedGroup: ResolvedGroupDto = GroupUcMapper.mapToResolvedGroupDto(group, resolvedUsers);
 
 		return resolvedGroup;
-	}
-
-	private async checkPermission(userId: EntityId, group: Group): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		return this.authorizationService.checkPermission(
-			user,
-			group,
-			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
-		);
 	}
 
 	private async findUsersForGroup(group: Group): Promise<ResolvedGroupUser[]> {
@@ -53,11 +46,11 @@ export class GroupUc {
 				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
 				let resolvedGroup: ResolvedGroupUser | null = null;
 
-				/* TODO add this log back later
-					    this.logger.warning(
+				if (!user) {
+					this.logger.warning(
 						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, groupUser.userId)
-					); */
-				if (user) {
+					);
+				} else {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
 					resolvedGroup = new ResolvedGroupUser({
@@ -95,12 +88,17 @@ export class GroupUc {
 		const filter: IGroupFilter = { nameQuery };
 		options.order = { name: SortOrder.asc };
 
-		let groups: Page<Group>;
 		if (canSeeFullList) {
-			groups = await this.getGroupsForSchool(schoolId, filter, options, availableGroupsForCourseSync);
+			filter.schoolId = schoolId;
 		} else {
-			groups = await this.getGroupsForUser(userId, filter, options, availableGroupsForCourseSync);
+			filter.userId = userId;
 		}
+
+		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+			filter.availableGroupsForCourseSync = availableGroupsForCourseSync;
+		}
+
+		const groups: Page<Group> = await this.getGroups(filter, options);
 
 		const resolvedGroups: ResolvedGroupDto[] = await Promise.all(
 			groups.data.map(async (group: Group) => {
@@ -116,34 +114,9 @@ export class GroupUc {
 		return page;
 	}
 
-	private async getGroupsForSchool(
-		schoolId: EntityId,
-		filter: IGroupFilter,
-		options: IFindOptions<Group>,
-		availableGroupsForCourseSync?: boolean
-	): Promise<Page<Group>> {
-		filter.schoolId = schoolId;
-
+	private async getGroups(filter: IGroupFilter, options: IFindOptions<Group>): Promise<Page<Group>> {
 		let foundGroups: Page<Group>;
-		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			foundGroups = await this.groupService.findAvailableGroups(filter, options);
-		} else {
-			foundGroups = await this.groupService.findGroups(filter, options);
-		}
-
-		return foundGroups;
-	}
-
-	private async getGroupsForUser(
-		userId: EntityId,
-		filter: IGroupFilter,
-		options: IFindOptions<Group>,
-		availableGroupsForCourseSync?: boolean
-	): Promise<Page<Group>> {
-		filter.userId = userId;
-
-		let foundGroups: Page<Group>;
-		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+		if (filter.availableGroupsForCourseSync) {
 			foundGroups = await this.groupService.findAvailableGroups(filter, options);
 		} else {
 			foundGroups = await this.groupService.findGroups(filter, options);

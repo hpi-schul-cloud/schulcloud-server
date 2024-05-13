@@ -7,4 +7,5 @@ export interface IGroupFilter {
 	systemId?: EntityId;
 	groupTypes?: GroupTypes[];
 	nameQuery?: string;
+	availableGroupsForCourseSync?: boolean;
 }

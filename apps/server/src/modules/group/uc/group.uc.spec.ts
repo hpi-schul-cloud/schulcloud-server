@@ -38,7 +38,6 @@ describe('GroupUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -234,6 +233,63 @@ describe('GroupUc', () => {
 						},
 					],
 				});
+			});
+		});
+
+		describe('when user in group is not found', () => {
+			const setup = () => {
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { studentUser } = UserAndAccountTestFactory.buildStudent();
+				const group: Group = groupFactory.build({
+					users: [
+						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
+						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
+					],
+				});
+				const teacherRole: RoleDto = roleDtoFactory.build({
+					id: teacherUser.roles[0].id,
+					name: teacherUser.roles[0].name,
+				});
+				const studentRole: RoleDto = roleDtoFactory.build({
+					id: studentUser.roles[0].id,
+					name: studentUser.roles[0].name,
+				});
+				const teacherUserDo: UserDO = userDoFactory.build({
+					id: teacherUser.id,
+					firstName: teacherUser.firstName,
+					lastName: teacherUser.lastName,
+					email: teacherUser.email,
+					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
+				});
+				const studentUserDo: UserDO = userDoFactory.build({
+					id: studentUser.id,
+					firstName: teacherUser.firstName,
+					lastName: studentUser.lastName,
+					email: studentUser.email,
+					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+				userService.findById.mockResolvedValueOnce(teacherUserDo);
+				userService.findByIdOrNull.mockResolvedValueOnce(teacherUserDo);
+				roleService.findById.mockResolvedValueOnce(teacherRole);
+				userService.findById.mockResolvedValueOnce(studentUserDo);
+				userService.findByIdOrNull.mockResolvedValueOnce(null);
+				roleService.findById.mockResolvedValueOnce(studentRole);
+
+				return {
+					teacherId: teacherUser.id,
+					group,
+				};
+			};
+
+			it('should log missing user', async () => {
+				const { teacherId, group } = setup();
+
+				await uc.getGroup(teacherId, group.id);
+
+				expect(logger.warning).toHaveBeenCalled();
 			});
 		});
 	});
