@@ -1313,7 +1313,8 @@ describe('AccountService', () => {
 
 				userRepo.save.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account);
+					mockStudentAccount.password = account.password;
+
 					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				});
 
