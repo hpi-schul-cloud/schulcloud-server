@@ -5,7 +5,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Group, GroupDeletedEvent, IGroupFilter } from '../domain';
+import { Group, GroupDeletedEvent, GroupFilter } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
@@ -34,13 +34,13 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
-	public async findGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
 		const groups: Page<Group> = await this.groupRepo.findGroups(filter, options);
 
 		return groups;
 	}
 
-	public async findAvailableGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+	public async findAvailableGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
 		const groups: Page<Group> = await this.groupRepo.findAvailableGroups(filter, options);
 
 		return groups;

@@ -1,1 +1,1 @@
-export { IGroupFilter } from './group-filter';
+export { GroupFilter } from './group-filter';

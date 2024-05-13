@@ -11,7 +11,7 @@ import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { Group, GroupUser, IGroupFilter } from '../domain';
+import { Group, GroupFilter, GroupUser } from '../domain';
 import { GroupService } from '../service';
 import { ResolvedGroupDto, ResolvedGroupUser } from './dto';
 import { GroupUcMapper } from './mapper/group-uc.mapper';
@@ -85,7 +85,7 @@ export class GroupUc {
 
 		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
 
-		const filter: IGroupFilter = { nameQuery };
+		const filter: GroupFilter = { nameQuery };
 		options.order = { name: SortOrder.asc };
 
 		if (canSeeFullList) {
@@ -94,11 +94,7 @@ export class GroupUc {
 			filter.userId = userId;
 		}
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			filter.availableGroupsForCourseSync = availableGroupsForCourseSync;
-		}
-
-		const groups: Page<Group> = await this.getGroups(filter, options);
+		const groups: Page<Group> = await this.getGroups(filter, options, availableGroupsForCourseSync);
 
 		const resolvedGroups: ResolvedGroupDto[] = await Promise.all(
 			groups.data.map(async (group: Group) => {
@@ -114,9 +110,13 @@ export class GroupUc {
 		return page;
 	}
 
-	private async getGroups(filter: IGroupFilter, options: IFindOptions<Group>): Promise<Page<Group>> {
+	private async getGroups(
+		filter: GroupFilter,
+		options: IFindOptions<Group>,
+		availableGroupsForCourseSync?: boolean
+	): Promise<Page<Group>> {
 		let foundGroups: Page<Group>;
-		if (filter.availableGroupsForCourseSync) {
+		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
 			foundGroups = await this.groupService.findAvailableGroups(filter, options);
 		} else {
 			foundGroups = await this.groupService.findGroups(filter, options);

@@ -1,4 +1,4 @@
-import { Group, GroupService, GroupTypes, IGroupFilter } from '@modules/group';
+import { Group, GroupFilter, GroupService, GroupTypes } from '@modules/group';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -31,7 +31,7 @@ export class SchulconnexProvisioningOptionsUpdateService
 	}
 
 	private async deleteGroups(schoolId: EntityId, systemId: EntityId, groupType: GroupTypes): Promise<void> {
-		const filter: IGroupFilter = { schoolId, systemId, groupTypes: [groupType] };
+		const filter: GroupFilter = { schoolId, systemId, groupTypes: [groupType] };
 
 		const page: Page<Group> = await this.groupService.findGroups(filter);
 		const groups: Group[] = page.data;

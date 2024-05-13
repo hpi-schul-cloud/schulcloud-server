@@ -7,7 +7,7 @@ import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { Group, GroupTypes, IGroupFilter } from '../domain';
+import { Group, GroupFilter, GroupTypes } from '../domain';
 import { GroupEntity } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
@@ -53,7 +53,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObject;
 	}
 
-	public async findGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+	public async findGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
 		const scope: GroupScope = new GroupScope();
 		scope.byUserId(filter.userId);
 		scope.byOrganizationId(filter.schoolId);
@@ -82,7 +82,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return page;
 	}
 
-	public async findAvailableGroups(filter: IGroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
+	public async findAvailableGroups(filter: GroupFilter, options?: IFindOptions<Group>): Promise<Page<Group>> {
 		const pipeline: unknown[] = [];
 		let nameRegexFilter = {};
 

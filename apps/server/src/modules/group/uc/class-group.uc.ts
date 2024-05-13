@@ -15,7 +15,7 @@ import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, IGroupFilter } from '../domain';
+import { Group, GroupFilter } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupUser } from './dto';
@@ -216,7 +216,7 @@ export class ClassGroupUc {
 	}
 
 	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
-		const filter: IGroupFilter = { schoolId };
+		const filter: GroupFilter = { schoolId };
 
 		const groups: Page<Group> = await this.groupService.findGroups(filter);
 
@@ -226,7 +226,7 @@ export class ClassGroupUc {
 	}
 
 	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
-		const filter: IGroupFilter = { userId };
+		const filter: GroupFilter = { userId };
 
 		const groups: Page<Group> = await this.groupService.findGroups(filter);
 

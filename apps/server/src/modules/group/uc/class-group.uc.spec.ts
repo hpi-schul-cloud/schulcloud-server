@@ -32,7 +32,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, IGroupFilter } from '../domain';
+import { Group, GroupFilter } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto } from './dto';
@@ -404,7 +404,7 @@ describe('ClassGroupUc', () => {
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroups).toHaveBeenCalledWith<[IGroupFilter]>({ userId: teacherUser.id });
+					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({ userId: teacherUser.id });
 				});
 			});
 
@@ -425,7 +425,6 @@ describe('ClassGroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
-						undefined,
 						undefined,
 						undefined,
 						'externalSourceName',
@@ -487,8 +486,7 @@ describe('ClassGroupUc', () => {
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
 						undefined,
-						2,
-						1,
+						{ skip: 2, limit: 1 },
 						'name',
 						SortOrder.asc
 					);
@@ -768,7 +766,7 @@ describe('ClassGroupUc', () => {
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroups).toHaveBeenCalledWith<[IGroupFilter]>({ schoolId: teacherUser.school.id });
+					expect(groupService.findGroups).toHaveBeenCalledWith<[GroupFilter]>({ schoolId: teacherUser.school.id });
 				});
 			});
 
@@ -779,7 +777,6 @@ describe('ClassGroupUc', () => {
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
-						undefined,
 						undefined,
 						undefined,
 						undefined,
@@ -831,8 +828,7 @@ describe('ClassGroupUc', () => {
 						adminUser.school.id,
 						undefined,
 						undefined,
-						1,
-						1,
+						{ skip: 1, limit: 1 },
 						'name',
 						SortOrder.asc
 					);
@@ -860,8 +856,7 @@ describe('ClassGroupUc', () => {
 						adminUser.school.id,
 						undefined,
 						undefined,
-						0,
-						5
+						{ skip: 0, limit: 5 }
 					);
 
 					expect(result.data.length).toEqual(5);
@@ -875,8 +870,7 @@ describe('ClassGroupUc', () => {
 						adminUser.school.id,
 						undefined,
 						undefined,
-						0,
-						-1
+						{ skip: 0, limit: -1 }
 					);
 
 					expect(result.data.length).toEqual(14);
