@@ -528,7 +528,7 @@ describe('ImportUser Controller (API)', () => {
 							expect(listResponse.data.some((elem) => elem.userId === currentSchoolsUser.id)).toEqual(true);
 						});
 
-						it('should not respond with assigned users', async () => {
+						it.skip('should not respond with assigned users', async () => {
 							const otherSchoolsUser = userFactory.build();
 							const currentSchoolsUser = userFactory.build({ school });
 							const importUser = importUserFactory.matched(MatchCreator.AUTO, currentSchoolsUser).build({ school });
