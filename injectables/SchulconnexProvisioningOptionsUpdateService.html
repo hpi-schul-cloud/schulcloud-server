@@ -166,7 +166,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -232,8 +232,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -326,8 +326,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -415,8 +415,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Group, GroupService, GroupTypes } from &#x27;@modules/group&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Group, GroupFilter, GroupService, GroupTypes } from &#x27;@modules/group&#x27;;
 import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { Page } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { SchulConneXProvisioningOptions } from &#x27;../domain&#x27;;
 import { ProvisioningOptionsUpdateHandler } from &#x27;./provisioning-options-update-handler&#x27;;
@@ -447,11 +448,10 @@ export class SchulconnexProvisioningOptionsUpdateService
 	}
 
 	private async deleteGroups(schoolId: EntityId, systemId: EntityId, groupType: GroupTypes): Promise&lt;void&gt; {
-		const groups: Group[] &#x3D; await this.groupService.findGroupsBySchoolIdAndSystemIdAndGroupType(
-			schoolId,
-			systemId,
-			groupType
-		);
+		const filter: GroupFilter &#x3D; { schoolId, systemId, groupTypes: [groupType] };
+
+		const page: Page&lt;Group&gt; &#x3D; await this.groupService.findGroups(filter);
+		const groups: Group[] &#x3D; page.data;
 
 		await Promise.all(
 			groups.map(async (group: Group): Promise&lt;void&gt; &#x3D;&gt; {

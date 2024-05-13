@@ -824,7 +824,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Group, GroupService, GroupTypes, GroupUser } from &#x27;@modules/group&#x27;;
+import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from &#x27;@modules/group&#x27;;
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -1000,7 +1000,8 @@ export class SchulconnexGroupProvisioningService {
 			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
 
-		const existingGroupsOfUser: Page&lt;Group&gt; &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user);
+		const filter: GroupFilter &#x3D; { userId: user.id };
+		const existingGroupsOfUser: Page&lt;Group&gt; &#x3D; await this.groupService.findGroups(filter);
 
 		const groupsFromSystem: Group[] &#x3D; existingGroupsOfUser.data.filter(
 			(existingGroup: Group) &#x3D;&gt; existingGroup.externalSource?.systemId &#x3D;&#x3D;&#x3D; systemId

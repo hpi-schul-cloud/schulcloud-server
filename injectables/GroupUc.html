@@ -124,21 +124,6 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#ALLOWED_GROUP_TYPES" >ALLOWED_GROUP_TYPES</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -151,81 +136,12 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#addSchoolYearsToClasses" >addSchoolYearsToClasses</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#applyPagination" >applyPagination</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#checkPermission" >checkPermission</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findAllClasses" >findAllClasses</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findClassesForSchool" >findClassesForSchool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findClassesForUser" >findClassesForUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findCombinedClassListForSchool" >findCombinedClassListForSchool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findCombinedClassListForUser" >findCombinedClassListForUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findGroupsForSchool" >findGroupsForSchool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findGroupsForUser" >findGroupsForUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#findSystemNamesForGroups" >findSystemNamesForGroups</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#findUsersForGroup" >findUsersForGroup</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getAllGroups" >getAllGroups</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getClassInfoFromGroup" >getClassInfoFromGroup</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getClassInfosFromClasses" >getClassInfosFromClasses</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getClassInfosFromGroups" >getClassInfosFromGroups</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -235,20 +151,7 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getGroupsForSchool" >getGroupsForSchool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getGroupsForUser" >getGroupsForUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#isClassOfQueryType" >isClassOfQueryType</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mapClassInfosFromClasses" >mapClassInfosFromClasses</a>
+                                <a href="#getGroups" >getGroups</a>
                             </li>
                         </ul>
                     </td>
@@ -268,12 +171,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, courseService: <a href="../injectables/CourseDoService.html" target="_self">CourseDoService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -295,30 +198,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/GroupService.html" target="_self" >GroupService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>classService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ClassService.html" target="_self" >ClassService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>systemService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacySystemService.html" target="_self" >LegacySystemService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -375,30 +254,6 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>schoolYearService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/SchoolYearService.html" target="_self" >SchoolYearService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>courseService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CourseDoService.html" target="_self" >CourseDoService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
                                                         <td>configService</td>
                                                   
                                                         <td>
@@ -440,962 +295,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addSchoolYearsToClasses"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>addSchoolYearsToClasses</b></span>
-                        <a href="#addSchoolYearsToClasses"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addSchoolYearsToClasses(classes: <a href="../classes/Class.html" target="_self">Class[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:166</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>classes</td>
-                                            <td>
-                                                            <code><a href="../classes/Class.html" target="_self" >Class[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;literal type[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="applyPagination"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>applyPagination</b></span>
-                        <a href="#applyPagination"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>applyPagination(combinedClassInfo: ClassInfoDto[], skip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit: number | undefined)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="335"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:335</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>combinedClassInfo</td>
-                                            <td>
-                                                        <code>ClassInfoDto[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>skip</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>limit</td>
-                                            <td>
-                                                        <code>number | undefined</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>ClassInfoDto[]</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkPermission"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>checkPermission</b></span>
-                        <a href="#checkPermission"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, group: <a href="../interfaces/Group.html" target="_self">Group</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="358"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:358</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>group</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findAllClasses"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findAllClasses</b></span>
-                        <a href="#findAllClasses"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllClasses(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>, calledFrom?: <a href="../undefineds/ClassRequestContext.html" target="_self">ClassRequestContext</a>, skip: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, sortBy, sortOrder: <a href="../undefineds/SortOrder.html" target="_self">SortOrder</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:46</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Default value</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>calledFrom</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#ClassRequestContext" target="_self" >ClassRequestContext</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>skip</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                                    <code>0</code>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>limit</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>sortBy</td>
-                                            <td>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                                    <code>&#x27;name&#x27;</code>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>sortOrder</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SortOrder" target="_self" >SortOrder</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                                    <code>SortOrder.asc</code>
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Page&lt;ClassInfoDto&gt;&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findClassesForSchool"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findClassesForSchool</b></span>
-                        <a href="#findClassesForSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findClassesForSchool(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:125</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findClassesForUser"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findClassesForUser</b></span>
-                        <a href="#findClassesForUser"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findClassesForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="136"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:136</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findCombinedClassListForSchool"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findCombinedClassListForSchool</b></span>
-                        <a href="#findCombinedClassListForSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findCombinedClassListForSchool(school: <a href="../classes/School.html" target="_self">School</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:91</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findCombinedClassListForUser"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findCombinedClassListForUser</b></span>
-                        <a href="#findCombinedClassListForUser"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findCombinedClassListForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:108</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findGroupsForSchool"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findGroupsForSchool</b></span>
-                        <a href="#findGroupsForSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findGroupsForSchool(school: <a href="../classes/School.html" target="_self">School</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="228"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:228</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findGroupsForUser"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findGroupsForUser</b></span>
-                        <a href="#findGroupsForUser"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findGroupsForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="239"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:239</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findSystemNamesForGroups"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>findSystemNamesForGroups</b></span>
-                        <a href="#findSystemNamesForGroups"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findSystemNamesForGroups(groups: <a href="../interfaces/Group.html" target="_self">Group[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="284"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:284</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>groups</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;Map&lt;EntityId, SystemDto&gt;&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="findUsersForGroup"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1415,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="304"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:304</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -1478,15 +377,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getAllGroups(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                    <code>getAllGroups(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options: <a href="../classes/Group.html" target="_self">IFindOptions&lt;Group&gt;</a>, nameQuery?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="367"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:367</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -1503,6 +402,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1516,6 +416,8 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -1528,18 +430,37 @@
                                                     No
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
-                                                <td>query</td>
+                                                <td>options</td>
                                             <td>
-                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                                            <code><a href="../classes/Group.html" target="_self" >IFindOptions&lt;Group&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>{ pagination: { skip: 0 } }</code>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>nameQuery</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
                                                     Yes
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -1552,6 +473,8 @@
                                                     Yes
                                             </td>
 
+                                            <td>
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -1559,240 +482,6 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;ResolvedGroupDto&gt;&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getClassInfoFromGroup"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getClassInfoFromGroup</b></span>
-                        <a href="#getClassInfoFromGroup"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getClassInfoFromGroup(group: <a href="../interfaces/Group.html" target="_self">Group</a>, systemMap: <a href="../undefineds/EntityId.html" target="_self">Map&lt;EntityId | SystemDto&gt;</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="261"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:261</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>group</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>systemMap</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Map&lt;EntityId | SystemDto&gt;</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getClassInfosFromClasses"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getClassInfosFromClasses</b></span>
-                        <a href="#getClassInfosFromClasses"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getClassInfosFromClasses(classes: <a href="../classes/Class.html" target="_self">Class[]</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="147"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:147</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>classes</td>
-                                            <td>
-                                                            <code><a href="../classes/Class.html" target="_self" >Class[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getClassInfosFromGroups"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getClassInfosFromGroups</b></span>
-                        <a href="#getClassInfosFromGroups"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getClassInfosFromGroups(groups: <a href="../interfaces/Group.html" target="_self">Group[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="251"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:251</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>groups</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ClassInfoDto[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1825,8 +514,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="347"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:347</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -1888,27 +577,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getGroupsForSchool"></a>
+                    <a name="getGroups"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>getGroupsForSchool</b></span>
-                        <a href="#getGroupsForSchool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getGroups</b></span>
+                        <a href="#getGroups"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getGroupsForSchool(school: <a href="../classes/School.html" target="_self">School</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                    <code>getGroups(filter: <a href="../interfaces/GroupFilter.html" target="_self">GroupFilter</a>, options: <a href="../classes/Group.html" target="_self">IFindOptions&lt;Group&gt;</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="401"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:401</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -1929,9 +618,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>school</td>
+                                                <td>filter</td>
                                             <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                            <code><a href="../interfaces/GroupFilter.html" target="_self" >GroupFilter</a></code>
                                             </td>
 
                                             <td>
@@ -1941,13 +630,13 @@
 
                                         </tr>
                                         <tr>
-                                                <td>query</td>
+                                                <td>options</td>
                                             <td>
-                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
+                                                            <code><a href="../classes/Group.html" target="_self" >IFindOptions&lt;Group&gt;</a></code>
                                             </td>
 
                                             <td>
-                                                    Yes
+                                                    No
                                             </td>
 
 
@@ -1976,300 +665,6 @@
                             </div>
                 </td>
             </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getGroupsForUser"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getGroupsForUser</b></span>
-                        <a href="#getGroupsForUser"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getGroupsForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query?: <a href="../interfaces/IFindQuery.html" target="_self">IFindQuery</a>, availableGroupsForCourseSync?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="416"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:416</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>query</td>
-                                            <td>
-                                                            <code><a href="../interfaces/IFindQuery.html" target="_self" >IFindQuery</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>availableGroupsForCourseSync</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Page&lt;Group&gt;&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isClassOfQueryType"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>isClassOfQueryType</b></span>
-                        <a href="#isClassOfQueryType"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isClassOfQueryType(currentYear: <a href="../entitys/SchoolYearEntity.html" target="_self">SchoolYearEntity</a>, schoolYear?: <a href="../entitys/SchoolYearEntity.html" target="_self">SchoolYearEntity</a>, schoolYearQueryType?: <a href="../undefineds/SchoolYearQueryType.html" target="_self">SchoolYearQueryType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:184</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>currentYear</td>
-                                            <td>
-                                                            <code><a href="../entitys/SchoolYearEntity.html" target="_self" >SchoolYearEntity</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYear</td>
-                                            <td>
-                                                            <code><a href="../entitys/SchoolYearEntity.html" target="_self" >SchoolYearEntity</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYearQueryType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#SchoolYearQueryType" target="_self" >SchoolYearQueryType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapClassInfosFromClasses"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>mapClassInfosFromClasses</b></span>
-                        <a href="#mapClassInfosFromClasses"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapClassInfosFromClasses(filteredClassesForSchoolYear: literal type[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="209"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:209</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>filteredClassesForSchoolYear</td>
-                                            <td>
-                                                        <code>literal type[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>ClassInfoDto[]</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="ALLOWED_GROUP_TYPES"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>ALLOWED_GROUP_TYPES</b></span>
-                        <a href="#ALLOWED_GROUP_TYPES"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/Group.html" target="_self" >GroupTypes[]</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/group/uc/group.uc.ts:44</a></div>
-                        </td>
-                    </tr>
-
-
         </tbody>
     </table>
 </section>
@@ -2279,306 +674,45 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { ClassService } from &#x27;@modules/class&#x27;;
-import { Class } from &#x27;@modules/class/domain&#x27;;
-import { Course } from &#x27;@modules/learnroom/domain&#x27;;
-import { CourseDoService } from &#x27;@modules/learnroom/service/course-do.service&#x27;;
-import { SchoolYearService } from &#x27;@modules/legacy-school&#x27;;
 import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
-import { RoleService } from &#x27;@modules/role&#x27;;
-import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
+import { RoleDto, RoleService } from &#x27;@modules/role&#x27;;
 import { School, SchoolService } from &#x27;@modules/school/domain&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { SortHelper } from &#x27;@shared/common&#x27;;
+import { ReferencedEntityNotFoundLoggable } from &#x27;@shared/common/loggable&#x27;;
 import { Page, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { SchoolYearEntity, User } from &#x27;@shared/domain/entity&#x27;;
-import { IFindQuery, Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
+import { IFindOptions, Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { LegacySystemService, SystemDto } from &#x27;@src/modules/system&#x27;;
-import { ClassRequestContext, SchoolYearQueryType } from &#x27;../controller/dto/interface&#x27;;
-import { Group, GroupTypes, GroupUser } from &#x27;../domain&#x27;;
-import { UnknownQueryTypeLoggableException } from &#x27;../loggable&#x27;;
+import { Group, GroupFilter, GroupUser } from &#x27;../domain&#x27;;
 import { GroupService } from &#x27;../service&#x27;;
-import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;./dto&#x27;;
+import { ResolvedGroupDto, ResolvedGroupUser } from &#x27;./dto&#x27;;
 import { GroupUcMapper } from &#x27;./mapper/group-uc.mapper&#x27;;
 
 @Injectable()
 export class GroupUc {
 	constructor(
 		private readonly groupService: GroupService,
-		private readonly classService: ClassService,
-		private readonly systemService: LegacySystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolYearService: SchoolYearService,
-		private readonly courseService: CourseDoService,
 		private readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;,
 		private readonly logger: Logger
 	) {}
 
-	private ALLOWED_GROUP_TYPES: GroupTypes[] &#x3D; [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER];
-
-	public async findAllClasses(
-		userId: EntityId,
-		schoolId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType,
-		calledFrom?: ClassRequestContext,
-		skip &#x3D; 0,
-		limit?: number,
-		sortBy: keyof ClassInfoDto &#x3D; &#x27;name&#x27;,
-		sortOrder: SortOrder &#x3D; SortOrder.asc
-	): Promise&lt;Page&lt;ClassInfoDto&gt;&gt; {
-		const school: School &#x3D; await this.schoolService.getSchoolById(schoolId);
-
+	public async getGroup(userId: EntityId, groupId: EntityId): Promise&lt;ResolvedGroupDto&gt; {
+		const group: Group &#x3D; await this.groupService.findById(groupId);
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(
-			user,
-			school,
-			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
-		);
 
-		const canSeeFullList: boolean &#x3D; this.authorizationService.hasAllPermissions(user, [
-			Permission.CLASS_FULL_ADMIN,
-			Permission.GROUP_FULL_ADMIN,
-		]);
+		this.authorizationService.checkPermission(user, group, AuthorizationContextBuilder.read([Permission.GROUP_VIEW]));
 
-		const calledFromCourse: boolean &#x3D;
-			calledFrom &#x3D;&#x3D;&#x3D; ClassRequestContext.COURSE &amp;&amp; school.getPermissions()?.teacher?.STUDENT_LIST &#x3D;&#x3D;&#x3D; true;
+		const resolvedUsers: ResolvedGroupUser[] &#x3D; await this.findUsersForGroup(group);
+		const resolvedGroup: ResolvedGroupDto &#x3D; GroupUcMapper.mapToResolvedGroupDto(group, resolvedUsers);
 
-		let combinedClassInfo: ClassInfoDto[];
-		if (canSeeFullList || calledFromCourse) {
-			combinedClassInfo &#x3D; await this.findCombinedClassListForSchool(school, schoolYearQueryType);
-		} else {
-			combinedClassInfo &#x3D; await this.findCombinedClassListForUser(userId, schoolYearQueryType);
-		}
-
-		combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number &#x3D;&gt;
-			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
-		);
-
-		const pageContent: ClassInfoDto[] &#x3D; this.applyPagination(combinedClassInfo, skip, limit);
-
-		const page: Page&lt;ClassInfoDto&gt; &#x3D; new Page&lt;ClassInfoDto&gt;(pageContent, combinedClassInfo.length);
-
-		return page;
-	}
-
-	private async findCombinedClassListForSchool(
-		school: School,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise&lt;ClassInfoDto[]&gt; {
-		let classInfosFromGroups: ClassInfoDto[] &#x3D; [];
-
-		const classInfosFromClasses &#x3D; await this.findClassesForSchool(school.id, schoolYearQueryType);
-
-		if (!schoolYearQueryType || schoolYearQueryType &#x3D;&#x3D;&#x3D; SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups &#x3D; await this.findGroupsForSchool(school);
-		}
-
-		const combinedClassInfo: ClassInfoDto[] &#x3D; [...classInfosFromClasses, ...classInfosFromGroups];
-
-		return combinedClassInfo;
-	}
-
-	private async findCombinedClassListForUser(
-		userId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise&lt;ClassInfoDto[]&gt; {
-		let classInfosFromGroups: ClassInfoDto[] &#x3D; [];
-
-		const classInfosFromClasses &#x3D; await this.findClassesForUser(userId, schoolYearQueryType);
-
-		if (!schoolYearQueryType || schoolYearQueryType &#x3D;&#x3D;&#x3D; SchoolYearQueryType.CURRENT_YEAR) {
-			classInfosFromGroups &#x3D; await this.findGroupsForUser(userId);
-		}
-
-		const combinedClassInfo: ClassInfoDto[] &#x3D; [...classInfosFromClasses, ...classInfosFromGroups];
-
-		return combinedClassInfo;
-	}
-
-	private async findClassesForSchool(
-		schoolId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise&lt;ClassInfoDto[]&gt; {
-		const classes: Class[] &#x3D; await this.classService.findClassesForSchool(schoolId);
-
-		const classInfosFromClasses: ClassInfoDto[] &#x3D; await this.getClassInfosFromClasses(classes, schoolYearQueryType);
-
-		return classInfosFromClasses;
-	}
-
-	private async findClassesForUser(
-		userId: EntityId,
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise&lt;ClassInfoDto[]&gt; {
-		const classes: Class[] &#x3D; await this.classService.findAllByUserId(userId);
-
-		const classInfosFromClasses: ClassInfoDto[] &#x3D; await this.getClassInfosFromClasses(classes, schoolYearQueryType);
-
-		return classInfosFromClasses;
-	}
-
-	private async getClassInfosFromClasses(
-		classes: Class[],
-		schoolYearQueryType?: SchoolYearQueryType
-	): Promise&lt;ClassInfoDto[]&gt; {
-		const currentYear: SchoolYearEntity &#x3D; await this.schoolYearService.getCurrentSchoolYear();
-
-		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] &#x3D; await this.addSchoolYearsToClasses(
-			classes
-		);
-
-		const filteredClassesForSchoolYear &#x3D; classesWithSchoolYear.filter((classWithSchoolYear) &#x3D;&gt;
-			this.isClassOfQueryType(currentYear, classWithSchoolYear.schoolYear, schoolYearQueryType)
-		);
-
-		const classInfosFromClasses: ClassInfoDto[] &#x3D; this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
-
-		return classInfosFromClasses;
-	}
-
-	private async addSchoolYearsToClasses(classes: Class[]): Promise&lt;{ clazz: Class; schoolYear?: SchoolYearEntity }[]&gt; {
-		const classesWithSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[] &#x3D; await Promise.all(
-			classes.map(async (clazz: Class) &#x3D;&gt; {
-				let schoolYear: SchoolYearEntity | undefined;
-				if (clazz.year) {
-					schoolYear &#x3D; await this.schoolYearService.findById(clazz.year);
-				}
-
-				return {
-					clazz,
-					schoolYear,
-				};
-			})
-		);
-
-		return classesWithSchoolYear;
-	}
-
-	private isClassOfQueryType(
-		currentYear: SchoolYearEntity,
-		schoolYear?: SchoolYearEntity,
-		schoolYearQueryType?: SchoolYearQueryType
-	): boolean {
-		if (schoolYearQueryType &#x3D;&#x3D;&#x3D; undefined) {
-			return true;
-		}
-
-		if (schoolYear &#x3D;&#x3D;&#x3D; undefined) {
-			return schoolYearQueryType &#x3D;&#x3D;&#x3D; SchoolYearQueryType.CURRENT_YEAR;
-		}
-
-		switch (schoolYearQueryType) {
-			case SchoolYearQueryType.CURRENT_YEAR:
-				return schoolYear.startDate &#x3D;&#x3D;&#x3D; currentYear.startDate;
-			case SchoolYearQueryType.NEXT_YEAR:
-				return schoolYear.startDate &gt; currentYear.startDate;
-			case SchoolYearQueryType.PREVIOUS_YEARS:
-				return schoolYear.startDate &lt; currentYear.startDate;
-			default:
-				throw new UnknownQueryTypeLoggableException(schoolYearQueryType);
-		}
-	}
-
-	private mapClassInfosFromClasses(
-		filteredClassesForSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[]
-	): ClassInfoDto[] {
-		const classInfosFromClasses: ClassInfoDto[] &#x3D; filteredClassesForSchoolYear.map(
-			(classWithSchoolYear): ClassInfoDto &#x3D;&gt; {
-				const teachers: UserDO[] &#x3D; [];
-
-				const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapClassToClassInfoDto(
-					classWithSchoolYear.clazz,
-					teachers,
-					classWithSchoolYear.schoolYear
-				);
-
-				return mapped;
-			}
-		);
-		return classInfosFromClasses;
-	}
-
-	private async findGroupsForSchool(school: School): Promise&lt;ClassInfoDto[]&gt; {
-		const groups: Page&lt;Group&gt; &#x3D; await this.groupService.findGroupsBySchoolIdAndGroupTypes(
-			school,
-			this.ALLOWED_GROUP_TYPES
-		);
-
-		const classInfosFromGroups: ClassInfoDto[] &#x3D; await this.getClassInfosFromGroups(groups.data);
-
-		return classInfosFromGroups;
-	}
-
-	private async findGroupsForUser(userId: EntityId): Promise&lt;ClassInfoDto[]&gt; {
-		const user: UserDO &#x3D; await this.userService.findById(userId);
-
-		const groups: Page&lt;Group&gt; &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES, {
-			pagination: { skip: 0 },
-		});
-
-		const classInfosFromGroups: ClassInfoDto[] &#x3D; await this.getClassInfosFromGroups(groups.data);
-
-		return classInfosFromGroups;
-	}
-
-	private async getClassInfosFromGroups(groups: Group[]): Promise&lt;ClassInfoDto[]&gt; {
-		const systemMap: Map&lt;EntityId, SystemDto&gt; &#x3D; await this.findSystemNamesForGroups(groups);
-
-		const classInfosFromGroups: ClassInfoDto[] &#x3D; await Promise.all(
-			groups.map(async (group: Group): Promise&lt;ClassInfoDto&gt; &#x3D;&gt; this.getClassInfoFromGroup(group, systemMap))
-		);
-
-		return classInfosFromGroups;
-	}
-
-	private async getClassInfoFromGroup(group: Group, systemMap: Map&lt;EntityId, SystemDto&gt;): Promise&lt;ClassInfoDto&gt; {
-		let system: SystemDto | undefined;
-		if (group.externalSource) {
-			system &#x3D; systemMap.get(group.externalSource.systemId);
-		}
-
-		const resolvedUsers: ResolvedGroupUser[] &#x3D; [];
-
-		let synchronizedCourses: Course[] &#x3D; [];
-		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;)) {
-			synchronizedCourses &#x3D; await this.courseService.findBySyncedGroup(group);
-		}
-
-		const mapped: ClassInfoDto &#x3D; GroupUcMapper.mapGroupToClassInfoDto(
-			group,
-			resolvedUsers,
-			synchronizedCourses,
-			system
-		);
-
-		return mapped;
-	}
-
-	private async findSystemNamesForGroups(groups: Group[]): Promise&lt;Map&lt;EntityId, SystemDto&gt;&gt; {
-		const systemIds: EntityId[] &#x3D; groups
-			.map((group: Group): string | undefined &#x3D;&gt; group.externalSource?.systemId)
-			.filter((systemId: string | undefined): systemId is EntityId &#x3D;&gt; systemId !&#x3D;&#x3D; undefined);
-
-		const uniqueSystemIds: EntityId[] &#x3D; Array.from(new Set(systemIds));
-
-		const systems: Map&lt;EntityId, SystemDto&gt; &#x3D; new Map&lt;EntityId, SystemDto&gt;();
-
-		await Promise.all(
-			uniqueSystemIds.map(async (systemId: string): Promise&lt;void&gt; &#x3D;&gt; {
-				const system: SystemDto &#x3D; await this.systemService.findById(systemId);
-
-				systems.set(systemId, system);
-			})
-		);
-
-		return systems;
+		return resolvedGroup;
 	}
 
 	private async findUsersForGroup(group: Group): Promise&lt;ResolvedGroupUser[]&gt; {
@@ -2587,11 +721,11 @@ export class GroupUc {
 				const user: UserDO | null &#x3D; await this.userService.findByIdOrNull(groupUser.userId);
 				let resolvedGroup: ResolvedGroupUser | null &#x3D; null;
 
-				/* TODO add this log back later
-					    this.logger.warning(
+				if (!user) {
+					this.logger.warning(
 						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, groupUser.userId)
-					); */
-				if (user) {
+					);
+				} else {
 					const role: RoleDto &#x3D; await this.roleService.findById(groupUser.roleId);
 
 					resolvedGroup &#x3D; new ResolvedGroupUser({
@@ -2612,42 +746,11 @@ export class GroupUc {
 		return resolvedGroupUsers;
 	}
 
-	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined): ClassInfoDto[] {
-		let page: ClassInfoDto[];
-
-		if (limit &#x3D;&#x3D;&#x3D; -1) {
-			page &#x3D; combinedClassInfo.slice(skip);
-		} else {
-			page &#x3D; combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
-		}
-
-		return page;
-	}
-
-	public async getGroup(userId: EntityId, groupId: EntityId): Promise&lt;ResolvedGroupDto&gt; {
-		const group: Group &#x3D; await this.groupService.findById(groupId);
-
-		await this.checkPermission(userId, group);
-
-		const resolvedUsers: ResolvedGroupUser[] &#x3D; await this.findUsersForGroup(group);
-		const resolvedGroup: ResolvedGroupDto &#x3D; GroupUcMapper.mapToResolvedGroupDto(group, resolvedUsers);
-
-		return resolvedGroup;
-	}
-
-	private async checkPermission(userId: EntityId, group: Group): Promise&lt;void&gt; {
-		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		return this.authorizationService.checkPermission(
-			user,
-			group,
-			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
-		);
-	}
-
 	public async getAllGroups(
 		userId: EntityId,
 		schoolId: EntityId,
-		query?: IFindQuery,
+		options: IFindOptions&lt;Group&gt; &#x3D; { pagination: { skip: 0 } },
+		nameQuery?: string,
 		availableGroupsForCourseSync?: boolean
 	): Promise&lt;Page&lt;ResolvedGroupDto&gt;&gt; {
 		const school: School &#x3D; await this.schoolService.getSchoolById(schoolId);
@@ -2657,12 +760,16 @@ export class GroupUc {
 
 		const canSeeFullList: boolean &#x3D; this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
 
-		let groups: Page&lt;Group&gt;;
+		const filter: GroupFilter &#x3D; { nameQuery };
+		options.order &#x3D; { name: SortOrder.asc };
+
 		if (canSeeFullList) {
-			groups &#x3D; await this.getGroupsForSchool(school, query, availableGroupsForCourseSync);
+			filter.schoolId &#x3D; schoolId;
 		} else {
-			groups &#x3D; await this.getGroupsForUser(userId, query, availableGroupsForCourseSync);
+			filter.userId &#x3D; userId;
 		}
+
+		const groups: Page&lt;Group&gt; &#x3D; await this.getGroups(filter, options, availableGroupsForCourseSync);
 
 		const resolvedGroups: ResolvedGroupDto[] &#x3D; await Promise.all(
 			groups.data.map(async (group: Group) &#x3D;&gt; {
@@ -2678,32 +785,16 @@ export class GroupUc {
 		return page;
 	}
 
-	private async getGroupsForSchool(
-		school: School,
-		query?: IFindQuery,
+	private async getGroups(
+		filter: GroupFilter,
+		options: IFindOptions&lt;Group&gt;,
 		availableGroupsForCourseSync?: boolean
 	): Promise&lt;Page&lt;Group&gt;&gt; {
 		let foundGroups: Page&lt;Group&gt;;
 		if (availableGroupsForCourseSync &amp;&amp; this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;)) {
-			foundGroups &#x3D; await this.groupService.findAvailableGroupsBySchoolId(school, query);
+			foundGroups &#x3D; await this.groupService.findAvailableGroups(filter, options);
 		} else {
-			foundGroups &#x3D; await this.groupService.findGroupsBySchoolIdAndGroupTypes(school, undefined, query);
-		}
-
-		return foundGroups;
-	}
-
-	private async getGroupsForUser(
-		userId: EntityId,
-		query?: IFindQuery,
-		availableGroupsForCourseSync?: boolean
-	): Promise&lt;Page&lt;Group&gt;&gt; {
-		let foundGroups: Page&lt;Group&gt;;
-		const user: UserDO &#x3D; await this.userService.findById(userId);
-		if (availableGroupsForCourseSync &amp;&amp; this.configService.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;)) {
-			foundGroups &#x3D; await this.groupService.findAvailableGroupsByUser(user, query);
-		} else {
-			foundGroups &#x3D; await this.groupService.findGroupsByUserAndGroupTypes(user, undefined, query);
+			foundGroups &#x3D; await this.groupService.findGroups(filter, options);
 		}
 
 		return foundGroups;

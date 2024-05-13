@@ -222,8 +222,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/group/controller/group.controller.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -524,13 +524,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
+import { Group } from &#x27;@modules/group&#x27;;
 import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject&#x27;;
-import { IFindQuery } from &#x27;@shared/domain/interface&#x27;;
+import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
 import { ErrorResponse } from &#x27;@src/core/error/dto&#x27;;
-import { GroupUc } from &#x27;../uc&#x27;;
+import { ClassGroupUc, GroupUc } from &#x27;../uc&#x27;;
 import { ClassInfoDto, ResolvedGroupDto } from &#x27;../uc/dto&#x27;;
 import {
 	ClassCallerParams,
@@ -549,7 +550,7 @@ import { GroupResponseMapper } from &#x27;./mapper&#x27;;
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;groups&#x27;)
 export class GroupController {
-	constructor(private readonly groupUc: GroupUc) {}
+	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
 
 	@ApiOperation({ summary: &#x27;Get a list of classes and groups of type class for the current user.&#x27; })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
@@ -563,13 +564,12 @@ export class GroupController {
 		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;ClassInfoSearchListResponse&gt; {
-		const board: Page&lt;ClassInfoDto&gt; &#x3D; await this.groupUc.findAllClasses(
+		const board: Page&lt;ClassInfoDto&gt; &#x3D; await this.classGroupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
 			callerParams.calledFrom,
-			pagination.skip,
-			pagination.limit,
+			pagination,
 			sortingQuery.sortBy,
 			sortingQuery.sortOrder
 		);
@@ -611,13 +611,16 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() params: GroupParams
 	): Promise&lt;GroupListResponse&gt; {
-		const query: IFindQuery &#x3D; { pagination, nameQuery: params.nameQuery };
+		const options: IFindOptions&lt;Group&gt; &#x3D; { pagination };
+
 		const groups: Page&lt;ResolvedGroupDto&gt; &#x3D; await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
-			query,
+			options,
+			params.nameQuery,
 			params.availableGroupsForCourseSync
 		);
+
 		const response: GroupListResponse &#x3D; GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;
