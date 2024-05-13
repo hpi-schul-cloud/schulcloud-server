@@ -52,8 +52,6 @@ spec:
             name: amqp-files-configmap
         - secretRef:
             name: amqp-files-secret
-        - secretRef:
-            name: api-secret
         command: ['npm', 'run', 'nest:start:files-storage-amqp:prod']
         resources:
           limits:
