@@ -458,5 +458,64 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
+		describe('when a valid code is provided with deactivated account', () => {
+			const setup = async (inputExternalId: string) => {
+				const schoolExternalId = 'schoolExternalId';
+				const userExternalId = inputExternalId;
+
+				const system = systemEntityFactory.withOauthConfig().buildWithId({});
+				const school = schoolEntityFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const teacherRoles = roleFactory.build({ name: RoleName.TEACHER, permissions: [] });
+				const user = userFactory.buildWithId({ school, roles: [teacherRoles], externalId: userExternalId });
+				const account = accountFactory.buildWithId({
+					userId: user.id,
+					systemId: system.id,
+					deactivatedAt: new Date(),
+				});
+
+				await em.persistAndFlush([system, school, teacherRoles, user, account]);
+
+				const idToken: string = jwt.sign(
+					{
+						sub: 'testUser2',
+						iss: system.oauthConfig?.issuer,
+						aud: system.oauthConfig?.clientId,
+						iat: Date.now(),
+						exp: Date.now() + 100000,
+						// For OIDC provisioning strategy
+						external_sub: userExternalId,
+					},
+					privateKey,
+					{
+						algorithm: 'RS256',
+					}
+				);
+
+				const axiosMock: MockAdapter = new MockAdapter(axios);
+
+				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
+					id_token: idToken,
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				});
+
+				return {
+					system,
+					idToken,
+				};
+			};
+
+			it('should return error response', async () => {
+				const { system } = await setup('user2ExternalId');
+
+				const response: Response = await request(app.getHttpServer()).post(`${basePath}/oauth2`).send({
+					redirectUri: 'redirectUri',
+					code: 'code',
+					systemId: system.id,
+				});
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
 	});
 });
