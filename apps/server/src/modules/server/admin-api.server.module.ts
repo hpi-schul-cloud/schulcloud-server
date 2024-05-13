@@ -11,6 +11,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
 import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
+import { EtherpadClientModule } from '@src/infra/etherpad-client';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
 
@@ -19,6 +21,10 @@ const serverModules = [
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
+	EtherpadClientModule.register({
+		apiKey: Configuration.has('ETHERPAD_API_KEY') ? (Configuration.get('ETHERPAD_API_KEY') as string) : undefined,
+		basePath: Configuration.has('ETHERPAD_URI') ? (Configuration.get('ETHERPAD_URI') as string) : undefined,
+	}),
 ];
 
 @Module({
