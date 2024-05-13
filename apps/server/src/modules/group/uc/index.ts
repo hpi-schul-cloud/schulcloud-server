@@ -1,1 +1,2 @@
-export * from './group.uc';
+export { GroupUc } from './group.uc';
+export { ClassGroupUc } from './class-group.uc';

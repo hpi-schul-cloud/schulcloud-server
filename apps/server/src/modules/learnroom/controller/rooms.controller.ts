@@ -69,7 +69,6 @@ export class RoomsController {
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
-		dto.elementsTypes = CopyMapper.mapElementsToTypes(copyStatus);
 		return dto;
 	}
 

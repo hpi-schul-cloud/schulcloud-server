@@ -185,7 +185,7 @@ describe('[ImportUserModule]', () => {
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
 				const schoolServiceSpy = jest.spyOn(schoolService, 'getSchoolById').mockResolvedValue(createMockSchoolDo());
 				const permissionServiceSpy = jest.spyOn(authorizationService, 'checkAllPermissions').mockReturnValue();
-				const userRepoFindUnmatchedSpy = jest.spyOn(userRepo, 'findWithoutImportUser').mockResolvedValueOnce([[], 0]);
+				const userRepoFindUnmatchedSpy = jest.spyOn(userRepo, 'findForImportUser').mockResolvedValueOnce([[], 0]);
 				const query = {};
 				const [result, count] = await uc.findAllUnmatchedUsers(user.id, query);
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);

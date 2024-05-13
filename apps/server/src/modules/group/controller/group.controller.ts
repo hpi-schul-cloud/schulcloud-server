@@ -1,11 +1,12 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Group } from '@modules/group';
 import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
-import { IFindQuery } from '@shared/domain/interface';
+import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
-import { GroupUc } from '../uc';
+import { ClassGroupUc, GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
 	ClassCallerParams,
@@ -24,7 +25,7 @@ import { GroupResponseMapper } from './mapper';
 @Authenticate('jwt')
 @Controller('groups')
 export class GroupController {
-	constructor(private readonly groupUc: GroupUc) {}
+	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
 
 	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
@@ -38,13 +39,12 @@ export class GroupController {
 		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
-		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
+		const board: Page<ClassInfoDto> = await this.classGroupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
 			callerParams.calledFrom,
-			pagination.skip,
-			pagination.limit,
+			pagination,
 			sortingQuery.sortBy,
 			sortingQuery.sortOrder
 		);
@@ -86,13 +86,16 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() params: GroupParams
 	): Promise<GroupListResponse> {
-		const query: IFindQuery = { pagination, nameQuery: params.nameQuery };
+		const options: IFindOptions<Group> = { pagination };
+
 		const groups: Page<ResolvedGroupDto> = await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
-			query,
+			options,
+			params.nameQuery,
 			params.availableGroupsForCourseSync
 		);
+
 		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;
