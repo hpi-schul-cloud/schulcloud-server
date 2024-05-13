@@ -54,10 +54,10 @@ spec:
         resources:
           limits:
             cpu: {{ COURSE_EXPORT_IMPORT_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ COURSE_EXPORT_IMPORT_MEMORY_LIMITS|default("500Mi", true) }}8
+            memory: {{ COURSE_EXPORT_IMPORT_MEMORY_LIMITS|default("500Mi", true) }}
           requests:
             cpu: {{ COURSE_EXPORT_IMPORT_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ COURSE_EXPORT_IMPORT_MEMORY_REQUESTS|default("250Mi", true) }}
+            memory: {{ COURSE_EXPORT_IMPORT_MEMORY_REQUESTS|default("50Mi", true) }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
