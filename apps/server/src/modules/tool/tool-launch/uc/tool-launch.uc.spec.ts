@@ -127,7 +127,7 @@ describe('ToolLaunchUc', () => {
 			it('should check user permissions to launch the tool', async () => {
 				const { user, contextExternalToolId, contextExternalTool } = setup();
 
-				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					user,
@@ -139,7 +139,7 @@ describe('ToolLaunchUc', () => {
 			it('should call service to get context external tool', async () => {
 				const { user, contextExternalToolId } = setup();
 
-				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
 				expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalToolId);
 			});
@@ -147,7 +147,7 @@ describe('ToolLaunchUc', () => {
 			it('should call service to get data', async () => {
 				const { user, contextExternalToolId, contextExternalTool } = setup();
 
-				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
 				expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(user.id, contextExternalTool);
 			});
@@ -157,7 +157,7 @@ describe('ToolLaunchUc', () => {
 
 				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
-				await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
 				expect(toolLaunchService.generateLaunchRequest).toHaveBeenCalledWith(toolLaunchData);
 			});
@@ -165,7 +165,10 @@ describe('ToolLaunchUc', () => {
 			it('should return launch request', async () => {
 				const { user, contextExternalToolId } = setup();
 
-				const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+				const toolLaunchRequest: ToolLaunchRequest = await uc.getContextExternalToolLaunchRequest(
+					user.id,
+					contextExternalToolId
+				);
 
 				expect(toolLaunchRequest).toBeDefined();
 			});
@@ -209,7 +212,7 @@ describe('ToolLaunchUc', () => {
 				it('should not check license', async () => {
 					const { user, contextExternalToolId } = setup();
 
-					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
 					expect(mediaUserLicenseService.hasLicenseForExternalTool).not.toHaveBeenCalled();
 				});
@@ -217,7 +220,10 @@ describe('ToolLaunchUc', () => {
 				it('should return launch request', async () => {
 					const { user, contextExternalToolId } = setup();
 
-					const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					const toolLaunchRequest: ToolLaunchRequest = await uc.getContextExternalToolLaunchRequest(
+						user.id,
+						contextExternalToolId
+					);
 
 					expect(toolLaunchRequest).toBeDefined();
 				});
@@ -263,7 +269,7 @@ describe('ToolLaunchUc', () => {
 				it('should check license', async () => {
 					const { user, contextExternalToolId } = setup();
 
-					await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					await uc.getContextExternalToolLaunchRequest(user.id, contextExternalToolId);
 
 					expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
 				});
@@ -271,7 +277,10 @@ describe('ToolLaunchUc', () => {
 				it('should return launch request', async () => {
 					const { user, contextExternalToolId } = setup();
 
-					const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					const toolLaunchRequest: ToolLaunchRequest = await uc.getContextExternalToolLaunchRequest(
+						user.id,
+						contextExternalToolId
+					);
 
 					expect(toolLaunchRequest).toBeDefined();
 				});
@@ -317,7 +326,10 @@ describe('ToolLaunchUc', () => {
 				it('should throw MissingMediaLicenseLoggableException', async () => {
 					const { user, contextExternalToolId } = setup();
 
-					const toolLaunchRequest: Promise<ToolLaunchRequest> = uc.getToolLaunchRequest(user.id, contextExternalToolId);
+					const toolLaunchRequest: Promise<ToolLaunchRequest> = uc.getContextExternalToolLaunchRequest(
+						user.id,
+						contextExternalToolId
+					);
 
 					await expect(toolLaunchRequest).rejects.toThrow(MissingMediaLicenseLoggableException);
 				});

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalToolLaunchable } from '@src/modules/tool/context-external-tool/domain';
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { ExternalToolService } from '../../../external-tool/service';
@@ -12,7 +12,7 @@ export class AutoMediumIdStrategy implements AutoParameterStrategy {
 	async getValue(
 		schoolExternalTool: SchoolExternalTool,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 		return externalTool.medium?.mediumId;

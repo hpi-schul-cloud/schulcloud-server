@@ -1,5 +1,5 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiForbiddenResponse,
@@ -8,10 +8,16 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { PseudoContextExternalTool } from '../domain/pseudo-context-external-tool';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from '../uc';
-import { ToolLaunchParams, ToolLaunchRequestResponse } from './dto';
+import {
+	ContextExternalToolBodyParams,
+	ContextExternalToolLaunchParams,
+	SchoolExternalToolLaunchParams,
+	ToolLaunchRequestResponse,
+} from './dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -25,13 +31,44 @@ export class ToolLaunchController {
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
-	async getToolLaunchRequest(
+	async getContextExternalToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolLaunchParams
+		@Param() params: ContextExternalToolLaunchParams
 	): Promise<ToolLaunchRequestResponse> {
-		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getToolLaunchRequest(
+		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getContextExternalToolLaunchRequest(
 			currentUser.userId,
 			params.contextExternalToolId
+		);
+
+		const response: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
+		return response;
+	}
+
+	@Post('school/:schoolExternalToolId/launch')
+	@ApiOperation({ summary: 'Get tool launch request for a context external tool id' })
+	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
+	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
+	@ApiForbiddenResponse({ description: 'Forbidden' })
+	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
+	async getSchoolExternalToolLaunchRequest(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: SchoolExternalToolLaunchParams,
+		@Body() body: ContextExternalToolBodyParams
+	): Promise<ToolLaunchRequestResponse> {
+		const pseudoContextExternalTool = new PseudoContextExternalTool({
+			schoolToolRef: {
+				schoolToolId: params.schoolExternalToolId,
+			},
+			contextRef: {
+				type: body.contextType,
+				id: body.contextId,
+			},
+			parameters: [],
+		});
+
+		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getSchoolExternalToolLaunchRequest(
+			currentUser.userId,
+			pseudoContextExternalTool
 		);
 
 		const response: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);

@@ -23,7 +23,7 @@ import { externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { LaunchRequestMethod } from '../../types';
-import { ToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
+import { ContextExternalToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;
@@ -90,7 +90,7 @@ describe('ToolLaunchController (API)', () => {
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+				const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					school,
@@ -148,7 +148,7 @@ describe('ToolLaunchController (API)', () => {
 					toolVersion: 0,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+				const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					school,
@@ -201,7 +201,7 @@ describe('ToolLaunchController (API)', () => {
 						toolVersion: 0,
 					});
 
-					const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+					const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 					await em.persistAndFlush([
 						school,
@@ -255,7 +255,7 @@ describe('ToolLaunchController (API)', () => {
 						toolVersion: 0,
 					});
 
-					const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+					const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 					await em.persistAndFlush([
 						school,
@@ -306,7 +306,7 @@ describe('ToolLaunchController (API)', () => {
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+				const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					toolSchool,
@@ -337,7 +337,7 @@ describe('ToolLaunchController (API)', () => {
 		describe('when user is not authenticated', () => {
 			const setup = () => {
 				const contextExternalTool = contextExternalToolFactory.buildWithId();
-				const params: ToolLaunchParams = {
+				const params: ContextExternalToolLaunchParams = {
 					contextExternalToolId: contextExternalTool.id as string,
 				};
 

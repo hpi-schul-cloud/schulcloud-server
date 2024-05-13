@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
+	AuthorizableReferenceType,
 	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
-	AuthorizableReferenceType,
 } from '@modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
@@ -14,12 +14,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, ExternalToolElement } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import {
+	boardDoAuthorizableFactory,
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolElementFactory,
 	setupEntities,
 	userFactory,
-	boardDoAuthorizableFactory,
 } from '@shared/testing';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { ToolContextType } from '../enum';
