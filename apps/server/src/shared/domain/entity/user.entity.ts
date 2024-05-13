@@ -8,6 +8,7 @@ import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
 import { SchoolEntity, SchoolRoles } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
+import { UserSourceOptionsEntity } from './user-source-options-entity';
 
 export interface UserProperties {
 	email: string;
@@ -29,6 +30,8 @@ export interface UserProperties {
 	parents?: UserParentsEntity[];
 	lastSyncedAt?: Date;
 	consent?: ConsentEntity;
+	source?: string;
+	sourceOptions?: UserSourceOptionsEntity;
 }
 
 interface UserInfo {
@@ -122,6 +125,13 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	lastSyncedAt?: Date;
 
+	@Property({ nullable: true })
+	@Index()
+	source?: string;
+
+	@Embedded(() => UserSourceOptionsEntity, { object: true, nullable: true })
+	sourceOptions?: UserSourceOptionsEntity;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -143,6 +153,13 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.parents = props.parents;
 		this.lastSyncedAt = props.lastSyncedAt;
 		this.consent = props.consent;
+		if (props.source !== undefined) {
+			this.source = props.source;
+		}
+
+		if (props.sourceOptions !== undefined) {
+			this.sourceOptions = props.sourceOptions;
+		}
 	}
 
 	public resolvePermissions(): string[] {

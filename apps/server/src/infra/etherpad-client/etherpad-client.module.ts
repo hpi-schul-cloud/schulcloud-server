@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { AuthorApi, GroupApi, SessionApi } from './etherpad-api-client/api';
+import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import { Configuration, ConfigurationParameters } from './etherpad-api-client/configuration';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
 
@@ -32,6 +32,13 @@ export class EtherpadClientModule {
 				useFactory: () => {
 					const configuration = new Configuration(config);
 					return new AuthorApi(configuration);
+				},
+			},
+			{
+				provide: PadApi,
+				useFactory: () => {
+					const configuration = new Configuration(config);
+					return new PadApi(configuration);
 				},
 			},
 		];

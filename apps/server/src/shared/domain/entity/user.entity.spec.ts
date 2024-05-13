@@ -33,6 +33,8 @@ describe('User Entity', () => {
 				email: 'john.cale@velvet.underground',
 				school,
 				roles: [],
+				source: 'ldap',
+				sourceOptions: { tspUid: '123' },
 			});
 
 			expect(user).toBeInstanceOf(User);
