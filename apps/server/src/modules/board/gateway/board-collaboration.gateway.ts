@@ -175,8 +175,6 @@ export class BoardCollaborationGateway {
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('fetch-board-success', responsePayload);
 			client.emit('fetch-board-success', responsePayload);
 		} catch (err) {
 			client.emit('fetch-board-failure', new Error('Failed to fetch board'));
@@ -267,7 +265,6 @@ export class BoardCollaborationGateway {
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
 			const room = await this.ensureUserInRoom(client, data.cardIds[0]);
-			client.to(room).emit('fetch-card-success', { cards: cardResponses });
 			client.emit('fetch-card-success', { cards: cardResponses });
 		} catch (err) {
 			client.emit('fetch-card-failure', new Error('Failed to fetch board'));
