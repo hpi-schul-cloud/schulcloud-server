@@ -77,18 +77,20 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		let updateUser = false;
 		let updateAccount = false;
+
+		let accountPassword: string | undefined;
+		let accountUsername: string | undefined;
+
 		if (updateData.passwordNew) {
-			account.password = updateData.passwordNew;
+			accountPassword = updateData.passwordNew;
 			updateAccount = true;
-		} else {
-			account.password = undefined;
 		}
 
 		if (updateData.email && user.email !== updateData.email) {
 			const newMail = updateData.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
-			account.username = newMail;
+			accountUsername = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -112,7 +114,13 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		if (updateAccount) {
 			try {
-				await this.save(account);
+				const updateProps = new AccountSave({
+					id: account.id,
+					password: accountPassword,
+					username: accountUsername,
+				});
+
+				await this.save(updateProps);
 			} catch (err) {
 				throw new EntityNotFoundError(AccountEntity.name);
 			}

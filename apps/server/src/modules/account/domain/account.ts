@@ -138,7 +138,7 @@ export class AccountSave {
 
 	public credentialHash: string | undefined;
 
-	constructor(props: Readonly<AccountSave>) {
+	constructor(props: Partial<Readonly<AccountSave>>) {
 		this.id = props.id;
 		this.userId = props.userId;
 		this.systemId = props.systemId;
