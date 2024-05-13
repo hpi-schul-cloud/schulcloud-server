@@ -10,11 +10,11 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { type ContextExternalTool } from '../../context-external-tool/domain';
+import { type ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { type SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { PseudoContextExternalTool } from '../domain/pseudo-context-external-tool';
+import { LaunchContextUnavailableLoggableException } from '../error';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 
@@ -55,15 +55,11 @@ export class ToolLaunchUc {
 
 	async getSchoolExternalToolLaunchRequest(
 		userId: EntityId,
-		pseudoContextExternalTool: PseudoContextExternalTool
+		pseudoContextExternalTool: ContextExternalToolLaunchable
 	): Promise<ToolLaunchRequest> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			pseudoContextExternalTool.schoolToolRef.schoolToolId
 		);
-
-		if (pseudoContextExternalTool.contextRef.type !== ToolContextType.MEDIA_BOARD) {
-			throw new Error('Not a valid context for school external tool launch');
-		}
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
@@ -74,6 +70,13 @@ export class ToolLaunchUc {
 			pseudoContextExternalTool.contextRef.type,
 			context
 		);
+
+		const availableLaunchContexts: ToolContextType[] = [ToolContextType.MEDIA_BOARD];
+		if (!availableLaunchContexts.includes(pseudoContextExternalTool.contextRef.type)) {
+			throw new LaunchContextUnavailableLoggableException(pseudoContextExternalTool, userId);
+		}
+
+		await this.contextExternalToolService.checkContextRestrictions(pseudoContextExternalTool);
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
 			await this.checkUserHasLicenseForExternalTool(pseudoContextExternalTool, userId);
@@ -89,7 +92,7 @@ export class ToolLaunchUc {
 	}
 
 	private async checkUserHasLicenseForExternalTool(
-		contextExternalTool: ContextExternalTool | PseudoContextExternalTool,
+		contextExternalTool: ContextExternalToolLaunchable,
 		userId: EntityId
 	): Promise<void> {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;

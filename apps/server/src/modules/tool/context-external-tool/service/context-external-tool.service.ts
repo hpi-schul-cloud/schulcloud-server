@@ -9,6 +9,7 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import {
 	ContextExternalTool,
+	ContextExternalToolLaunchable,
 	ContextExternalToolWithId,
 	ContextRef,
 	RestrictedContextMismatchLoggableException,
@@ -71,7 +72,7 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	public async checkContextRestrictions(contextExternalTool: ContextExternalTool): Promise<void> {
+	public async checkContextRestrictions(contextExternalTool: ContextExternalToolLaunchable): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);

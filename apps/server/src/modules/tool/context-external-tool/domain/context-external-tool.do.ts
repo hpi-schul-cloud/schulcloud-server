@@ -15,15 +15,7 @@ export interface ContextExternalToolLaunchable {
 }
 
 export interface ContextExternalToolProps extends ContextExternalToolLaunchable {
-	id?: string;
-
-	schoolToolRef: SchoolExternalToolRefDO;
-
-	contextRef: ContextRef;
-
 	displayName?: string;
-
-	parameters: CustomParameterEntry[];
 
 	toolVersion: number;
 }

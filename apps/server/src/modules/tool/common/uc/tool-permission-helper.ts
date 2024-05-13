@@ -46,7 +46,6 @@ export class ToolPermissionHelper {
 		);
 	}
 
-	// TODO build interface to get contextDO by contextType
 	private async checkPermissionsByContextRef(
 		user: User,
 		contextId: EntityId,

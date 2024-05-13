@@ -8,7 +8,6 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { PseudoContextExternalTool } from '../domain/pseudo-context-external-tool';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from '../uc';
@@ -55,20 +54,18 @@ export class ToolLaunchController {
 		@Param() params: SchoolExternalToolLaunchParams,
 		@Body() body: ContextExternalToolBodyParams
 	): Promise<ToolLaunchRequestResponse> {
-		const pseudoContextExternalTool = new PseudoContextExternalTool({
-			schoolToolRef: {
-				schoolToolId: params.schoolExternalToolId,
-			},
-			contextRef: {
-				type: body.contextType,
-				id: body.contextId,
-			},
-			parameters: [],
-		});
-
 		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getSchoolExternalToolLaunchRequest(
 			currentUser.userId,
-			pseudoContextExternalTool
+			{
+				schoolToolRef: {
+					schoolToolId: params.schoolExternalToolId,
+				},
+				contextRef: {
+					type: body.contextType,
+					id: body.contextId,
+				},
+				parameters: [],
+			}
 		);
 
 		const response: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);

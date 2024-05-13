@@ -11,7 +11,7 @@ export class ContextExternalToolBodyParams {
 	@ApiProperty({
 		enum: ToolContextType,
 		enumName: 'ToolContextType',
-		example: ToolContextType.COURSE,
+		example: ToolContextType.MEDIA_BOARD,
 	})
 	contextType!: ToolContextType;
 }
