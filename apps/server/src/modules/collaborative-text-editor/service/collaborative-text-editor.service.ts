@@ -33,14 +33,13 @@ export class CollaborativeTextEditorService {
 			parentId,
 			sessionExpiryDate
 		);
-		const authorsSessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
 		const url = this.buildPath(padId);
-		const uniqueSessionIds = this.removeDuplicateSessions([...authorsSessionIds, sessionId]);
 
 		return {
-			sessions: uniqueSessionIds,
+			sessionId,
 			url,
+			path: `/p/${padId}`,
 			sessionExpiryDate,
 		};
 	}
@@ -51,10 +50,13 @@ export class CollaborativeTextEditorService {
 		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
 	}
 
-	private removeDuplicateSessions(sessions: string[]): string[] {
-		const uniqueSessions = [...new Set(sessions)];
+	async deleteSessionsByUser(userId: string) {
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId);
+		const sessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
-		return uniqueSessions;
+		const promises = sessionIds.map((sessionId) => this.collaborativeTextEditorAdapter.deleteSession(sessionId));
+
+		await Promise.all(promises);
 	}
 
 	private buildSessionExpiryDate(): Date {

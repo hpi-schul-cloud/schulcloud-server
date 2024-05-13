@@ -31,7 +31,7 @@ export class EtherpadClientAdapter {
 		private readonly authorApi: AuthorApi
 	) {}
 
-	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
+	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise<AuthorId> {
 		const response = await this.tryCreateAuthor(userId, username);
 		const user = this.handleEtherpadResponse<InlineResponse2003>(response, { userId });
 
@@ -40,7 +40,7 @@ export class EtherpadClientAdapter {
 		return authorId;
 	}
 
-	private async tryCreateAuthor(userId: string, username: string): Promise<AxiosResponse<InlineResponse2003>> {
+	private async tryCreateAuthor(userId: string, username?: string): Promise<AxiosResponse<InlineResponse2003>> {
 		try {
 			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
 
@@ -69,6 +69,14 @@ export class EtherpadClientAdapter {
 		sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
 
 		return sessionId;
+	}
+
+	public async deleteSession(sessionId: SessionId) {
+		try {
+			await this.sessionApi.deleteSessionUsingPOST(sessionId);
+		} catch (error) {
+			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
+		}
 	}
 
 	private async tryCreateSession(

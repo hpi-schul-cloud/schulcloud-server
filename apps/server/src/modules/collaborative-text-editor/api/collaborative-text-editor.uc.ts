@@ -36,6 +36,12 @@ export class CollaborativeTextEditorUc {
 		return textEditor;
 	}
 
+	async deleteSessionsByUser(userId: string): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		await this.collaborativeTextEditorService.deleteSessionsByUser(user.id);
+	}
+
 	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User) {
 		if (params.parentType === CollaborativeTextEditorParentType.BOARD_CONTENT_ELEMENT) {
 			await this.authorizeForContentElement(params, user);
