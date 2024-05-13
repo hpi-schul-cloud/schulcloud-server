@@ -215,10 +215,12 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		setOfPermissions: Set<string>,
 		schoolPermissions?: SchoolRoles
 	): Set<string> {
-		if (schoolPermissions?.student?.LERNSTORE_VIEW) {
-			setOfPermissions.add(Permission.LERNSTORE_VIEW);
-		} else {
-			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
+		if (schoolPermissions?.student) {
+			if (schoolPermissions.student.LERNSTORE_VIEW) {
+				setOfPermissions.add(Permission.LERNSTORE_VIEW);
+			} else {
+				setOfPermissions.delete(Permission.LERNSTORE_VIEW);
+			}
 		}
 
 		return setOfPermissions;

@@ -261,6 +261,44 @@ describe('User Entity', () => {
 	});
 
 	describe('when user is a student', () => {
+		describe('when LERNSTORE_VIEW permission is not set for school', () => {
+			describe('when user has LERNSTORE_VIEW permission from his role', () => {
+				const setup = () => {
+					const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [Permission.LERNSTORE_VIEW] });
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the unchanged permissions of the user', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([Permission.LERNSTORE_VIEW].sort());
+				});
+			});
+
+			describe('when user does not have LERNSTORE_VIEW permission from his role', () => {
+				const setup = () => {
+					const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });
+					const school = schoolEntityFactory.build();
+					const user = userFactory.build({ roles: [role], school });
+
+					return { user };
+				};
+
+				it('should return the unchanged permissions of the user', () => {
+					const { user } = setup();
+
+					const result = user.resolvePermissions();
+
+					expect(result.sort()).toEqual([permissionA].sort());
+				});
+			});
+		});
+
 		describe('when school permissions `LERNSTORE_VIEW` is true', () => {
 			const setup = () => {
 				const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });
