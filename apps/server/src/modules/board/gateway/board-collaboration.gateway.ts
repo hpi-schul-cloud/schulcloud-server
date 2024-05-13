@@ -13,6 +13,7 @@ import {
 	UpdateColumnTitleMessageParams,
 } from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
+import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { DeleteCardMessageParams } from './dto/delete-card.message.param';
@@ -148,9 +149,10 @@ export class BoardCollaborationGateway {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const column = await this.boardUc.createColumn(userId, data.boardId);
+			const newColumn = ColumnResponseMapper.mapToResponse(column);
 			const responsePayload = {
 				...data,
-				newColumn: column.getProps(),
+				newColumn,
 			};
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
