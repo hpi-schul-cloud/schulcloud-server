@@ -110,6 +110,8 @@ export interface ServerConfig
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
+	BOARD_COLLABORATION_URI: string;
+	FEATURE_NEW_LAYOUT_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -236,6 +238,8 @@ const config: ServerConfig = {
 	ALERT_CACHE_INTERVAL_MIN: Configuration.get('ALERT_CACHE_INTERVAL_MIN') as number,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
+	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
+	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get('FEATURE_NEW_LAYOUT_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;
