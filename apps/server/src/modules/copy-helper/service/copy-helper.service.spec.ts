@@ -124,6 +124,7 @@ describe('copy helper service', () => {
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
 			});
+
 			it('should return fail if the last and only nested child is FAIL ', () => {
 				const element = createNestedStates([
 					CopyStatusEnum.SUCCESS,
