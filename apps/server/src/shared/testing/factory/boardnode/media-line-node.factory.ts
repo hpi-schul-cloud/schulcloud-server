@@ -6,6 +6,7 @@ export const mediaLineNodeFactory = BaseFactory.define<MediaLineNode, MediaLineN
 	({ sequence }) => {
 		return {
 			title: `Line ${sequence}`,
+			backgroundColor: '#FFFFFF',
 		};
 	}
 );

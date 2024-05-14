@@ -3,11 +3,15 @@ import { MediaAvailableLineElement } from './media-available-line-element.do';
 export class MediaAvailableLine {
 	elements: MediaAvailableLineElement[];
 
+	backgroundColor: string;
+
 	constructor(props: MediaAvailableLineProps) {
 		this.elements = props.elements;
+		this.backgroundColor = props.backgroundColor;
 	}
 }
 
 export interface MediaAvailableLineProps {
 	elements: MediaAvailableLineElement[];
+	backgroundColor: string;
 }

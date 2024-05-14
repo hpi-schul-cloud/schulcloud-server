@@ -18,5 +18,6 @@ export const mediaLineFactory = MediaLineFactory.define(MediaLine, ({ sequence }
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		title: `Line ${sequence}`,
+		backgroundColor: '#ffffff',
 	};
 });

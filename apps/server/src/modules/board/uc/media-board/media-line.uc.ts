@@ -51,6 +51,18 @@ export class MediaLineUc {
 		await this.mediaLineService.updateTitle(line, title);
 	}
 
+	public async updateLineColor(userId: EntityId, lineId: EntityId, color: string) {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaLineService.updateColor(line, color);
+	}
+
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 

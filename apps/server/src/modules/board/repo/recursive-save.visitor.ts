@@ -269,6 +269,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 			title: mediaLine.title,
+			backgroundColor: mediaLine.backgroundColor,
 		});
 
 		this.saveRecursive(boardNode, mediaLine);

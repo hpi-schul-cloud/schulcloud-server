@@ -284,6 +284,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: elements,
 			title: boardNode.title,
+			backgroundColor: boardNode.backgroundColor,
 		});
 
 		return mediaLine;

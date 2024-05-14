@@ -125,7 +125,7 @@ export class MediaAvailableLineService {
 				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
 		);
 
-		const line: MediaAvailableLine = new MediaAvailableLine({ elements: lineElements });
+		const line: MediaAvailableLine = new MediaAvailableLine({ elements: lineElements, backgroundColor: '#ffffff' });
 
 		return line;
 	}

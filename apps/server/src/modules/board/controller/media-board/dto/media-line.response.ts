@@ -20,10 +20,14 @@ export class MediaLineResponse {
 	@ApiProperty({ description: 'The timestamps of the media line' })
 	timestamps: TimestampsResponse;
 
+	@ApiProperty({ description: 'The background color of the media line' })
+	backgroundColor: string;
+
 	constructor(props: MediaLineResponse) {
 		this.id = props.id;
 		this.title = props.title;
 		this.elements = props.elements;
 		this.timestamps = props.timestamps;
+		this.backgroundColor = props.backgroundColor;
 	}
 }

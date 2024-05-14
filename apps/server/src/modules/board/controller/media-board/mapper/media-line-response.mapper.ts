@@ -22,6 +22,7 @@ export class MediaLineResponseMapper {
 				lastUpdatedAt: line.updatedAt,
 				createdAt: line.createdAt,
 			}),
+			backgroundColor: line.backgroundColor,
 		});
 
 		return lineResponse;

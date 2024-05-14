@@ -8,7 +8,13 @@ export class MediaAvailableLineResponse {
 	})
 	elements: MediaAvailableLineElementResponse[];
 
+	@ApiProperty({
+		description: 'Background color of available media line',
+	})
+	backgroundColor: string;
+
 	constructor(props: MediaAvailableLineResponse) {
 		this.elements = props.elements;
+		this.backgroundColor = props.backgroundColor;
 	}
 }

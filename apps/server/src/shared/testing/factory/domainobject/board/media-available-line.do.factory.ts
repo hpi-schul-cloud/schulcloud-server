@@ -13,5 +13,6 @@ class MediaAvailableLineFactory extends BaseFactory<MediaAvailableLine, MediaAva
 export const mediaAvailableLineFactory = MediaAvailableLineFactory.define(MediaAvailableLine, () => {
 	return {
 		elements: [],
+		backgroundColor: '#000000',
 	};
 });

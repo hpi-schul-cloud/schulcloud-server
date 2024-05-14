@@ -23,6 +23,7 @@ import { ApiValidationError } from '@shared/common';
 import { MediaLineUc } from '../../uc';
 import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import { LineUrlParams } from './dto';
+import { ColorBodyParams } from './dto/color.body.params';
 
 @ApiTags('Media Line')
 @Authenticate('jwt')
@@ -58,6 +59,21 @@ export class MediaLineController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.mediaLineUc.updateLineTitle(currentUser.userId, urlParams.lineId, bodyParams.title);
+	}
+
+	@ApiOperation({ summary: 'Update the color of a single line.' })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(':lineId/color')
+	public async updateBackgroundColor(
+		@Param() urlParams: LineUrlParams,
+		@Body() bodyParams: ColorBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.mediaLineUc.updateLineColor(currentUser.userId, urlParams.lineId, bodyParams.backgroundColor);
 	}
 
 	@ApiOperation({ summary: 'Delete a single line.' })

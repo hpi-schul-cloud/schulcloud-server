@@ -19,6 +19,7 @@ export class MediaLineService {
 		const line: MediaLine = new MediaLine({
 			id: new ObjectId().toHexString(),
 			title: props?.title ?? '',
+			backgroundColor: props?.backgroundColor ?? '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -43,6 +44,14 @@ export class MediaLineService {
 		const parent: AnyBoardDo | undefined = await this.boardDoRepo.findParentOfId(line.id);
 
 		line.title = title;
+
+		await this.boardDoRepo.save(line, parent);
+	}
+
+	public async updateColor(line: MediaLine, color: string): Promise<void> {
+		const parent: AnyBoardDo | undefined = await this.boardDoRepo.findParentOfId(line.id);
+
+		line.backgroundColor = color;
 
 		await this.boardDoRepo.save(line, parent);
 	}

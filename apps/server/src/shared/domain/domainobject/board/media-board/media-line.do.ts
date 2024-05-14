@@ -11,6 +11,14 @@ export class MediaLine extends BoardComposite<MediaLineProps> {
 		this.props.title = title;
 	}
 
+	get backgroundColor(): string {
+		return this.props.backgroundColor;
+	}
+
+	set backgroundColor(backgroundColor: string) {
+		this.props.backgroundColor = backgroundColor;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed: boolean = domainObject instanceof MediaExternalToolElement;
 
@@ -28,6 +36,7 @@ export class MediaLine extends BoardComposite<MediaLineProps> {
 
 export interface MediaLineProps extends BoardCompositeProps {
 	title: string;
+	backgroundColor: string;
 }
 
 export type MediaLineInitProps = Omit<MediaLineProps, keyof BoardCompositeProps>;

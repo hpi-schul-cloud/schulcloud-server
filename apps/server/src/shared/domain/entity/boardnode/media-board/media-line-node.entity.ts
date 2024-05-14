@@ -10,10 +10,14 @@ export class MediaLineNode extends BoardNode {
 		this.type = BoardNodeType.MEDIA_LINE;
 
 		this.title = props.title;
+		this.backgroundColor = props.backgroundColor;
 	}
 
 	@Property({ nullable: false })
 	title: string;
+
+	@Property({ nullable: false })
+	backgroundColor: string;
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
 		const domainObject: MediaLine = builder.buildMediaLine(this);
@@ -23,4 +27,5 @@ export class MediaLineNode extends BoardNode {
 
 export interface MediaLineNodeProps extends BoardNodeProps {
 	title: string;
+	backgroundColor: string;
 }
