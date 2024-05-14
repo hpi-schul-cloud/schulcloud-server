@@ -41,8 +41,8 @@ describe(SchulconnexRestClient.name, () => {
 			const setup = () => {
 				const badOptions: SchulconnexRestClientOptions = {
 					apiUrl: '',
-					clientId: '',
-					clientSecret: '',
+					clientId: undefined,
+					clientSecret: undefined,
 					tokenEndpoint: '',
 				};
 				return {
@@ -57,6 +57,16 @@ describe(SchulconnexRestClient.name, () => {
 				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
 
 				expect(logger.debug).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
+			});
+
+			it('should reject promise if configuration is missing', async () => {
+				const { badOptions } = setup();
+
+				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
+
+				await expect(badOptionsClient.getPersonenInfo({})).rejects.toThrow(
+					'Missing configuration for SchulconnexRestClient'
+				);
 			});
 		});
 	});
@@ -80,7 +90,7 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPersonInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl}/person-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/person-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
@@ -163,7 +173,9 @@ describe(SchulconnexRestClient.name, () => {
 				});
 
 				expect(httpService.get).toHaveBeenCalledWith(
-					`${optionsWithTimeout.apiUrl}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
+					`${
+						optionsWithTimeout.apiUrl ?? ''
+					}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
 					{
 						headers: {
 							Authorization: `Bearer ${tokens.accessToken}`,
@@ -202,7 +214,7 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getLizenzInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl}/lizenz-info`, {
+				expect(httpService.get).toHaveBeenCalledWith(`${options.apiUrl ?? ''}/lizenz-info`, {
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
