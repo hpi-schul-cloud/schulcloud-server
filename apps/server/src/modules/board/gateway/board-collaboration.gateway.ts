@@ -1,9 +1,10 @@
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { BoardResponseMapper, CardResponseMapper } from '../controller/mapper';
+import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
 import { BoardDoAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
@@ -13,23 +14,24 @@ import {
 	UpdateColumnTitleMessageParams,
 } from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
-import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
+import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
 import { DeleteCardMessageParams } from './dto/delete-card.message.param';
+import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
 import { FetchCardsMessageParams } from './dto/fetch-cards.message.param';
 import { MoveColumnMessageParams } from './dto/move-column.message.param';
+import { MoveContentElementMessageParams } from './dto/move-content-element.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
-import { Socket } from './types';
-import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
-import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import { MoveContentElementMessageParams } from './dto/move-content-element.message.param';
+import { Socket } from './types';
+import { WsValidationPipe } from './ws-validation.pipe';
 
+@UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway {

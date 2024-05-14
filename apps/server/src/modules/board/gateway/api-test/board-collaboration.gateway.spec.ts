@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
@@ -10,7 +10,6 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
-	richTextElementFactory,
 	richTextElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
@@ -91,7 +90,7 @@ describe(BoardCollaborationGateway.name, () => {
 			it('should answer with failure', async () => {
 				await setup();
 
-				ioClient.emit('create-card-request', { columnId: 'non-existing-column' });
+				ioClient.emit('create-card-request', { columnId: new ObjectId().toHexString() });
 				const failure = await waitForEvent(ioClient, 'create-card-failure');
 
 				expect(failure).toBeDefined();
@@ -115,7 +114,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = 'non-existing-id';
+				const boardId = new ObjectId().toHexString();
 
 				ioClient.emit('fetch-board-request', { boardId });
 				const failure = await waitForEvent(ioClient, 'fetch-board-failure');
@@ -151,9 +150,7 @@ describe(BoardCollaborationGateway.name, () => {
 
 				const moveCardProps = {
 					cardId: cardNodes[0].id,
-					oldIndex: 0,
 					newIndex: 1,
-					fromColumnId: columnNode.id,
 					toColumnId: columnNode.id,
 				};
 
@@ -169,7 +166,7 @@ describe(BoardCollaborationGateway.name, () => {
 				const { columnNode } = await setup();
 
 				const moveCardProps = {
-					cardId: 'non-existing-card',
+					cardId: new ObjectId().toHexString(),
 					oldIndex: 0,
 					newIndex: 1,
 					fromColumnId: columnNode.id,
@@ -200,7 +197,7 @@ describe(BoardCollaborationGateway.name, () => {
 			it('should answer with failure', async () => {
 				await setup();
 
-				ioClient.emit('update-column-title-request', { columnId: 'non-existing-id', newTitle: 'new title' });
+				ioClient.emit('update-column-title-request', { columnId: new ObjectId().toHexString(), newTitle: 'new title' });
 				const failure = await waitForEvent(ioClient, 'update-column-title-failure');
 
 				expect(failure).toBeDefined();
@@ -224,7 +221,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = 'non-existing-id';
+				const boardId = new ObjectId().toHexString();
 
 				ioClient.emit('delete-board-request', { boardId });
 				const failure = await waitForEvent(ioClient, 'delete-board-failure');
@@ -250,7 +247,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = 'non-existing-id';
+				const boardId = new ObjectId().toHexString();
 
 				ioClient.emit('update-board-title-request', { boardId, newTitle: 'new title' });
 				const failure = await waitForEvent(ioClient, 'update-board-title-failure');
@@ -276,7 +273,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = 'non-existing-id';
+				const boardId = new ObjectId().toHexString();
 
 				ioClient.emit('create-column-request', { boardId });
 				const failure = await waitForEvent(ioClient, 'create-column-failure');
@@ -302,7 +299,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = 'non-existing-id';
+				const boardId = new ObjectId().toHexString();
 
 				ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
 				const failure = await waitForEvent(ioClient, 'update-board-visibility-failure');
@@ -328,7 +325,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when column does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const columnId = 'not-existing-id';
+				const columnId = new ObjectId().toHexString();
 
 				ioClient.emit('delete-column-request', { columnId });
 				const failure = await waitForEvent(ioClient, 'delete-column-failure');
@@ -365,13 +362,13 @@ describe(BoardCollaborationGateway.name, () => {
 				const { columnBoardNode } = await setup();
 
 				const moveColumnProps = {
-					columnId: 'non-existing-id',
+					columnId: new ObjectId().toHexString(),
 					targetBoardId: columnBoardNode.id,
 					newIndex: 1,
 					columnMove: {
 						addedIndex: 1,
 						removedIndex: 0,
-						columnId: 'non-existing-id',
+						columnId: new ObjectId().toHexString(),
 					},
 				};
 
@@ -399,7 +396,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const cardId = 'non-existing-id';
+				const cardId = new ObjectId().toHexString();
 
 				ioClient.emit('update-card-title-request', { cardId, newTitle: 'new title' });
 				const failure = await waitForEvent(ioClient, 'update-card-title-failure');
@@ -426,7 +423,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const cardId = 'non-existing-id';
+				const cardId = new ObjectId().toHexString();
 
 				ioClient.emit('update-card-height-request', { cardId, newHeight: 200 });
 				const failure = await waitForEvent(ioClient, 'update-card-height-failure');
@@ -452,7 +449,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const cardId = 'non-existing-id';
+				const cardId = new ObjectId().toHexString();
 
 				ioClient.emit('fetch-card-request', { cardIds: [cardId] });
 				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
@@ -478,7 +475,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const cardId = 'non-existing-id';
+				const cardId = new ObjectId().toHexString();
 
 				ioClient.emit('delete-card-request', { cardId });
 				const failure = await waitForEvent(ioClient, 'delete-card-failure');
@@ -519,7 +516,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const elementId = 'non-existing-id';
+				const elementId = new ObjectId().toHexString();
 
 				ioClient.emit('delete-element-request', { elementId });
 				const failure = await waitForEvent(ioClient, 'delete-element-failure');
@@ -535,23 +532,25 @@ describe(BoardCollaborationGateway.name, () => {
 				const { elementNodes } = await setup();
 				const elementId = elementNodes[0].id;
 
-				ioClient.emit('update-element-request', {
+				const payload = {
 					elementId,
 					data: {
 						type: ContentElementType.RICH_TEXT,
 						content: { text: 'some new text', inputFormat: InputFormat.PLAIN_TEXT },
 					},
-				});
+				};
+
+				ioClient.emit('update-element-request', payload);
 				const success = await waitForEvent(ioClient, 'update-element-success');
 
-				expect(success).toEqual({ elementId });
+				expect(success).toEqual(payload);
 			});
 		});
 
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const elementId = 'non-existing-id';
+				const elementId = new ObjectId().toHexString();
 
 				ioClient.emit('update-element-request', {
 					elementId,
