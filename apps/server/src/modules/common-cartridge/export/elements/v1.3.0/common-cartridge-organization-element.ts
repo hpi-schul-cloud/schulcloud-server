@@ -1,53 +1,50 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
-import { createIdentifier } from '../../utils';
+import { CommonCartridgeBase, CommonCartridgeOrganization, CommonCartridgeResource, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeOrganizationElementPropsV130 = {
 	type: CommonCartridgeElementType.ORGANIZATION;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	title: string;
-	items: CommonCartridgeResource | Array<CommonCartridgeElement | CommonCartridgeResource>;
+	items:
+		| (CommonCartridgeBase & CommonCartridgeOrganization & CommonCartridgeResource)
+		| Array<CommonCartridgeBase & CommonCartridgeOrganization>;
 };
 
-export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeElement {
+export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeBase implements CommonCartridgeOrganization {
 	constructor(private readonly props: CommonCartridgeOrganizationElementPropsV130) {
 		super(props);
+	}
+
+	public isResource(): boolean {
+		return false;
 	}
 
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): XmlObject {
-		if (this.props.items instanceof CommonCartridgeResource) {
-			return {
-				$: {
-					identifier: this.identifier,
-					identifierref: this.props.items.identifier,
-				},
-				title: this.title,
-			};
-		}
+	public getManifestOrganizationXmlObject(): XmlObject {
+		const xmlObject = Array.isArray(this.props.items)
+			? this.getManifestXmlObjectForMany(this.props.items)
+			: this.props.items.getManifestOrganizationXmlObject();
 
-		return {
+		return xmlObject;
+	}
+
+	public getManifestResourceXmlObject(): XmlObject {
+		throw new Error('CommonCartridgeOrganizationElementV130 does not support getManifestResourceXmlObject');
+	}
+
+	private getManifestXmlObjectForMany(items: Array<CommonCartridgeBase & CommonCartridgeOrganization>): XmlObject {
+		const xmlObject = {
 			$: {
 				identifier: this.identifier,
 			},
 			title: this.title,
-			item: this.props.items.map((item) => {
-				if (item instanceof CommonCartridgeResource) {
-					return {
-						$: {
-							identifier: createIdentifier(),
-							identifierref: item.identifier,
-						},
-						title: item.title,
-					};
-				}
-
-				return item.getManifestXmlObject();
-			}),
+			item: items.map((item) => item.getManifestOrganizationXmlObject()),
 		};
+
+		return xmlObject;
 	}
 }

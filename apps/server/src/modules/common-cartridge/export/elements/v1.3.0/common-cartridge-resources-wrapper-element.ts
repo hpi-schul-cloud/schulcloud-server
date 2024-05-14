@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement, XmlObject } from '../../interfaces';
+import { CommonCartridgeBase, CommonCartridgeElement, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeResourcesWrapperElementPropsV130 = {
 	type: CommonCartridgeElementType.RESOURCES_WRAPPER;
@@ -7,7 +7,7 @@ export type CommonCartridgeResourcesWrapperElementPropsV130 = {
 	items: CommonCartridgeElement[];
 };
 
-export class CommonCartridgeResourcesWrapperElementV130 extends CommonCartridgeElement {
+export class CommonCartridgeResourcesWrapperElementV130 extends CommonCartridgeBase implements CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeResourcesWrapperElementPropsV130) {
 		super(props);
 	}

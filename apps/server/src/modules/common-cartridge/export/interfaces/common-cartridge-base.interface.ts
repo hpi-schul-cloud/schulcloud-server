@@ -27,21 +27,3 @@ export abstract class CommonCartridgeBase {
 		}
 	}
 }
-
-// export abstract class CCElement extends CCBase {
-// 	abstract getManifestXmlObject(): XmlObject;
-// }
-
-// export abstract class CCOrganization extends CCBase {
-// 	abstract getManifestOrganizationXmlObject(): XmlObject;
-// }
-
-// export abstract class CCResource extends CCOrganization {
-// 	abstract getManifestResourceXmlObject(): XmlObject;
-
-// 	abstract canInline(): boolean;
-
-// 	abstract getFilePath(): string;
-
-// 	abstract getFileContent(): string;
-// }

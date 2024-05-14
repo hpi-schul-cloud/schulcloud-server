@@ -1,5 +1,5 @@
 import { IntendedUseNotSupportedLoggableException } from './errors';
-import { CommonCartridgeResource } from './interfaces';
+import { CommonCartridgeOrganization, CommonCartridgeResource } from './interfaces';
 
 export class CommonCartridgeGuard {
 	public static checkIntendedUse(intendedUse: string, supportedIntendedUses: string[]): void {
@@ -8,9 +8,11 @@ export class CommonCartridgeGuard {
 		}
 	}
 
-	public static isResource(element: unknown): element is CommonCartridgeResource {
-		const result = element instanceof CommonCartridgeResource;
+	public static isResource(element: object): element is CommonCartridgeResource {
+		throw new Error('Method not implemented.');
+	}
 
-		return result;
+	public static isOrganization(element: object): element is CommonCartridgeOrganization {
+		throw new Error('Method not implemented.');
 	}
 }

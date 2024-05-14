@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement, XmlObject } from '../../interfaces';
+import { CommonCartridgeBase, CommonCartridgeElement, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeMetadataElementPropsV110 = {
 	type: CommonCartridgeElementType.METADATA;
@@ -9,7 +9,7 @@ export type CommonCartridgeMetadataElementPropsV110 = {
 	copyrightOwners: string[];
 };
 
-export class CommonCartridgeMetadataElementV110 extends CommonCartridgeElement {
+export class CommonCartridgeMetadataElementV110 extends CommonCartridgeBase implements CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeMetadataElementPropsV110) {
 		super(props);
 	}
