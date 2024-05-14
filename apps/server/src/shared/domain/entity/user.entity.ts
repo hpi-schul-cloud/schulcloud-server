@@ -232,9 +232,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		setOfPermissions: Set<string>,
 		schoolPermissions?: SchoolRoles
 	): Set<string> {
-		if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+		if (schoolPermissions?.student?.LERNSTORE_VIEW === true) {
 			setOfPermissions.add(Permission.LERNSTORE_VIEW);
-		} else {
+		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
 			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
 		}
 

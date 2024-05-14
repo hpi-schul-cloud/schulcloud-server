@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { Group, GroupFilter, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -175,7 +175,8 @@ export class SchulconnexGroupProvisioningService {
 			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
 
-		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroupsByUserAndGroupTypes(user);
+		const filter: GroupFilter = { userId: user.id };
+		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups(filter);
 
 		const groupsFromSystem: Group[] = existingGroupsOfUser.data.filter(
 			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId

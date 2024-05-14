@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
 import { groupFactory, schoolSystemOptionsFactory } from '@shared/testing';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchulconnexProvisioningOptionsUpdateService } from './schulconnex-provisioning-options-update.service';
@@ -50,8 +51,9 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 					groupProvisioningCoursesEnabled: true,
 				});
 				const group: Group = groupFactory.build({ type: GroupTypes.CLASS });
+				const page: Page<Group> = new Page<Group>([group], 1);
 
-				groupService.findGroupsBySchoolIdAndSystemIdAndGroupType.mockResolvedValueOnce([group]);
+				groupService.findGroups.mockResolvedValueOnce(page);
 
 				return {
 					schoolSystemOptions,
@@ -70,11 +72,11 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 					schoolSystemOptions.provisioningOptions
 				);
 
-				expect(groupService.findGroupsBySchoolIdAndSystemIdAndGroupType).toHaveBeenCalledWith(
-					schoolSystemOptions.schoolId,
-					schoolSystemOptions.systemId,
-					GroupTypes.CLASS
-				);
+				expect(groupService.findGroups).toHaveBeenCalledWith({
+					schoolId: schoolSystemOptions.schoolId,
+					systemId: schoolSystemOptions.systemId,
+					groupTypes: [GroupTypes.CLASS],
+				});
 			});
 
 			it('should delete all classes', async () => {
@@ -107,8 +109,9 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 					groupProvisioningCoursesEnabled: false,
 				});
 				const group: Group = groupFactory.build({ type: GroupTypes.COURSE });
+				const page: Page<Group> = new Page<Group>([group], 1);
 
-				groupService.findGroupsBySchoolIdAndSystemIdAndGroupType.mockResolvedValueOnce([group]);
+				groupService.findGroups.mockResolvedValueOnce(page);
 
 				return {
 					schoolSystemOptions,
@@ -127,11 +130,11 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 					schoolSystemOptions.provisioningOptions
 				);
 
-				expect(groupService.findGroupsBySchoolIdAndSystemIdAndGroupType).toHaveBeenCalledWith(
-					schoolSystemOptions.schoolId,
-					schoolSystemOptions.systemId,
-					GroupTypes.COURSE
-				);
+				expect(groupService.findGroups).toHaveBeenCalledWith({
+					schoolId: schoolSystemOptions.schoolId,
+					systemId: schoolSystemOptions.systemId,
+					groupTypes: [GroupTypes.COURSE],
+				});
 			});
 
 			it('should delete all courses', async () => {
@@ -164,8 +167,9 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 					groupProvisioningCoursesEnabled: true,
 				});
 				const group: Group = groupFactory.build({ type: GroupTypes.OTHER });
+				const page: Page<Group> = new Page<Group>([group], 1);
 
-				groupService.findGroupsBySchoolIdAndSystemIdAndGroupType.mockResolvedValueOnce([group]);
+				groupService.findGroups.mockResolvedValueOnce(page);
 
 				return {
 					schoolSystemOptions,
@@ -184,11 +188,11 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 					schoolSystemOptions.provisioningOptions
 				);
 
-				expect(groupService.findGroupsBySchoolIdAndSystemIdAndGroupType).toHaveBeenCalledWith(
-					schoolSystemOptions.schoolId,
-					schoolSystemOptions.systemId,
-					GroupTypes.OTHER
-				);
+				expect(groupService.findGroups).toHaveBeenCalledWith({
+					schoolId: schoolSystemOptions.schoolId,
+					systemId: schoolSystemOptions.systemId,
+					groupTypes: [GroupTypes.OTHER],
+				});
 			});
 
 			it('should delete all other groups', async () => {
