@@ -313,6 +313,7 @@ import { SchulconnexClientModule } from &#x27;@infra/schulconnex-client&#x27;;
 import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
 import { AccountApiModule } from &#x27;@modules/account/account-api.module&#x27;;
+import { AlertModule } from &#x27;@modules/alert/alert.module&#x27;;
 import { AuthenticationApiModule } from &#x27;@modules/authentication/authentication-api.module&#x27;;
 import { BoardApiModule } from &#x27;@modules/board/board-api.module&#x27;;
 import { MediaBoardApiModule } from &#x27;@modules/board/media-board-api.module&#x27;;
@@ -347,7 +348,6 @@ import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { AlertModule } from &#x27;@modules/alert/alert.module&#x27;;
 import { UserLicenseModule } from &#x27;../user-license&#x27;;
 import { ServerConfigController, ServerController, ServerUc } from &#x27;./api&#x27;;
 import { SERVER_CONFIG_TOKEN, serverConfig } from &#x27;./server.config&#x27;;
@@ -365,13 +365,7 @@ const serverModules &#x3D; [
 	NewsModule,
 	UserApiModule,
 	UsersAdminApiModule,
-	SchulconnexClientModule.register({
-		apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
-		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
-		clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
-		clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
-		personenInfoTimeoutInMs: Configuration.get(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;) as number,
-	}),
+	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
 	UserImportConfigModule,
 	LearnroomApiModule,

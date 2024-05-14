@@ -131,26 +131,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="register"></a>
+                    <a name="registerAsync"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>register</b></span>
-                        <a href="#register"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>registerAsync</b></span>
+                        <a href="#registerAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>register(options: <a href="../interfaces/SchulconnexRestClientOptions.html" target="_self">SchulconnexRestClientOptions</a>)</code>
+                    <code>registerAsync()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-client.module.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-client.module.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -158,40 +158,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                            <code><a href="../interfaces/SchulconnexRestClientOptions.html" target="_self" >SchulconnexRestClientOptions</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>DynamicModule</code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -204,13 +174,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthAdapterService } from &#x27;@modules/oauth/service&#x27;;
 import { HttpModule, HttpService } from &#x27;@nestjs/axios&#x27;;
 import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { SchulconnexRestClient } from &#x27;./schulconnex-rest-client&#x27;;
 import { SchulconnexRestClientOptions } from &#x27;./schulconnex-rest-client-options&#x27;;
 
 @Module({})
 export class SchulconnexClientModule {
-	static register(options: SchulconnexRestClientOptions): DynamicModule {
+	static registerAsync(): DynamicModule {
 		return {
 			imports: [HttpModule, LoggerModule],
 			module: SchulconnexClientModule,
@@ -218,9 +189,22 @@ export class SchulconnexClientModule {
 				OauthAdapterService,
 				{
 					provide: SchulconnexRestClient,
-					useFactory: (httpService: HttpService, oauthAdapterService: OauthAdapterService, logger: Logger) &#x3D;&gt;
-						new SchulconnexRestClient(options, httpService, oauthAdapterService, logger),
-					inject: [HttpService, OauthAdapterService, Logger],
+					useFactory: (
+						httpService: HttpService,
+						oauthAdapterService: OauthAdapterService,
+						logger: Logger,
+						configService: ConfigService
+					) &#x3D;&gt; {
+						const options: SchulconnexRestClientOptions &#x3D; {
+							apiUrl: configService.get&lt;string&gt;(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;),
+							tokenEndpoint: configService.get&lt;string&gt;(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;),
+							clientId: configService.get&lt;string&gt;(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;),
+							clientSecret: configService.get&lt;string&gt;(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;),
+							personenInfoTimeoutInMs: configService.get&lt;number&gt;(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;),
+						};
+						return new SchulconnexRestClient(options, httpService, oauthAdapterService, logger);
+					},
+					inject: [HttpService, OauthAdapterService, Logger, ConfigService],
 				},
 			],
 			exports: [SchulconnexRestClient],

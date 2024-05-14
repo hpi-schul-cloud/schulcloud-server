@@ -5241,6 +5241,18 @@ This allows adding console commands to execute provider methods.</p>
 	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get(&#x27;I18N__DEFAULT_TIMEZONE&#x27;) as Timezone,
+	SCHULCONNEX_CLIENT__API_URL: Configuration.has(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;)
+		? (Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: Configuration.has(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;)
+		? (Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_ID: Configuration.has(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;)
+		? (Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;)
+		? (Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string)
+		: undefined,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;
 	) as number,
@@ -6562,13 +6574,7 @@ must use</p>
 	NewsModule,
 	UserApiModule,
 	UsersAdminApiModule,
-	SchulconnexClientModule.register({
-		apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
-		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
-		clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
-		clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
-		personenInfoTimeoutInMs: Configuration.get(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;) as number,
-	}),
+	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
 	UserImportConfigModule,
 	LearnroomApiModule,

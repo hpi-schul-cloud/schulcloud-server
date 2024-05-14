@@ -139,18 +139,21 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#apiUrl" 
 >
                                             apiUrl
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#clientId" 
 >
                                             clientId
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#clientSecret" 
 >
                                             clientSecret
@@ -164,6 +167,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#tokenEndpoint" 
 >
                                             tokenEndpoint
@@ -207,6 +211,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -240,6 +249,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -273,6 +287,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -344,6 +363,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -356,13 +380,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface SchulconnexRestClientOptions {
-	apiUrl: string;
+	apiUrl?: string;
 
-	tokenEndpoint: string;
+	tokenEndpoint?: string;
 
-	clientId: string;
+	clientId?: string;
 
-	clientSecret: string;
+	clientSecret?: string;
 
 	personenInfoTimeoutInMs?: number;
 }

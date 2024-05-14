@@ -358,7 +358,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                 </td>
@@ -622,8 +622,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -724,8 +724,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -775,7 +775,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		private readonly logger: Logger
 	) {
 		this.checkOptions();
-		this.SCHULCONNEX_API_BASE_URL &#x3D; options.apiUrl;
+		this.SCHULCONNEX_API_BASE_URL &#x3D; options.apiUrl || &#x27;&#x27;;
 	}
 
 	// TODO: N21-1678 use this in provisioning module
@@ -816,10 +816,12 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		return response;
 	}
 
-	private checkOptions(): void {
+	private checkOptions(): boolean {
 		if (!this.options.apiUrl || !this.options.clientId || !this.options.clientSecret || !this.options.tokenEndpoint) {
 			this.logger.debug(new SchulconnexConfigurationMissingLoggable());
+			return false;
 		}
+		return true;
 	}
 
 	private async getRequest&lt;T&gt;(url: URL, accessToken: string, timeout?: number): Promise&lt;T&gt; {
@@ -839,13 +841,17 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	private async requestClientCredentialToken(): Promise&lt;OAuthTokenDto&gt; {
 		const { tokenEndpoint, clientId, clientSecret } &#x3D; this.options;
 
+		if (!this.checkOptions()) {
+			return Promise.reject(new Error(&#x27;Missing configuration for SchulconnexRestClient&#x27;));
+		}
+
 		const payload: ClientCredentialsGrantTokenRequest &#x3D; new ClientCredentialsGrantTokenRequest({
-			client_id: clientId,
-			client_secret: clientSecret,
+			client_id: clientId ?? &#x27;&#x27;,
+			client_secret: clientSecret ?? &#x27;&#x27;,
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
-		const tokenDto: OAuthTokenDto &#x3D; await this.oauthAdapterService.sendTokenRequest(tokenEndpoint, payload);
+		const tokenDto: OAuthTokenDto &#x3D; await this.oauthAdapterService.sendTokenRequest(tokenEndpoint ?? &#x27;&#x27;, payload);
 
 		return tokenDto;
 	}
