@@ -58,7 +58,6 @@ describe(BoardCollaborationGateway.name, () => {
 		const cardNodes = cardNodeFactory.buildList(2, { parent: columnNode });
 
 		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes]);
-		await em.persistAndFlush(cardNodes);
 
 		em.clear();
 
