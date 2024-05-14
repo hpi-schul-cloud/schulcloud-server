@@ -121,8 +121,9 @@ describe('CollaborativeTextEditorService', () => {
 				const result = await service.getOrCreateCollaborativeTextEditor(userId, userName, params);
 
 				expect(result).toEqual({
-					sessions: ['sessionId1', 'sessionId2'],
+					sessionId: 'sessionId1',
 					url: `${url}/${padId}`,
+					path: `/p/${padId}`,
 					sessionExpiryDate,
 				});
 			});
@@ -141,7 +142,6 @@ describe('CollaborativeTextEditorService', () => {
 					params.parentId,
 					sessionExpiryDate
 				);
-				expect(etherpadClientAdapter.listSessionIdsOfAuthor).toHaveBeenCalledWith(authorId);
 			});
 		});
 
@@ -234,32 +234,6 @@ describe('CollaborativeTextEditorService', () => {
 				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
 			});
 		});
-
-		describe('WHEN etherpadClientAdapter.listSessionsOfAuthor throws an error', () => {
-			const setup = () => {
-				const { userId, userName, params, dateMock, cookieExpiresSeconds, groupId, padId, authorId, sessionId } =
-					buildParameter();
-				const error = new Error('error');
-
-				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
-				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
-				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(padId);
-				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
-				etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
-				etherpadClientAdapter.listSessionIdsOfAuthor.mockRejectedValueOnce(error);
-
-				jest.useFakeTimers();
-				jest.setSystemTime(dateMock);
-
-				return { userId, userName, params, error };
-			};
-
-			it('should throw an error', async () => {
-				const { userId, userName, params, error } = setup();
-
-				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
-			});
-		});
 	});
 
 	describe('deleteCollaborativeTextEditorByParentId', () => {
@@ -315,6 +289,106 @@ describe('CollaborativeTextEditorService', () => {
 				const { parentId, error } = setup();
 
 				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
+			});
+		});
+	});
+
+	describe('deleteSessionsByUser', () => {
+		describe('WHEN sessions are deleted successfully', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const sessionIds = ['sessionId1', 'sessionId2'];
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(sessionIds);
+				etherpadClientAdapter.deleteSession.mockResolvedValueOnce();
+				etherpadClientAdapter.deleteSession.mockResolvedValueOnce();
+
+				return { userId, authorId, sessionIds };
+			};
+
+			it('should call etherpadClientAdapter.getOrCreateAuthorId with correct parameter', async () => {
+				const { userId } = setup();
+
+				await service.deleteSessionsByUser(userId);
+
+				expect(etherpadClientAdapter.getOrCreateAuthorId).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call etherpadClientAdapter.listSessionIdsOfAuthor with correct parameter', async () => {
+				const { userId, authorId } = setup();
+
+				await service.deleteSessionsByUser(userId);
+
+				expect(etherpadClientAdapter.listSessionIdsOfAuthor).toHaveBeenCalledWith(authorId);
+			});
+
+			it('should call etherpadClientAdapter.deleteSession with correct parameter', async () => {
+				const { userId, sessionIds } = setup();
+
+				await service.deleteSessionsByUser(userId);
+
+				expect(etherpadClientAdapter.deleteSession).toHaveBeenNthCalledWith(1, sessionIds[0]);
+				expect(etherpadClientAdapter.deleteSession).toHaveBeenNthCalledWith(2, sessionIds[1]);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.getOrCreateAuthorId throws an error', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockRejectedValueOnce(error);
+
+				return { userId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(service.deleteSessionsByUser(userId)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.listSessionIdsOfAuthor throws an error', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockRejectedValueOnce(error);
+
+				return { userId, authorId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(service.deleteSessionsByUser(userId)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.deleteSession throws an error', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const sessionIds = ['sessionId1', 'sessionId2'];
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(sessionIds);
+				etherpadClientAdapter.deleteSession.mockResolvedValueOnce();
+				etherpadClientAdapter.deleteSession.mockRejectedValueOnce(error);
+
+				return { userId, authorId, sessionIds, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(service.deleteSessionsByUser(userId)).rejects.toThrowError(error);
 			});
 		});
 	});
