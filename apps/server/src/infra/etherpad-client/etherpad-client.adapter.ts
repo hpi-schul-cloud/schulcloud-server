@@ -272,11 +272,9 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async deleteSession(sessionId: SessionId): Promise<InlineResponse2001 | undefined> {
+	public async deleteSession(sessionId: SessionId): Promise<void> {
 		const response = await this.tryDeleteSession(sessionId);
-		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
-
-		return responseData;
+		this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
 	}
 
 	private async tryDeleteSession(sessionId: SessionId): Promise<AxiosResponse<InlineResponse2001>> {

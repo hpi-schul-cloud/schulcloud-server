@@ -50,7 +50,7 @@ export class CollaborativeTextEditorService {
 		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
 	}
 
-	async deleteSessionsByUser(userId: string) {
+	async deleteSessionsByUser(userId: string): Promise<void> {
 		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId);
 		const sessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
