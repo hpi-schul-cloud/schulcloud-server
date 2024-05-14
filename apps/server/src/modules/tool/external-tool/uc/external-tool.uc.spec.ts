@@ -255,7 +255,7 @@ describe('ExternalToolUc', () => {
 			it('should call ExternalToolLogoService', async () => {
 				const { currentUser, externalTool } = setup();
 
-				await uc.createExternalTool(currentUser.userId, externalTool);
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(logoService.fetchLogo).toHaveBeenCalledWith(externalTool);
 			});

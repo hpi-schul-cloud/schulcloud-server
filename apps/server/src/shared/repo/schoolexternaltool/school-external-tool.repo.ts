@@ -19,9 +19,10 @@ export class SchoolExternalToolRepo {
 	}
 
 	public async createOrUpdate(domainObject: SchoolExternalTool): Promise<SchoolExternalTool> {
-		const existing: SchoolExternalToolEntity | undefined = this.em
-			.getUnitOfWork()
-			.getById<SchoolExternalToolEntity>(SchoolExternalToolEntity.name, domainObject.id);
+		const existing: SchoolExternalToolEntity | null = await this.em.findOne<SchoolExternalToolEntity>(
+			SchoolExternalToolEntity.name,
+			domainObject.id
+		);
 
 		const entityProps: SchoolExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
 		let entity: SchoolExternalToolEntity = new SchoolExternalToolEntity(entityProps);

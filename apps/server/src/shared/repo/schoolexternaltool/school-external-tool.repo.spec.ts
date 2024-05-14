@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
@@ -145,17 +145,26 @@ describe(SchoolExternalToolRepo.name, () => {
 	});
 
 	describe('save', () => {
-		function setup() {
-			const domainObject: SchoolExternalTool = schoolExternalToolFactory.build({
-				toolId: new ObjectId().toHexString(),
-				parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
-				schoolId: new ObjectId().toHexString(),
+		const setup = () => {
+			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				school: schoolEntityFactory.buildWithId(),
+				tool: externalToolEntityFactory.buildWithId(),
 			});
+
+			const domainObject: SchoolExternalTool = schoolExternalToolFactory.build({
+				id: schoolExternalToolEntity.id,
+				toolId: schoolExternalToolEntity.tool.id,
+				parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
+				schoolId: schoolExternalToolEntity.school.id,
+			});
+
+			em.persist([schoolExternalToolEntity]);
+			em.clear();
 
 			return {
 				domainObject,
 			};
-		}
+		};
 
 		it('should save a SchoolExternalTool', async () => {
 			const { domainObject } = setup();

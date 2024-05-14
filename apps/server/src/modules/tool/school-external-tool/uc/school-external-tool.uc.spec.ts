@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { School, SchoolService } from '@src/modules/school';
-import { schoolFactory } from '@modules/school/testing';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ContextExternalToolService } from '../../context-external-tool';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../domain';
+import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 
@@ -179,7 +179,7 @@ describe('SchoolExternalToolUc', () => {
 
 				return {
 					user,
-					schoolExternalToolId: tool.id as EntityId,
+					schoolExternalToolId: tool.id,
 					school,
 				};
 			};
@@ -199,9 +199,9 @@ describe('SchoolExternalToolUc', () => {
 
 		describe('when calls services', () => {
 			const setup = () => {
-				const tool: SchoolExternalToolWithId = schoolExternalToolFactory.buildWithId({
+				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId: new ObjectId().toHexString(),
-				}) as SchoolExternalToolWithId;
+				});
 				const user: User = userFactory.buildWithId();
 				const school: School = schoolFactory.build({ id: tool.schoolId });
 
@@ -297,9 +297,9 @@ describe('SchoolExternalToolUc', () => {
 	describe('getSchoolExternalTool', () => {
 		describe('when checks permission', () => {
 			const setup = () => {
-				const tool: SchoolExternalToolWithId = schoolExternalToolFactory.buildWithId({
+				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId: new ObjectId().toHexString(),
-				}) as SchoolExternalToolWithId;
+				});
 				const user: User = userFactory.buildWithId();
 				const school: School = schoolFactory.build({ id: tool.schoolId });
 
@@ -329,9 +329,9 @@ describe('SchoolExternalToolUc', () => {
 
 		describe('when userId and schoolExternalTool are given', () => {
 			const setup = () => {
-				const tool: SchoolExternalToolWithId = schoolExternalToolFactory.buildWithId({
+				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId: new ObjectId().toHexString(),
-				}) as SchoolExternalToolWithId;
+				});
 				const user: User = userFactory.buildWithId();
 				schoolExternalToolService.findById.mockResolvedValue(tool);
 
@@ -371,7 +371,7 @@ describe('SchoolExternalToolUc', () => {
 				userId: user.id,
 				updatedTool,
 				school,
-				schoolExternalToolId: updatedTool.id as EntityId,
+				schoolExternalToolId: updatedTool.id,
 			};
 		};
 
@@ -416,10 +416,7 @@ describe('SchoolExternalToolUc', () => {
 		describe('when authorize user', () => {
 			const setupMetadata = () => {
 				const toolId = new ObjectId().toHexString();
-				const tool: SchoolExternalToolWithId = schoolExternalToolFactory.buildWithId(
-					{ id: toolId },
-					toolId
-				) as SchoolExternalToolWithId;
+				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ id: toolId }, toolId);
 				const userId: string = new ObjectId().toHexString();
 				const user: User = userFactory.buildWithId({}, userId);
 				const school: School = schoolFactory.build({ id: tool.schoolId });
@@ -453,9 +450,9 @@ describe('SchoolExternalToolUc', () => {
 				const user: User = userFactory.buildWithId();
 				const toolId: string = new ObjectId().toHexString();
 				const school: School = schoolFactory.build({ id: new ObjectId().toHexString() });
-				const schoolExternalTool: SchoolExternalToolWithId = schoolExternalToolFactory.buildWithId({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					id: toolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
