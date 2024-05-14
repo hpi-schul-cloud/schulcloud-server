@@ -2,8 +2,8 @@ import { Action } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { BoardNodeFactory, Card, Column, ContentElementType } from '../poc/domain';
-import { BoardNodePermissionService, BoardNodeService } from '../poc/service';
+import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
+import { BoardNodePermissionService, BoardNodeService } from '../service';
 
 @Injectable()
 export class ColumnUc {

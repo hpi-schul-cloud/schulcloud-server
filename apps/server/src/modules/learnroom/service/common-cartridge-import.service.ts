@@ -1,7 +1,14 @@
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	BoardNodeFactory,
+	BoardNodeService,
+	Column,
+	ColumnBoard,
+	ContentElementUpdateService,
+} from '@modules/board';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, BoardLayout, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import {
 	CommonCartridgeFileParser,
 	CommonCartridgeOrganizationProps,
@@ -14,10 +21,9 @@ import { CourseService } from './course.service';
 export class CommonCartridgeImportService {
 	constructor(
 		private readonly courseService: CourseService,
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnService: ColumnService,
-		private readonly cardService: CardService,
-		private readonly contentElementService: ContentElementService,
+		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly contentElementUpdateService: ContentElementUpdateService,
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
@@ -33,14 +39,13 @@ export class CommonCartridgeImportService {
 	}
 
 	private async createColumnBoard(parser: CommonCartridgeFileParser, course: Course): Promise<void> {
-		const columnBoard = await this.columnBoardService.create(
-			{
-				type: BoardExternalReferenceType.Course,
-				id: course.id,
-			},
-			BoardLayout.COLUMNS,
-			parser.getTitle() || ''
-		);
+		const columnBoard = this.boardNodeFactory.buildColumnBoard({
+			context: { type: BoardExternalReferenceType.Course, id: course.id },
+			title: parser.getTitle() || '',
+			layout: BoardLayout.COLUMNS,
+		});
+
+		await this.boardNodeService.addRoot(columnBoard);
 
 		await this.createColumns(parser, columnBoard);
 	}
@@ -60,7 +65,10 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		organizations: CommonCartridgeOrganizationProps[]
 	): Promise<void> {
-		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
+		const column = this.boardNodeFactory.buildColumn();
+		column.title = columnProps.title;
+		await this.boardNodeService.addToParent(columnBoard, column);
+
 		const cards = organizations.filter(
 			(organization) =>
 				organization.pathDepth === 1 && organization.path.startsWith(columnProps.identifier) && organization.isResource
@@ -76,15 +84,18 @@ export class CommonCartridgeImportService {
 		column: Column,
 		cardProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
-		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps));
+		const card = this.boardNodeFactory.buildCard();
+		card.title = cardProps.title;
+		await this.boardNodeService.addToParent(column, card);
+
 		const resource = parser.getResource(cardProps);
 		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
 
 		if (resource && contentElementType) {
-			const contentElement = await this.contentElementService.create(card, contentElementType);
+			const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
+			await this.boardNodeService.addToParent(card, contentElement);
 			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
-
-			await this.contentElementService.update(contentElement, contentElementBody);
+			await this.contentElementUpdateService.updateContent(contentElement, contentElementBody);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 export * from './all-entities';
 export * from './base.entity';
-export * from './boardnode';
 export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './dashboard.entity';

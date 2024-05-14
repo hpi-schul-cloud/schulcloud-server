@@ -4,11 +4,10 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { CopyStatus } from '@src/modules/copy-helper';
+import { CopyStatus } from '@modules/copy-helper';
 import { CreateBoardBodyParams } from '../controller/dto';
-import { BoardExternalReference, BoardNodeFactory, Column, ColumnBoard } from '../poc/domain';
-import { BoardNodePermissionService, BoardNodeService } from '../poc/service';
-import { ColumnBoardCopyService } from '../service/column-board-copy.service';
+import { BoardExternalReference, BoardNodeFactory, Column, ColumnBoard } from '../domain';
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardCopyService } from '../service';
 
 @Injectable()
 export class BoardUc {
@@ -50,6 +49,7 @@ export class BoardUc {
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
+		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 
@@ -127,7 +127,6 @@ export class BoardUc {
 			requiredPermissions: [],
 		});
 
-		// TODO: implement copyColumnBoard
 		const copyStatus = await this.columnBoardCopyService.copyColumnBoard({
 			userId,
 			originalColumnBoardId: boardId,

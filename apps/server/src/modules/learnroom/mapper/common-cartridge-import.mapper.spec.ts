@@ -47,39 +47,6 @@ describe('CommonCartridgeImportMapper', () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('mapOrganizationToColumn', () => {
-		describe('when organization is provided', () => {
-			const setup = () => setupOrganization();
-
-			it('should map organization to column', () => {
-				const { organization } = setup();
-
-				const result = sut.mapOrganizationToColumn(organization);
-
-				expect(result).toEqual<ColumnInitProps>({
-					title: organization.title,
-				});
-			});
-		});
-	});
-
-	describe('mapOrganizationToCard', () => {
-		describe('when organization is provided', () => {
-			const setup = () => setupOrganization();
-
-			it('should map organization to card', () => {
-				const { organization } = setup();
-
-				const result = sut.mapOrganizationToCard(organization);
-
-				expect(result).toEqual<CardInitProps>({
-					title: organization.title,
-					height: 150,
-				});
-			});
-		});
-	});
-
 	describe('mapResourceTypeToContentElementType', () => {
 		describe('when resourceType is provided', () => {
 			it('should return undefined', () => {

@@ -7,25 +7,23 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
+import { setupEntities, userFactory } from '@shared/testing';
+import { BoardNodeAuthorizable, BoardRoles, ContentElementType, UserWithBoardRoles } from '../domain';
+import { BoardNodeAuthorizableService } from '../service/board-node-authorizable.service';
+import { BoardNodePermissionService } from '../service/board-node-permission.service';
 import {
 	columnBoardFactory,
 	fileElementFactory,
 	richTextElementFactory,
-	setupEntities,
 	submissionContainerElementFactory,
 	submissionItemFactory,
-	userFactory,
-} from '@shared/testing';
-import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
-import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
+} from '../testing';
 import { SubmissionItemUc } from './submission-item.uc';
-import { UserWithBoardRoles } from '../poc/domain';
 
 describe(SubmissionItemUc.name, () => {
 	let module: TestingModule;
 	let uc: SubmissionItemUc;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let boardPermissionService: DeepMocked<BoardNodePermissionService>;
 	let elementService: DeepMocked<ContentElementService>;
 	let submissionItemService: DeepMocked<SubmissionItemService>;
@@ -35,8 +33,8 @@ describe(SubmissionItemUc.name, () => {
 			providers: [
 				SubmissionItemUc,
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
 					provide: BoardNodePermissionService,
@@ -54,7 +52,7 @@ describe(SubmissionItemUc.name, () => {
 		}).compile();
 
 		uc = module.get(SubmissionItemUc);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		boardPermissionService = module.get(BoardNodePermissionService);
 		elementService = module.get(ContentElementService);
 		submissionItemService = module.get(SubmissionItemService);
@@ -83,8 +81,8 @@ describe(SubmissionItemUc.name, () => {
 					children: [submissionItem],
 				});
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
-					new BoardDoAuthorizable({
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					new BoardNodeAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: submissionContainerEl.id,
 						boardDo: submissionContainerEl,
@@ -142,8 +140,8 @@ describe(SubmissionItemUc.name, () => {
 					{ userId: boardReaderUser2.id, roles: [BoardRoles.READER] },
 				];
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
-					new BoardDoAuthorizable({
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					new BoardNodeAuthorizable({
 						users,
 						id: submissionContainerEl.id,
 						boardDo: submissionContainerEl,
@@ -225,7 +223,7 @@ describe(SubmissionItemUc.name, () => {
 
 			submissionItemService.findById.mockResolvedValueOnce(submissionItem);
 
-			return { submissionItem, user, boardDoAuthorizableService };
+			return { submissionItem, user, boardNodeAuthorizableService };
 		};
 
 		it('should call service to find the submission item ', async () => {
@@ -299,8 +297,8 @@ describe(SubmissionItemUc.name, () => {
 				const element = richTextElementFactory.build();
 
 				const users = [{ userId: user.id, roles: [BoardRoles.READER] }];
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
-					new BoardDoAuthorizable({
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					new BoardNodeAuthorizable({
 						users,
 						id: submissionItem.id,
 						boardDo: submissionItem,
@@ -401,8 +399,8 @@ describe(SubmissionItemUc.name, () => {
 
 				elementService.create.mockResolvedValueOnce(element);
 				const users = [{ userId: user.id, roles: [BoardRoles.READER] }];
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
-					new BoardDoAuthorizable({
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					new BoardNodeAuthorizable({
 						users,
 						id: submissionItem.id,
 						boardDo: submissionItem,

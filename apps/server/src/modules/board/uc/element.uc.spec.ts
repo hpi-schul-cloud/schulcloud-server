@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import type { BoardDoAuthorizable } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
 	drawingElementFactory,
@@ -13,16 +12,15 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
 import { Action } from '@modules/authorization';
-import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
-import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
+import { BoardNodePermissionService } from '../service/board-node-permission.service';
+import { BoardNodeAuthorizableService } from '../service/board-node-authorizable.service';
 
 describe(ElementUc.name, () => {
 	let module: TestingModule;
 	let uc: ElementUc;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let boardPermissionService: DeepMocked<BoardNodePermissionService>;
 	let submissionItemService: DeepMocked<SubmissionItemService>;
 	let elementService: DeepMocked<ContentElementService>;
@@ -32,8 +30,8 @@ describe(ElementUc.name, () => {
 			providers: [
 				ElementUc,
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
 					provide: BoardNodePermissionService,
@@ -59,7 +57,7 @@ describe(ElementUc.name, () => {
 		}).compile();
 
 		uc = module.get(ElementUc);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		boardPermissionService = module.get(BoardNodePermissionService);
 		elementService = module.get(ContentElementService);
 		submissionItemService = module.get(SubmissionItemService);
@@ -288,18 +286,18 @@ describe(ElementUc.name, () => {
 				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, submissionContainer, Action.read);
 			});
 
-			it('should call BoarddoAuthorizableService to get board authorizable', async () => {
+			it('should call BoardNodeAuthorizableService to get board authorizable', async () => {
 				const { user, submissionContainer } = setup();
 				boardPermissionService.checkPermission.mockResolvedValueOnce();
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
-				expect(boardDoAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(submissionContainer);
+				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledWith(submissionContainer);
 			});
 
 			it('should call Board Permission Service to check user *editor* permission', async () => {
 				const { user, submissionContainer } = setup();
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizableFactory.build());
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
@@ -309,7 +307,7 @@ describe(ElementUc.name, () => {
 			it('should call service to create submission item', async () => {
 				const { user, submissionContainer } = setup();
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizableFactory.build());
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
 				boardPermissionService.isUserBoardEditor.mockReturnValueOnce(false);
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
@@ -324,7 +322,7 @@ describe(ElementUc.name, () => {
 
 				elementService.findById.mockResolvedValueOnce(submissionContainer);
 				boardPermissionService.checkPermission.mockResolvedValueOnce();
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizableFactory.build());
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
 				submissionItemService.create.mockResolvedValueOnce(submissionItem);
 
 				const result = await uc.createSubmissionItem(user.id, submissionContainer.id, true);

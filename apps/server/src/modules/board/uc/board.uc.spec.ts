@@ -7,14 +7,12 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { courseFactory } from '@shared/testing/factory';
 import { Permission } from '@shared/domain/interface';
-import { ColumnBoardService, ColumnService, ContentElementService } from '../service';
-import { ColumnBoardCopyService } from '../service/column-board-copy.service';
 import { BoardUc } from './board.uc';
-import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
-import { BoardLayout } from '../poc/domain';
+import { BoardNodePermissionService } from '../service/board-node-permission.service';
+import { BoardExternalReferenceType, BoardLayout } from '../domain';
+import { ColumnBoardCopyService, ColumnBoardService } from '../service';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;

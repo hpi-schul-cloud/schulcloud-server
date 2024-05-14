@@ -2,13 +2,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeAuthorizable, BoardRoles } from '@src/modules/board/poc/domain';
+import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import {
 	columnBoardFactory,
 	drawingElementFactory,
 	fileElementFactory,
 	submissionItemFactory,
-} from '@src/modules/board/poc/testing';
+} from '@modules/board/testing';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action } from '../type';
 import { BoardNodeRule } from './board-node.rule';

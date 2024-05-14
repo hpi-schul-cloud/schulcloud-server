@@ -1,52 +1,102 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import type { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference, MediaBoard } from '@shared/domain/domainobject';
-import type { EntityId } from '@shared/domain/types';
-import { BoardDoRepo } from '../../repo';
-import { BoardDoService } from '../board-do.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool';
+import { ContextExternalTool, ContextExternalToolWithId, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalToolRefDO, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import {
+	AnyMediaBoardNode,
+	BoardExternalReference,
+	isMediaBoard,
+	isMediaExternalToolElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
+} from '../../domain';
+import { BoardNodeRepo } from '../../repo';
 
 @Injectable()
-export class MediaBoardService implements AuthorizationLoaderServiceGeneric<MediaBoard> {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+export class MediaBoardService {
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly contextExternalToolService: ContextExternalToolService
+	) {}
 
-	public async findById(boardId: EntityId): Promise<MediaBoard> {
-		const board: MediaBoard = await this.boardDoRepo.findByClassAndId(MediaBoard, boardId);
+	// TODO do we need this?
+	async findById(boardId: EntityId): Promise<MediaBoard> {
+		const boardNode = await this.boardNodeRepo.findById(boardId);
+		if (!isMediaBoard(boardNode)) {
+			throw new NotFoundException(`There is no '${MediaBoard.name}' with this id`);
+		}
 
-		return board;
+		return boardNode;
 	}
 
-	public async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
-		const ids: EntityId[] = await this.boardDoRepo.findIdsByExternalReference(reference);
+	async findByExternalReference(reference: BoardExternalReference): Promise<MediaBoard[]> {
+		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference);
 
-		return ids;
+		const boards = boardNodes.filter((bn) => isMediaBoard(bn));
+
+		return boards as MediaBoard[];
 	}
 
-	public async findByDescendant(descendant: AnyBoardDo): Promise<MediaBoard> {
-		const mediaBoard: MediaBoard = await this.boardDoService.getRootBoardDo(descendant);
-
-		return mediaBoard;
+	async addToBoard(parent: MediaBoard, child: MediaLine, position = 0): Promise<void> {
+		parent.addChild(child, position);
+		await this.boardNodeRepo.persistAndFlush(parent);
 	}
 
-	public async create(context: BoardExternalReference): Promise<MediaBoard> {
-		const mediaBoard: MediaBoard = new MediaBoard({
-			id: new ObjectId().toHexString(),
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			context,
+	async addToMediaLine(parent: MediaLine, child: MediaExternalToolElement, position = 0): Promise<void> {
+		parent.addChild(child, position);
+		await this.boardNodeRepo.persistAndFlush(parent);
+	}
+
+	public async createContextExternalToolForMediaBoard(
+		schoolId: EntityId,
+		schoolExternalTool: SchoolExternalToolWithId,
+		mediaBoard: MediaBoard
+	): Promise<ContextExternalToolWithId> {
+		const contextExternalTool: ContextExternalToolWithId =
+			await this.contextExternalToolService.saveContextExternalTool(
+				new ContextExternalTool({
+					schoolToolRef: new SchoolExternalToolRefDO({ schoolId, schoolToolId: schoolExternalTool.id }),
+					contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
+					toolVersion: 0,
+					parameters: [],
+				})
+			);
+
+		return contextExternalTool;
+	}
+
+	public async checkElementExists(
+		mediaBoard: MediaBoard,
+		schoolExternalTool: SchoolExternalToolWithId
+	): Promise<boolean> {
+		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
+			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
 
-		await this.boardDoRepo.save(mediaBoard);
+		const existing = this.findMediaElements(mediaBoard);
 
-		return mediaBoard;
+		const exists = existing.some((element) =>
+			contextExternalTools.some((tool) => tool.id === element.contextExternalToolId)
+		);
+
+		return exists;
 	}
 
-	public async delete(board: MediaBoard): Promise<void> {
-		await this.boardDoService.deleteWithDescendants(board);
-	}
+	public findMediaElements(boardNode: AnyMediaBoardNode): MediaExternalToolElement[] {
+		const elements = boardNode.children.reduce((result: MediaExternalToolElement[], bn) => {
+			result.push(...this.findMediaElements(bn as AnyMediaBoardNode));
 
-	public async deleteByExternalReference(reference: BoardExternalReference): Promise<number> {
-		return this.boardDoRepo.deleteByExternalReference(reference);
+			if (isMediaExternalToolElement(bn)) {
+				result.push(bn);
+			}
+
+			return result;
+		}, []);
+
+		return elements;
 	}
 }

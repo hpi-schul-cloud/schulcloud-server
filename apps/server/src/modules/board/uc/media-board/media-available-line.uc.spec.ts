@@ -8,12 +8,6 @@ import { MediaUserLicenseService } from '@modules/user-license/service';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import {
-	MediaAvailableLine,
-	MediaAvailableLineElement,
-	MediaBoard,
-	MediaExternalToolElement,
-} from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
 	externalToolFactory,
@@ -25,10 +19,10 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
+import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaAvailableLineService, MediaBoardService } from '../../service';
+import { BoardNodePermissionService, MediaAvailableLineService, MediaBoardService } from '../../service';
 import { MediaAvailableLineUc } from './media-available-line.uc';
-import { BoardNodePermissionService } from '../../poc/service';
 
 describe(MediaAvailableLineUc.name, () => {
 	let module: TestingModule;

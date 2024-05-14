@@ -1,4 +1,4 @@
-import { BoardNodeAuthorizableService } from '@modules/board/poc/service/board-node-authorizable.service';
+import { BoardNodeAuthorizableService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';

@@ -6,21 +6,18 @@ import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/dom
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { MediaExternalToolElement } from '@shared/domain/domainobject';
 import {
 	contextExternalToolFactory,
-	mediaBoardFactory,
-	mediaExternalToolElementFactory,
-	mediaLineFactory,
 	schoolExternalToolFactory,
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
+import { MediaExternalToolElement } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaElementService, MediaLineService } from '../../service';
+import { BoardNodePermissionService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
+import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaElementUc } from './media-element.uc';
-import { BoardNodePermissionService } from '../../poc/service';
 
 describe(MediaElementUc.name, () => {
 	let module: TestingModule;

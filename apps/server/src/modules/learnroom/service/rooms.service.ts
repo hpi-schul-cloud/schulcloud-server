@@ -1,9 +1,8 @@
-import { ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { LegacyBoard, ColumnBoardNode } from '@shared/domain/entity';
+import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
@@ -23,14 +22,10 @@ export class RoomsService {
 		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 
-		const columnBoardIds = await this.columnBoardService.findIdsByExternalReference({
+		const columnBoards = await this.columnBoardService.findByExternalReference({
 			type: BoardExternalReferenceType.Course,
 			id: roomId,
 		});
-
-		const columnBoards = await Promise.all(
-			columnBoardIds.map(async (id) => (await this.boardNodeRepo.findById(id)) as ColumnBoardNode)
-		);
 
 		const boardElementTargets = [...courseLessons, ...courseTasks, ...columnBoards];
 

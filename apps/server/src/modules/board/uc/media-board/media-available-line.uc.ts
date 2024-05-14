@@ -1,17 +1,15 @@
 import { Action, AuthorizationService } from '@modules/authorization';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { MediaUserLicenseService } from '@modules/user-license/service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { MediaAvailableLine } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { MediaAvailableLine, MediaBoard } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoard } from '../../poc/domain';
-import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
-import { MediaAvailableLineService } from '../../poc/service/media-board';
+import { BoardNodePermissionService, BoardNodeService, MediaAvailableLineService } from '../../service';
 
 @Injectable()
 export class MediaAvailableLineUc {

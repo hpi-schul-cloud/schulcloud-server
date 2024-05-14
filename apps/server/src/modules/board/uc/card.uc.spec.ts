@@ -1,20 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, ContentElementType } from '@shared/domain/domainobject';
 import { columnBoardFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BoardNodeAuthorizable, ContentElementType } from '../domain';
+import { BoardNodeAuthorizableService, BoardNodePermissionService } from '../service';
 import { CardUc } from './card.uc';
-import { BoardNodePermissionService } from '../poc/service/board-node-permission.service';
 
 describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let boardPermissionService: DeepMocked<BoardNodePermissionService>;
 
 	let cardService: DeepMocked<CardService>;
@@ -29,8 +28,8 @@ describe(CardUc.name, () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
 					provide: BoardNodePermissionService,
@@ -53,7 +52,7 @@ describe(CardUc.name, () => {
 
 		uc = module.get(CardUc);
 		authorizationService = module.get(AuthorizationService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		boardPermissionService = module.get(BoardNodePermissionService);
 
 		cardService = module.get(CardService);
@@ -76,8 +75,8 @@ describe(CardUc.name, () => {
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardNodeAuthorizable({
 						users: [],
 						id: new ObjectId().toHexString(),
 						boardDo: cards[0],

@@ -1,4 +1,4 @@
-import { type AnyBoardDo, isMediaLine, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
+import { isMediaLine, type AnyBoardNode, type MediaBoard, type MediaLine } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
 import { MediaBoardResponse, MediaLineResponse } from '../dto';
 import { MediaLineResponseMapper } from './media-line-response.mapper';
@@ -6,7 +6,7 @@ import { MediaLineResponseMapper } from './media-line-response.mapper';
 export class MediaBoardResponseMapper {
 	static mapToResponse(board: MediaBoard): MediaBoardResponse {
 		const lines: MediaLineResponse[] = board.children
-			.filter((line: AnyBoardDo): line is MediaLine => isMediaLine(line))
+			.filter((line: AnyBoardNode): line is MediaLine => isMediaLine(line))
 			.map((line: MediaLine) => MediaLineResponseMapper.mapToResponse(line));
 
 		const boardResponse: MediaBoardResponse = new MediaBoardResponse({

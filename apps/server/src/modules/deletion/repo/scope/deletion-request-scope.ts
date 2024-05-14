@@ -1,4 +1,4 @@
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 

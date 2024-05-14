@@ -7,11 +7,10 @@ import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../poc/domain';
-import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
-import { MediaBoardService } from '../../poc/service/media-board';
+import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()
 export class MediaElementUc {

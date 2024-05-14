@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoard, MediaLine } from '../../poc/domain';
-import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
+import { MediaBoard, MediaLine } from '../../domain';
+import { BoardNodePermissionService, BoardNodeService } from '../../service';
 
 @Injectable()
 export class MediaLineUc {

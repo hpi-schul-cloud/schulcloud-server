@@ -1,13 +1,13 @@
+import { ColumnBoard } from '@modules/board';
+import { columnBoardFactory } from '@modules/board/testing';
 import {
 	ColumnboardBoardElement,
-	ColumnBoardNode,
 	LessonBoardElement,
 	LessonEntity,
 	Task,
 	TaskBoardElement,
 } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
-import { columnBoardNodeFactory } from './boardnode';
 import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';
 
@@ -24,10 +24,10 @@ export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, 
 	}
 );
 
-export const columnboardBoardElementFactory = BaseFactory.define<ColumnboardBoardElement, { target: ColumnBoardNode }>(
+export const columnboardBoardElementFactory = BaseFactory.define<ColumnboardBoardElement, { target: ColumnBoard }>(
 	ColumnboardBoardElement,
 	() => {
-		const target = columnBoardNodeFactory.build();
+		const target = columnBoardFactory.build();
 		return { target };
 	}
 );

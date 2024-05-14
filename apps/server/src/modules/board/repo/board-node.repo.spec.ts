@@ -1,15 +1,12 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	richTextElementNodeFactory,
-} from '@shared/testing';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { cleanupCollections } from '@shared/testing';
+import { MongoMemoryDatabaseModule } from '@src/infra/database';
+import { ColumnBoard } from '../domain';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeRepo } from './board-node.repo';
+import { BoardNodeEntity } from './entity/board-node.entity';
 
 describe('BoardNodeRepo', () => {
 	let module: TestingModule;
@@ -18,7 +15,7 @@ describe('BoardNodeRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [BaseEntityWithTimestamps, BoardNodeEntity] })],
 			providers: [BoardNodeRepo],
 		}).compile();
 		repo = module.get(BoardNodeRepo);
@@ -33,206 +30,206 @@ describe('BoardNodeRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findDescendants', () => {
-		const setup = async () => {
-			// root
-			// -- level1[0]
-			// ---- level2[0]
-			// ---- level2[1]
-			// ------ level3[0]
-			// ------ level3[1]
-			// ---- level2b[0]
-			// ---- level2b[1]
-			// -- level1[1]
+	describe('persist (and flush)', () => {
+		const setup = () => {
+			const board = columnBoardFactory.build({
+				children: columnFactory.buildList(2, { children: cardFactory.buildList(2) }),
+			});
 
-			const root = columnBoardNodeFactory.build();
-			await em.persistAndFlush(root);
-			const level1 = columnNodeFactory.buildList(2, { parent: root });
-			await em.persistAndFlush(level1);
-			const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
-			await em.persistAndFlush(level2);
-			const level2b = cardNodeFactory.buildList(2, { parent: level1[1] });
-			await em.persistAndFlush(level2b);
-			const level3 = richTextElementNodeFactory.buildList(2, { parent: level2[1] });
-			await em.persistAndFlush(level3);
-			em.clear();
-
-			return { root, level1, level2, level2b, level3 };
+			return { board };
 		};
 
-		describe('when starting at the root node', () => {
-			it('should find descendents with a specific depth', async () => {
-				const { root, level1, level2, level2b } = await setup();
+		it('should be able to persist a tree of nodes', async () => {
+			const { board } = setup();
 
-				const result = await repo.findDescendants(root, 2);
+			repo.persist(board);
+			await repo.flush();
+			em.clear();
 
-				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level1, ...level2, ...level2b].map((o) => o.id).sort();
-				expect(resultIds).toEqual(expectedIds);
-			});
+			const nodeCount = await em.count(BoardNodeEntity);
+			expect(nodeCount).toBe(5);
 		});
 
-		describe('when starting at a nested node', () => {
-			it('should find descendents with a specific depth', async () => {
-				const { level1, level2 } = await setup();
+		it('should be able to persist multiple root nodes', async () => {
+			const { board: board1 } = setup();
+			const { board: board2 } = setup();
 
-				const result = await repo.findDescendants(level1[0], 1);
+			repo.persist([board1, board2]);
+			await repo.flush();
+			em.clear();
 
-				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level2].map((o) => o.id).sort();
-				expect(resultIds).toEqual(expectedIds);
-			});
-		});
-
-		describe('when depth is undefined', () => {
-			it('should return all descendants', async () => {
-				const { level1, level2, level3 } = await setup();
-
-				const result = await repo.findDescendants(level1[0]);
-
-				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level2, ...level3].map((o) => o.id).sort();
-				expect(resultIds).toEqual(expectedIds);
-			});
-		});
-
-		describe('when depth is 0', () => {
-			it('should return empty list', async () => {
-				const { level1 } = await setup();
-
-				const result = await repo.findDescendants(level1[0], 0);
-
-				expect(result).toEqual([]);
-			});
-		});
-	});
-
-	describe('findDescendantsOfMany', () => {
-		describe('when giving ids from boardNodes of different levels', () => {
-			const setup = async () => {
-				// root
-				// -- level1[0]
-				// ---- level2[0]
-				// ---- level2[1]
-				// ------ level3[0]
-				// ------ level3[1]
-				// -- level1[1]
-
-				const root = columnBoardNodeFactory.build();
-				await em.persistAndFlush(root);
-				const level1 = columnNodeFactory.buildList(2, { parent: root });
-				await em.persistAndFlush(level1);
-				const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
-				await em.persistAndFlush(level2);
-				const level3 = richTextElementNodeFactory.buildList(2, { parent: level2[1] });
-				await em.persistAndFlush(level3);
-				em.clear();
-
-				return { root, level1, level2, level3 };
-			};
-
-			it('should find a map of children that is complete', async () => {
-				const { root, level1, level2 } = await setup();
-
-				const result = await repo.findDescendantsOfMany([root, ...level1, ...level2]);
-
-				expect(Object.keys(result)).toEqual([root.pathOfChildren, level1[0].pathOfChildren, level2[1].pathOfChildren]);
-
-				expect(result[root.pathOfChildren]).toHaveLength(6);
-				expect(result[level1[0].pathOfChildren]).toHaveLength(4);
-				expect(result[level2[1].pathOfChildren]).toHaveLength(2);
-			});
-		});
-
-		describe('when giving ids of some boardNodes', () => {
-			const setup = async () => {
-				const root = columnBoardNodeFactory.build();
-				await em.persistAndFlush(root);
-				const [column0, column1, column2] = columnNodeFactory.buildList(3, { parent: root });
-				await em.persistAndFlush([column0, column1, column2]);
-				const [card00, card01] = cardNodeFactory.buildList(2, { parent: column0 });
-				await em.persistAndFlush([card00, card01]);
-				const [text000, text001] = richTextElementNodeFactory.buildList(2, { parent: card00 });
-				await em.persistAndFlush([text000, text001]);
-				const [card20, card21] = cardNodeFactory.buildList(2, { parent: column2 });
-				await em.persistAndFlush([card20, card21]);
-				const [text210, text211] = richTextElementNodeFactory.buildList(2, { parent: card21 });
-				await em.persistAndFlush([text210, text211]);
-				em.clear();
-
-				return { root, column0, card00, card01, text000, text001, column1, column2, card20, card21, text210, text211 };
-			};
-
-			it('should return all decendants of those part trees', async () => {
-				// root
-				// -- column0     <-- requested
-				// ---- card00    <-- returned
-				// ------ text000 <-- returned
-				// ------ text001 <-- returned
-				// ---- card01    <-- returned
-				// -- column1
-				// -- column2
-				// ---- card20
-				// ---- card21    <-- requested
-				// ------ text210 <-- returned
-				// ------ text211 <-- returned
-				const { column0, card00, card01, text000, text001, card21, text210, text211 } = await setup();
-
-				const result = await repo.findDescendantsOfMany([column0, card21]);
-				const returnedColumnDescendantIds = result[column0.pathOfChildren].map((o) => o.id);
-				const returnedCardDescendantIds = result[card21.pathOfChildren].map((o) => o.id);
-
-				expect(returnedCardDescendantIds).toEqual([text210.id, text211.id]);
-				expect(returnedColumnDescendantIds).toEqual([card00.id, card01.id, text000.id, text001.id]);
-			});
-
-			it('should return no decendants of leaf nodes', async () => {
-				// root
-				// -- column0
-				// ---- card00
-				// ------ text000
-				// ------ text001
-				// ---- card01
-				// -- column1     <-- requested
-				// -- column2
-				// ---- card20    <-- requested
-				// ---- card21
-				// ------ text210
-				// ------ text211
-				const { column1, card20 } = await setup();
-
-				const result = await repo.findDescendantsOfMany([column1, card20]);
-				const returnedDescendants = Object.values(result).flat();
-
-				expect(returnedDescendants).toHaveLength(0);
-			});
+			const nodeCount = await em.count(BoardNodeEntity);
+			expect(nodeCount).toBe(10);
 		});
 	});
 
 	describe('findById', () => {
-		describe('when boardNode exists in the database but NOT in the unit-of-work', () => {
-			it('should return an equal object', async () => {
-				const columnBoard = columnBoardNodeFactory.build();
-				await em.persistAndFlush(columnBoard);
+		const setup = async () => {
+			const card = cardFactory.build();
 
-				em.clear();
+			const column = columnFactory.build({ children: [card] });
 
-				const boardNode = await repo.findById(columnBoard.id);
+			const board = columnBoardFactory.build({
+				children: [column],
+			});
 
-				expect(columnBoard).toEqual(boardNode);
+			await repo.persistAndFlush(board);
+			em.clear();
+
+			return { board, column, card };
+		};
+
+		it('should be able to find a node tree by root id', async () => {
+			const { board, column, card } = await setup();
+
+			const result = await repo.findById(board.id);
+
+			// TODO implement tree matcher (by id)?
+			expect(result.id).toEqual(board.id);
+			expect(result.children[0].id).toEqual(column.id);
+			expect(result.children[0].children[0].id).toEqual(card.id);
+		});
+	});
+
+	describe('findByIds', () => {
+		const setup = async () => {
+			const board = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
+
+			const extraBoard = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
+
+			await repo.persistAndFlush([board, extraBoard]);
+			em.clear();
+
+			return { board, extraBoard };
+		};
+
+		it('should be able to find multiple board nodes', async () => {
+			const { board, extraBoard } = await setup();
+
+			const result = await repo.findByIds([board.id, extraBoard.id]);
+
+			expect(result[0]).toBeInstanceOf(ColumnBoard);
+			expect(result[1]).toBeInstanceOf(ColumnBoard);
+		});
+
+		it('should be able to limit tree depth', async () => {
+			const { board } = await setup();
+
+			const result = (await repo.findByIds([board.id], 1))[0];
+
+			expect(result.children[0].children).toHaveLength(0);
+		});
+	});
+
+	// describe('findByIdAndType', () => {
+	// 	const setup = async () => {
+	// 		const board = columnBoardFactory.build({
+	// 			children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+	// 		});
+
+	// 		await repo.persistAndFlush(board);
+	// 		em.clear();
+
+	// 		return { board };
+	// 	};
+
+	// 	describe('when type is valid', () => {
+	// 		it('should return the proper instance', async () => {
+	// 			const { board } = await setup();
+
+	// 			const result = await repo.findByIdAndType(board.id, BoardNodeType.COLUMN_BOARD);
+
+	// 			expect(result).toBeInstanceOf(ColumnBoard);
+	// 		});
+	// 	});
+
+	// 	describe('when type is not valid', () => {
+	// 		it('should throw an error', async () => {
+	// 			const { board } = await setup();
+
+	// 			await expect(repo.findByIdAndType(board.id, BoardNodeType.COLUMN)).rejects.toThrowError();
+	// 		});
+	// 	});
+
+	// 	describe('when depth is omitted', () => {
+	// 		it('should return the whole tree', async () => {
+	// 			const { board } = await setup();
+
+	// 			const result = await repo.findByIdAndType(board.id, BoardNodeType.COLUMN_BOARD);
+
+	// 			expect(result.id).toEqual(board.id);
+	// 			expect(result.children[0].id).toEqual(board.children[0].id);
+	// 			expect(result.children[0].children[0].id).toEqual(board.children[0].children[0].id);
+	// 		});
+	// 	});
+
+	// 	describe('when depth is specified', () => {
+	// 		it('should return a tree with limited depth', async () => {
+	// 			const { board } = await setup();
+
+	// 			const result = await repo.findByIdAndType(board.id, BoardNodeType.COLUMN_BOARD, 1);
+
+	// 			expect(result.children[0].children.length).toBe(0);
+	// 		});
+	// 	});
+	// });
+
+	describe('findCommonParentOfIds', () => {
+		const setup = async () => {
+			const card = cardFactory.build();
+			const column = columnFactory.build({ children: [card] });
+			const board = columnBoardFactory.build({ children: [column] });
+
+			await repo.persistAndFlush(board);
+			em.clear();
+
+			return { board, column, card };
+		};
+
+		it('should find the common parent', async () => {
+			const { board, column, card } = await setup();
+
+			const result = await repo.findCommonParentOfIds([column.id, card.id]);
+
+			expect(result.id).toEqual(board.id);
+		});
+	});
+
+	describe('remove (and flush)', () => {
+		const setup = async () => {
+			const board = columnBoardFactory.build({
+				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
+			});
+
+			await repo.persistAndFlush(board);
+
+			return { board };
+		};
+
+		describe('remove + flush', () => {
+			it('should delete all nodes recursivevely', async () => {
+				const { board } = await setup();
+				expect(await em.count(BoardNodeEntity)).toBe(3);
+
+				repo.remove(board);
+				await repo.flush();
+
+				expect(await em.count(BoardNodeEntity)).toBe(0);
 			});
 		});
 
-		describe('when boardNode exists NOT in the database but in the unit of work', () => {
-			it('should return the exact same object', async () => {
-				const columnBoard = columnBoardNodeFactory.build();
-				await em.persistAndFlush(columnBoard);
+		describe('removeAndFlush', () => {
+			it('should delete all nodes recursivevely', async () => {
+				const { board } = await setup();
+				expect(await em.count(BoardNodeEntity)).toBe(3);
 
-				await em.nativeDelete(ColumnBoardNode, columnBoard.id);
+				await repo.removeAndFlush(board);
 
-				const boardNode = await repo.findById(columnBoard.id);
-
-				expect(columnBoard === boardNode).toBe(true);
+				expect(await em.count(BoardNodeEntity)).toBe(0);
 			});
 		});
 	});

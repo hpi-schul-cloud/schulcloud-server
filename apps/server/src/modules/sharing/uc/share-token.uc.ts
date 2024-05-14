@@ -1,6 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizableReferenceType, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { BoardExternalReferenceType, ColumnBoardCopyService } from '@modules/board';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService } from '@modules/lesson';
@@ -9,8 +10,6 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotImple
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@modules/board';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,

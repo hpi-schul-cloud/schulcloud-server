@@ -13,8 +13,8 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 	UserWithBoardRoles,
-} from '../poc/domain';
-import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../poc/service';
+} from '../domain';
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 
 @Injectable()
 export class SubmissionItemUc {

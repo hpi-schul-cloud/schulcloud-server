@@ -1,6 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { BoardLayout } from '@shared/domain/domainobject';
-import { BoardNodeType } from '@shared/domain/entity';
+import { BoardLayout, BoardNodeType } from '@modules/board';
 
 export class Migration20240415124640 extends Migration {
 	async up(): Promise<void> {

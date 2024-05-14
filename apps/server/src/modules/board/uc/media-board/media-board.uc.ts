@@ -11,9 +11,8 @@ import {
 	MediaBoard,
 	MediaBoardNodeFactory,
 	MediaLine,
-} from '../../poc/domain';
-import { BoardNodePermissionService, BoardNodeService } from '../../poc/service';
-import { MediaBoardService } from '../../poc/service/media-board';
+} from '../../domain';
+import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()
 export class MediaBoardUc {

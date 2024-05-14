@@ -1,27 +1,24 @@
-import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { CopyStatus } from '@modules/copy-helper';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import {
-	BoardExternalReference,
-	BoardExternalReferenceType,
-	ColumnBoard,
-	isColumnBoard,
-} from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { BoardDoRepo } from '../repo';
-import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
-import { SwapInternalLinksVisitor } from './board-do-copy-service/swap-internal-links.visitor';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
+import { BoardNodeCopyContext } from './board-node-copy-context';
+import { BoardNodeCopyService } from './board-node-copy.service';
+import { BoardNodeService } from './board-node.service';
+import { ColumnBoardTitleService } from './column-board-title.service';
 
 @Injectable()
 export class ColumnBoardCopyService {
 	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
-		private readonly copyHelperService: CopyHelperService,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly columnBoardTitleService: ColumnBoardTitleService,
 		private readonly courseRepo: CourseRepo,
 		private readonly userService: UserService,
-		private readonly boardDoCopyService: BoardDoCopyService,
-		private readonly fileCopyServiceFactory: SchoolSpecificFileCopyServiceFactory
+		private readonly boardNodeCopyService: BoardNodeCopyService,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async copyColumnBoard(props: {
@@ -30,15 +27,15 @@ export class ColumnBoardCopyService {
 		userId: EntityId;
 		copyTitle?: string;
 	}): Promise<CopyStatus> {
-		const originalBoard: ColumnBoard = await this.boardDoRepo.findByClassAndId(
-			ColumnBoard,
-			props.originalColumnBoardId
-		);
+		const originalBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
 
 		if (props.copyTitle) {
 			originalBoard.title = props.copyTitle;
 		} else {
-			originalBoard.title = await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
+			originalBoard.title = await this.columnBoardTitleService.deriveColumnBoardTitle(
+				originalBoard.title,
+				props.destinationExternalReference
+			);
 		}
 
 		const user = await this.userService.findById(props.userId);
@@ -48,13 +45,14 @@ export class ColumnBoardCopyService {
 		}
 		const course = await this.courseRepo.findById(originalBoard.context.id); // TODO: get rid of this
 
-		const fileCopyService = this.fileCopyServiceFactory.build({
+		const copyContext = new BoardNodeCopyContext({
 			sourceSchoolId: course.school.id,
 			targetSchoolId: user.schoolId,
 			userId: props.userId,
+			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
 		});
 
-		const copyStatus = await this.boardDoCopyService.copy({ original: originalBoard, fileCopyService });
+		const copyStatus = await this.boardNodeCopyService.copy(originalBoard, copyContext);
 
 		/* istanbul ignore next */
 		if (!isColumnBoard(copyStatus.copyEntity)) {
@@ -62,30 +60,8 @@ export class ColumnBoardCopyService {
 		}
 
 		copyStatus.copyEntity.context = props.destinationExternalReference;
-		await this.boardDoRepo.save(copyStatus.copyEntity);
+		await this.boardNodeService.addRoot(copyStatus.copyEntity);
 
 		return copyStatus;
-	}
-
-	private async deriveColumnBoardTitle(
-		originalTitle: string,
-		destinationExternalReference: BoardExternalReference
-	): Promise<string> {
-		const existingBoardIds = await this.boardDoRepo.findIdsByExternalReference(destinationExternalReference);
-		const existingTitles = await this.boardDoRepo.getTitlesByIds(existingBoardIds);
-		const copyName = this.copyHelperService.deriveCopyName(originalTitle, Object.values(existingTitles));
-		return copyName;
-	}
-
-	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>) {
-		const board = await this.boardDoRepo.findById(boardId);
-
-		const visitor = new SwapInternalLinksVisitor(idMap);
-
-		board.accept(visitor);
-
-		await this.boardDoRepo.save(board);
-
-		return board;
 	}
 }

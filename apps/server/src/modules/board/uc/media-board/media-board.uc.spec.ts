@@ -3,11 +3,11 @@ import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modu
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { mediaBoardFactory, mediaLineFactory, setupEntities, userFactory as userEntityFactory } from '@shared/testing';
+import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { MediaBoardService, MediaLineService } from '../../service';
+import { BoardNodePermissionService, MediaBoardService } from '../../service';
+import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardUc } from './media-board.uc';
-import { BoardNodePermissionService } from '../../poc/service';
 
 describe(MediaBoardUc.name, () => {
 	let module: TestingModule;

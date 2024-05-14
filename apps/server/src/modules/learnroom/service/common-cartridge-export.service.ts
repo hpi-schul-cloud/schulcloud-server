@@ -1,13 +1,5 @@
 import {
-	CommonCartridgeFileBuilder,
-	CommonCartridgeOrganizationBuilder,
-	CommonCartridgeVersion,
-} from '@modules/common-cartridge';
-import { LessonService } from '@modules/lesson';
-import { TaskService } from '@modules/task';
-import { Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
+	AnyBoardNode,
 	BoardExternalReferenceType,
 	Card,
 	Column,
@@ -15,7 +7,15 @@ import {
 	isColumn,
 	isLinkElement,
 	isRichTextElement,
-} from '@shared/domain/domainobject';
+} from '@modules/board';
+import {
+	CommonCartridgeFileBuilder,
+	CommonCartridgeOrganizationBuilder,
+	CommonCartridgeVersion,
+} from '@modules/common-cartridge';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
+import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardService } from '@src/modules/board';
@@ -110,16 +110,14 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		exportedColumnBoards: string[]
 	): Promise<void> {
-		const columnBoardIds = (
-			await this.columnBoardService.findIdsByExternalReference({
+		const columnBoards = (
+			await this.columnBoardService.findByExternalReference({
 				type: BoardExternalReferenceType.Course,
 				id: courseId,
 			})
-		).filter((id) => exportedColumnBoards.includes(id));
+		).filter((cb) => exportedColumnBoards.includes(cb.id));
 
-		for await (const columnBoardId of columnBoardIds) {
-			const columnBoard = await this.columnBoardService.findById(columnBoardId);
-
+		for (const columnBoard of columnBoards) {
 			const organization = builder.addOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
@@ -134,7 +132,7 @@ export class CommonCartridgeExportService {
 	private addColumnToOrganization(column: Column, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
 		const { id } = column;
 		const columnOrganization = organizationBuilder.addSubOrganization({
-			title: column.title,
+			title: column.title ?? '',
 			identifier: createIdentifier(id),
 		});
 
@@ -146,7 +144,7 @@ export class CommonCartridgeExportService {
 	private addCardToOrganization(card: Card, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
 		const { id } = card;
 		const cardOrganization = organizationBuilder.addSubOrganization({
-			title: card.title,
+			title: card.title ?? '',
 			identifier: createIdentifier(id),
 		});
 
@@ -154,7 +152,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private addCardElementToOrganization(
-		element: AnyBoardDo,
+		element: AnyBoardNode,
 		organizationBuilder: CommonCartridgeOrganizationBuilder
 	): void {
 		if (isRichTextElement(element)) {

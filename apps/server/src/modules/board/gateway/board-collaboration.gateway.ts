@@ -4,7 +4,7 @@ import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websock
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { BoardResponseMapper } from '../controller/mapper';
-import { BoardDoAuthorizableService } from '../service';
+import { BoardNodeAuthorizableService } from '../service';
 import { BoardUc, ColumnUc } from '../uc';
 import {
 	CreateCardMessageParams,
@@ -30,7 +30,7 @@ export class BoardCollaborationGateway {
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
-		private readonly authorizableService: BoardDoAuthorizableService // to be removed
+		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
 	) {}
 
 	private getCurrentUser(client: Socket) {
@@ -236,7 +236,7 @@ export class BoardCollaborationGateway {
 
 	private async getRootIdForId(id: string) {
 		const authorizable = await this.authorizableService.findById(id);
-		const rootId = authorizable.rootDo.id;
+		const rootId = authorizable.rootNode.id;
 
 		return rootId;
 	}

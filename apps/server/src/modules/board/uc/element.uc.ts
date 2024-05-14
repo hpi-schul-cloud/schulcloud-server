@@ -6,17 +6,16 @@ import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyContentElement,
 	BoardNodeFactory,
-	ContentElementType,
 	isSubmissionItem,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '../poc/domain';
+} from '../domain';
 import {
 	BoardNodeAuthorizableService,
 	BoardNodePermissionService,
 	BoardNodeService,
 	ContentElementUpdateService,
-} from '../poc/service';
+} from '../service';
 
 @Injectable()
 export class ElementUc {
@@ -34,7 +33,6 @@ export class ElementUc {
 	async updateElement(
 		userId: EntityId,
 		elementId: EntityId,
-		type: ContentElementType,
 		content: AnyElementContentBody
 	): Promise<AnyContentElement> {
 		const element = await this.boardNodeService.findContentElementById(elementId);

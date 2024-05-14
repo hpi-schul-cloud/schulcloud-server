@@ -13,23 +13,7 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import {
-	BoardNode,
-	CardNode,
-	CollaborativeTextEditorElementNode,
-	ColumnBoardNode,
-	ColumnNode,
-	DrawingElementNode,
-	ExternalToolElementNodeEntity,
-	FileElementNode,
-	LinkElementNode,
-	MediaBoardNode,
-	MediaExternalToolElementNode,
-	MediaLineNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-} from './boardnode';
+import { BoardNodeEntity } from '@modules/board/repo';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -62,25 +46,11 @@ export const ALL_ENTITIES = [
 	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
-	BoardNode,
-	CardNode,
+	BoardNodeEntity,
 	ColumnboardBoardElement,
-	ColumnBoardNode,
-	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,
 	DeletionLogEntity,
-	FileElementNode,
-	LinkElementNode,
-	RichTextElementNode,
-	DrawingElementNode,
-	SubmissionContainerElementNode,
-	SubmissionItemNode,
-	ExternalToolElementNodeEntity,
-	CollaborativeTextEditorElementNode,
-	MediaBoardNode,
-	MediaLineNode,
-	MediaExternalToolElementNode,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,
