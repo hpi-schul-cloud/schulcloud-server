@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AccountModule } from '@modules/account';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
@@ -39,13 +38,7 @@ import {
 		LoggerModule,
 		GroupModule,
 		LearnroomModule,
-		SchulconnexClientModule.register({
-			apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
-			tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
-			clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
-			clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
-			personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
-		}),
+		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
 	],
 	providers: [
