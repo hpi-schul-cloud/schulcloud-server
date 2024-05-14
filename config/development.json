@@ -85,9 +85,7 @@
 	"FEATURE_BOARD_LAYOUT_ENABLED": true,
 	"SCHULCONNEX_CLIENT": {
 		"API_URL": "http://localhost:8888/v1/",
-		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
-		"CLIENT_ID": "schulcloud",
-		"CLIENT_SECRET": "secret"
+		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token"
 	},
 	"ETHERPAD_URI": "http://localhost:9001/api/1/",
 	"ETHERPAD": {
