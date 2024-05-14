@@ -80,7 +80,6 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
-		console.log('this.content', this.content);
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
 			richTextElement.inputFormat = this.content.inputFormat;
