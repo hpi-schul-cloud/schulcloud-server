@@ -5,7 +5,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { BoardResponseMapper, CardResponseMapper } from '../controller/mapper';
 import { BoardDoAuthorizableService } from '../service';
-import { BoardUc, CardUc, ColumnUc } from '../uc';
+import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
 	CreateCardMessageParams,
 	DeleteColumnMessageParams,
@@ -25,6 +25,10 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { Socket } from './types';
+import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
+import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
+import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
+import { MoveContentElementMessageParams } from './dto/move-content-element.message.param';
 
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
@@ -36,6 +40,7 @@ export class BoardCollaborationGateway {
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
+		private readonly elementUc: ElementUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -270,6 +275,72 @@ export class BoardCollaborationGateway {
 			client.emit('fetch-card-success', { cards: cardResponses });
 		} catch (err) {
 			client.emit('fetch-card-failure', new Error('Failed to fetch board'));
+		}
+	}
+
+	@SubscribeMessage('create-element-request')
+	@UseRequestContext()
+	async createElement(client: Socket, data: CreateContentElementMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			const card = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
+			const responsePayload = {
+				...data,
+				newElement: card.getProps(),
+			};
+
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('create-element-success', responsePayload);
+			client.emit('create-element-success', responsePayload);
+		} catch (err) {
+			console.log('create-element-request', err);
+			client.emit('create-element-failure', new Error('Failed to create element'));
+		}
+	}
+
+	@SubscribeMessage('update-element-request')
+	@UseRequestContext()
+	async updateElement(client: Socket, data: UpdateContentElementMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
+
+			const room = await this.ensureUserInRoom(client, data.elementId);
+			client.to(room).emit('update-element-success', data);
+			client.emit('update-element-success', data);
+		} catch (err) {
+			console.log('update-element-request', err);
+			client.emit('update-element-failure', new Error('Failed to update element'));
+		}
+	}
+
+	@SubscribeMessage('delete-element-request')
+	@UseRequestContext()
+	async deleteElement(client: Socket, data: DeleteContentElementMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			const room = await this.ensureUserInRoom(client, data.elementId);
+			await this.elementUc.deleteElement(userId, data.elementId);
+
+			client.to(room).emit('delete-element-success', data);
+			client.emit('delete-element-success', data);
+		} catch (err) {
+			client.emit('delete-element-failure', new Error('Failed to delete element'));
+		}
+	}
+
+	@SubscribeMessage('move-element-request')
+	@UseRequestContext()
+	async moveElement(client: Socket, data: MoveContentElementMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+
+			const room = await this.ensureUserInRoom(client, data.elementId);
+			client.to(room).emit('move-element-success', data);
+			client.emit('move-element-success', data);
+		} catch (err) {
+			client.emit('move-element-failure', new Error('Failed to move element'));
 		}
 	}
 

@@ -2,13 +2,16 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-import { BoardExternalReferenceType, CardProps } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, CardProps, ContentElementType } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
+	richTextElementFactory,
+	richTextElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
@@ -55,13 +58,14 @@ describe(BoardCollaborationGateway.name, () => {
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const columnNode2 = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 
-		const cardNodes = cardNodeFactory.buildList(2, { parent: columnNode });
+		const cardNodes = cardNodeFactory.buildListWithId(2, { parent: columnNode });
+		const elementNodes = richTextElementNodeFactory.buildListWithId(3, { parent: cardNodes[0] });
 
-		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes]);
+		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]);
 
 		em.clear();
 
-		return { user, columnBoardNode, columnNode, columnNode2, cardNodes };
+		return { user, columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
 	};
 
 	it('should be defined', () => {
@@ -476,8 +480,87 @@ describe(BoardCollaborationGateway.name, () => {
 				await setup();
 				const cardId = 'non-existing-id';
 
-				ioClient.emit('delete-card-request', { cardIds: [cardId] });
+				ioClient.emit('delete-card-request', { cardId });
 				const failure = await waitForEvent(ioClient, 'delete-card-failure');
+
+				expect(failure).toBeDefined();
+			});
+		});
+	});
+
+	describe('create element', () => {
+		it('should answer with success', async () => {
+			const { cardNodes } = await setup();
+			const cardId = cardNodes[1].id;
+
+			ioClient.emit('create-element-request', { cardId, type: ContentElementType.RICH_TEXT });
+			const success = (await waitForEvent(ioClient, 'create-element-success')) as {
+				cardId: string;
+				newElement: unknown;
+			};
+
+			expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'newElement']));
+		});
+	});
+
+	describe('delete element', () => {
+		describe('when element exists', () => {
+			it('should answer with success', async () => {
+				const { elementNodes } = await setup();
+				const elementId = elementNodes[0].id;
+
+				ioClient.emit('delete-element-request', { elementId });
+				const success = await waitForEvent(ioClient, 'delete-element-success');
+
+				expect(success).toEqual({ elementId });
+			});
+		});
+
+		describe('when element does not exist', () => {
+			it('should answer with failure', async () => {
+				await setup();
+				const elementId = 'non-existing-id';
+
+				ioClient.emit('delete-element-request', { elementId });
+				const failure = await waitForEvent(ioClient, 'delete-element-failure');
+
+				expect(failure).toBeDefined();
+			});
+		});
+	});
+
+	describe('update element', () => {
+		describe('when element exists', () => {
+			it('should answer with success', async () => {
+				const { elementNodes } = await setup();
+				const elementId = elementNodes[0].id;
+
+				ioClient.emit('update-element-request', {
+					elementId,
+					data: {
+						type: ContentElementType.RICH_TEXT,
+						content: { text: 'some new text', inputFormat: InputFormat.PLAIN_TEXT },
+					},
+				});
+				const success = await waitForEvent(ioClient, 'update-element-success');
+
+				expect(success).toEqual({ elementId });
+			});
+		});
+
+		describe('when element does not exist', () => {
+			it('should answer with failure', async () => {
+				await setup();
+				const elementId = 'non-existing-id';
+
+				ioClient.emit('update-element-request', {
+					elementId,
+					data: {
+						type: ContentElementType.RICH_TEXT,
+						content: { text: 'some new text', inputFormat: InputFormat.PLAIN_TEXT },
+					},
+				});
+				const failure = await waitForEvent(ioClient, 'update-element-failure');
 
 				expect(failure).toBeDefined();
 			});
