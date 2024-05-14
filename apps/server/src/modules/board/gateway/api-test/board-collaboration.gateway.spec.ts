@@ -566,4 +566,31 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 	});
+
+	describe('move element', () => {
+		describe('when element exists', () => {
+			it('should answer with success', async () => {
+				const { cardNodes, elementNodes } = await setup();
+				const data = { elementId: elementNodes[0].id, toCardId: cardNodes[0].id, toPosition: 2 };
+
+				ioClient.emit('move-element-request', data);
+				const success = await waitForEvent(ioClient, 'move-element-success');
+
+				expect(success).toEqual(data);
+			});
+		});
+
+		describe('when element does not exist', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const elementId = 'non-existing-id';
+				const toCardId = cardNodes[0].id;
+
+				ioClient.emit('move-element-request', { elementId, toCardId, toPosition: 2 });
+				const failure = await waitForEvent(ioClient, 'move-element-failure');
+
+				expect(failure).toBeDefined();
+			});
+		});
+	});
 });
