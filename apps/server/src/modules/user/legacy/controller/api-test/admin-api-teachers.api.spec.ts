@@ -11,7 +11,7 @@ import {
 	schoolYearFactory,
 	userFactory,
 } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';

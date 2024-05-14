@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
-import { AccountEntity } from '@modules/account/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';

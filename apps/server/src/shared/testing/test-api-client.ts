@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import supertest, { Response } from 'supertest';
-import { AccountEntity } from '@modules/account/entity/account.entity';
-import { defaultTestPassword } from './factory/account.factory';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { defaultTestPassword } from '../../modules/account/testing/account.factory';
 
 interface AuthenticationResponse {
 	accessToken: string;

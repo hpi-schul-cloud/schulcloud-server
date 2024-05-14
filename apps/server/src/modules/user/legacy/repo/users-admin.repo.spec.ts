@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { accountFactory, roleFactory, schoolEntityFactory, schoolYearFactory, userFactory } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';

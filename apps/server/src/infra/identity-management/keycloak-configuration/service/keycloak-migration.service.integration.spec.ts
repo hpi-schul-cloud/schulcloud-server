@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
-import { AccountEntity } from '@modules/account/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakMigrationService } from './keycloak-migration.service';

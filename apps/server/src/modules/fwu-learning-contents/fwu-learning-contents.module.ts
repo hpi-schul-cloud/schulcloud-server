@@ -14,7 +14,7 @@ import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
-import { AccountEntity } from '../account/entity/account.entity';
+import { AccountEntity } from '../account/domain/entity/account.entity';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>

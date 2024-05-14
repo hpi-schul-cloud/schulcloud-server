@@ -1,10 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import _ from 'lodash';
-import { accountFactory } from './account.factory';
+import { accountFactory } from '../../../modules/account/testing/account.factory';
 import { userFactory } from './user.factory';
 
 interface UserParams {
