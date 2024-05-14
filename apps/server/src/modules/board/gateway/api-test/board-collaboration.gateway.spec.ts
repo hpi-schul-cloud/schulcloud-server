@@ -582,7 +582,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
 				const { cardNodes } = await setup();
-				const elementId = 'non-existing-id';
+				const elementId = new ObjectId().toHexString();
 				const toCardId = cardNodes[0].id;
 
 				ioClient.emit('move-element-request', { elementId, toCardId, toPosition: 2 });
