@@ -85,20 +85,40 @@ describe(EtherpadClientAdapter.name, () => {
 				return { userId, username };
 			};
 
-			it('should return author id', async () => {
-				const { userId, username } = setup();
+			describe('When user name parameter is set', () => {
+				it('should return author id', async () => {
+					const { userId, username } = setup();
 
-				const result = await service.getOrCreateAuthorId(userId, username);
+					const result = await service.getOrCreateAuthorId(userId, username);
 
-				expect(result).toBe('authorId');
+					expect(result).toBe('authorId');
+				});
+
+				it('should call createAuthorIfNotExistsForUsingGET with correct params', async () => {
+					const { userId, username } = setup();
+
+					await service.getOrCreateAuthorId(userId, username);
+
+					expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, username);
+				});
 			});
 
-			it('should call createAuthorIfNotExistsForUsingGET with correct params', async () => {
-				const { userId, username } = setup();
+			describe('When user name parameter is not set', () => {
+				it('should return author id', async () => {
+					const { userId } = setup();
 
-				await service.getOrCreateAuthorId(userId, username);
+					const result = await service.getOrCreateAuthorId(userId);
 
-				expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, username);
+					expect(result).toBe('authorId');
+				});
+
+				it('should call createAuthorIfNotExistsForUsingGET with correct params', async () => {
+					const { userId } = setup();
+
+					await service.getOrCreateAuthorId(userId);
+
+					expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, undefined);
+				});
 			});
 		});
 

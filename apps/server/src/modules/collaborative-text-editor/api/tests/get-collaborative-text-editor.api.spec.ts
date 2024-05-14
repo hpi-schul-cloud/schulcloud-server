@@ -139,8 +139,6 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
 				const expectedPath = `${basePath}/${editorId}`;
 
-				const expectedSessions = encodeURIComponent([...otherSessionIds, sessionId].join(','));
-
 				const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
 				// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 				const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
@@ -149,8 +147,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					loggedInClient,
 					collaborativeTextEditorElement,
 					expectedPath,
-					expectedSessions,
+					sessionId,
 					sessionCookieExpiryDate,
+					editorId,
 				};
 			};
 
@@ -159,8 +158,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					loggedInClient,
 					collaborativeTextEditorElement,
 					expectedPath,
-					expectedSessions,
+					sessionId,
 					sessionCookieExpiryDate,
+					editorId,
 				} = await setup();
 
 				const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
@@ -170,7 +170,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				expect(response.body['url']).toEqual(expectedPath);
 				// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
 				expect(response.headers['set-cookie'][0]).toContain(
-					`sessionID=${expectedSessions}; Path=/; Expires=${sessionCookieExpiryDate}`
+					`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
 				);
 			});
 		});
