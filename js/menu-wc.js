@@ -4025,6 +4025,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AccountResponseMapper.html" data-type="entity-link" >AccountResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AccountSave.html" data-type="entity-link" >AccountSave</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AccountScope.html" data-type="entity-link" >AccountScope</a>
                             </li>
                             <li class="link">

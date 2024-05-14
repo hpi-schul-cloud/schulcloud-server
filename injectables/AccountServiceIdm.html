@@ -1269,7 +1269,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(accountSave: <a href="../undefineds/AccountSave.html" target="_self">AccountSave</a>)</code>
+                    <code>save(accountSave: <a href="../classes/AccountSave.html" target="_self">AccountSave</a>)</code>
                 </td>
             </tr>
 
@@ -1306,7 +1306,7 @@
                                         <tr>
                                                 <td>accountSave</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AccountSave" target="_self" >AccountSave</a></code>
+                                                            <code><a href="../classes/AccountSave.html" target="_self" >AccountSave</a></code>
                                             </td>
 
                                             <td>
@@ -1961,9 +1961,9 @@ import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountConfig } from &#x27;../account-config&#x27;;
 import { Account, AccountSave } from &#x27;../domain&#x27;;
+import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from &#x27;../loggable&#x27;;
 import { AccountIdmToDoMapper } from &#x27;../repo/mapper&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
-import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from &#x27;../loggable&#x27;;
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
