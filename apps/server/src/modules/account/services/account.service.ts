@@ -21,18 +21,14 @@ import { isEmail, isNotEmpty } from 'class-validator';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
-import { AccountServiceDb } from './account-db.service';
-import { AccountServiceIdm } from './account-idm.service';
-import { AbstractAccountService } from './account.service.abstract';
-import { AccountValidationService } from './account.validation.service';
 import {
-	IdmCallbackLoggableException,
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
 	DeletedUserDataLoggable,
 	DeletingAccountLoggable,
 	DeletingAccountWithUserIdLoggable,
 	DeletingUserDataLoggable,
+	IdmCallbackLoggableException,
 	SavedAccountLoggable,
 	SavingAccountLoggable,
 	UpdatedAccountPasswordLoggable,
@@ -43,6 +39,10 @@ import {
 	UpdatingLastFailedLoginLoggable,
 } from '../loggable';
 import { AccountRepo } from '../repo/account.repo';
+import { AccountServiceDb } from './account-db.service';
+import { AccountServiceIdm } from './account-idm.service';
+import { AbstractAccountService } from './account.service.abstract';
+import { AccountValidationService } from './account.validation.service';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -77,18 +77,20 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		let updateUser = false;
 		let updateAccount = false;
+
+		let newAccountPassword: string | undefined;
+		let newAccountUsername: string | undefined;
+
 		if (updateData.passwordNew) {
-			account.password = updateData.passwordNew;
+			newAccountPassword = updateData.passwordNew;
 			updateAccount = true;
-		} else {
-			account.password = undefined;
 		}
 
 		if (updateData.email && user.email !== updateData.email) {
 			const newMail = updateData.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
-			account.username = newMail;
+			newAccountUsername = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
@@ -112,7 +114,13 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		if (updateAccount) {
 			try {
-				await this.save(account);
+				const updateProps = new AccountSave({
+					id: account.id,
+					password: newAccountPassword,
+					username: newAccountUsername,
+				});
+
+				await this.save(updateProps);
 			} catch (err) {
 				throw new EntityNotFoundError(AccountEntity.name);
 			}
@@ -264,7 +272,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
-		if (!isNotEmpty(accountSave.username)) {
+		// if username is undefined or empty, throw error ✔
+		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
 		}
 
