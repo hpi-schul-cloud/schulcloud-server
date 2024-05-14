@@ -1,12 +1,12 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import {
-	ApiBadRequestResponse,
 	ApiForbiddenResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchRequest } from '../types';
@@ -29,7 +29,7 @@ export class ToolLaunchController {
 	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
-	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
+	@ApiUnprocessableEntityResponse({ description: 'Outdated tools cannot be launched' })
 	async getContextExternalToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolLaunchParams
@@ -44,11 +44,12 @@ export class ToolLaunchController {
 	}
 
 	@Post('school/:schoolExternalToolId/launch')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Get tool launch request for a context external tool id' })
 	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
-	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
+	@ApiUnprocessableEntityResponse({ description: 'Outdated tools cannot be launched' })
 	async getSchoolExternalToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolLaunchParams,
