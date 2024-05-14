@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
@@ -35,7 +36,7 @@ export class ExternalToolUc {
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const externalTool = new ExternalTool({ ...externalToolCreate });
+		const externalTool: ExternalTool = new ExternalTool({ ...externalToolCreate, id: new ObjectId().toHexString() });
 		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
 
 		await this.toolValidationService.validateCreate(externalTool);
@@ -61,7 +62,7 @@ export class ExternalToolUc {
 
 		await this.toolValidationService.validateUpdate(toolId, toUpdate);
 
-		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate);
 
 		return saved;
 	}

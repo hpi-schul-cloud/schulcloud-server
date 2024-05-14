@@ -18,13 +18,13 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 	roleFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
@@ -363,26 +363,24 @@ describe('ExternalToolUc', () => {
 		const setup = () => {
 			const { externalTool, toolId } = setupDefault();
 
-			const externalToolDOtoUpdate: ExternalToolUpdate = {
-				id: toolId,
-				...externalTool,
+			const externalToolToUpdate: ExternalToolUpdate = {
+				...externalTool.getProps(),
 				name: 'newName',
 				url: undefined,
-				version: 1,
 			};
-			const updatedExternalToolDO: ExternalTool = externalToolFactory.build({
+			const updatedExternalTool: ExternalTool = externalToolFactory.build({
 				...externalTool,
 				name: 'newName',
 				url: undefined,
 			});
 
-			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
-			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
+			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalTool);
+			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolToUpdate));
 
 			return {
 				externalTool,
-				updatedExternalToolDO,
-				externalToolDOtoUpdate,
+				updatedExternalToolDO: updatedExternalTool,
+				externalToolDOtoUpdate: externalToolToUpdate,
 				toolId,
 			};
 		};
@@ -553,7 +551,7 @@ describe('ExternalToolUc', () => {
 			it('should check that the user has TOOL_ADMIN permission', async () => {
 				const { user, tool } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, tool.id!);
+				await uc.getMetadataForExternalTool(user.id, tool.id);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});

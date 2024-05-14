@@ -17,8 +17,8 @@ import {
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '@modules/tool/external-tool/domain';
+import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
 import { DeepPartial } from 'fishery';
-import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
 	return {
@@ -127,19 +127,18 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 	}
 }
 
-export const externalToolFactory = ExternalToolFactory.define(
-	ExternalTool,
-	({ sequence }) =>
-		new ExternalTool({
-			id: new ObjectId().toHexString(),
-			name: `external-tool-${sequence}`,
-			description: 'description',
-			url: 'https://url.com/',
-			config: basicToolConfigFactory.build(),
-			logoUrl: 'https://logo.com/',
-			isHidden: false,
-			isDeactivated: false,
-			openNewTab: false,
-			createdAt: new Date(2020, 1, 1),
-		})
-);
+export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ sequence }) => {
+	return {
+		id: new ObjectId().toHexString(),
+		name: `external-tool-${sequence}`,
+		description: 'description',
+		url: 'https://url.com/',
+		config: basicToolConfigFactory.build(),
+		logoUrl: 'https://logo.com/',
+		isHidden: false,
+		isDeactivated: false,
+		openNewTab: false,
+		version: 1,
+		createdAt: new Date(2020, 1, 1),
+	};
+});

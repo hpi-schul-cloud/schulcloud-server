@@ -16,7 +16,6 @@ import {
 	ExternalToolService,
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
-	ExternalToolVersionIncrementService,
 } from './service';
 
 @Module({
@@ -26,7 +25,6 @@ import {
 		ExternalToolServiceMapper,
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
-		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
@@ -37,7 +35,6 @@ import {
 	exports: [
 		ExternalToolService,
 		ExternalToolValidationService,
-		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		DatasheetPdfService,

@@ -4,20 +4,18 @@ import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
 import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
 
-describe('ExternalToolService', () => {
+describe(ExternalToolService.name, () => {
 	let module: TestingModule;
 	let service: ExternalToolService;
 
@@ -27,7 +25,6 @@ describe('ExternalToolService', () => {
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
 	let encryptionService: DeepMocked<EncryptionService>;
-	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -61,10 +58,6 @@ describe('ExternalToolService', () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
-				{
-					provide: ExternalToolVersionIncrementService,
-					useValue: createMock<ExternalToolVersionIncrementService>(),
-				},
 			],
 		}).compile();
 
@@ -75,7 +68,6 @@ describe('ExternalToolService', () => {
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
 		encryptionService = module.get(DefaultEncryptionService);
-		versionService = module.get(ExternalToolVersionIncrementService);
 	});
 
 	afterAll(async () => {
@@ -273,7 +265,10 @@ describe('ExternalToolService', () => {
 
 				const result: Page<ExternalTool> = await service.findExternalTools(query, options);
 
-				expect(result).toEqual({ data: [{ ...externalTool, config: oauth2ToolConfig }], total: 1 });
+				expect(result).toEqual({
+					data: [expect.objectContaining<Partial<ExternalTool>>({ ...externalTool, config: oauth2ToolConfig })],
+					total: 1,
+				});
 			});
 		});
 
@@ -301,7 +296,10 @@ describe('ExternalToolService', () => {
 
 				const result: Page<ExternalTool> = await service.findExternalTools(query, options);
 
-				expect(result).toEqual({ data: [{ ...externalTool, config: oauth2ToolConfig }], total: 1 });
+				expect(result).toEqual({
+					data: [expect.objectContaining<Partial<ExternalTool>>({ ...externalTool, config: oauth2ToolConfig })],
+					total: 1,
+				});
 			});
 		});
 	});
@@ -340,7 +338,13 @@ describe('ExternalToolService', () => {
 
 				const result: ExternalTool = await service.findById('toolId');
 
-				expect(result).toEqual({ ...externalTool, config: oauth2ToolConfig });
+				expect(result).toEqual(
+					expect.objectContaining<Partial<ExternalTool>>({
+						...externalTool,
+						config: oauth2ToolConfig,
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 
@@ -376,7 +380,6 @@ describe('ExternalToolService', () => {
 				toolId: 'tool1',
 				schoolId: 'school1',
 				parameters: [],
-				toolVersion: 1,
 			});
 
 			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool]);
@@ -515,7 +518,7 @@ describe('ExternalToolService', () => {
 			it('should call externalToolServiceMapper', async () => {
 				const { changedTool, existingTool } = setup();
 
-				await service.updateExternalTool(changedTool, existingTool);
+				await service.updateExternalTool(changedTool);
 
 				expect(mapper.mapDoToProviderOauthClient).toHaveBeenCalledWith(changedTool.name, changedTool.config);
 			});
@@ -548,7 +551,7 @@ describe('ExternalToolService', () => {
 			it('should call oauthProviderService', async () => {
 				const { changedTool, oauthClientId, existingTool } = setup();
 
-				await service.updateExternalTool(changedTool, existingTool);
+				await service.updateExternalTool(changedTool);
 
 				expect(oauthProviderService.getOAuth2Client).toHaveBeenCalledWith(oauthClientId);
 			});
@@ -581,7 +584,7 @@ describe('ExternalToolService', () => {
 			it('should update the oauth2Client', async () => {
 				const { changedTool, oauthClientId, providerOauthClient, existingTool } = setup();
 
-				await service.updateExternalTool(changedTool, existingTool);
+				await service.updateExternalTool(changedTool);
 
 				expect(oauthProviderService.updateOAuth2Client).toHaveBeenCalledWith(oauthClientId, providerOauthClient);
 			});
@@ -610,7 +613,7 @@ describe('ExternalToolService', () => {
 			it('should throw an error ', async () => {
 				const { changedTool, existingTool } = setup();
 
-				const func = () => service.updateExternalTool(changedTool, existingTool);
+				const func = () => service.updateExternalTool(changedTool);
 
 				await expect(func).rejects.toThrow(UnprocessableEntityException);
 			});
@@ -628,54 +631,9 @@ describe('ExternalToolService', () => {
 			it('should save the externalTool', async () => {
 				const { externalTool } = setup();
 
-				await service.updateExternalTool(externalTool, externalTool);
+				await service.updateExternalTool(externalTool);
 
 				expect(externalToolRepo.save).toHaveBeenCalled();
-			});
-		});
-
-		describe('externalToolVersionService', () => {
-			describe('when service', () => {
-				const setup = () => {
-					const tool1: ExternalTool = externalToolFactory.buildWithId();
-					const tool2: ExternalTool = externalToolFactory.buildWithId();
-
-					return {
-						tool1,
-						tool2,
-					};
-				};
-
-				it('should call increaseVersionOfNewToolIfNecessary', async () => {
-					const { tool1, tool2 } = setup();
-
-					await service.updateExternalTool(tool1, tool2);
-
-					expect(versionService.increaseVersionOfNewToolIfNecessary).toHaveBeenCalledWith(tool2, tool1);
-				});
-			});
-
-			describe('when increaseVersionOfNewToolIfNecessary returns a tool with higher version', () => {
-				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.buildWithId();
-					externalTool.version = 1;
-					versionService.increaseVersionOfNewToolIfNecessary.mockImplementation((toolDO: ExternalTool) => {
-						toolDO.version = 2;
-						return toolDO;
-					});
-
-					return {
-						externalTool,
-					};
-				};
-
-				it('should increase the version of the externalTool', async () => {
-					const { externalTool } = setup();
-
-					await service.updateExternalTool(externalTool, externalTool);
-
-					expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalTool, version: 2 });
-				});
 			});
 		});
 	});

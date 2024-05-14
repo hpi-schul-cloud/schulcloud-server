@@ -124,7 +124,7 @@ describe('ExternalToolRequestMapper', () => {
 			it('should map the request to external tool DO with basicConfig', () => {
 				const { externalToolCreateParams, externalToolDOCreate } = setup();
 
-				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
+				const result = mapper.mapCreateRequest(externalToolCreateParams);
 
 				expect(result).toEqual(externalToolDOCreate);
 			});
@@ -210,7 +210,7 @@ describe('ExternalToolRequestMapper', () => {
 			it('should map the request to external tool DO with lti11 config', () => {
 				const { externalToolCreateParams, externalToolDOCreate } = setup();
 
-				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
+				const result = mapper.mapCreateRequest(externalToolCreateParams);
 
 				expect(result).toEqual(externalToolDOCreate);
 			});
@@ -300,7 +300,7 @@ describe('ExternalToolRequestMapper', () => {
 			it('should map the request to external tool DO with oauth2', () => {
 				const { externalToolCreateParams, externalToolDOCreate } = setup();
 
-				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
+				const result = mapper.mapCreateRequest(externalToolCreateParams);
 
 				expect(result).toEqual(externalToolDOCreate);
 			});
@@ -382,7 +382,7 @@ describe('ExternalToolRequestMapper', () => {
 			it('should map the request to external tool DO with basicConfig', () => {
 				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
 
-				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolUpdateParams);
 
 				expect(result).toEqual(externalToolDOUpdate);
 			});
@@ -472,7 +472,7 @@ describe('ExternalToolRequestMapper', () => {
 			it('should map the request to external tool DO with lti11 config', () => {
 				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
 
-				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolUpdateParams);
 
 				expect(result).toEqual(externalToolDOUpdate);
 			});
@@ -566,7 +566,7 @@ describe('ExternalToolRequestMapper', () => {
 			it('should map the request to external tool DO with oauth2', () => {
 				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
 
-				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
+				const result = mapper.mapUpdateRequest(externalToolUpdateParams);
 
 				expect(result).toEqual(externalToolDOUpdate);
 			});

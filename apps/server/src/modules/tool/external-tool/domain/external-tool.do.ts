@@ -1,12 +1,12 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameter } from '../../common/domain';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
 import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
 import { ExternalToolMedium } from './external-tool-medium.do';
 
-export interface ExternalToolProps {
-	id?: string;
+export interface ExternalToolProps extends AuthorizableObject {
+	id: string;
 
 	name: string;
 
@@ -35,35 +35,113 @@ export interface ExternalToolProps {
 	createdAt?: Date;
 }
 
-export class ExternalTool extends BaseDO {
-	name: string;
+export class ExternalTool extends DomainObject<ExternalToolProps> {
+	get name(): string {
+		return this.props.name;
+	}
 
-	description?: string;
+	set name(value: string) {
+		this.props.name = value;
+	}
 
-	url?: string;
+	get description(): string | undefined {
+		return this.props.description;
+	}
 
-	logoUrl?: string;
+	set description(value: string | undefined) {
+		this.props.description = value;
+	}
 
-	logo?: string;
+	get url(): string | undefined {
+		return this.props.url;
+	}
 
-	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
+	set url(value: string | undefined) {
+		this.props.url = value;
+	}
 
-	parameters?: CustomParameter[];
+	get logoUrl(): string | undefined {
+		return this.props.logoUrl;
+	}
 
-	isHidden: boolean;
+	set logoUrl(value: string | undefined) {
+		this.props.logoUrl = value;
+	}
 
-	isDeactivated: boolean;
+	get logo(): string | undefined {
+		return this.props.logo;
+	}
 
-	openNewTab: boolean;
+	set logo(value: string | undefined) {
+		this.props.logo = value;
+	}
 
-	restrictToContexts?: ToolContextType[];
+	get config(): BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig {
+		return this.props.config;
+	}
 
-	medium?: ExternalToolMedium;
+	set config(value: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) {
+		this.props.config = value;
+	}
 
-	createdAt?: Date;
+	get parameters(): CustomParameter[] | undefined {
+		return this.props.parameters;
+	}
+
+	set parameters(value: CustomParameter[] | undefined) {
+		this.props.parameters = value;
+	}
+
+	get isHidden(): boolean {
+		return this.props.isHidden;
+	}
+
+	set isHidden(value: boolean) {
+		this.props.isHidden = value;
+	}
+
+	get isDeactivated(): boolean {
+		return this.props.isDeactivated;
+	}
+
+	set isDeactivated(value: boolean) {
+		this.props.isDeactivated = value;
+	}
+
+	get openNewTab(): boolean {
+		return this.props.openNewTab;
+	}
+
+	set openNewTab(value: boolean) {
+		this.props.openNewTab = value;
+	}
+
+	get restrictToContexts(): ToolContextType[] | undefined {
+		return this.props.restrictToContexts;
+	}
+
+	set restrictToContexts(value: ToolContextType[] | undefined) {
+		this.props.restrictToContexts = value;
+	}
+
+	get medium(): ExternalToolMedium | undefined {
+		return this.props.medium;
+	}
+
+	set medium(value: ExternalToolMedium | undefined) {
+		this.props.medium = value;
+	}
+
+	get createdAt(): Date | undefined {
+		return this.props.createdAt;
+	}
+
+	set createdAt(value: Date | undefined) {
+		this.props.createdAt = value;
+	}
 
 	constructor(props: ExternalToolProps) {
-		super(props.id);
+		super(props);
 
 		this.name = props.name;
 		this.description = props.description;
