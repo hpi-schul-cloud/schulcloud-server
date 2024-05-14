@@ -394,7 +394,7 @@ describe('ToolLaunchUc', () => {
 
 				await uc.getSchoolExternalToolLaunchRequest(user.id, contextExternalTool);
 
-				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
+				expect(toolPermissionHelper.ensureContextPermissionsForSchool).toHaveBeenCalledWith(
 					user,
 					schoolExternalTool,
 					contextExternalTool.contextRef.id,
