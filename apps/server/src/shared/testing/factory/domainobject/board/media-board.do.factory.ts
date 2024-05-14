@@ -26,5 +26,6 @@ export const mediaBoardFactory = MediaBoardFactory.define(MediaBoard, () => {
 			type: BoardExternalReferenceType.User,
 			id: new ObjectId().toHexString(),
 		},
+		mediaAvailableLineBackgroundColor: '#FFFFFF',
 	};
 });

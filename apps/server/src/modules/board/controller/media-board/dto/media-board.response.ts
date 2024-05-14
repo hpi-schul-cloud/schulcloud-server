@@ -15,9 +15,15 @@ export class MediaBoardResponse {
 	@ApiProperty({ description: 'The timestamps of the media board' })
 	timestamps: TimestampsResponse;
 
+	@ApiProperty({
+		description: 'Configuration of media available line',
+	})
+	mediaAvailableLineBackgroundColor: string | undefined;
+
 	constructor(props: MediaBoardResponse) {
 		this.id = props.id;
 		this.lines = props.lines;
 		this.timestamps = props.timestamps;
+		this.mediaAvailableLineBackgroundColor = props.mediaAvailableLineBackgroundColor;
 	}
 }

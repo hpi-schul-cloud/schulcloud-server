@@ -61,6 +61,18 @@ export class MediaBoardUc {
 		return line;
 	}
 
+	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: string | undefined) {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.updateAvailableLineColor(board, color);
+	}
+
 	private checkFeatureEnabled() {
 		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');

@@ -1,9 +1,21 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, ForbiddenException, Get, NotFoundException, Param, Post } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	HttpStatus,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+} from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -14,6 +26,7 @@ import { MediaAvailableLine, MediaBoard, MediaLine } from '@shared/domain/domain
 import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';
 import { MediaAvailableLineResponse, MediaBoardResponse, MediaLineResponse } from './dto';
+import { ColorBodyParams } from './dto/color.body.params';
 import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 
 @ApiTags('Media Board')
@@ -71,5 +84,20 @@ export class MediaBoardController {
 		const response: MediaAvailableLineResponse = MediaAvailableLineResponseMapper.mapToResponse(mediaAvailableLine);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Update the color of available line in media board.' })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(':boardId/media-available-line/configuration')
+	public async updateMediaAvailableLineColor(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: ColorBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.mediaBoardUc.updateAvailableLineColor(currentUser.userId, urlParams.boardId, bodyParams.backgroundColor);
 	}
 }

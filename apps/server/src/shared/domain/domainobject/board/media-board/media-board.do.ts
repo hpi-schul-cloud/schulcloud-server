@@ -7,6 +7,14 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 		return this.props.context;
 	}
 
+	get mediaAvailableLineBackgroundColor(): string | undefined {
+		return this.props.mediaAvailableLineBackgroundColor;
+	}
+
+	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: string | undefined) {
+		this.props.mediaAvailableLineBackgroundColor = mediaAvailableLineBackgroundColor;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed: boolean = domainObject instanceof MediaLine;
 
@@ -24,4 +32,5 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 
 export interface MediaBoardProps extends BoardCompositeProps {
 	context: BoardExternalReference;
+	mediaAvailableLineBackgroundColor?: string;
 }
