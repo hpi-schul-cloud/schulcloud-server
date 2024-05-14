@@ -593,15 +593,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardWsApiModule.html" data-type="entity-link" >BoardWsApiModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' }>
+                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' :
-                                        'id="xs-injectables-links-module-BoardWsApiModule-460ce4de7bec536f42b7be5c1edeba4f55b96ac84aa065d8da790675297a82ca14f120b3ebaf38a4ab1ff8beb6e7756baefa86401674ffe760f7fd994751beeb"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' :
+                                        'id="xs-injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' }>
                                         <li class="link">
                                             <a href="injectables/BoardUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/CardUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CardUc</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/ColumnUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ColumnUc</a>
@@ -4736,6 +4739,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DeleteBoardMessageParams.html" data-type="entity-link" >DeleteBoardMessageParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeleteCardMessageParams.html" data-type="entity-link" >DeleteCardMessageParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DeleteColumnMessageParams.html" data-type="entity-link" >DeleteColumnMessageParams</a>
                             </li>
                             <li class="link">
@@ -5070,6 +5076,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/FetchBoardMessageParams.html" data-type="entity-link" >FetchBoardMessageParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/FetchCardsMessageParams.html" data-type="entity-link" >FetchCardsMessageParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/FileContentBody.html" data-type="entity-link" >FileContentBody</a>
@@ -6858,6 +6867,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UpdateBoardVisibilityMessageParams.html" data-type="entity-link" >UpdateBoardVisibilityMessageParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UpdateCardHeightMessageParams.html" data-type="entity-link" >UpdateCardHeightMessageParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UpdateCardTitleMessageParams.html" data-type="entity-link" >UpdateCardTitleMessageParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UpdateColumnTitleMessageParams.html" data-type="entity-link" >UpdateColumnTitleMessageParams</a>
