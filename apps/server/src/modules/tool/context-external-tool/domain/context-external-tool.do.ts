@@ -1,47 +1,50 @@
-import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
-import { ToolVersion } from '../../common/interface';
-import { SchoolExternalToolRefDO } from '../../school-external-tool/domain';
+import { SchoolExternalToolRef } from '../../school-external-tool/domain';
 import { ContextRef } from './context-ref';
 
-export interface ContextExternalToolProps {
-	id?: string;
+export interface ContextExternalToolProps extends AuthorizableObject {
+	id: string;
 
-	schoolToolRef: SchoolExternalToolRefDO;
-
-	contextRef: ContextRef;
-
-	displayName?: string;
-
-	parameters: CustomParameterEntry[];
-
-	toolVersion: number;
-}
-
-export class ContextExternalTool extends BaseDO implements ToolVersion {
-	schoolToolRef: SchoolExternalToolRefDO;
+	schoolToolRef: SchoolExternalToolRef;
 
 	contextRef: ContextRef;
 
 	displayName?: string;
 
 	parameters: CustomParameterEntry[];
-
-	toolVersion: number;
-
-	constructor(props: ContextExternalToolProps) {
-		super(props.id);
-		this.schoolToolRef = props.schoolToolRef;
-		this.contextRef = props.contextRef;
-		this.displayName = props.displayName;
-		this.parameters = props.parameters;
-		this.toolVersion = props.toolVersion;
-	}
-
-	getVersion(): number {
-		return this.toolVersion;
-	}
 }
 
-// TODO: N21-1885: Remove this type and alls its usages
-export type ContextExternalToolWithId = ContextExternalTool & { id: string };
+export class ContextExternalTool extends DomainObject<ContextExternalToolProps> {
+	get schoolToolRef(): SchoolExternalToolRef {
+		return this.props.schoolToolRef;
+	}
+
+	set schoolToolRef(value: SchoolExternalToolRef) {
+		this.props.schoolToolRef = value;
+	}
+
+	get contextRef(): ContextRef {
+		return this.props.contextRef;
+	}
+
+	set contextRef(value: ContextRef) {
+		this.props.contextRef = value;
+	}
+
+	get displayName(): string | undefined {
+		return this.props.displayName;
+	}
+
+	set displayName(value: string | undefined) {
+		this.props.displayName = value;
+	}
+
+	get parameters(): CustomParameterEntry[] {
+		return this.props.parameters;
+	}
+
+	set parameters(value: CustomParameterEntry[]) {
+		this.props.parameters = value;
+	}
+}

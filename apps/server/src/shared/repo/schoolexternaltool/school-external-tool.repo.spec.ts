@@ -6,7 +6,7 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { type SchoolEntity } from '@shared/domain/entity';
@@ -20,7 +20,7 @@ import { LegacyLogger } from '@src/core/logger';
 
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
-describe('SchoolExternalToolRepo', () => {
+describe(SchoolExternalToolRepo.name, () => {
 	let module: TestingModule;
 	let repo: SchoolExternalToolRepo;
 	let em: EntityManager;
@@ -146,11 +146,10 @@ describe('SchoolExternalToolRepo', () => {
 
 	describe('save', () => {
 		function setup() {
-			const domainObject: SchoolExternalTool = new SchoolExternalTool({
+			const domainObject: SchoolExternalTool = schoolExternalToolFactory.build({
 				toolId: new ObjectId().toHexString(),
 				parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
 				schoolId: new ObjectId().toHexString(),
-				toolVersion: 1,
 			});
 
 			return {
@@ -162,7 +161,7 @@ describe('SchoolExternalToolRepo', () => {
 			const { domainObject } = setup();
 			const { id, ...expected } = domainObject;
 
-			const result: SchoolExternalTool = await repo.save(domainObject);
+			const result: SchoolExternalTool = await repo.createOrUpdate(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();

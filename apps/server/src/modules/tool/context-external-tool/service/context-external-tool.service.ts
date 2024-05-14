@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
@@ -7,12 +8,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import {
-	ContextExternalTool,
-	ContextExternalToolWithId,
-	ContextRef,
-	RestrictedContextMismatchLoggableException,
-} from '../domain';
+import { ContextExternalTool, ContextRef, RestrictedContextMismatchLoggableException } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
@@ -42,11 +38,10 @@ export class ContextExternalToolService {
 		return tool;
 	}
 
-	// TODO: N21-1885 - Refactor to return ContextExternalToolWithId without cast
-	public async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalToolWithId> {
+	public async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
 		const savedContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(contextExternalTool);
 
-		return savedContextExternalTool as ContextExternalToolWithId;
+		return savedContextExternalTool;
 	}
 
 	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
@@ -87,20 +82,27 @@ export class ContextExternalToolService {
 		contextExternalTool: ContextExternalTool,
 		contextCopyId: EntityId
 	): Promise<ContextExternalTool> {
-		contextExternalTool.id = undefined;
-		contextExternalTool.contextRef.id = contextCopyId;
+		const copy = new ContextExternalTool({
+			id: new ObjectId().toHexString(),
+			schoolToolRef: contextExternalTool.schoolToolRef,
+			contextRef: contextExternalTool.contextRef,
+			displayName: contextExternalTool.displayName,
+			parameters: contextExternalTool.parameters,
+		});
+
+		copy.contextRef.id = contextCopyId;
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-			contextExternalTool.schoolToolRef.schoolToolId
+			copy.schoolToolRef.schoolToolId
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		contextExternalTool.parameters.forEach((parameter: CustomParameterEntry): void => {
+		copy.parameters.forEach((parameter: CustomParameterEntry): void => {
 			const isUnusedParameter = !externalTool.parameters?.find(
 				(param: CustomParameter): boolean => param.name === parameter.name
 			);
 			if (isUnusedParameter) {
-				this.deleteUnusedParameter(contextExternalTool, parameter.name);
+				this.deleteUnusedParameter(copy, parameter.name);
 			}
 		});
 

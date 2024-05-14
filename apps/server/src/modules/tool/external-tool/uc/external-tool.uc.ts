@@ -57,7 +57,6 @@ export class ExternalToolUc {
 			...loaded,
 			...externalTool,
 			config: configToUpdate,
-			version: loaded.version,
 		});
 
 		await this.toolValidationService.validateUpdate(toolId, toUpdate);

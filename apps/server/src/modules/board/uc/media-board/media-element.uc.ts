@@ -1,7 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { ContextExternalToolWithId } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
-import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -14,6 +12,8 @@ import {
 } from '@shared/domain/domainobject';
 import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { ContextExternalTool } from '../../../tool/context-external-tool/domain';
+import { SchoolExternalTool } from '../../../tool/school-external-tool/domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
@@ -73,13 +73,11 @@ export class MediaElementUc {
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findByDescendant(line);
 
-		const schoolExternalTool: SchoolExternalToolWithId = await this.schoolExternalToolService.findById(
-			schoolExternalToolId
-		);
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 
 		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
 
-		const createdContexExternalTool: ContextExternalToolWithId =
+		const createdContexExternalTool: ContextExternalTool =
 			await this.mediaElementService.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
 
 		const createdElement: AnyMediaContentElementDo = await this.mediaElementService.createExternalToolElement(
@@ -93,7 +91,7 @@ export class MediaElementUc {
 
 	private async checkElementExistsAlreadyOnBoardAndThrow(
 		mediaBoard: MediaBoard,
-		schoolExternalTool: SchoolExternalToolWithId
+		schoolExternalTool: SchoolExternalTool
 	): Promise<void> {
 		const exists = await this.mediaElementService.checkElementExists(mediaBoard, schoolExternalTool);
 

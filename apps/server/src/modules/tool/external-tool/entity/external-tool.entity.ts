@@ -1,12 +1,39 @@
 import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
 
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { CustomParameterEntity } from './custom-parameter';
-import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
+import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../common/enum';
+import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
+import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolMediumEntity } from './external-tool-medium.entity';
 
-export type IExternalToolProperties = Readonly<Omit<ExternalToolEntity, keyof BaseEntityWithTimestamps>>;
+export interface ExternalToolProps {
+	id?: EntityId;
+
+	name: string;
+
+	description?: string;
+
+	url?: string;
+
+	logoUrl?: string;
+
+	logoBase64?: string;
+
+	config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
+
+	parameters?: CustomParameterEntity[];
+
+	isHidden: boolean;
+
+	isDeactivated: boolean;
+
+	openNewTab: boolean;
+
+	restrictToContexts?: ToolContextType[];
+
+	medium?: ExternalToolMediumEntity;
+}
 
 @Entity({ tableName: 'external-tools' })
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
@@ -41,16 +68,13 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property()
 	openNewTab: boolean;
 
-	@Property()
-	version: number;
-
 	@Property({ nullable: true })
 	restrictToContexts?: ToolContextType[];
 
 	@Embedded(() => ExternalToolMediumEntity, { nullable: true, object: true })
 	medium?: ExternalToolMediumEntity;
 
-	constructor(props: IExternalToolProperties) {
+	constructor(props: ExternalToolProps) {
 		super();
 		this.name = props.name;
 		this.description = props.description;
@@ -62,7 +86,6 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.isHidden = props.isHidden;
 		this.isDeactivated = props.isDeactivated;
 		this.openNewTab = props.openNewTab;
-		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
 		this.medium = props.medium;
 	}

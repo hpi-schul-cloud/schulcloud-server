@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalTool } from '../domain';
 import { CustomParameter } from '../../common/domain';
+import { ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolVersionIncrementService {
@@ -9,7 +9,7 @@ export class ExternalToolVersionIncrementService {
 			return;
 		}
 		if (this.compareParameters(oldTool.parameters, newTool.parameters)) {
-			newTool.version += 1;
+			// newTool.version += 1;
 		}
 	}
 

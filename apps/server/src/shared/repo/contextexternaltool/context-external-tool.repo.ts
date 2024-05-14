@@ -4,7 +4,7 @@ import { ToolContextType } from '@modules/tool/common/enum/tool-context-type.enu
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolRefDO } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -97,7 +97,7 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 	}
 
 	mapEntityToDO(entity: ContextExternalToolEntity): ContextExternalTool {
-		const schoolToolRef: SchoolExternalToolRefDO = new SchoolExternalToolRefDO({
+		const schoolToolRef: SchoolExternalToolRef = new SchoolExternalToolRef({
 			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
 		});
@@ -112,7 +112,6 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 			schoolToolRef,
 			contextRef,
 			displayName: entity.displayName,
-			toolVersion: entity.toolVersion,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
 		});
 	}
@@ -123,7 +122,6 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			displayName: entityDO.displayName,
 			schoolTool: this._em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
-			toolVersion: entityDO.toolVersion,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}

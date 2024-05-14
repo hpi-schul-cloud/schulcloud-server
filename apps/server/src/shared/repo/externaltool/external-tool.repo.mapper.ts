@@ -13,9 +13,9 @@ import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
+	ExternalToolMediumEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-	ExternalToolMediumEntity,
 } from '@modules/tool/external-tool/entity';
 import { UnprocessableEntityException } from '@nestjs/common';
 
@@ -50,7 +50,6 @@ export class ExternalToolRepoMapper {
 			isHidden: entity.isHidden,
 			isDeactivated: entity.isDeactivated,
 			openNewTab: entity.openNewTab,
-			version: entity.version,
 			restrictToContexts: entity.restrictToContexts,
 			medium: this.mapExternalToolMediumEntityToDO(entity.medium),
 			createdAt: entity.createdAt,
@@ -124,7 +123,6 @@ export class ExternalToolRepoMapper {
 			isHidden: entityDO.isHidden,
 			isDeactivated: entityDO.isDeactivated,
 			openNewTab: entityDO.openNewTab,
-			version: entityDO.version,
 			restrictToContexts: entityDO.restrictToContexts,
 			medium: this.mapExternalToolMediumDOToEntity(entityDO.medium),
 		};

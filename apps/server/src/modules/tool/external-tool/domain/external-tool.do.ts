@@ -1,9 +1,8 @@
-import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ToolVersion } from '../../common/interface';
-import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { CustomParameter } from '../../common/domain';
 import { ToolConfigType, ToolContextType } from '../../common/enum';
+import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
 import { ExternalToolMedium } from './external-tool-medium.do';
 
 export interface ExternalToolProps {
@@ -29,8 +28,6 @@ export interface ExternalToolProps {
 
 	openNewTab: boolean;
 
-	version: number;
-
 	restrictToContexts?: ToolContextType[];
 
 	medium?: ExternalToolMedium;
@@ -38,7 +35,7 @@ export interface ExternalToolProps {
 	createdAt?: Date;
 }
 
-export class ExternalTool extends BaseDO implements ToolVersion {
+export class ExternalTool extends BaseDO {
 	name: string;
 
 	description?: string;
@@ -58,8 +55,6 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 	isDeactivated: boolean;
 
 	openNewTab: boolean;
-
-	version: number;
 
 	restrictToContexts?: ToolContextType[];
 
@@ -88,14 +83,9 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.isHidden = props.isHidden;
 		this.isDeactivated = props.isDeactivated;
 		this.openNewTab = props.openNewTab;
-		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;
 		this.medium = props.medium;
 		this.createdAt = props.createdAt;
-	}
-
-	getVersion(): number {
-		return this.version;
 	}
 
 	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
