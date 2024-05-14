@@ -96,14 +96,6 @@ export class EtherpadClientAdapter {
 		return sessionId;
 	}
 
-	public async deleteSession(sessionId: SessionId) {
-		try {
-			await this.sessionApi.deleteSessionUsingPOST(sessionId);
-		} catch (error) {
-			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { sessionId }, error);
-		}
-	}
-
 	private async tryCreateSession(
 		groupId: string,
 		authorId: string,
@@ -157,9 +149,12 @@ export class EtherpadClientAdapter {
 			throw new InternalServerErrorException('Etherpad session ids response is not an object');
 		}
 
-		const sessionIds = Object.keys(sessions);
+		const validSessionIds = Object.entries(sessions)
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			.filter(([key, value]) => value !== null)
+			.map(([key]) => key);
 
-		return sessionIds;
+		return validSessionIds;
 	}
 
 	private isObject(value: any): value is object {
