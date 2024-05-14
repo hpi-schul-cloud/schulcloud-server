@@ -266,7 +266,7 @@ export class BoardCollaborationGateway {
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			const room = await this.ensureUserInRoom(client, data.cardIds[0]);
+			await this.ensureUserInRoom(client, data.cardIds[0]);
 			client.emit('fetch-card-success', { cards: cardResponses });
 		} catch (err) {
 			client.emit('fetch-card-failure', new Error('Failed to fetch board'));
