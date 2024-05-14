@@ -310,7 +310,7 @@ describe(EtherpadClientAdapter.name, () => {
 					data: {
 						code: EtherpadResponseCode.OK,
 						// @ts-expect-error wrong type mapping
-						data: { 'session-id-1': { groupID: 'groupId', authorID: authorId } },
+						data: { 'session-id-1': { groupID: 'groupId', authorID: authorId }, 'session-id-2': null },
 					},
 				});
 
