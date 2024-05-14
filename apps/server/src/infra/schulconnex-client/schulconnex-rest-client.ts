@@ -22,7 +22,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		private readonly logger: Logger
 	) {
 		this.checkOptions();
-		this.SCHULCONNEX_API_BASE_URL = options.apiUrl;
+		this.SCHULCONNEX_API_BASE_URL = options.apiUrl || '';
 	}
 
 	// TODO: N21-1678 use this in provisioning module
@@ -63,10 +63,12 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		return response;
 	}
 
-	private checkOptions(): void {
+	private checkOptions(): boolean {
 		if (!this.options.apiUrl || !this.options.clientId || !this.options.clientSecret || !this.options.tokenEndpoint) {
 			this.logger.debug(new SchulconnexConfigurationMissingLoggable());
+			return false;
 		}
+		return true;
 	}
 
 	private async getRequest<T>(url: URL, accessToken: string, timeout?: number): Promise<T> {
@@ -86,13 +88,17 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 	private async requestClientCredentialToken(): Promise<OAuthTokenDto> {
 		const { tokenEndpoint, clientId, clientSecret } = this.options;
 
+		if (!this.checkOptions()) {
+			return Promise.reject(new Error('Missing configuration for SchulconnexRestClient'));
+		}
+
 		const payload: ClientCredentialsGrantTokenRequest = new ClientCredentialsGrantTokenRequest({
-			client_id: clientId,
-			client_secret: clientSecret,
+			client_id: clientId ?? '',
+			client_secret: clientSecret ?? '',
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
-		const tokenDto: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(tokenEndpoint, payload);
+		const tokenDto: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(tokenEndpoint ?? '', payload);
 
 		return tokenDto;
 	}

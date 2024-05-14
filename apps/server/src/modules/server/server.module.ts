@@ -6,6 +6,7 @@ import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { AlertModule } from '@modules/alert/alert.module';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
@@ -40,7 +41,6 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AlertModule } from '@modules/alert/alert.module';
 import { UserLicenseModule } from '../user-license';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
@@ -58,13 +58,7 @@ const serverModules = [
 	NewsModule,
 	UserApiModule,
 	UsersAdminApiModule,
-	SchulconnexClientModule.register({
-		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
-		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
-		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
-		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
-		personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
-	}),
+	SchulconnexClientModule.registerAsync(),
 	ImportUserModule,
 	UserImportConfigModule,
 	LearnroomApiModule,
