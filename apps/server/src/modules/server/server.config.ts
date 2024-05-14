@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
+import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
 import type { MediaBoardConfig } from '@modules/board/media-board.config';
@@ -21,10 +22,9 @@ import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { AlertConfig } from '@modules/alert';
-import { SchulcloudTheme } from '@shared/domain/types';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -112,6 +112,10 @@ export interface ServerConfig
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_NEW_LAYOUT_ENABLED: boolean;
+	SCHULCONNEX_CLIENT__API_URL: string | undefined;
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
+	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 }
 
 const config: ServerConfig = {
@@ -227,6 +231,18 @@ const config: ServerConfig = {
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
+	SCHULCONNEX_CLIENT__API_URL: Configuration.has('SCHULCONNEX_CLIENT__API_URL')
+		? (Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: Configuration.has('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT')
+		? (Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_ID')
+		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_SECRET')
+		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string)
+		: undefined,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
