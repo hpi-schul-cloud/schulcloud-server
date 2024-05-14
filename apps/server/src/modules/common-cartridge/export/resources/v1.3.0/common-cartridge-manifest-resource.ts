@@ -7,7 +7,7 @@ import {
 	CommonCartridgeOrganizationsWrapperElementV130,
 	CommonCartridgeResourcesWrapperElementV130,
 } from '../../elements/v1.3.0';
-import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { CommonCartridgeBase, CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV130 = {
@@ -19,7 +19,10 @@ export type CommonCartridgeManifestResourcePropsV130 = {
 	resources: CommonCartridgeElement[];
 };
 
-export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource {
+export class CommonCartridgeManifestResourceV130
+	extends CommonCartridgeBase
+	implements CommonCartridgeElement, CommonCartridgeResource
+{
 	constructor(private readonly props: CommonCartridgeManifestResourcePropsV130) {
 		super(props);
 	}

@@ -4,7 +4,8 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeGuard } from '../../common-cartridge.guard';
-import { CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { CommonCartridgeBase, CommonCartridgeOrganization, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV130 = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -16,7 +17,10 @@ export type CommonCartridgeWebContentResourcePropsV130 = {
 	intendedUse: CommonCartridgeIntendedUseType;
 };
 
-export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResource {
+export class CommonCartridgeWebContentResourceV130
+	extends CommonCartridgeBase
+	implements CommonCartridgeOrganization, CommonCartridgeResource
+{
 	private static readonly SUPPORTED_INTENDED_USES = [
 		CommonCartridgeIntendedUseType.ASSIGNMENT,
 		CommonCartridgeIntendedUseType.LESSON_PLAN,
@@ -30,6 +34,35 @@ export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResour
 			props.intendedUse,
 			CommonCartridgeWebContentResourceV130.SUPPORTED_INTENDED_USES
 		);
+	}
+
+	public isResource(): boolean {
+		return true;
+	}
+
+	public getManifestOrganizationXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: createIdentifier(),
+				identifierref: this.props.identifier,
+			},
+			title: this.props.title,
+		};
+	}
+
+	public getManifestResourceXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: this.props.identifier,
+				type: this.props.type,
+				intendeduse: this.props.intendedUse,
+			},
+			file: {
+				$: {
+					href: this.getFilePath(),
+				},
+			},
+		};
 	}
 
 	public canInline(): boolean {
@@ -46,20 +79,5 @@ export class CommonCartridgeWebContentResourceV130 extends CommonCartridgeResour
 
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
-	}
-
-	public getManifestXmlObject(): XmlObject {
-		return {
-			$: {
-				identifier: this.props.identifier,
-				type: this.props.type,
-				intendeduse: this.props.intendedUse,
-			},
-			file: {
-				$: {
-					href: this.getFilePath(),
-				},
-			},
-		};
 	}
 }

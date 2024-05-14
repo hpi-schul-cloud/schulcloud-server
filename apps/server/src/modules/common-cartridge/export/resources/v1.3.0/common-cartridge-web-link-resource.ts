@@ -1,6 +1,6 @@
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeResource, XmlObject } from '../../interfaces';
-import { buildXmlString } from '../../utils';
+import { CommonCartridgeBase, CommonCartridgeOrganization, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { buildXmlString, createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebLinkResourcePropsV130 = {
 	type: CommonCartridgeResourceType.WEB_LINK;
@@ -13,9 +13,40 @@ export type CommonCartridgeWebLinkResourcePropsV130 = {
 	windowFeatures?: string;
 };
 
-export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource {
+export class CommonCartridgeWebLinkResourceV130
+	extends CommonCartridgeBase
+	implements CommonCartridgeOrganization, CommonCartridgeResource
+{
 	constructor(private readonly props: CommonCartridgeWebLinkResourcePropsV130) {
 		super(props);
+	}
+
+	public isResource(): boolean {
+		return true;
+	}
+
+	public getManifestOrganizationXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: createIdentifier(),
+				identifierref: this.props.identifier,
+			},
+			title: this.props.title,
+		};
+	}
+
+	public getManifestResourceXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: this.props.identifier,
+				type: 'imswl_xmlv1p3',
+			},
+			file: {
+				$: {
+					href: this.getFilePath(),
+				},
+			},
+		};
 	}
 
 	public canInline(): boolean {
@@ -49,19 +80,5 @@ export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource 
 
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
-	}
-
-	public getManifestXmlObject(): XmlObject {
-		return {
-			$: {
-				identifier: this.props.identifier,
-				type: 'imswl_xmlv1p3',
-			},
-			file: {
-				$: {
-					href: this.getFilePath(),
-				},
-			},
-		};
 	}
 }

@@ -1,5 +1,5 @@
 import { IntendedUseNotSupportedLoggableException } from './errors';
-import { CommonCartridgeElement, CommonCartridgeResource } from './interfaces';
+import { CommonCartridgeResource } from './interfaces';
 
 export class CommonCartridgeGuard {
 	public static checkIntendedUse(intendedUse: string, supportedIntendedUses: string[]): void {
@@ -8,9 +8,7 @@ export class CommonCartridgeGuard {
 		}
 	}
 
-	public static isResource(
-		element: CommonCartridgeElement | (CommonCartridgeElement | CommonCartridgeResource)[]
-	): element is CommonCartridgeResource {
+	public static isResource(element: unknown): element is CommonCartridgeResource {
 		const result = element instanceof CommonCartridgeResource;
 
 		return result;

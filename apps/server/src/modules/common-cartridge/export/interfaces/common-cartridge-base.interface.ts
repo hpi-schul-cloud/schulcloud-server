@@ -1,0 +1,47 @@
+import { CommonCartridgeVersion } from '../common-cartridge.enums';
+
+type CCBaseProps = {
+	version: CommonCartridgeVersion;
+	identifier?: string;
+	title?: string;
+};
+
+export abstract class CommonCartridgeBase {
+	protected constructor(public readonly baseProps: CCBaseProps) {
+		this.checkVersion(baseProps.version);
+	}
+
+	public get identifier(): string | undefined {
+		return this.baseProps.identifier;
+	}
+
+	public get title(): string | undefined {
+		return this.baseProps.title;
+	}
+
+	abstract getSupportedVersion(): CommonCartridgeVersion;
+
+	private checkVersion(target: CommonCartridgeVersion): void {
+		if (this.getSupportedVersion() !== target) {
+			throw new Error(`Version ${target} is not supported.`);
+		}
+	}
+}
+
+// export abstract class CCElement extends CCBase {
+// 	abstract getManifestXmlObject(): XmlObject;
+// }
+
+// export abstract class CCOrganization extends CCBase {
+// 	abstract getManifestOrganizationXmlObject(): XmlObject;
+// }
+
+// export abstract class CCResource extends CCOrganization {
+// 	abstract getManifestResourceXmlObject(): XmlObject;
+
+// 	abstract canInline(): boolean;
+
+// 	abstract getFilePath(): string;
+
+// 	abstract getFileContent(): string;
+// }

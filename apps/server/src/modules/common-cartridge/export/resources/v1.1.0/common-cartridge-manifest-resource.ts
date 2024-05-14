@@ -4,7 +4,7 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
-import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { CommonCartridgeBase, CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV110 = {
@@ -16,7 +16,10 @@ export type CommonCartridgeManifestResourcePropsV110 = {
 	resources: CommonCartridgeElement[];
 };
 
-export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource {
+export class CommonCartridgeManifestResourceV110
+	extends CommonCartridgeBase
+	implements CommonCartridgeElement, CommonCartridgeResource
+{
 	constructor(private readonly props: CommonCartridgeManifestResourcePropsV110) {
 		super(props);
 	}
