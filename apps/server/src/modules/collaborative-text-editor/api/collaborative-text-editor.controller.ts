@@ -42,10 +42,8 @@ export class CollaborativeTextEditorController {
 	}
 
 	@ApiOperation({ summary: 'Delete all etherpad sessions for user' })
-	@ApiResponse({ status: 200, type: CollaborativeTextEditorResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
 	@Delete('/delete-sessions')
 	async deleteSessionsByUser(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.collaborativeTextEditorUc.deleteSessionsByUser(currentUser.userId);
