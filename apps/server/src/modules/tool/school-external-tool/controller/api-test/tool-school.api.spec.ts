@@ -1,14 +1,11 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	columnBoardNodeFactory,
 	externalToolElementNodeFactory,
 	schoolEntityFactory,
@@ -16,7 +13,6 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
