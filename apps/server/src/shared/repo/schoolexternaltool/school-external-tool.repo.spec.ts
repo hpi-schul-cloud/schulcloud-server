@@ -6,18 +6,17 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import {
+	schoolExternalToolConfigurationStatusEntityFactory,
+	schoolExternalToolEntityFactory,
+	schoolExternalToolFactory,
+} from '@modules/tool/school-external-tool/testing';
 import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { type SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import {
-	cleanupCollections,
-	schoolEntityFactory,
-	schoolExternalToolConfigurationStatusEntityFactory,
-} from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe(SchoolExternalToolRepo.name, () => {
@@ -144,7 +143,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		});
 	});
 
-	describe('createOrUpdate', () => {
+	describe('save', () => {
 		const setup = () => {
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				school: schoolEntityFactory.buildWithId(),
@@ -170,7 +169,7 @@ describe(SchoolExternalToolRepo.name, () => {
 			const { domainObject } = setup();
 			const { id, ...expected } = domainObject;
 
-			const result: SchoolExternalTool = await repo.createOrUpdate(domainObject);
+			const result: SchoolExternalTool = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();

@@ -5,18 +5,21 @@ import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextExternalToolProps } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
+import {
+	contextExternalToolEntityFactory,
+	contextExternalToolFactory,
+} from '@modules/tool/context-external-tool/testing';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { cleanupCollections, contextExternalToolFactory, schoolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { cleanupCollections, schoolEntityFactory } from '../../testing';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
-describe('ContextExternalToolRepo', () => {
+describe(ContextExternalToolRepo.name, () => {
 	let module: TestingModule;
 	let repo: ContextExternalToolRepo;
 	let em: EntityManager;
@@ -136,7 +139,6 @@ describe('ContextExternalToolRepo', () => {
 						schoolToolId: new ObjectId().toHexString(),
 						schoolId: undefined,
 					},
-					toolVersion: 1,
 				});
 
 				return {
@@ -144,7 +146,7 @@ describe('ContextExternalToolRepo', () => {
 				};
 			}
 
-			it('should save a ContextExternalToolDO', async () => {
+			it('should save a ContextExternalTool', async () => {
 				const { domainObject } = setup();
 				const { id, ...expected } = domainObject;
 
@@ -168,7 +170,6 @@ describe('ContextExternalToolRepo', () => {
 						schoolToolId: new ObjectId().toHexString(),
 						schoolId: undefined,
 					},
-					toolVersion: 1,
 				});
 
 				return {
@@ -176,7 +177,7 @@ describe('ContextExternalToolRepo', () => {
 				};
 			}
 
-			it('should save a ContextExternalToolDO', async () => {
+			it('should save a ContextExternalTool', async () => {
 				const { domainObject } = setup();
 				const { id, ...expected } = domainObject;
 
@@ -199,7 +200,6 @@ describe('ContextExternalToolRepo', () => {
 					schoolToolRef: {
 						schoolToolId: new ObjectId().toHexString(),
 					},
-					toolVersion: 1,
 				});
 
 				return {
@@ -366,9 +366,9 @@ describe('ContextExternalToolRepo', () => {
 			it('should return a context external tool', async () => {
 				const { contextExternalTool, schoolExternalTool } = await setup();
 
-				const result = await repo.findById(contextExternalTool.id);
+				const result: ContextExternalTool = await repo.findById(contextExternalTool.id);
 
-				expect(result).toEqual<ContextExternalToolProps>({
+				expect(result.getProps()).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
 					contextRef: {
 						id: contextExternalTool.contextId,
@@ -385,7 +385,6 @@ describe('ContextExternalToolRepo', () => {
 						schoolToolId: schoolExternalTool.id,
 						schoolId: schoolExternalTool.school.id,
 					},
-					toolVersion: contextExternalTool.toolVersion,
 				});
 			});
 		});
@@ -411,9 +410,9 @@ describe('ContextExternalToolRepo', () => {
 			it('should return a context external tool', async () => {
 				const { contextExternalTool, schoolExternalTool } = await setup();
 
-				const result = await repo.findByIdOrNull(contextExternalTool.id);
+				const result: ContextExternalTool | null = await repo.findByIdOrNull(contextExternalTool.id);
 
-				expect(result).toEqual<ContextExternalToolProps>({
+				expect(result?.getProps()).toEqual<ContextExternalToolProps>({
 					id: contextExternalTool.id,
 					contextRef: {
 						id: contextExternalTool.contextId,
@@ -430,7 +429,6 @@ describe('ContextExternalToolRepo', () => {
 						schoolToolId: schoolExternalTool.id,
 						schoolId: schoolExternalTool.school.id,
 					},
-					toolVersion: contextExternalTool.toolVersion,
 				});
 			});
 		});

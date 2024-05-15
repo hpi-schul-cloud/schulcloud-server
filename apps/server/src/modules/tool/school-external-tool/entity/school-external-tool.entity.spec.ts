@@ -1,9 +1,9 @@
 import { basicToolConfigFactory, schoolEntityFactory, setupEntities } from '@shared/testing';
-import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 import { CustomParameterEntity, ExternalToolConfigEntity, ExternalToolEntity } from '../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../testing';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '../testing/school-external-tool-configuration-status-entity.factory';
 import { SchoolExternalToolEntity } from './school-external-tool.entity';
 
 describe('SchoolExternalToolEntity', () => {

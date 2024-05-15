@@ -317,7 +317,7 @@ describe(SchoolExternalToolService.name, () => {
 
 						await service.saveSchoolExternalTool(schoolExternalTool);
 
-						expect(schoolExternalToolRepo.createOrUpdate).toHaveBeenCalledWith(schoolExternalTool);
+						expect(schoolExternalToolRepo.save).toHaveBeenCalledWith(schoolExternalTool);
 					});
 
 					it('should enrich data from externalTool', async () => {

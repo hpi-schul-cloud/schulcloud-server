@@ -5,16 +5,14 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
-import {
-	customParameterFactory,
-	externalToolFactory,
-	legacySchoolDoFactory,
-} from '@shared/testing/factory/domainobject';
+import { legacySchoolDoFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
+import { externalToolFactory } from '../../external-tool/testing';
+import { customParameterFactory } from '../../external-tool/testing/external-tool.factory';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
@@ -27,7 +25,7 @@ import {
 import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolService } from './context-external-tool.service';
 
-describe('ContextExternalToolService', () => {
+describe(ContextExternalToolService.name, () => {
 	let module: TestingModule;
 	let service: ContextExternalToolService;
 	let externalToolService: DeepMocked<ExternalToolService>;

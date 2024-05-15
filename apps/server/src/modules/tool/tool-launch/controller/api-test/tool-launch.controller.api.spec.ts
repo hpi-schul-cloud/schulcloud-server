@@ -13,7 +13,6 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
@@ -22,6 +21,7 @@ import { ExternalToolEntity } from '../../../external-tool/entity';
 import { externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '../../../school-external-tool/testing/school-external-tool-configuration-status-entity.factory';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 

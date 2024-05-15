@@ -1,5 +1,5 @@
-import { SchoolExternalToolConfigurationStatusEntity } from '@modules/tool/school-external-tool/entity/school-external-tool-configuration-status.entity';
 import { Factory } from 'fishery';
+import { SchoolExternalToolConfigurationStatusEntity } from '../entity/school-external-tool-configuration-status.entity';
 
 export const schoolExternalToolConfigurationStatusEntityFactory =
 	Factory.define<SchoolExternalToolConfigurationStatusEntity>(() => {

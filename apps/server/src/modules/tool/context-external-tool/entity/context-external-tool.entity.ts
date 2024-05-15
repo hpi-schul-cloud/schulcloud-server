@@ -5,7 +5,7 @@ import { CustomParameterEntryEntity } from '../../common/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 
-export interface ContextExternalToolProperties {
+export interface ContextExternalToolEntityProps {
 	id?: EntityId;
 
 	schoolTool: SchoolExternalToolEntity;
@@ -36,7 +36,7 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CustomParameterEntryEntity, { array: true })
 	parameters: CustomParameterEntryEntity[];
 
-	constructor(props: ContextExternalToolProperties) {
+	constructor(props: ContextExternalToolEntityProps) {
 		super();
 		if (props.id) {
 			this.id = props.id;

@@ -18,7 +18,7 @@ export class SchoolExternalToolRepo {
 		return SchoolExternalToolEntity;
 	}
 
-	public async createOrUpdate(domainObject: SchoolExternalTool): Promise<SchoolExternalTool> {
+	public async save(domainObject: SchoolExternalTool): Promise<SchoolExternalTool> {
 		const existing: SchoolExternalToolEntity | null = await this.em.findOne<SchoolExternalToolEntity>(
 			SchoolExternalToolEntity.name,
 			domainObject.id
@@ -34,7 +34,9 @@ export class SchoolExternalToolRepo {
 		}
 		await this.em.flush();
 
-		const savedDomainObject: SchoolExternalTool = this.mapEntityToDomainObject(entity);
+		const savedDomainObject: SchoolExternalTool = Object.assign(this.mapEntityToDomainObject(entity), {
+			...domainObject,
+		});
 
 		return savedDomainObject;
 	}
@@ -108,6 +110,7 @@ export class SchoolExternalToolRepo {
 
 	private mapDomainObjectToEntityProps(entityDO: SchoolExternalTool): SchoolExternalToolEntityProps {
 		return {
+			id: entityDO.id,
 			school: this.em.getReference(SchoolEntity, entityDO.schoolId),
 			tool: this.em.getReference(ExternalToolEntity, entityDO.toolId),
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),

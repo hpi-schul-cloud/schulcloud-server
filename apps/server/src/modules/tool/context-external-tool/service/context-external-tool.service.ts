@@ -112,7 +112,7 @@ export class ContextExternalToolService {
 			}
 		});
 
-		const copiedTool = await this.contextExternalToolRepo.save(contextExternalTool);
+		const copiedTool: ContextExternalTool = await this.contextExternalToolRepo.save(contextExternalTool);
 
 		return copiedTool;
 	}
