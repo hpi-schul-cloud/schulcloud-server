@@ -110,8 +110,8 @@ export class Account extends DomainObject<AccountProps> {
 		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin ?? this.props.lasttriedFailedLogin;
 		this.props.credentialHash = accountSave.credentialHash ?? this.props.credentialHash;
 		this.props.token = accountSave.token ?? this.props.token;
+		this.props.deactivatedAt = accountSave.deactivatedAt ?? this.props.deactivatedAt;
 
-		this.props.deactivatedAt = accountSave.deactivatedAt;
 		if (accountSave.password) {
 			this.props.password = await this.encryptPassword(accountSave.password);
 		}
