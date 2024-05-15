@@ -3,7 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo, LegacyBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
-	boardFactory,
+	legacyBoardFactory,
 	courseFactory,
 	lessonFactory,
 	setupEntities,
@@ -84,7 +84,7 @@ describe('rooms usecase', () => {
 			const room = courseFactory.buildWithId({ students: [user] });
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
-			const board = boardFactory.buildWithId({ course: room });
+			const board = legacyBoardFactory.buildWithId({ course: room });
 			const roomBoardDTO: RoomBoardDTO = {
 				roomId: room.id,
 				displayColor: room.color,
@@ -165,7 +165,7 @@ describe('rooms usecase', () => {
 			const room = courseFactory.buildWithId({ students: [user] });
 			const hiddenTask = taskFactory.draft().buildWithId({ course: room });
 			const visibleTask = taskFactory.buildWithId({ course: room });
-			const board = boardFactory.buildWithId({ course: room });
+			const board = legacyBoardFactory.buildWithId({ course: room });
 			board.syncBoardElementReferences([hiddenTask, visibleTask]);
 			const userSpy = userRepo.findById.mockResolvedValue(user);
 			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
@@ -229,7 +229,7 @@ describe('rooms usecase', () => {
 			const user = userFactory.buildWithId();
 			const room = courseFactory.buildWithId({ teachers: [user] });
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
-			const board = boardFactory.buildWithId({ course: room });
+			const board = legacyBoardFactory.buildWithId({ course: room });
 			board.syncBoardElementReferences(tasks);
 			const reorderSpy = jest.spyOn(board, 'reorderElements');
 			const userSpy = userRepo.findById.mockResolvedValue(user);

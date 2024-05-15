@@ -1,6 +1,6 @@
 export * from './axios-response.factory';
 export * from './base.factory';
-export * from './board.factory';
+export * from './legacyBoardFactory';
 export * from './boardelement.factory';
 export * from './boardnode';
 export * from './course.factory';
