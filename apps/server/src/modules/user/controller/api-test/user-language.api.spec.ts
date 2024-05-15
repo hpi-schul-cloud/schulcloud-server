@@ -8,7 +8,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ApiValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing/factory';
 import { Request } from 'express';
 import request from 'supertest';
 

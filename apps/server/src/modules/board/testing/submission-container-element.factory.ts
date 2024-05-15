@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@shared/testing/factory';
 import { SubmissionContainerElement, SubmissionContainerElementProps, ROOT_PATH } from '../domain';
 
 export const submissionContainerElementFactory = BaseFactory.define<

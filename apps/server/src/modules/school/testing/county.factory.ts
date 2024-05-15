@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { County, CountyProps } from '../domain';
 

@@ -4,7 +4,7 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { courseFactory, schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing/factory';
 import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 import { ShareTokenService } from '../../service';
 import { ShareTokenInfoResponse } from '../dto';

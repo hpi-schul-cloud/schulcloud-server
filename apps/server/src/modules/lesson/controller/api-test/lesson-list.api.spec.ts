@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, courseFactory, lessonFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, courseFactory, lessonFactory } from '@shared/testing/factory';
 import { LessonMetadataListResponse } from '../dto';
 
 describe('Lesson Controller (API) - GET list of lessons from course /lessons/course/:courseId', () => {

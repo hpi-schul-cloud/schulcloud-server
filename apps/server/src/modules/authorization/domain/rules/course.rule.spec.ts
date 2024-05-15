@@ -2,7 +2,7 @@ import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory as courseEntityFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory as courseEntityFactory, roleFactory, setupEntities, userFactory } from '@shared/testing/factory';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action } from '../type';
 import { CourseRule } from './course.rule';

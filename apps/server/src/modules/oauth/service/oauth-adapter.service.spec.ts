@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
-import { axiosErrorFactory } from '@shared/testing/factory';
+import { axiosResponseFactory, axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthTokenDto } from '../interface';

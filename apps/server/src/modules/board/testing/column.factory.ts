@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@shared/testing/factory';
 import { Column, ColumnProps, ROOT_PATH } from '../domain';
 
 export const columnFactory = BaseFactory.define<Column, ColumnProps>(Column, ({ sequence }) => {

@@ -4,7 +4,7 @@ import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing/factory';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { Logger } from '@src/core/logger';

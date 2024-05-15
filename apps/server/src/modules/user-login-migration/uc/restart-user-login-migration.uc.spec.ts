@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService } from '../service';

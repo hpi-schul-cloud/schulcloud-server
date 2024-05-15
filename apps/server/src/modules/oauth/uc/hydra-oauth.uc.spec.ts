@@ -6,7 +6,7 @@ import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfigEntity } from '@shared/domain/entity';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';

@@ -5,7 +5,7 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SchoolEntity } from '@shared/domain/entity';
-import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory } from '@shared/testing/factory';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';

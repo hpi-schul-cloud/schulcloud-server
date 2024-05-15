@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { accountDoFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { accountDoFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing/factory';
 import { AccountService } from '@modules/account';
 import { RoleService } from '@src/modules/role';
 import { UserService } from '../service/user.service';

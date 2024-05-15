@@ -4,7 +4,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BoardNode } from '@shared/domain/entity';
-import { mediaBoardNodeFactory, mediaLineNodeFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import {
+	mediaBoardNodeFactory,
+	mediaLineNodeFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
+} from '@shared/testing/factory';
 import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
 
 const baseRouteName = '/media-lines';

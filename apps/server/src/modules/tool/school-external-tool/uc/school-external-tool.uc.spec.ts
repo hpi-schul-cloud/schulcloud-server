@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
+import { schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing/factory';
 import { School, SchoolService } from '@src/modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';

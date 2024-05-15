@@ -11,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, OauthConfigEntity } from '@shared/domain/entity';
 import { LtiToolRepo } from '@shared/repo';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';

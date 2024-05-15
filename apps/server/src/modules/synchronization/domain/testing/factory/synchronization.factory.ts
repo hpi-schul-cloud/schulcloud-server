@@ -1,4 +1,4 @@
-import { DoBaseFactory } from '@shared/testing';
+import { DoBaseFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Synchronization, SynchronizationProps } from '../../do';
 import { SynchronizationStatusModel } from '../../types';

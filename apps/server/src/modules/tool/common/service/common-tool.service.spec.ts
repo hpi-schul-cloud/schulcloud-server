@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { externalToolFactory } from '@shared/testing';
+import { externalToolFactory } from '@shared/testing/factory';
 import { ExternalTool } from '../../external-tool/domain';
 import { ToolContextType } from '../enum';
 import { CommonToolService } from './common-tool.service';

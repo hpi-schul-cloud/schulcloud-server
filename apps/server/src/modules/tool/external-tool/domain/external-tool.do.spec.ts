@@ -1,4 +1,4 @@
-import { basicToolConfigFactory, externalToolFactory } from '@shared/testing';
+import { basicToolConfigFactory, externalToolFactory } from '@shared/testing/factory';
 import { ExternalTool } from './external-tool.do';
 
 describe('ExternalTool', () => {

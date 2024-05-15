@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { accountDoFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountDoFactory, setupEntities, systemFactory, userFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';

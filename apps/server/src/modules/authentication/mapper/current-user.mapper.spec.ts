@@ -1,7 +1,7 @@
 import { ValidationError } from '@shared/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { roleFactory, schoolEntityFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing/factory';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';

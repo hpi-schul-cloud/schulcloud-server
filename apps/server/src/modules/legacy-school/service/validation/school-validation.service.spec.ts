@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { LegacySchoolRepo } from '@shared/repo';
-import { legacySchoolDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory } from '@shared/testing/factory';
 import { SchoolNumberDuplicateLoggableException } from '../../loggable';
 import { SchoolValidationService } from './school-validation.service';
 

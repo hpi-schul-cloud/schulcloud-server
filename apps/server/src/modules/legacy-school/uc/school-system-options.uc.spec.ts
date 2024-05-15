@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolSystemOptionsFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { schoolSystemOptionsFactory, setupEntities, systemFactory, userFactory } from '@shared/testing/factory';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';
