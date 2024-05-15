@@ -1,4 +1,4 @@
 export enum MediaBoardLayoutType {
-	GRID = 'file',
-	LIST = 'drawing',
+	GRID = 'grid',
+	LIST = 'list',
 }
