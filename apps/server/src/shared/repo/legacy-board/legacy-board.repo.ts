@@ -1,14 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { BoardNodeService } from '@modules/board/service/board-node.service';
 import { Injectable } from '@nestjs/common';
 import {
-	LegacyBoard,
 	ColumnboardBoardElement,
 	Course,
+	LegacyBoard,
 	LessonBoardElement,
 	TaskBoardElement,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardNodeService, ColumnBoard } from '@src/modules/board';
+import { ColumnBoard } from '@modules/board';
 
 @Injectable()
 export class LegacyBoardRepo {
@@ -62,11 +63,11 @@ export class LegacyBoardRepo {
 		await board.references.init();
 		const elements = board.references.getItems();
 
-		const taskElements = elements.filter((el) => el instanceof TaskBoardElement);
-		await this._em.populate(taskElements, ['target']);
+		const taskElements = elements.filter((el) => el instanceof TaskBoardElement) as TaskBoardElement[];
+		await this._em.populate(taskElements, ['_target']);
 
-		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
-		await this._em.populate(lessonElements, ['target']);
+		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement) as LessonBoardElement[];
+		await this._em.populate(lessonElements, ['_target']);
 
 		const columnBoardElements = elements.filter(
 			(el) => el instanceof ColumnboardBoardElement

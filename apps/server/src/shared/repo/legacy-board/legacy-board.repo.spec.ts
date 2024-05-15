@@ -5,18 +5,19 @@ import { LegacyBoard, LessonEntity, Task } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { BoardNodeService, ColumnBoard } from '@modules/board';
+import { cleanupCollections } from '@shared/testing';
 import {
 	boardFactory,
-	cleanupCollections,
+	columnboardBoardElementFactory,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	taskBoardElementFactory,
-} from '@shared/testing';
-import { BoardNodeService } from '@src/modules/board';
+} from '@shared/testing/factory';
 import { LegacyBoardRepo } from './legacy-board.repo';
 
-describe('LegacyRoomBoardRepo', () => {
+describe(LegacyBoardRepo.name, () => {
 	let module: TestingModule;
 	let repo: LegacyBoardRepo;
 	let em: EntityManager;
@@ -33,6 +34,7 @@ describe('LegacyRoomBoardRepo', () => {
 				},
 			],
 		}).compile();
+
 		repo = module.get(LegacyBoardRepo);
 		em = module.get(EntityManager);
 		boardNodeService = module.get(BoardNodeService);
@@ -125,7 +127,7 @@ describe('LegacyRoomBoardRepo', () => {
 		em.clear();
 
 		const result = await repo.findById(board.id);
-		const resultLesson = result.references.getItems()[0].target as unknown as LessonEntity;
+		const resultLesson = result.references.getItems()[0].target as LessonEntity;
 		expect(resultLesson.hidden).toBeDefined();
 	});
 
@@ -137,7 +139,21 @@ describe('LegacyRoomBoardRepo', () => {
 		em.clear();
 
 		const result = await repo.findById(board.id);
-		const task = result.references.getItems()[0].target as unknown as Task;
+		const task = result.references.getItems()[0].target as Task;
 		expect(task.name).toBeDefined();
+	});
+
+	it('should populate column board in element', async () => {
+		const columnBoardElement = columnboardBoardElementFactory.build();
+		const board = boardFactory.build({ references: [columnBoardElement] });
+		await repo.save(board);
+
+		em.clear();
+
+		boardNodeService.findByClassAndIds.mockResolvedValue([columnBoardElement.target]);
+		const result = await repo.findById(board.id);
+
+		const columnBoard = result.references.getItems()[0].target as ColumnBoard;
+		expect(columnBoard.title).toBeDefined();
 	});
 });
