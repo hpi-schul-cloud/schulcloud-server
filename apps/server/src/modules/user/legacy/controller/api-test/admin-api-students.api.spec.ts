@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
-	accountFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolEntityFactory,
@@ -13,6 +12,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
