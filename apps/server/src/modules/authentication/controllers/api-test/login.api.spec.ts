@@ -12,6 +12,7 @@ import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
 import { AccountEntity } from '@modules/account/entity/account.entity';
+import moment from 'moment';
 import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
@@ -104,6 +105,7 @@ describe('Login Controller (api)', () => {
 				userId: user.id,
 				username: user.email,
 				password: defaultPasswordHash,
+				deactivatedAt: moment().add(1, 'd').toDate(),
 			});
 
 			em.persist(school);
@@ -144,6 +146,30 @@ describe('Login Controller (api)', () => {
 				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
 			});
 		});
+		describe('when user login fails cause account is deactivated', () => {
+			const setup = async () => {
+				const newUser: User = userFactory.buildWithId();
+				const deactivatedAccount: AccountEntity = accountFactory.buildWithId({
+					userId: newUser.id,
+					username: newUser.email,
+					password: defaultPasswordHash,
+					deactivatedAt: new Date(),
+				});
+
+				em.persist(newUser);
+				em.persist(deactivatedAccount);
+				await em.flush();
+				return { newUser };
+			};
+			it('should return error response', async () => {
+				const { newUser } = await setup();
+				const params = {
+					username: newUser.email,
+					password: defaultPassword,
+				};
+				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+			});
+		});
 	});
 
 	describe('loginLdap', () => {
@@ -163,6 +189,7 @@ describe('Login Controller (api)', () => {
 					userId: user.id,
 					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
 					systemId: system.id,
+					deactivatedAt: moment().add(1, 'd').toDate(),
 				});
 
 				await em.persistAndFlush([system, school, studentRoles, user, account]);
@@ -224,6 +251,48 @@ describe('Login Controller (api)', () => {
 				const params: LdapAuthorizationBodyParams = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
+					schoolId: school.id,
+					systemId: system.id,
+				};
+
+				return {
+					params,
+				};
+			};
+
+			it('should return error response', async () => {
+				const { params } = await setup();
+
+				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user login fails because account is deactivated', () => {
+			const setup = async () => {
+				const schoolExternalId = 'mockSchoolExternalId';
+				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: schoolExternalId,
+				});
+				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+
+				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
+
+				const account: AccountEntity = accountFactory.buildWithId({
+					userId: user.id,
+					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
+					systemId: system.id,
+					deactivatedAt: new Date(),
+				});
+
+				await em.persistAndFlush([system, school, studentRoles, user, account]);
+
+				const params: LdapAuthorizationBodyParams = {
+					username: ldapAccountUserName,
+					password: defaultPassword,
 					schoolId: school.id,
 					systemId: system.id,
 				};
@@ -315,6 +384,7 @@ describe('Login Controller (api)', () => {
 				const account = accountFactory.buildWithId({
 					userId: user.id,
 					systemId: system.id,
+					deactivatedAt: moment().add(1, 'd').toDate(),
 				});
 
 				await em.persistAndFlush([system, school, studentRoles, user, account]);
@@ -390,6 +460,65 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
+			});
+		});
+		describe('when a valid code is provided with deactivated account', () => {
+			const setup = async (inputExternalId: string) => {
+				const schoolExternalId = 'schoolExternalId';
+				const userExternalId = inputExternalId;
+
+				const system = systemEntityFactory.withOauthConfig().buildWithId({});
+				const school = schoolEntityFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const teacherRoles = roleFactory.build({ name: RoleName.TEACHER, permissions: [] });
+				const user = userFactory.buildWithId({ school, roles: [teacherRoles], externalId: userExternalId });
+				const account = accountFactory.buildWithId({
+					userId: user.id,
+					systemId: system.id,
+					deactivatedAt: new Date(),
+				});
+
+				await em.persistAndFlush([system, school, teacherRoles, user, account]);
+
+				const idToken: string = jwt.sign(
+					{
+						sub: 'testUser2',
+						iss: system.oauthConfig?.issuer,
+						aud: system.oauthConfig?.clientId,
+						iat: Date.now(),
+						exp: Date.now() + 100000,
+						// For OIDC provisioning strategy
+						external_sub: userExternalId,
+					},
+					privateKey,
+					{
+						algorithm: 'RS256',
+					}
+				);
+
+				const axiosMock: MockAdapter = new MockAdapter(axios);
+
+				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
+					id_token: idToken,
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				});
+
+				return {
+					system,
+					idToken,
+				};
+			};
+
+			it('should return error response', async () => {
+				const { system } = await setup('user2ExternalId');
+
+				const response: Response = await request(app.getHttpServer()).post(`${basePath}/oauth2`).send({
+					redirectUri: 'redirectUri',
+					code: 'code',
+					systemId: system.id,
+				});
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
