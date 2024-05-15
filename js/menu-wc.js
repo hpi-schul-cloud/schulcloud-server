@@ -6920,6 +6920,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/User.html" data-type="entity-link" >User</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserAccountDeactivatedLoggableException.html" data-type="entity-link" >UserAccountDeactivatedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UserAlreadyAssignedToImportUserError.html" data-type="entity-link" >UserAlreadyAssignedToImportUserError</a>
                             </li>
                             <li class="link">

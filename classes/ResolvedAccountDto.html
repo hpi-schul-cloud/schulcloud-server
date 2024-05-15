@@ -160,6 +160,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
+                                <a href="#deactivatedAt" >deactivatedAt</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#expiresAt" >expiresAt</a>
                             </li>
                             <li>
@@ -240,7 +246,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:57</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:61</a></div>
                             </td>
                         </tr>
 
@@ -392,6 +398,44 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deactivatedAt"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>deactivatedAt</b></span>
+                        <a href="#deactivatedAt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsOptional()<br />@IsDate()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -848,6 +892,10 @@ export class ResolvedAccountDto {
 	@IsOptional()
 	idmReferenceId?: string;
 
+	@IsOptional()
+	@IsDate()
+	deactivatedAt?: Date;
+
 	constructor(account: ResolvedAccountDto) {
 		this.id &#x3D; account.id;
 		this.username &#x3D; account.username;
@@ -862,6 +910,7 @@ export class ResolvedAccountDto {
 		this.lasttriedFailedLogin &#x3D; account.lasttriedFailedLogin;
 		this.expiresAt &#x3D; account.expiresAt;
 		this.idmReferenceId &#x3D; account.idmReferenceId;
+		this.deactivatedAt &#x3D; account.deactivatedAt;
 	}
 }
 

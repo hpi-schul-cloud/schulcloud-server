@@ -166,7 +166,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -243,8 +243,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/oauth2.strategy.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -306,6 +306,7 @@ import { Oauth2AuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
 import { ICurrentUser, OauthCurrentUser } from &#x27;../interface&#x27;;
 import { SchoolInMigrationLoggableException } from &#x27;../loggable&#x27;;
 import { CurrentUserMapper } from &#x27;../mapper&#x27;;
+import { UserAccountDeactivatedLoggableException } from &#x27;../loggable/user-account-deactivated-exception&#x27;;
 
 @Injectable()
 export class Oauth2Strategy extends PassportStrategy(Strategy, &#x27;oauth2&#x27;) {
@@ -329,13 +330,16 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, &#x27;oauth2&#x27
 			throw new UnauthorizedException(&#x27;no account found&#x27;);
 		}
 
+		if (account.deactivatedAt !&#x3D;&#x3D; undefined &amp;&amp; account.deactivatedAt.getTime() &lt;&#x3D; Date.now()) {
+			throw new UserAccountDeactivatedLoggableException();
+		}
+
 		const currentUser: OauthCurrentUser &#x3D; CurrentUserMapper.mapToOauthCurrentUser(
 			account.id,
 			user,
 			systemId,
 			tokenDto.idToken
 		);
-
 		return currentUser;
 	}
 }

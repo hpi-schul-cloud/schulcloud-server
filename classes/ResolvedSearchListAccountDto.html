@@ -175,7 +175,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:83</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:88</a></div>
                             </td>
                         </tr>
 
@@ -273,7 +273,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:77</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -300,7 +300,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:83</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +327,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:81</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -353,7 +353,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:79</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">apps/server/src/modules/account/uc/dto/resolved-account.dto.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -430,6 +430,10 @@ export class ResolvedAccountDto {
 	@IsOptional()
 	idmReferenceId?: string;
 
+	@IsOptional()
+	@IsDate()
+	deactivatedAt?: Date;
+
 	constructor(account: ResolvedAccountDto) {
 		this.id &#x3D; account.id;
 		this.username &#x3D; account.username;
@@ -444,6 +448,7 @@ export class ResolvedAccountDto {
 		this.lasttriedFailedLogin &#x3D; account.lasttriedFailedLogin;
 		this.expiresAt &#x3D; account.expiresAt;
 		this.idmReferenceId &#x3D; account.idmReferenceId;
+		this.deactivatedAt &#x3D; account.deactivatedAt;
 	}
 }
 

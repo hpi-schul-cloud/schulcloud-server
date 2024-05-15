@@ -167,6 +167,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#deactivatedAt" 
+>
+                                            deactivatedAt
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#expiresAt" 
 >
                                             expiresAt
@@ -343,6 +350,44 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="deactivatedAt"></a>
+                                        <span class="name "><b>deactivatedAt</b>
+                                            <a href="#deactivatedAt">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>deactivatedAt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
 
                                         </td>
                                     </tr>
@@ -752,6 +797,7 @@ export interface AccountProps extends AuthorizableObject {
 	expiresAt?: Date;
 	activated?: boolean;
 	idmReferenceId?: string;
+	deactivatedAt?: Date;
 }
 
 export class Account extends DomainObject&lt;AccountProps&gt; {
@@ -831,6 +877,10 @@ export class Account extends DomainObject&lt;AccountProps&gt; {
 		return this.props.idmReferenceId;
 	}
 
+	public get deactivatedAt(): Date | undefined {
+		return this.props.deactivatedAt;
+	}
+
 	public async update(accountSave: AccountSave): Promise&lt;void&gt; {
 		this.props.userId &#x3D; accountSave.userId ?? this.props.userId;
 		this.props.systemId &#x3D; accountSave.systemId ?? this.props.systemId;
@@ -840,6 +890,7 @@ export class Account extends DomainObject&lt;AccountProps&gt; {
 		this.props.lasttriedFailedLogin &#x3D; accountSave.lasttriedFailedLogin ?? this.props.lasttriedFailedLogin;
 		this.props.credentialHash &#x3D; accountSave.credentialHash ?? this.props.credentialHash;
 		this.props.token &#x3D; accountSave.token ?? this.props.token;
+		this.props.deactivatedAt &#x3D; accountSave.deactivatedAt ?? this.props.deactivatedAt;
 
 		if (accountSave.password) {
 			this.props.password &#x3D; await this.encryptPassword(accountSave.password);
