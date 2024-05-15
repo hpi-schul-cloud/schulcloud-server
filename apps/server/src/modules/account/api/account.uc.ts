@@ -1,10 +1,10 @@
 import { ICurrentUser } from '@modules/authentication';
+import { AuthorizationService } from '@modules/authorization';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationService } from '@modules/authorization';
 import { AccountService } from '..';
 import { AccountSearchType } from './dto';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';

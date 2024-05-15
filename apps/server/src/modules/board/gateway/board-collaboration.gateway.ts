@@ -3,9 +3,9 @@ import { UseGuards } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import { BoardResponseMapper } from '../controller/mapper';
+import { BoardResponseMapper, CardResponseMapper } from '../controller/mapper';
 import { BoardDoAuthorizableService } from '../service';
-import { BoardUc, ColumnUc } from '../uc';
+import { BoardUc, CardUc, ColumnUc } from '../uc';
 import {
 	CreateCardMessageParams,
 	DeleteColumnMessageParams,
@@ -13,12 +13,17 @@ import {
 	UpdateColumnTitleMessageParams,
 } from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
+import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
 import { CreateColumnMessageParams } from './dto/create-column.message.param';
 import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
+import { DeleteCardMessageParams } from './dto/delete-card.message.param';
 import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
+import { FetchCardsMessageParams } from './dto/fetch-cards.message.param';
 import { MoveColumnMessageParams } from './dto/move-column.message.param';
 import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
 import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
+import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
+import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { Socket } from './types';
 
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -30,6 +35,7 @@ export class BoardCollaborationGateway {
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
+		private readonly cardUc: CardUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -44,6 +50,7 @@ export class BoardCollaborationGateway {
 	}
 
 	@SubscribeMessage('delete-board-request')
+	@UseRequestContext()
 	async deleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
@@ -72,21 +79,50 @@ export class BoardCollaborationGateway {
 		}
 	}
 
-	// @SubscribeMessage('update-card-request')
-	// handleUpdateCard(client: Socket, data: unknown) {
-	// 	this.logger.log(`Message received from client id: ${client.id}`);
-	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-	// 	client.broadcast.emit('update-card-success', data);
-	// 	client.emit('update-card-success', data);
-	// }
+	@SubscribeMessage('update-card-title-request')
+	@UseRequestContext()
+	async updateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-	// @SubscribeMessage('delete-card-request')
-	// handleDeleteCard(client: Socket, data: unknown) {
-	// 	this.logger.log(`Message received from client id: ${client.id}`);
-	// 	this.logger.debug(`Payload: ${JSON.stringify(data)}`);
-	// 	client.broadcast.emit('delete-card-success', data);
-	// 	client.emit('delete-card-success', data);
-	// }
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('update-card-title-success', data);
+			client.emit('update-card-title-success', data);
+		} catch (err) {
+			client.emit('update-card-title-failure', new Error('Failed to update card title'));
+		}
+	}
+
+	@SubscribeMessage('update-card-height-request')
+	@UseRequestContext()
+	async updateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
+
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit('update-card-height-success', data);
+			client.emit('update-card-height-success', data);
+		} catch (err) {
+			client.emit('update-card-height-failure', new Error('Failed to update card height'));
+		}
+	}
+
+	@SubscribeMessage('delete-card-request')
+	@UseRequestContext()
+	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			const room = await this.ensureUserInRoom(client, data.cardId);
+			await this.cardUc.deleteCard(userId, data.cardId);
+
+			client.to(room).emit('delete-card-success', data);
+			client.emit('delete-card-success', data);
+		} catch (err) {
+			client.emit('delete-card-failure', new Error('Failed to update card height'));
+		}
+	}
 
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
@@ -113,9 +149,10 @@ export class BoardCollaborationGateway {
 		try {
 			const { userId } = this.getCurrentUser(client);
 			const column = await this.boardUc.createColumn(userId, data.boardId);
+			const newColumn = ColumnResponseMapper.mapToResponse(column);
 			const responsePayload = {
 				...data,
-				newColumn: column.getProps(),
+				newColumn,
 			};
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
@@ -140,8 +177,6 @@ export class BoardCollaborationGateway {
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('fetch-board-success', responsePayload);
 			client.emit('fetch-board-success', responsePayload);
 		} catch (err) {
 			client.emit('fetch-board-failure', new Error('Failed to fetch board'));
@@ -220,6 +255,21 @@ export class BoardCollaborationGateway {
 			client.emit('delete-column-success', data);
 		} catch (err) {
 			client.emit('delete-column-failure', new Error('Failed to delete column'));
+		}
+	}
+
+	@SubscribeMessage('fetch-card-request')
+	@UseRequestContext()
+	async fetchCards(client: Socket, data: FetchCardsMessageParams) {
+		try {
+			const { userId } = this.getCurrentUser(client);
+			const cards = await this.cardUc.findCards(userId, data.cardIds);
+			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
+
+			await this.ensureUserInRoom(client, data.cardIds[0]);
+			client.emit('fetch-card-success', { cards: cardResponses });
+		} catch (err) {
+			client.emit('fetch-card-failure', new Error('Failed to fetch board'));
 		}
 	}
 

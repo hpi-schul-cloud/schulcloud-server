@@ -30,8 +30,12 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		try {
+			const dataDeleted = await this.deleteUserData(targetRefId);
+			await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		} catch (error) {
+			this.logger.error('error during deletionRequest proccess', error);
+		}
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {

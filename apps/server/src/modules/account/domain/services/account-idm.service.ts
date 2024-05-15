@@ -6,11 +6,11 @@ import { EntityNotFoundError } from '@shared/common';
 import { IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { AccountConfig } from '../../account-config';
 import { Account, AccountSave } from '..';
+import { AccountConfig } from '../../account-config';
 import { AccountIdmToDoMapper } from '../../repo/micro-orm/mapper';
-import { AbstractAccountService } from './account.service.abstract';
 import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from '../error';
+import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {

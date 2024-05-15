@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,14 +7,13 @@ import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { accountDoFactory, setupEntities, userFactory } from '@shared/testing';
-import { IdentityManagementService } from '@infra/identity-management';
+import { Logger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { Logger } from '@src/core/logger';
-import { AccountConfig } from '../../account-config';
 import { Account } from '..';
-import { AccountEntity } from '../entity/account.entity';
+import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
+import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {
@@ -670,6 +670,21 @@ describe('AccountDbService', () => {
 						password: mockTeacherAccount.password,
 					})
 				);
+			});
+		});
+
+		describe('when username is empty while creating a new account', () => {
+			const setup = () => {
+				const account = {
+					username: '',
+					password: defaultPassword,
+				} as Account;
+				return { account };
+			};
+
+			it('should throw an error', async () => {
+				const { account } = setup();
+				await expect(accountService.save(account)).rejects.toThrow();
 			});
 		});
 	});
