@@ -70,13 +70,11 @@ export class CommonCartridgeFileBuilder {
 			resources,
 		});
 
-		archive.addFile('imsmanifest.xml', Buffer.from(manifest.getFileContent()));
+		archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
 
-		resources
-			.filter((resource) => !resource.canInline())
-			.forEach((resource) => {
-				archive.addFile(resource.getFilePath(), Buffer.from(resource.getFileContent()));
-			});
+		resources.forEach((resource) => {
+			archive.addFile(resource.getFilePath(), Buffer.from(resource.getFileContent()));
+		});
 
 		return archive.toBuffer();
 	}

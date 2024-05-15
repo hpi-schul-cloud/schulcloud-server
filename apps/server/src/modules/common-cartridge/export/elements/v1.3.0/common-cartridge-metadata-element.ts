@@ -1,5 +1,6 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeBase, CommonCartridgeElement, XmlObject } from '../../interfaces';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeElement, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeMetadataElementPropsV130 = {
 	type: CommonCartridgeElementType.METADATA;
@@ -9,7 +10,7 @@ export type CommonCartridgeMetadataElementPropsV130 = {
 	copyrightOwners: string[];
 };
 
-export class CommonCartridgeMetadataElementV130 extends CommonCartridgeBase implements CommonCartridgeElement {
+export class CommonCartridgeMetadataElementV130 extends CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeMetadataElementPropsV130) {
 		super(props);
 	}
@@ -18,7 +19,16 @@ export class CommonCartridgeMetadataElementV130 extends CommonCartridgeBase impl
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestXmlObject(): XmlObject {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.METADATA:
+				return this.getManifestXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	private getManifestXmlObjectInternal(): XmlObject {
 		return {
 			schema: 'IMS Common Cartridge',
 			schemaversion: '1.3.0',

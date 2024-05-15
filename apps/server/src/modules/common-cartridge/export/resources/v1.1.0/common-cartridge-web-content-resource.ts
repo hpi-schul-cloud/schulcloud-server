@@ -1,10 +1,12 @@
 import {
+	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeGuard } from '../../common-cartridge.guard';
-import { CommonCartridgeBase, CommonCartridgeOrganization, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV110 = {
@@ -17,10 +19,7 @@ export type CommonCartridgeWebContentResourcePropsV110 = {
 	intendedUse: CommonCartridgeIntendedUseType;
 };
 
-export class CommonCartridgeWebContentResourceV110
-	extends CommonCartridgeBase
-	implements CommonCartridgeOrganization, CommonCartridgeResource
-{
+export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResource {
 	private static readonly SUPPORTED_INTENDED_USES = [
 		CommonCartridgeIntendedUseType.LESSON_PLAN,
 		CommonCartridgeIntendedUseType.SYLLABUS,
@@ -35,11 +34,30 @@ export class CommonCartridgeWebContentResourceV110
 		);
 	}
 
-	public isResource(): boolean {
-		return true;
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestOrganizationXmlObject(): XmlObject {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.RESOURCE:
+				return this.getManifestResourceXmlObject();
+			case CommonCartridgeElementType.ORGANIZATION:
+				return this.getManifestOrganizationXmlObject();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	public getFilePath(): string {
+		return `${this.props.folder}/${this.props.identifier}.html`;
+	}
+
+	public getFileContent(): string {
+		return this.props.html;
+	}
+
+	private getManifestOrganizationXmlObject(): XmlObject {
 		return {
 			$: {
 				identifier: createIdentifier(),
@@ -49,7 +67,7 @@ export class CommonCartridgeWebContentResourceV110
 		};
 	}
 
-	public getManifestResourceXmlObject(): XmlObject {
+	private getManifestResourceXmlObject(): XmlObject {
 		return {
 			$: {
 				identifier: this.props.identifier,
@@ -62,21 +80,5 @@ export class CommonCartridgeWebContentResourceV110
 				},
 			},
 		};
-	}
-
-	public canInline(): boolean {
-		return false;
-	}
-
-	public getFilePath(): string {
-		return `${this.props.folder}/${this.props.identifier}.html`;
-	}
-
-	public getFileContent(): string {
-		return this.props.html;
-	}
-
-	public getSupportedVersion(): CommonCartridgeVersion {
-		return CommonCartridgeVersion.V_1_1_0;
 	}
 }

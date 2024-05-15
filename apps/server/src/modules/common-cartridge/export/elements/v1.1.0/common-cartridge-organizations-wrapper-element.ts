@@ -1,5 +1,6 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeBase, CommonCartridgeElement, XmlObject } from '../../interfaces';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeElement, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeOrganizationsWrapperElementPropsV110 = {
 	type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
@@ -7,10 +8,7 @@ export type CommonCartridgeOrganizationsWrapperElementPropsV110 = {
 	items: CommonCartridgeElement[];
 };
 
-export class CommonCartridgeOrganizationsWrapperElementV110
-	extends CommonCartridgeBase
-	implements CommonCartridgeElement
-{
+export class CommonCartridgeOrganizationsWrapperElementV110 extends CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementPropsV110) {
 		super(props);
 	}
@@ -19,7 +17,16 @@ export class CommonCartridgeOrganizationsWrapperElementV110
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestXmlObject(): XmlObject {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.ORGANIZATIONS_WRAPPER:
+				return this.getManifestXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	private getManifestXmlObjectInternal(): XmlObject {
 		return {
 			organization: [
 				{
@@ -32,7 +39,9 @@ export class CommonCartridgeOrganizationsWrapperElementV110
 							$: {
 								identifier: 'LearningModules',
 							},
-							item: this.props.items.map((items) => items.getManifestXmlObject()),
+							item: this.props.items.map((items) =>
+								items.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION)
+							),
 						},
 					],
 				},

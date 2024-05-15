@@ -1,48 +1,48 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeBase, CommonCartridgeOrganization, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 
 export type CommonCartridgeOrganizationElementPropsV110 = {
 	type: CommonCartridgeElementType.ORGANIZATION;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	title: string;
-	items:
-		| (CommonCartridgeBase & CommonCartridgeOrganization & CommonCartridgeResource)
-		| Array<CommonCartridgeBase & CommonCartridgeOrganization>;
+	items: CommonCartridgeResource | Array<CommonCartridgeElement>;
 };
 
-export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeBase implements CommonCartridgeOrganization {
+export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeElement {
 	constructor(protected readonly props: CommonCartridgeOrganizationElementPropsV110) {
 		super(props);
-	}
-
-	public isResource(): boolean {
-		return false;
 	}
 
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public getManifestOrganizationXmlObject(): XmlObject {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.ORGANIZATION:
+				return this.getManifestXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	private getManifestXmlObjectInternal(): XmlObject {
 		const xmlObject = Array.isArray(this.props.items)
 			? this.getManifestXmlObjectForMany(this.props.items)
-			: this.props.items.getManifestOrganizationXmlObject();
+			: this.props.items.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION);
 
 		return xmlObject;
 	}
 
-	public getManifestResourceXmlObject(): XmlObject {
-		throw new Error('CommonCartridgeOrganizationElementV110 does not support getManifestResourceXmlObject');
-	}
-
-	private getManifestXmlObjectForMany(items: Array<CommonCartridgeBase & CommonCartridgeOrganization>): XmlObject {
+	private getManifestXmlObjectForMany(items: Array<CommonCartridgeElement>): XmlObject {
 		const xmlObject = {
 			$: {
 				identifier: this.identifier,
 			},
 			title: this.title,
-			item: items.map((item) => item.getManifestOrganizationXmlObject()),
+			item: items.map((item) => item.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION)),
 		};
 
 		return xmlObject;

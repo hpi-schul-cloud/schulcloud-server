@@ -4,7 +4,8 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
-import { CommonCartridgeBase, CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV110 = {
@@ -16,16 +17,22 @@ export type CommonCartridgeManifestResourcePropsV110 = {
 	resources: CommonCartridgeElement[];
 };
 
-export class CommonCartridgeManifestResourceV110
-	extends CommonCartridgeBase
-	implements CommonCartridgeElement, CommonCartridgeResource
-{
+export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource {
 	constructor(private readonly props: CommonCartridgeManifestResourcePropsV110) {
 		super(props);
 	}
 
-	public canInline(): boolean {
-		return false;
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_1_0;
+	}
+
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.MANIFEST:
+				return this.getManifestXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
 	}
 
 	public getFilePath(): string {
@@ -33,14 +40,10 @@ export class CommonCartridgeManifestResourceV110
 	}
 
 	public getFileContent(): string {
-		return buildXmlString(this.getManifestXmlObject());
+		return buildXmlString(this.getManifestXmlObjectInternal());
 	}
 
-	public getSupportedVersion(): CommonCartridgeVersion {
-		return CommonCartridgeVersion.V_1_1_0;
-	}
-
-	public getManifestXmlObject(): XmlObject {
+	private getManifestXmlObjectInternal(): XmlObject {
 		return {
 			manifest: {
 				$: {
@@ -54,17 +57,17 @@ export class CommonCartridgeManifestResourceV110
 						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest https://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd ' +
 						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource https://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd',
 				},
-				metadata: this.props.metadata.getManifestXmlObject(),
+				metadata: this.props.metadata.getManifestXmlObject(CommonCartridgeElementType.METADATA),
 				organizations: CommonCartridgeElementFactory.createElement({
 					type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
 					version: this.props.version,
 					items: this.props.organizations,
-				}).getManifestXmlObject(),
+				}).getManifestXmlObject(CommonCartridgeElementType.ORGANIZATIONS_WRAPPER),
 				...CommonCartridgeElementFactory.createElement({
 					type: CommonCartridgeElementType.RESOURCES_WRAPPER,
 					version: this.props.version,
 					items: this.props.resources,
-				}).getManifestXmlObject(),
+				}).getManifestXmlObject(CommonCartridgeElementType.RESOURCES_WRAPPER),
 			},
 		};
 	}

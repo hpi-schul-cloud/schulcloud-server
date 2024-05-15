@@ -1,13 +1,13 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 
-type CCBaseProps = {
+type CommonCartridgeBaseProps = {
 	version: CommonCartridgeVersion;
 	identifier?: string;
 	title?: string;
 };
 
 export abstract class CommonCartridgeBase {
-	protected constructor(public readonly baseProps: CCBaseProps) {
+	protected constructor(public readonly baseProps: CommonCartridgeBaseProps) {
 		this.checkVersion(baseProps.version);
 	}
 

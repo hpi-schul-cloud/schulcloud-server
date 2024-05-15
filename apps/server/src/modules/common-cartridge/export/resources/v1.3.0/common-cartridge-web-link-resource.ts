@@ -1,5 +1,10 @@
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeBase, CommonCartridgeOrganization, CommonCartridgeResource, XmlObject } from '../../interfaces';
+import {
+	CommonCartridgeElementType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from '../../common-cartridge.enums';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
+import { CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString, createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebLinkResourcePropsV130 = {
@@ -13,44 +18,24 @@ export type CommonCartridgeWebLinkResourcePropsV130 = {
 	windowFeatures?: string;
 };
 
-export class CommonCartridgeWebLinkResourceV130
-	extends CommonCartridgeBase
-	implements CommonCartridgeOrganization, CommonCartridgeResource
-{
+export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource {
 	constructor(private readonly props: CommonCartridgeWebLinkResourcePropsV130) {
 		super(props);
 	}
 
-	public isResource(): boolean {
-		return true;
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getManifestOrganizationXmlObject(): XmlObject {
-		return {
-			$: {
-				identifier: createIdentifier(),
-				identifierref: this.props.identifier,
-			},
-			title: this.props.title,
-		};
-	}
-
-	public getManifestResourceXmlObject(): XmlObject {
-		return {
-			$: {
-				identifier: this.props.identifier,
-				type: 'imswl_xmlv1p3',
-			},
-			file: {
-				$: {
-					href: this.getFilePath(),
-				},
-			},
-		};
-	}
-
-	public canInline(): boolean {
-		return false;
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.RESOURCE:
+				return this.getManifestResourceXmlObject();
+			case CommonCartridgeElementType.ORGANIZATION:
+				return this.getManifestOrganizationXmlObject();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
 	}
 
 	public getFilePath(): string {
@@ -78,7 +63,27 @@ export class CommonCartridgeWebLinkResourceV130
 		});
 	}
 
-	public getSupportedVersion(): CommonCartridgeVersion {
-		return CommonCartridgeVersion.V_1_3_0;
+	private getManifestOrganizationXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: createIdentifier(),
+				identifierref: this.props.identifier,
+			},
+			title: this.props.title,
+		};
+	}
+
+	private getManifestResourceXmlObject(): XmlObject {
+		return {
+			$: {
+				identifier: this.props.identifier,
+				type: 'imswl_xmlv1p3',
+			},
+			file: {
+				$: {
+					href: this.getFilePath(),
+				},
+			},
+		};
 	}
 }
