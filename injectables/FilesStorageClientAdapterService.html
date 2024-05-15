@@ -274,8 +274,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -343,8 +343,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -412,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -481,8 +481,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -550,8 +550,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -688,8 +688,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -773,8 +773,12 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
-		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		try {
+			const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+			await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		} catch (error) {
+			this.logger.error(&#x27;error during deletionRequest proccess&#x27;, error);
+		}
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise&lt;CopyFileDto[]&gt; {

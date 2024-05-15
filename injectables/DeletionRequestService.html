@@ -135,6 +135,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#countPendingDeletionRequests" >countPendingDeletionRequests</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#createDeletionRequest" >createDeletionRequest</a>
                             </li>
                             <li>
@@ -243,6 +247,45 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="countPendingDeletionRequests"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>countPendingDeletionRequests</b></span>
+                        <a href="#countPendingDeletionRequests"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>countPendingDeletionRequests()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -366,8 +409,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -573,8 +616,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -642,8 +685,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -711,8 +754,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -780,8 +823,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -881,6 +924,12 @@ export class DeletionRequestService {
 		const itemsToDelete: DeletionRequest[] &#x3D; await this.deletionRequestRepo.findAllItemsToExecution(threshold, limit);
 
 		return itemsToDelete;
+	}
+
+	async countPendingDeletionRequests(): Promise&lt;number&gt; {
+		const numberItemsWithStatusPending: number &#x3D; await this.deletionRequestRepo.countPendingDeletionRequests();
+
+		return numberItemsWithStatusPending;
 	}
 
 	async update(deletionRequestToUpdate: DeletionRequest): Promise&lt;void&gt; {

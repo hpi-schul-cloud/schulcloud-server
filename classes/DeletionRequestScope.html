@@ -174,6 +174,9 @@
                                 <a href="#byStatus" >byStatus</a>
                             </li>
                             <li>
+                                <a href="#byStatusPending" >byStatusPending</a>
+                            </li>
+                            <li>
                                 <a href="#addQuery" >addQuery</a>
                             </li>
                             <li>
@@ -435,6 +438,34 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="byStatusPending"></a>
+                    <span class="name">
+                        <span ><b>byStatusPending</b></span>
+                        <a href="#byStatusPending"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byStatusPending()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/scope/deletion-request-scope.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="addQuery"></a>
                     <span class="name">
                         <span ><b>addQuery</b></span>
@@ -607,6 +638,12 @@ export class DeletionRequestScope extends Scope&lt;DeletionRequestEntity&gt; {
 				},
 			],
 		});
+
+		return this;
+	}
+
+	byStatusPending(): this {
+		this.addQuery({ status: [StatusModel.PENDING] });
 
 		return this;
 	}

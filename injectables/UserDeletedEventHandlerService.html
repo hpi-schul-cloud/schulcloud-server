@@ -256,8 +256,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/board/service/event/user-deleted-event-handler.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/board/service/event/user-deleted-event-handler.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -326,8 +326,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/board/service/event/user-deleted-event-handler.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/board/service/event/user-deleted-event-handler.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -404,7 +404,9 @@ export class UserDeletedEventHandlerService implements DeletionService, IEventHa
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus
-	) {}
+	) {
+		this.logger.setContext(UserDeletedEventHandlerService.name);
+	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted: DomainDeletionReport &#x3D; await this.deleteUserData(targetRefId);
@@ -427,7 +429,7 @@ export class UserDeletedEventHandlerService implements DeletionService, IEventHa
 			id: userId,
 		});
 
-		const result: DomainDeletionReport &#x3D; DomainDeletionReportBuilder.build(DomainName.CLASS, [
+		const result: DomainDeletionReport &#x3D; DomainDeletionReportBuilder.build(DomainName.BOARD, [
 			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedBoards, boardIds),
 		]);
 
