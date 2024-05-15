@@ -8,6 +8,10 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import { AdminApiServerModule } from '@src/modules/server/admin-api.server.module';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from './helpers/prometheus-metrics';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -21,6 +25,8 @@ async function bootstrap() {
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
 	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();
+
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestAdminServerExpress);
 
 	enableOpenApiDocs(nestAdminServerApp, 'docs');
 	nestAdminServerApp.setGlobalPrefix('/admin/api/v1');
@@ -37,6 +43,8 @@ async function bootstrap() {
 				mountsDescription: `/admin/api/v1 --> Admin API Server`,
 			})
 		);
+
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
 }
 
