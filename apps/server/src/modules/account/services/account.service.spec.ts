@@ -1,32 +1,32 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { User } from '@shared/domain/entity';
-import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
-import 'reflect-metadata';
-import { EventBus } from '@nestjs/cqrs';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { ConfigService } from '@nestjs/config';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { User } from '@shared/domain/entity';
+import { UserRepo } from '@shared/repo';
+import { accountFactory, schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import 'reflect-metadata';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
+import { IdmCallbackLoggableException } from '../loggable';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { IdmCallbackLoggableException } from '../loggable';
-import { AccountRepo } from '../repo/account.repo';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -1313,7 +1313,8 @@ describe('AccountService', () => {
 
 				userRepo.save.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account.getProps());
+					mockStudentAccount.password = account.password;
+
 					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				});
 
@@ -1347,7 +1348,7 @@ describe('AccountService', () => {
 
 				userRepo.save.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account.getProps());
+					Object.assign(mockStudentAccount, account);
 					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				});
 				accountValidationService.isUniqueEmail.mockResolvedValue(true);

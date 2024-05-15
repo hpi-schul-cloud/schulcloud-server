@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat';
 import {
 	UserDeletedEvent,

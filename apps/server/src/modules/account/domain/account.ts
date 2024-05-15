@@ -1,6 +1,7 @@
-import bcrypt from 'bcryptjs';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import bcrypt from 'bcryptjs';
+import { AccountSave } from './account-save';
 
 export interface AccountProps extends AuthorizableObject {
 	id: EntityId;
@@ -101,14 +102,15 @@ export class Account extends DomainObject<AccountProps> {
 	}
 
 	public async update(accountSave: AccountSave): Promise<void> {
-		this.props.userId = accountSave.userId;
-		this.props.systemId = accountSave.systemId;
-		this.props.username = accountSave.username;
-		this.props.activated = accountSave.activated;
-		this.props.expiresAt = accountSave.expiresAt;
-		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
-		this.props.credentialHash = accountSave.credentialHash;
-		this.props.token = accountSave.token;
+		this.props.userId = accountSave.userId ?? this.props.userId;
+		this.props.systemId = accountSave.systemId ?? this.props.systemId;
+		this.props.username = accountSave.username ?? this.props.username;
+		this.props.activated = accountSave.activated ?? this.props.activated;
+		this.props.expiresAt = accountSave.expiresAt ?? this.props.expiresAt;
+		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin ?? this.props.lasttriedFailedLogin;
+		this.props.credentialHash = accountSave.credentialHash ?? this.props.credentialHash;
+		this.props.token = accountSave.token ?? this.props.token;
+
 		this.props.deactivatedAt = accountSave.deactivatedAt;
 		if (accountSave.password) {
 			this.props.password = await this.encryptPassword(accountSave.password);
@@ -119,5 +121,3 @@ export class Account extends DomainObject<AccountProps> {
 		return bcrypt.hash(password, 10);
 	}
 }
-
-export type AccountSave = Omit<Account, 'id'> & Partial<Pick<Account, 'id'>>;

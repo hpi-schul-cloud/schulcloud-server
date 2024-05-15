@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { Account, AccountSave } from './account';
+import { Account } from './account';
+import { AccountSave } from './account-save';
 
 describe('Account', () => {
 	beforeEach(() => {
