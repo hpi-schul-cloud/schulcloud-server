@@ -3,7 +3,7 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import { BoardResponseMapper, CardResponseMapper } from '../controller/mapper';
+import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
 import { BoardDoAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
@@ -285,10 +285,10 @@ export class BoardCollaborationGateway {
 	async createElement(client: Socket, data: CreateContentElementMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const card = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
+			const element = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
 			const responsePayload = {
 				...data,
-				newElement: card.getProps(),
+				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
 
 			const room = await this.ensureUserInRoom(client, data.cardId);
