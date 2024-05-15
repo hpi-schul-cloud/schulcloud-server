@@ -17,6 +17,7 @@ export interface AccountProps extends AuthorizableObject {
 	expiresAt?: Date;
 	activated?: boolean;
 	idmReferenceId?: string;
+	deactivatedAt?: Date;
 }
 
 export class Account extends DomainObject<AccountProps> {
@@ -96,6 +97,10 @@ export class Account extends DomainObject<AccountProps> {
 		return this.props.idmReferenceId;
 	}
 
+	public get deactivatedAt(): Date | undefined {
+		return this.props.deactivatedAt;
+	}
+
 	public async update(accountSave: AccountSave): Promise<void> {
 		this.props.userId = accountSave.userId ?? this.props.userId;
 		this.props.systemId = accountSave.systemId ?? this.props.systemId;
@@ -105,6 +110,7 @@ export class Account extends DomainObject<AccountProps> {
 		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin ?? this.props.lasttriedFailedLogin;
 		this.props.credentialHash = accountSave.credentialHash ?? this.props.credentialHash;
 		this.props.token = accountSave.token ?? this.props.token;
+		this.props.deactivatedAt = accountSave.deactivatedAt ?? this.props.deactivatedAt;
 
 		if (accountSave.password) {
 			this.props.password = await this.encryptPassword(accountSave.password);
