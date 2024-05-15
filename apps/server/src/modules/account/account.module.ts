@@ -6,12 +6,12 @@ import { LegacySystemRepo, UserRepo } from '@shared/repo';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { AccountConfig } from './account-config';
-import { AccountRepo } from './repo/account.repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/mapper';
-import { AccountServiceDb } from './services/account-db.service';
-import { AccountServiceIdm } from './services/account-idm.service';
-import { AccountService } from './services/account.service';
-import { AccountValidationService } from './services/account.validation.service';
+import { AccountRepo } from './repo/micro-orm/account.repo';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { AccountServiceDb } from './domain/services/account-db.service';
+import { AccountServiceIdm } from './domain/services/account-idm.service';
+import { AccountService } from './domain/services/account.service';
+import { AccountValidationService } from './domain/services/account.validation.service';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {

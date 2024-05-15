@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Controller,
 	Delete,
@@ -11,10 +12,10 @@ import {
 	Put,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthGuard } from '@nestjs/passport';
-import { accountFactory } from './factory';
+import { Test } from '@nestjs/testing';
+
+import { accountFactory } from '@src/modules/account/testing';
 import { TestApiClient } from './test-api-client';
 
 @Controller('')
