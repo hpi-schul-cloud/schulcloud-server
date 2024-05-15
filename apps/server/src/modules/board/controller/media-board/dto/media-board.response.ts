@@ -17,6 +17,7 @@ export class MediaBoardResponse {
 	timestamps: TimestampsResponse;
 
 	@ApiProperty({
+		enum: MediaBoardLayoutType,
 		description: 'Layout of media board',
 	})
 	layout: MediaBoardLayoutType;

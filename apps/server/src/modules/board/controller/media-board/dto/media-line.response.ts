@@ -23,11 +23,15 @@ export class MediaLineResponse {
 	@ApiProperty({ description: 'The background color of the media line' })
 	backgroundColor: string;
 
+	@ApiProperty({ description: 'Collapse the media line' })
+	collapsed: boolean;
+
 	constructor(props: MediaLineResponse) {
 		this.id = props.id;
 		this.title = props.title;
 		this.elements = props.elements;
 		this.timestamps = props.timestamps;
 		this.backgroundColor = props.backgroundColor;
+		this.collapsed = props.collapsed;
 	}
 }

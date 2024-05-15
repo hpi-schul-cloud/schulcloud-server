@@ -84,7 +84,7 @@ export class MediaLineController {
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Patch(':lineId/collapse')
-	public async collapsMediaLine(
+	public async collapseMediaLine(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: CollapsableBodyParams,
 		@CurrentUser() currentUser: ICurrentUser

@@ -23,6 +23,7 @@ export class MediaLineResponseMapper {
 				createdAt: line.createdAt,
 			}),
 			backgroundColor: line.backgroundColor,
+			collapsed: line.collapsed,
 		});
 
 		return lineResponse;
