@@ -1,13 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { SortOrder, SortOrderMap } from '@shared/domain/interface';
-import {
-	basicToolConfigFactory,
-	customParameterFactory,
-	externalToolFactory,
-	lti11ToolConfigFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -35,6 +28,13 @@ import {
 	SortExternalToolParams,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '../testing';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
@@ -109,7 +109,6 @@ describe('ExternalToolRequestMapper', () => {
 					parameters: [customParameterDO],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: basicToolConfigDO,
 					isDeactivated: true,
 					createdAt: undefined,
@@ -195,7 +194,6 @@ describe('ExternalToolRequestMapper', () => {
 					parameters: [customParameterDO],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: lti11ToolConfigDO,
 					isDeactivated: false,
 					createdAt: undefined,
@@ -285,7 +283,6 @@ describe('ExternalToolRequestMapper', () => {
 					parameters: [customParameterDO],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: oauth2ToolConfigDO,
 					isDeactivated: false,
 					createdAt: undefined,
@@ -365,7 +362,6 @@ describe('ExternalToolRequestMapper', () => {
 						parameters: [customParameterDO],
 						isHidden: true,
 						openNewTab: true,
-						version: 1,
 						config: basicToolConfigDO,
 						isDeactivated: false,
 						createdAt: undefined,
@@ -455,7 +451,6 @@ describe('ExternalToolRequestMapper', () => {
 						parameters: [customParameterDO],
 						isHidden: true,
 						openNewTab: true,
-						version: 1,
 						config: lti11ToolConfigDO,
 						isDeactivated: false,
 						createdAt: undefined,
@@ -549,7 +544,6 @@ describe('ExternalToolRequestMapper', () => {
 						parameters: [customParameterDO],
 						isHidden: true,
 						openNewTab: true,
-						version: 1,
 						config: oauth2ToolConfigDO,
 						isDeactivated: false,
 						createdAt: undefined,

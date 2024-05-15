@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { customParameterFactory, externalToolFactory, setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
@@ -13,6 +13,7 @@ import {
 } from '../../school-external-tool/testing';
 import { ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { customParameterFactory, externalToolFactory } from '../testing';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
 

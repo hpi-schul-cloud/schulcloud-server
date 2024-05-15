@@ -1,9 +1,12 @@
-import { basicToolConfigFactory, schoolEntityFactory, setupEntities } from '@shared/testing';
+import { schoolEntityFactory, setupEntities } from '@shared/testing';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 import { CustomParameterEntity, ExternalToolConfigEntity, ExternalToolEntity } from '../../external-tool/entity';
-import { customParameterEntityFactory, externalToolEntityFactory } from '../../external-tool/testing';
-import { schoolExternalToolEntityFactory } from '../testing';
-import { schoolExternalToolConfigurationStatusEntityFactory } from '../testing/school-external-tool-configuration-status-entity.factory';
+import {
+	basicToolConfigFactory,
+	customParameterEntityFactory,
+	externalToolEntityFactory,
+} from '../../external-tool/testing';
+import { schoolExternalToolConfigurationStatusEntityFactory, schoolExternalToolEntityFactory } from '../testing';
 import { SchoolExternalToolEntity } from './school-external-tool.entity';
 
 describe('SchoolExternalToolEntity', () => {
@@ -48,14 +51,12 @@ describe('SchoolExternalToolEntity', () => {
 				parameters: [customParameter],
 				isHidden: true,
 				openNewTab: true,
-				version: 1,
 				isDeactivated: false,
 			});
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
-				toolVersion: 1,
 				status: schoolExternalToolConfigurationStatusEntityFactory.build(),
 			});
 
@@ -87,14 +88,12 @@ describe('SchoolExternalToolEntity', () => {
 				parameters: [customParameter],
 				isHidden: true,
 				openNewTab: true,
-				version: 1,
 				isDeactivated: false,
 			});
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
-				toolVersion: 1,
 				status: schoolExternalToolConfigurationStatusEntityFactory.build(),
 			});
 

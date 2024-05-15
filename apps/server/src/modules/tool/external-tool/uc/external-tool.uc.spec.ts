@@ -12,15 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
-import {
-	customParameterFactory,
-	externalToolDatasheetTemplateDataFactory,
-	externalToolFactory,
-	oauth2ToolConfigFactory,
-	roleFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
@@ -38,6 +30,12 @@ import {
 	ExternalToolService,
 	ExternalToolValidationService,
 } from '../service';
+import {
+	customParameterFactory,
+	externalToolDatasheetTemplateDataFactory,
+	externalToolFactory,
+	oauth2ToolConfigFactory,
+} from '../testing';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
@@ -171,7 +169,7 @@ describe('ExternalToolUc', () => {
 				const { currentUser } = setupAuthorization();
 				const { externalTool } = setupDefault();
 
-				await uc.createExternalTool(currentUser.userId, externalTool);
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
@@ -180,7 +178,7 @@ describe('ExternalToolUc', () => {
 				const { currentUser, user } = setupAuthorization();
 				const { externalTool } = setupDefault();
 
-				await uc.createExternalTool(currentUser.userId, externalTool);
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
@@ -202,7 +200,7 @@ describe('ExternalToolUc', () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool } = setupDefault();
 
-			await uc.createExternalTool(currentUser.userId, externalTool);
+			await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			expect(toolValidationService.validateCreate).toHaveBeenCalledWith(externalTool);
 		});
@@ -223,7 +221,7 @@ describe('ExternalToolUc', () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool } = setupDefault();
 
-			await uc.createExternalTool(currentUser.userId, externalTool);
+			await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			expect(externalToolService.createExternalTool).toHaveBeenCalledWith(externalTool);
 		});
@@ -232,7 +230,7 @@ describe('ExternalToolUc', () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool } = setupDefault();
 
-			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool);
+			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			expect(result).toEqual(externalTool);
 		});
@@ -477,7 +475,7 @@ describe('ExternalToolUc', () => {
 			it('should call ExternalToolLogoService', async () => {
 				const { currentUser, externalTool } = setupLogo();
 
-				await uc.createExternalTool(currentUser.userId, externalTool);
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(logoService.fetchLogo).toHaveBeenCalledWith(externalTool);
 			});

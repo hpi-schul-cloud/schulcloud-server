@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { externalToolFactory } from '@shared/testing/factory';
 import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalTool } from '../domain';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
@@ -264,10 +264,10 @@ describe(SchoolExternalToolService.name, () => {
 						};
 					};
 
-					it('should call the schoolExternalToolRepo', async () => {
+					it('should call the schoolExternalToolRepo', () => {
 						const { schoolExternalToolId } = setup();
 
-						await service.deleteSchoolExternalToolById(schoolExternalToolId);
+						service.deleteSchoolExternalToolById(schoolExternalToolId);
 
 						expect(schoolExternalToolRepo.deleteById).toHaveBeenCalledWith(schoolExternalToolId);
 					});

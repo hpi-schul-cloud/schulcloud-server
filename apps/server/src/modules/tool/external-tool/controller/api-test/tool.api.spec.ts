@@ -10,7 +10,6 @@ import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	externalToolElementNodeFactory,
-	externalToolFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -28,7 +27,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '../../../con
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
-import { externalToolEntityFactory } from '../../testing';
+import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
 	ExternalToolCreateParams,
 	ExternalToolMetadataResponse,
@@ -157,7 +156,6 @@ describe('ToolController (API)', () => {
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
-					version: 1,
 				});
 			});
 		});
@@ -403,7 +401,7 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
 					.withBase64Logo()
 					.withMedium()
-					.buildWithId({ version: 1 }, toolId);
+					.buildWithId({ id: toolId });
 
 				const base64Logo: string = externalToolEntity.logoBase64 as string;
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
@@ -464,7 +462,6 @@ describe('ToolController (API)', () => {
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
-					version: 2,
 					medium: {
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
@@ -517,7 +514,7 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ version: 1 }, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ id: toolId });
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);

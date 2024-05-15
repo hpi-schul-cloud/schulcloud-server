@@ -7,11 +7,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '../testing';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolService } from './external-tool.service';
 
@@ -516,7 +516,7 @@ describe(ExternalToolService.name, () => {
 			};
 
 			it('should call externalToolServiceMapper', async () => {
-				const { changedTool, existingTool } = setup();
+				const { changedTool } = setup();
 
 				await service.updateExternalTool(changedTool);
 
@@ -549,7 +549,7 @@ describe(ExternalToolService.name, () => {
 			};
 
 			it('should call oauthProviderService', async () => {
-				const { changedTool, oauthClientId, existingTool } = setup();
+				const { changedTool, oauthClientId } = setup();
 
 				await service.updateExternalTool(changedTool);
 
@@ -582,7 +582,7 @@ describe(ExternalToolService.name, () => {
 			};
 
 			it('should update the oauth2Client', async () => {
-				const { changedTool, oauthClientId, providerOauthClient, existingTool } = setup();
+				const { changedTool, oauthClientId, providerOauthClient } = setup();
 
 				await service.updateExternalTool(changedTool);
 
@@ -611,7 +611,7 @@ describe(ExternalToolService.name, () => {
 			};
 
 			it('should throw an error ', async () => {
-				const { changedTool, existingTool } = setup();
+				const { changedTool } = setup();
 
 				const func = () => service.updateExternalTool(changedTool);
 

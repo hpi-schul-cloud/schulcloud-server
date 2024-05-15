@@ -13,14 +13,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { contextExternalToolFactory, schoolExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { ContextExternalTool, ContextExternalToolWithId } from '../domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import { ContextExternalTool } from '../domain';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
+import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 
 describe('ContextExternalToolUc', () => {
@@ -85,7 +86,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -97,7 +98,7 @@ describe('ContextExternalToolUc', () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
-				}) as ContextExternalToolWithId;
+				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
@@ -162,7 +163,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -174,7 +175,7 @@ describe('ContextExternalToolUc', () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
-				}) as ContextExternalToolWithId;
+				});
 
 				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
@@ -209,7 +210,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -254,7 +255,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -298,7 +299,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -344,7 +345,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -356,7 +357,7 @@ describe('ContextExternalToolUc', () => {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
 					},
-				}) as ContextExternalToolWithId;
+				});
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
@@ -420,7 +421,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -438,7 +439,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 				};
 			};
@@ -472,7 +473,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -494,7 +495,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 					schoolId,
 					error,
@@ -518,7 +519,7 @@ describe('ContextExternalToolUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					schoolId,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					displayName: 'Course',
@@ -540,7 +541,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 					schoolId,
 					error,
@@ -571,7 +572,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 					user,
 				};
 			};
@@ -739,7 +740,7 @@ describe('ContextExternalToolUc', () => {
 			it('should call contextExternalToolService to ensure permission  ', async () => {
 				const { contextExternalTool, user } = setup();
 
-				await uc.getContextExternalTool(user.id, contextExternalTool.id as string);
+				await uc.getContextExternalTool(user.id, contextExternalTool.id);
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					user,
@@ -751,7 +752,7 @@ describe('ContextExternalToolUc', () => {
 			it('should call contextExternalToolService to get contextExternalTool  ', async () => {
 				const { contextExternalTool, user } = setup();
 
-				await uc.getContextExternalTool(user.id, contextExternalTool.id as string);
+				await uc.getContextExternalTool(user.id, contextExternalTool.id);
 
 				expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalTool.id);
 			});
@@ -791,7 +792,7 @@ describe('ContextExternalToolUc', () => {
 			it('should throw forbiddenLoggableException', async () => {
 				const { contextExternalTool, userId } = setup();
 
-				const func = () => uc.getContextExternalTool(userId, contextExternalTool.id as string);
+				const func = () => uc.getContextExternalTool(userId, contextExternalTool.id);
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenLoggableException(userId, 'contextExternalTool', {

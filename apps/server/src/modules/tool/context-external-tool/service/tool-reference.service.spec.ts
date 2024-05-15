@@ -1,16 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	toolConfigurationStatusFactory,
-} from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
+import { externalToolFactory, toolConfigurationStatusFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolReference } from '../domain';
+import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 import { ToolReferenceService } from './tool-reference.service';
@@ -74,8 +70,8 @@ describe('ToolReferenceService', () => {
 				const contextExternalToolId = new ObjectId().toHexString();
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
-				}) as SchoolExternalToolWithId;
+					toolId: externalTool.id,
+				});
 				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId(undefined, contextExternalToolId);
