@@ -48,6 +48,12 @@ export class DeletionRequestService {
 		return itemsToDelete;
 	}
 
+	async countPendingDeletionRequests(): Promise<number> {
+		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.countPendingDeletionRequests();
+
+		return numberItemsWithStatusPending;
+	}
+
 	async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
 		await this.deletionRequestRepo.update(deletionRequestToUpdate);
 	}
