@@ -190,6 +190,10 @@ const config: ServerConfig = {
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
+	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: Configuration.get(
+		'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
+	) as number,
+	ADMIN_API__DELETION_DELAY_MILLISECONDS: Configuration.get('ADMIN_API__DELETION_DELAY_MILLISECONDS') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),

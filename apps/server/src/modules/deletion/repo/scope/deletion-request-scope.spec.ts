@@ -62,4 +62,23 @@ describe(DeletionRequestScope.name, () => {
 			});
 		});
 	});
+
+	describe('byStatusPending', () => {
+		const setup = () => {
+			const expectedQuery = { status: [StatusModel.PENDING] };
+
+			return { expectedQuery };
+		};
+
+		describe('when is called', () => {
+			it('should add query', () => {
+				const { expectedQuery } = setup();
+
+				const result = scope.byStatusPending();
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQuery);
+			});
+		});
+	});
 });
