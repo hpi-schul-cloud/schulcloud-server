@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 import { AuthenticationService } from './authentication.service';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 jest.mock('jsonwebtoken');
 
@@ -89,6 +90,23 @@ describe('AuthenticationService', () => {
 				await expect(authenticationService.loadAccount('username', 'mockSystemId')).rejects.toThrow(
 					UnauthorizedException
 				);
+			});
+		});
+
+		describe('when account is deactivated', () => {
+			const setup = () =>
+				new Account({
+					id: 'mockAccountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'mockedUsername',
+					deactivatedAt: new Date(),
+				});
+			it('should throw USER_ACCOUNT_DEACTIVATED exception', async () => {
+				const deactivatedAccount = setup();
+				accountService.findByUsernameAndSystemId.mockResolvedValue(deactivatedAccount);
+				const func = authenticationService.loadAccount('username', 'mockSystemId');
+				await expect(func).rejects.toThrow(UserAccountDeactivatedLoggableException);
 			});
 		});
 	});

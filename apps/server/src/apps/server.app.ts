@@ -4,8 +4,8 @@ import { Mail, MailService } from '@infra/mail';
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
-import { AccountValidationService } from '@modules/account/services/account.validation.service';
-import { AccountUc } from '@modules/account/uc/account.uc';
+import { AccountValidationService } from '@src/modules/account/domain/services/account.validation.service';
+import { AccountUc } from '@src/modules/account/api/account.uc';
 import { SystemRule } from '@modules/authorization/domain/rules';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';

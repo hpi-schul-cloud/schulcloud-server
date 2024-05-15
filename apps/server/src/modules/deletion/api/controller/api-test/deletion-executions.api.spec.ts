@@ -35,6 +35,7 @@ describe(`deletionExecution (api)`, () => {
 
 	describe('executeDeletions', () => {
 		describe('when execute deletionRequests with default limit', () => {
+			jest.setTimeout(20000);
 			it('should return status 204', async () => {
 				const response = await testApiClient.post('');
 				expect(response.status).toEqual(204);

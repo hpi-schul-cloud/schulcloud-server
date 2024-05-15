@@ -10,11 +10,11 @@ import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@share
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
-import { AccountEntity } from '../account/entity/account.entity';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
