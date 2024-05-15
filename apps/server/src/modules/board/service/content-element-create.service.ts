@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContentElementType } from '@modules/board';
 import { Injectable } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
+import { ContentElementType } from '../domain/types';
 
 import {
 	AnyContentElement,

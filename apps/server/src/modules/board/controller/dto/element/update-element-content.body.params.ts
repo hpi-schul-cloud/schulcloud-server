@@ -1,8 +1,8 @@
-import { ContentElementType } from '@modules/board';
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { ContentElementType } from '../../../domain/types';
 
 export abstract class ElementContentBody {
 	@IsEnum(ContentElementType)
