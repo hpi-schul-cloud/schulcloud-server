@@ -6,19 +6,19 @@ import { Course, Role, SchoolEntity, TargetModels, User, VideoConference } from 
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
-	accountFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	courseFactory,
 	roleFactory,
 	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AccountEntity } from '@modules/account/entity/account.entity';
 import { Response } from 'supertest';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
