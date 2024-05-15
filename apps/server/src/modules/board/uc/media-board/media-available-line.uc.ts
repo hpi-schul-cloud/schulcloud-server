@@ -49,6 +49,9 @@ export class MediaAvailableLineUc {
 		const mediaAvailableLine: MediaAvailableLine =
 			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
 
+		mediaAvailableLine.backgroundColor = mediaBoard.mediaAvailableLineBackgroundColor;
+		mediaAvailableLine.collapsed = mediaBoard.mediaAvailableLineCollapsed;
+
 		return mediaAvailableLine;
 	}
 
@@ -60,6 +63,30 @@ export class MediaAvailableLineUc {
 		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
 
 		return user;
+	}
+
+	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: string | undefined) {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.updateAvailableLineColor(board, color);
+	}
+
+	public async collapsAvailableLine(userId: EntityId, boardId: EntityId, mediaAvailableLineCollapsed: boolean) {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.collapseAvailableLine(board, mediaAvailableLineCollapsed);
 	}
 
 	private checkFeatureEnabled(): void {

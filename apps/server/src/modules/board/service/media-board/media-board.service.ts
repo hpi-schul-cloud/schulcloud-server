@@ -3,6 +3,7 @@ import type { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { AnyBoardDo, BoardExternalReference, ColumnBoard, MediaBoard } from '@shared/domain/domainobject';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoardLayoutType } from '../../controller/media-board/types/layout-type.enum';
 import { BoardNotInstanceOfMediaBoardLoggableException } from '../../loggable';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
@@ -39,7 +40,9 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			context,
-			mediaAvailableLineBackgroundColor: undefined,
+			layout: MediaBoardLayoutType.LIST,
+			mediaAvailableLineBackgroundColor: 'transparent',
+			mediaAvailableLineCollapsed: false,
 		});
 
 		await this.boardDoRepo.save(mediaBoard);
@@ -51,6 +54,18 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 		if (color) {
 			mediaBoard.mediaAvailableLineBackgroundColor = color;
 		}
+
+		await this.boardDoRepo.save(mediaBoard);
+	}
+
+	public async collapseAvailableLine(mediaBoard: MediaBoard, mediaAvailableLineCollapsed: boolean) {
+		mediaBoard.mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
+
+		await this.boardDoRepo.save(mediaBoard);
+	}
+
+	public async setLayout(mediaBoard: MediaBoard, layout: MediaBoardLayoutType) {
+		mediaBoard.layout = layout;
 
 		await this.boardDoRepo.save(mediaBoard);
 	}

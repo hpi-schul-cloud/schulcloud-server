@@ -7,5 +7,5 @@ export class CollapsableBodyParams {
 		required: true,
 		nullable: false,
 	})
-	collapsable!: boolean;
+	collapsed!: boolean;
 }

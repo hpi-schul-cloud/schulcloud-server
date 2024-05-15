@@ -19,10 +19,11 @@ export class MediaLineService {
 		const line: MediaLine = new MediaLine({
 			id: new ObjectId().toHexString(),
 			title: props?.title ?? '',
-			backgroundColor: props?.backgroundColor ?? '',
+			backgroundColor: props?.backgroundColor ?? 'transparent',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			collapsed: props?.collapsed ?? false,
 		});
 
 		parent.addChild(line);
@@ -52,6 +53,14 @@ export class MediaLineService {
 		const parent: AnyBoardDo | undefined = await this.boardDoRepo.findParentOfId(line.id);
 
 		line.backgroundColor = color;
+
+		await this.boardDoRepo.save(line, parent);
+	}
+
+	public async collapse(line: MediaLine, collapsed: boolean): Promise<void> {
+		const parent: AnyBoardDo | undefined = await this.boardDoRepo.findParentOfId(line.id);
+
+		line.collapsed = collapsed;
 
 		await this.boardDoRepo.save(line, parent);
 	}

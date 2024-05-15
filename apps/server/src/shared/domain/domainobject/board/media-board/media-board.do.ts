@@ -1,3 +1,4 @@
+import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
 import { BoardComposite, BoardCompositeProps } from '../board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from '../types';
 import { MediaLine } from './media-line.do';
@@ -7,12 +8,28 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 		return this.props.context;
 	}
 
-	get mediaAvailableLineBackgroundColor(): string | undefined {
+	get layout(): MediaBoardLayoutType {
+		return this.props.layout;
+	}
+
+	set layout(layout: MediaBoardLayoutType) {
+		this.props.layout = layout;
+	}
+
+	get mediaAvailableLineBackgroundColor(): string {
 		return this.props.mediaAvailableLineBackgroundColor;
 	}
 
-	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: string | undefined) {
+	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: string) {
 		this.props.mediaAvailableLineBackgroundColor = mediaAvailableLineBackgroundColor;
+	}
+
+	get mediaAvailableLineCollapsed(): boolean {
+		return this.props.mediaAvailableLineCollapsed;
+	}
+
+	set mediaAvailableLineCollapsed(collapsed: boolean) {
+		this.props.mediaAvailableLineCollapsed = collapsed;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
@@ -32,5 +49,7 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 
 export interface MediaBoardProps extends BoardCompositeProps {
 	context: BoardExternalReference;
-	mediaAvailableLineBackgroundColor?: string;
+	layout: MediaBoardLayoutType;
+	mediaAvailableLineBackgroundColor: string;
+	mediaAvailableLineCollapsed: boolean;
 }

@@ -21,8 +21,9 @@ import {
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { MediaLineUc } from '../../uc';
-import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
+import { BoardUrlParams, MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import { LineUrlParams } from './dto';
+import { CollapsableBodyParams } from './dto/collapsable.body.params';
 import { ColorBodyParams } from './dto/color.body.params';
 
 @ApiTags('Media Line')
@@ -74,6 +75,21 @@ export class MediaLineController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.mediaLineUc.updateLineColor(currentUser.userId, urlParams.lineId, bodyParams.backgroundColor);
+	}
+
+	@ApiOperation({ summary: 'Collapse available line in media board.' })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(':lineId/collapse')
+	public async collapsMediaLine(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: CollapsableBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.mediaLineUc.collapsLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
 	}
 
 	@ApiOperation({ summary: 'Delete a single line.' })

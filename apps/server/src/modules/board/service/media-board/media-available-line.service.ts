@@ -125,7 +125,11 @@ export class MediaAvailableLineService {
 				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
 		);
 
-		const line: MediaAvailableLine = new MediaAvailableLine({ elements: lineElements, backgroundColor: 'transparent' });
+		const line: MediaAvailableLine = new MediaAvailableLine({
+			elements: lineElements,
+			backgroundColor: 'transparent',
+			collapsed: false,
+		});
 
 		return line;
 	}

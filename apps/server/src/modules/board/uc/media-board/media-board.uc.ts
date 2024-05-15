@@ -10,6 +10,7 @@ import {
 } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoardLayoutType } from '../../controller/media-board/types/layout-type.enum';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 
@@ -61,7 +62,7 @@ export class MediaBoardUc {
 		return line;
 	}
 
-	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: string | undefined) {
+	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType) {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
@@ -70,7 +71,7 @@ export class MediaBoardUc {
 		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
 		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
-		await this.mediaBoardService.updateAvailableLineColor(board, color);
+		await this.mediaBoardService.setLayout(board, layout);
 	}
 
 	private checkFeatureEnabled() {

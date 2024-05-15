@@ -26,7 +26,9 @@ import { MediaAvailableLine, MediaBoard, MediaLine } from '@shared/domain/domain
 import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';
 import { MediaAvailableLineResponse, MediaBoardResponse, MediaLineResponse } from './dto';
+import { CollapsableBodyParams } from './dto/collapsable.body.params';
 import { ColorBodyParams } from './dto/color.body.params';
+import { LayoutBodyParams } from './dto/layout.body.params';
 import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 
 @ApiTags('Media Board')
@@ -92,12 +94,46 @@ export class MediaBoardController {
 	@ApiForbiddenResponse({ type: ForbiddenException })
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Patch(':boardId/media-available-line/configuration')
+	@Patch(':boardId/media-available-line/color')
 	public async updateMediaAvailableLineColor(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: ColorBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.mediaBoardUc.updateAvailableLineColor(currentUser.userId, urlParams.boardId, bodyParams.backgroundColor);
+		await this.mediaAvailableLineUc.updateAvailableLineColor(
+			currentUser.userId,
+			urlParams.boardId,
+			bodyParams.backgroundColor
+		);
+	}
+
+	@ApiOperation({ summary: 'Collaps available line in media board.' })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(':boardId/media-available-line/color')
+	public async collapsMediaAvailableLine(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: CollapsableBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.mediaAvailableLineUc.collapsAvailableLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
+	}
+
+	@ApiOperation({ summary: 'Set layout for media board.' })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(':boardId/layout')
+	public async setMediaBoardLayout(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: LayoutBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.mediaBoardUc.setLayout(currentUser.userId, urlParams.boardId, bodyParams.type);
 	}
 }

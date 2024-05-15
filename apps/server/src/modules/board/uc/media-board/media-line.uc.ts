@@ -63,6 +63,18 @@ export class MediaLineUc {
 		await this.mediaLineService.updateColor(line, color);
 	}
 
+	public async collapsLine(userId: EntityId, lineId: EntityId, collapsed: boolean) {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaLineService.collapse(line, collapsed);
+	}
+
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 

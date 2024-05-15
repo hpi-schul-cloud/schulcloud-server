@@ -5,13 +5,17 @@ export class MediaAvailableLine {
 
 	backgroundColor: string;
 
+	collapsed: boolean;
+
 	constructor(props: MediaAvailableLineProps) {
 		this.elements = props.elements;
 		this.backgroundColor = props.backgroundColor;
+		this.collapsed = props.collapsed;
 	}
 }
 
 export interface MediaAvailableLineProps {
 	elements: MediaAvailableLineElement[];
 	backgroundColor: string;
+	collapsed: boolean;
 }

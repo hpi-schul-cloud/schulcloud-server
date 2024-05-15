@@ -13,8 +13,14 @@ export class MediaAvailableLineResponse {
 	})
 	backgroundColor: string;
 
+	@ApiProperty({
+		description: 'Collapse available media line',
+	})
+	collapsed: boolean;
+
 	constructor(props: MediaAvailableLineResponse) {
 		this.elements = props.elements;
 		this.backgroundColor = props.backgroundColor;
+		this.collapsed = props.collapsed;
 	}
 }

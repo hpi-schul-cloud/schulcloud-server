@@ -17,9 +17,9 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import {
-	BoardNodeType,
 	type BoardDoBuilder,
 	type BoardNode,
+	BoardNodeType,
 	type CardNode,
 	type CollaborativeTextEditorElementNode,
 	type ColumnBoardNode,
@@ -35,6 +35,7 @@ import {
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
 } from '@shared/domain/entity';
+import { MediaBoardLayoutType } from '../controller/media-board/types/layout-type.enum';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -268,6 +269,9 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: lines,
 			context: boardNode.context,
+			layout: MediaBoardLayoutType.LIST,
+			mediaAvailableLineBackgroundColor: 'transparent',
+			mediaAvailableLineCollapsed: false,
 		});
 
 		return mediaBoard;
@@ -285,6 +289,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: elements,
 			title: boardNode.title,
 			backgroundColor: boardNode.backgroundColor,
+			collapsed: boardNode.collapsed,
 		});
 
 		return mediaLine;

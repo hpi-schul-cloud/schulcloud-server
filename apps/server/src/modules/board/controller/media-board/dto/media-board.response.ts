@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TimestampsResponse } from '../../dto';
+import { MediaBoardLayoutType } from '../types/layout-type.enum';
 import { MediaLineResponse } from './media-line.response';
 
 export class MediaBoardResponse {
@@ -16,14 +17,14 @@ export class MediaBoardResponse {
 	timestamps: TimestampsResponse;
 
 	@ApiProperty({
-		description: 'Configuration of media available line',
+		description: 'Layout of media board',
 	})
-	mediaAvailableLineBackgroundColor: string | undefined;
+	layout: MediaBoardLayoutType;
 
 	constructor(props: MediaBoardResponse) {
 		this.id = props.id;
 		this.lines = props.lines;
 		this.timestamps = props.timestamps;
-		this.mediaAvailableLineBackgroundColor = props.mediaAvailableLineBackgroundColor;
+		this.layout = props.layout;
 	}
 }

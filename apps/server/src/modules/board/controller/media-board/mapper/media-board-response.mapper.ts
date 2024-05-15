@@ -16,7 +16,7 @@ export class MediaBoardResponseMapper {
 				lastUpdatedAt: board.updatedAt,
 				createdAt: board.createdAt,
 			}),
-			mediaAvailableLineBackgroundColor: board.mediaAvailableLineBackgroundColor,
+			layout: board.layout,
 		});
 
 		return boardResponse;

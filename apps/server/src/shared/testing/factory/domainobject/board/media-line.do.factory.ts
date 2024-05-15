@@ -19,5 +19,6 @@ export const mediaLineFactory = MediaLineFactory.define(MediaLine, ({ sequence }
 		updatedAt: new Date(),
 		title: `Line ${sequence}`,
 		backgroundColor: '#ffffff',
+		collapsed: false,
 	};
 });

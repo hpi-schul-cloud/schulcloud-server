@@ -14,5 +14,6 @@ export const mediaAvailableLineFactory = MediaAvailableLineFactory.define(MediaA
 	return {
 		elements: [],
 		backgroundColor: 'transparent',
+		collapsed: false,
 	};
 });
