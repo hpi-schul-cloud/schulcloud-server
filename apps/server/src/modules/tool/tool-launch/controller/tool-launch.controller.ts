@@ -45,7 +45,7 @@ export class ToolLaunchController {
 
 	@Post('school/:schoolExternalToolId/launch')
 	@HttpCode(HttpStatus.OK)
-	@ApiOperation({ summary: 'Get tool launch request for a context external tool id' })
+	@ApiOperation({ summary: 'Get tool launch request for a school external tool' })
 	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
