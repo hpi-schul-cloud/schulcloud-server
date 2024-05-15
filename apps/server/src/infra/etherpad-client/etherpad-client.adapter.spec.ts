@@ -250,11 +250,8 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire);
 
-				expect(sessionApi.createSessionUsingGET).toBeCalledWith(
-					groupId,
-					authorId,
-					sessionCookieExpire.getTime().toString()
-				);
+				const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000).toString();
+				expect(sessionApi.createSessionUsingGET).toBeCalledWith(groupId, authorId, unixTimeInSeconds);
 			});
 		});
 

@@ -102,11 +102,8 @@ export class EtherpadClientAdapter {
 		sessionCookieExpire: Date
 	): Promise<AxiosResponse<InlineResponse2004>> {
 		try {
-			const response = await this.sessionApi.createSessionUsingGET(
-				groupId,
-				authorId,
-				sessionCookieExpire.getTime().toString()
-			);
+			const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000);
+			const response = await this.sessionApi.createSessionUsingGET(groupId, authorId, unixTimeInSeconds.toString());
 
 			return response;
 		} catch (error) {
