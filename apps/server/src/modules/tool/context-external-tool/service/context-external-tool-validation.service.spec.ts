@@ -1,14 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ContextExternalToolNameAlreadyExistsLoggableException } from '@modules/tool/common/domain';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
-import { ContextExternalToolNameAlreadyExistsLoggableException } from '@modules/tool/common/domain';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalTool } from '../domain';
+import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
 import { ContextExternalToolService } from './context-external-tool.service';
 

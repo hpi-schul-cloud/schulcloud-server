@@ -51,18 +51,15 @@ describe('ExternalToolEntity', () => {
 				parameters: [customParameter],
 				isHidden: true,
 				openNewTab: true,
-				version: 1,
 			});
 			const schoolTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
-				toolVersion: 1,
 			});
 			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 				schoolTool,
 				parameters: [],
-				toolVersion: 1,
 			});
 
 			expect(contextExternalToolEntity instanceof ContextExternalToolEntity).toEqual(true);

@@ -24,7 +24,7 @@ import { ContextExternalToolValidationService } from '../service/context-externa
 import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 
-describe('ContextExternalToolUc', () => {
+describe(ContextExternalToolUc.name, () => {
 	let module: TestingModule;
 	let uc: ContextExternalToolUc;
 

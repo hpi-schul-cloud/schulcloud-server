@@ -58,7 +58,6 @@ describe('ExternalToolEntity', () => {
 				isHidden: true,
 				isDeactivated: false,
 				openNewTab: true,
-				version: 1,
 			});
 			return {
 				externalToolEntity,
