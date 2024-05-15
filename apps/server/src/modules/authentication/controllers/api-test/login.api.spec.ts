@@ -12,6 +12,7 @@ import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
 import { AccountEntity } from '@modules/account/entity/account.entity';
+import moment from 'moment';
 import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
@@ -104,6 +105,7 @@ describe('Login Controller (api)', () => {
 				userId: user.id,
 				username: user.email,
 				password: defaultPasswordHash,
+				deactivatedAt: moment().add(1, 'd').toDate(),
 			});
 
 			em.persist(school);
@@ -187,6 +189,7 @@ describe('Login Controller (api)', () => {
 					userId: user.id,
 					username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
 					systemId: system.id,
+					deactivatedAt: moment().add(1, 'd').toDate(),
 				});
 
 				await em.persistAndFlush([system, school, studentRoles, user, account]);
@@ -381,6 +384,7 @@ describe('Login Controller (api)', () => {
 				const account = accountFactory.buildWithId({
 					userId: user.id,
 					systemId: system.id,
+					deactivatedAt: moment().add(1, 'd').toDate(),
 				});
 
 				await em.persistAndFlush([system, school, studentRoles, user, account]);
