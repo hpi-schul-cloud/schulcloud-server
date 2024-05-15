@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory, teamFactory } from '@shared/testing';
+import { roleFactory, setupEntities, userFactory, teamFactory } from '@shared/testing/factory';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { TeamRule } from './team.rule';
 import { AuthorizationContextBuilder } from '../mapper';

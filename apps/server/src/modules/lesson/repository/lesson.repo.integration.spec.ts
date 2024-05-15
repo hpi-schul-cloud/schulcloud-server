@@ -1,7 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType, LessonEntity } from '@shared/domain/entity';
-import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	courseFactory,
+	lessonFactory,
+	materialFactory,
+	taskFactory,
+} from '@shared/testing/factory';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
 

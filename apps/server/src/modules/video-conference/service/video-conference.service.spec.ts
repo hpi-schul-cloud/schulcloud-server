@@ -12,7 +12,7 @@ import { Course, TeamUserEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing/factory';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';

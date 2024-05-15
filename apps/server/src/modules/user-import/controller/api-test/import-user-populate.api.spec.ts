@@ -6,7 +6,13 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import { TestApiClient, roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
+import {
+	TestApiClient,
+	roleFactory,
+	schoolEntityFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing/factory';
 import { accountFactory } from '@src/modules/account/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';

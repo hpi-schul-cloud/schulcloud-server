@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { mediaBoardFactory, mediaLineFactory } from '@shared/testing';
+import { mediaBoardFactory, mediaLineFactory } from '@shared/testing/factory';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 import { MediaLineService } from './media-line.service';

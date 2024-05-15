@@ -8,7 +8,7 @@ import {
 } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { federalStateFactory, schoolEntityFactory } from '@shared/testing';
+import { federalStateFactory, schoolEntityFactory } from '@shared/testing/factory';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';

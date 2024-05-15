@@ -3,7 +3,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
-import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
+import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing/factory';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';

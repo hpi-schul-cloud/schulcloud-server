@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { mediaBoardFactory } from '@shared/testing';
+import { mediaBoardFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import {
 	DataDeletedEvent,

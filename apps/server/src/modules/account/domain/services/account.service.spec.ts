@@ -14,7 +14,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo';
-import { schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';

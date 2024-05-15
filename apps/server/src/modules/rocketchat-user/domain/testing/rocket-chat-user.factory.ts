@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@shared/testing/factory';
 import { RocketChatUser, RocketChatUserProps } from '../rocket-chat-user.do';
 
 export const rocketChatUserFactory = BaseFactory.define<RocketChatUser, RocketChatUserProps>(

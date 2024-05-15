@@ -4,7 +4,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing/factory';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';

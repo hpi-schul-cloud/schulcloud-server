@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
-import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
+import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing/factory';
 import { SubmissionService } from '../service/submission.service';
 import { SubmissionUc } from './submission.uc';
 

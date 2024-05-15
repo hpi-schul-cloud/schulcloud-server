@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { linkElementFactory } from '@shared/testing';
+import { linkElementFactory } from '@shared/testing/factory';
 import { LinkElement } from './link-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

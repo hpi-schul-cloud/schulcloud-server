@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { externalToolElementFactory } from '@shared/testing';
+import { externalToolElementFactory } from '@shared/testing/factory';
 import { ExternalToolElement } from './external-tool-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

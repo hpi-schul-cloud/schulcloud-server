@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { fileElementFactory } from '@shared/testing';
+import { fileElementFactory } from '@shared/testing/factory';
 import { FileElementNode } from './file-element-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 

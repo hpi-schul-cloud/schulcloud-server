@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { userDoFactory } from '@shared/testing';
+import { userDoFactory } from '@shared/testing/factory';
 
 import { ICurrentUser, OauthCurrentUser } from '../interface';
 

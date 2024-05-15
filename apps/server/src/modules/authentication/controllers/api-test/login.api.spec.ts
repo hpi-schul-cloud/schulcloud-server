@@ -5,7 +5,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
+import { roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing/factory';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
 import axios from 'axios';

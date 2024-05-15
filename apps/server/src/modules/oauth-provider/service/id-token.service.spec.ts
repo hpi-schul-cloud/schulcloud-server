@@ -9,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { TeamEntity } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo';
-import { externalToolFactory, pseudonymFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { externalToolFactory, pseudonymFactory, setupEntities, userDoFactory } from '@shared/testing/factory';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';

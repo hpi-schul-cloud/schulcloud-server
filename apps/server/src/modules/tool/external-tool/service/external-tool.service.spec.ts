@@ -9,7 +9,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '@shared/testing';
+import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';

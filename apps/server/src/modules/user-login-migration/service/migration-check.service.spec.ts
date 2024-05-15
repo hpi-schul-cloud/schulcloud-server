@@ -4,7 +4,7 @@ import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, userDoFactory } from '@shared/testing/factory';
 import { MigrationCheckService } from './migration-check.service';
 
 describe('MigrationCheckService', () => {

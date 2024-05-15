@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing/factory';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { BoardDoAuthorizableService, CardService, ColumnService, ContentElementService } from '../service';

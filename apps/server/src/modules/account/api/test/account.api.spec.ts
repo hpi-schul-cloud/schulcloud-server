@@ -3,7 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { TestApiClient, cleanupCollections, roleFactory, schoolEntityFactory, userFactory } from '@shared/testing';
+import {
+	TestApiClient,
+	cleanupCollections,
+	roleFactory,
+	schoolEntityFactory,
+	userFactory,
+} from '@shared/testing/factory';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	AccountByIdBodyParams,

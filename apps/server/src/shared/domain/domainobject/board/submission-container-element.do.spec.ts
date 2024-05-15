@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { submissionContainerElementFactory, submissionItemFactory } from '@shared/testing';
+import { submissionContainerElementFactory, submissionItemFactory } from '@shared/testing/factory';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

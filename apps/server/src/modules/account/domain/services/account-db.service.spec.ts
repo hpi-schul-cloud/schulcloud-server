@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';

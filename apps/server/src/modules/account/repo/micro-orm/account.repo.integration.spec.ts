@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
-import { cleanupCollections, userFactory } from '@shared/testing';
+import { cleanupCollections, userFactory } from '@shared/testing/factory';
 import { AccountRepo } from './account.repo';
 import { AccountEntity } from '../../domain/entity/account.entity';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';

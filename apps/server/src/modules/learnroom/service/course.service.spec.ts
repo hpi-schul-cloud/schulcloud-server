@@ -11,7 +11,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { CourseRepo as LegacyCourseRepo, UserRepo } from '@shared/repo';
-import { courseFactory as courseEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory as courseEntityFactory, setupEntities, userFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { CourseService } from './course.service';

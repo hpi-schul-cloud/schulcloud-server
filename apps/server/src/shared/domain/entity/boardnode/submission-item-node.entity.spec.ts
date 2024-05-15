@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { submissionItemFactory } from '@shared/testing';
+import { submissionItemFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionItemNode } from './submission-item-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';

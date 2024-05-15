@@ -4,7 +4,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing/factory';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 

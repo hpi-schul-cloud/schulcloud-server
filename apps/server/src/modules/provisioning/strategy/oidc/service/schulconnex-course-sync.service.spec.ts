@@ -6,7 +6,7 @@ import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
-import { groupFactory, roleDtoFactory } from '@shared/testing';
+import { groupFactory, roleDtoFactory } from '@shared/testing/factory';
 import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 describe(SchulconnexCourseSyncService.name, () => {

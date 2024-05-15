@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { collaborativeTextEditorElementFactory } from '@shared/testing';
+import { collaborativeTextEditorElementFactory } from '@shared/testing/factory';
 import {
 	CollaborativeTextEditorElement,
 	isCollaborativeTextEditorElement,

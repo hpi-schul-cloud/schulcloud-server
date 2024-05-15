@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
-import { cleanupCollections, userFactory } from '@shared/testing';
+import { cleanupCollections, userFactory } from '@shared/testing/factory';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity, UserLicenseEntity, UserLicenseType } from '../entity';
 import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';

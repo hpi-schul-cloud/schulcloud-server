@@ -3,7 +3,7 @@ import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { SubmissionItem } from '@shared/domain/domainobject';
-import { richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
+import { richTextElementFactory, setupEntities, userFactory } from '@shared/testing/factory';
 import {
 	cardFactory,
 	submissionContainerElementFactory,

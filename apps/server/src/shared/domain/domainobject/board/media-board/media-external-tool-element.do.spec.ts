@@ -1,4 +1,4 @@
-import { mediaExternalToolElementFactory } from '@shared/testing';
+import { mediaExternalToolElementFactory } from '@shared/testing/factory';
 import { MediaExternalToolElement } from './media-external-tool-element.do';
 
 describe(MediaExternalToolElement.name, () => {

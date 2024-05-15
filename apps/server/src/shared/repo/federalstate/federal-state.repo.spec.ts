@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FederalStateEntity } from '@shared/domain/entity';
-import { cleanupCollections, federalStateFactory } from '@shared/testing';
+import { cleanupCollections, federalStateFactory } from '@shared/testing/factory';
 import { FederalStateRepo } from './federal-state.repo';
 
 describe('FederalStateRepo', () => {

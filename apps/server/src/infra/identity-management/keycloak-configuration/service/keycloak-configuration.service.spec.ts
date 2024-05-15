@@ -15,7 +15,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain/entity';
 import { SystemTypeEnum } from '@shared/domain/types';
 
-import { systemEntityFactory } from '@shared/testing';
+import { systemEntityFactory } from '@shared/testing/factory';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';

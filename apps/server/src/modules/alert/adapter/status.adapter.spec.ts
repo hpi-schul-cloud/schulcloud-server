@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfig } from '@modules/server';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing/factory';
 import { of, throwError } from 'rxjs';
 import { AxiosError } from 'axios';
 import { StatusAdapter } from './status.adapter';

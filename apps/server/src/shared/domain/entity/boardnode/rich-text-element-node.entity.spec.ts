@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InputFormat } from '@shared/domain/types';
-import { richTextElementFactory } from '@shared/testing';
+import { richTextElementFactory } from '@shared/testing/factory';
 import { RichTextElementNode } from './rich-text-element-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 

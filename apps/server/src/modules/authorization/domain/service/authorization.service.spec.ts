@@ -3,7 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing/factory';
 import { ForbiddenLoggableException } from '../error';
 import { AuthorizationContextBuilder } from '../mapper';
 import { Rule } from '../type';

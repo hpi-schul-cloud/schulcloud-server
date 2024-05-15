@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { mediaBoardFactory, mediaLineFactory } from '@shared/testing';
+import { mediaBoardFactory, mediaLineFactory } from '@shared/testing/factory';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 import { MediaBoardService } from './media-board.service';

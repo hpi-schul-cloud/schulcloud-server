@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { richTextElementFactory } from '@shared/testing';
+import { richTextElementFactory } from '@shared/testing/factory';
 import { RichTextElement } from './rich-text-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

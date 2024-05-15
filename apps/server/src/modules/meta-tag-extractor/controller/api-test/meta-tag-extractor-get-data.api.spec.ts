@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing/factory';
 import { MetaTagExtractorService } from '../../service';
 
 const URL = 'https://best-example.de/my-article';
