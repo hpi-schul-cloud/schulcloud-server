@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
@@ -24,16 +23,17 @@ import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@sha
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
-	accountFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {
