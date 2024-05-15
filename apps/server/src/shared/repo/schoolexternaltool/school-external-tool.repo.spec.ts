@@ -144,7 +144,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		});
 	});
 
-	describe('save', () => {
+	describe('createOrUpdate', () => {
 		const setup = () => {
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				school: schoolEntityFactory.buildWithId(),
@@ -177,7 +177,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		});
 	});
 
-	describe('find is called', () => {
+	describe('find', () => {
 		describe('when school is set', () => {
 			const setup = async () => {
 				const { school, schoolExternalTool1 } = createTools();
@@ -290,6 +290,46 @@ describe(SchoolExternalToolRepo.name, () => {
 
 				expect(result.length).toBeGreaterThan(0);
 			});
+		});
+	});
+
+	describe('deleteById', () => {
+		const setup = async () => {
+			const { schoolExternalTool1 } = createTools();
+
+			await em.persistAndFlush([schoolExternalTool1]);
+			em.clear();
+
+			return { schoolExternalTool1 };
+		};
+
+		it('should delete a SchoolExternalTool', async () => {
+			const { schoolExternalTool1 } = await setup();
+
+			repo.deleteById(schoolExternalTool1.id);
+
+			const result: SchoolExternalTool[] = await repo.find({ schoolId: schoolExternalTool1.school.id });
+
+			expect(result).toHaveLength(0);
+		});
+	});
+
+	describe('findById', () => {
+		const setup = async () => {
+			const { schoolExternalTool1 } = createTools();
+
+			await em.persistAndFlush([schoolExternalTool1]);
+			em.clear();
+
+			return { schoolExternalTool1 };
+		};
+
+		it('should find a SchoolExternalTool by id', async () => {
+			const { schoolExternalTool1 } = await setup();
+
+			const result: SchoolExternalTool = await repo.findById(schoolExternalTool1.id);
+
+			expect(result.id).toEqual(schoolExternalTool1.id);
 		});
 	});
 });
