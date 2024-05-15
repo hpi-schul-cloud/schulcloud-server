@@ -6,7 +6,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, MediaBoardService } from '../../service';
-import { mediaBoardFactory, mediaLineFactory } from '../../testing';
+import { mediaBoardFactory, mediaLineFactory } from '../../../../shared/testing/factory/domainobject/board';
 import { MediaLineUc } from './media-line.uc';
 
 describe(MediaLineUc.name, () => {

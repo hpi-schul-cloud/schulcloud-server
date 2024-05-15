@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject/board';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardContextService } from './board-context.service';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';

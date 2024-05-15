@@ -1,5 +1,4 @@
 import { ColumnBoard } from '@modules/board';
-import { columnBoardFactory } from '@modules/board/testing';
 import {
 	ColumnboardBoardElement,
 	LessonBoardElement,
@@ -7,6 +6,7 @@ import {
 	Task,
 	TaskBoardElement,
 } from '@shared/domain/entity';
+import { columnBoardFactory } from './domainobject/board';
 import { BaseFactory } from './base.factory';
 import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';

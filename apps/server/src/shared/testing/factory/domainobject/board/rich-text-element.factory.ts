@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat } from '@shared/domain/types';
-import { BaseFactory } from '@shared/testing';
-import { RichTextElement, RichTextElementProps, ROOT_PATH } from '../domain';
+import { RichTextElement, RichTextElementProps, ROOT_PATH } from '@modules/board/domain';
+import { InputFormat } from '../../../../domain/types';
+import { BaseFactory } from '../../base.factory';
 
 export const richTextElementFactory = BaseFactory.define<RichTextElement, RichTextElementProps>(
 	RichTextElement,

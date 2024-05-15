@@ -12,11 +12,15 @@ import {
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
+import {
+	mediaBoardFactory,
+	mediaExternalToolElementFactory,
+	mediaLineFactory,
+} from '@shared/testing/factory/domainobject/board';
 import { MediaExternalToolElement } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, MediaBoardService, MediaElementService, MediaLineService } from '../../service';
-import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaElementUc } from './media-element.uc';
 
 describe(MediaElementUc.name, () => {

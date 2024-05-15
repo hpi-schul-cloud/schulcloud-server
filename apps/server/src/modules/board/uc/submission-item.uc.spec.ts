@@ -7,17 +7,18 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeAuthorizable, BoardRoles, ContentElementType, UserWithBoardRoles } from '../domain';
-import { BoardNodeAuthorizableService } from '../service/board-node-authorizable.service';
-import { BoardNodePermissionService } from '../service/board-node-permission.service';
 import {
+	setupEntities,
+	userFactory,
 	columnBoardFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
-} from '../testing';
+} from '@shared/testing';
+import { BoardNodeAuthorizable, BoardRoles, ContentElementType, UserWithBoardRoles } from '../domain';
+import { BoardNodeAuthorizableService } from '../service/board-node-authorizable.service';
+import { BoardNodePermissionService } from '../service/board-node-permission.service';
 import { SubmissionItemUc } from './submission-item.uc';
 
 describe(SubmissionItemUc.name, () => {

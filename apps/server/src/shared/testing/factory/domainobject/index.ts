@@ -1,3 +1,4 @@
+export * from './board';
 export * from './tool';
 export * from './groups';
 export * from './do-base.factory';

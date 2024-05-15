@@ -4,15 +4,14 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject/board';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { courseFactory } from '@shared/testing/factory';
 import { Permission } from '@shared/domain/interface';
 import { BoardUc } from './board.uc';
-import { BoardNodePermissionService } from '../service/board-node-permission.service';
 import { BoardExternalReferenceType, BoardLayout } from '../domain';
-import { ColumnBoardCopyService, ColumnBoardService } from '../service';
+import { BoardNodePermissionService, ColumnBoardCopyService, ColumnBoardService } from '../service';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;

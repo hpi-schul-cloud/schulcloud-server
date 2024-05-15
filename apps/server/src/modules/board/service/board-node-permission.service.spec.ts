@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory, columnBoardFactory } from '@shared/testing';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
-import { columnBoardFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodePermissionService } from './board-node-permission.service';
 
@@ -11,7 +10,7 @@ describe(BoardNodePermissionService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodePermissionService;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardDNodeuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,7 +29,7 @@ describe(BoardNodePermissionService.name, () => {
 
 		service = module.get(BoardNodePermissionService);
 		authorizationService = module.get(AuthorizationService);
-		boardDNodeuthorizableService = module.get(BoardNodeAuthorizableService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 
 		await setupEntities();
 	});
@@ -69,14 +68,14 @@ describe(BoardNodePermissionService.name, () => {
 			const { anyBoardDo, user } = setup();
 			await service.checkPermission(user.id, anyBoardDo, Action.write);
 
-			expect(boardDNodeuthorizableService.getBoardAuthorizable).toBeCalledWith(anyBoardDo);
+			expect(boardNodeAuthorizableService.getBoardAuthorizable).toBeCalledWith(anyBoardDo);
 		});
 
 		it('should call authorization service to checkPermission', async () => {
 			const { anyBoardDo, boardNodeAuthorizable, user } = setup();
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-			boardDNodeuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
+			boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 
 			await service.checkPermission(user.id, anyBoardDo, Action.write);
 

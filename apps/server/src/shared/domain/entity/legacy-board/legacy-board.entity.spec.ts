@@ -9,7 +9,7 @@ import {
 	taskBoardElementFactory,
 	taskFactory,
 } from '@shared/testing/factory';
-import { columnBoardFactory } from '@src/modules/board/testing/column-board.factory';
+import { columnBoardFactory } from '../../../testing/factory/domainobject/board/column-board.factory';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {

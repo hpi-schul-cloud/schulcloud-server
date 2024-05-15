@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { columnFactory, columnBoardFactory } from '@shared/testing/factory/domainobject/board';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../domain';
-import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardContextService } from './board-context.service';
 
 describe(`${BoardContextService.name}`, () => {
