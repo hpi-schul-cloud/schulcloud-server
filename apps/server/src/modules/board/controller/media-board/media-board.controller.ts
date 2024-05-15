@@ -113,7 +113,7 @@ export class MediaBoardController {
 	@ApiForbiddenResponse({ type: ForbiddenException })
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Patch(':boardId/media-available-line/color')
+	@Patch(':boardId/media-available-line/collaps')
 	public async collapsMediaAvailableLine(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: CollapsableBodyParams,
