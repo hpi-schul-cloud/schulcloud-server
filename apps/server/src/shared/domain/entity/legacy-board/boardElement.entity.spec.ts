@@ -1,4 +1,4 @@
-import { columnBoardFactory } from 'apps/server/src/shared/testing/factory/domainobject/board';
+import { columnBoardFactory } from '@shared/testing/factory/domainobject/board';
 import { setupEntities } from '@shared/testing';
 import { lessonFactory, taskFactory } from '@shared/testing/factory';
 import { ColumnboardBoardElement } from './column-board-boardelement';

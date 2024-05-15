@@ -1,6 +1,6 @@
 import { WsSharedDocDo } from '@modules/tldraw/domain/ws-shared-doc.do';
 import WebSocket from 'ws';
-import { WebSocketReadyStateEnum } from '@shared/testing';
+import { WebSocketReadyStateEnum } from '../web-socket-ready-state-enum';
 
 export class TldrawWsFactory {
 	public static createWsSharedDocDo(): WsSharedDocDo {

@@ -1,7 +1,7 @@
 import { Role, TeamEntity, TeamProperties, TeamUserEntity } from '@shared/domain/entity';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { DeepPartial } from 'fishery';
+import { BaseFactory } from './base.factory';
+import { teamUserFactory } from './teamuser.factory';
 
 class TeamFactory extends BaseFactory<TeamEntity, TeamProperties> {
 	withRoleAndUserId(role: Role, userId: string): this {

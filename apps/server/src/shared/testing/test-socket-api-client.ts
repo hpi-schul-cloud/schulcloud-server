@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 
+import { LocalAuthorizationBodyParams } from '@modules/authentication/controllers/dto';
 import { User } from '@shared/domain/entity';
-import { accountFactory } from '@shared/testing';
-import { LocalAuthorizationBodyParams } from '@src/modules/authentication/controllers/dto';
-import { Socket, io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import request from 'supertest';
+import { accountFactory } from './factory/account.factory';
 
 export async function waitForEvent(socket: Socket, eventName: string): Promise<unknown> {
 	return new Promise((resolve) => {
