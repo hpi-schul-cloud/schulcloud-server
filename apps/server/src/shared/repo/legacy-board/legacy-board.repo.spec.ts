@@ -1,6 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyBoard, LessonEntity, Task } from '@shared/domain/entity';
+
+import { MongoMemoryDatabaseModule } from '@infra/database';
+
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	boardFactory,
 	cleanupCollections,
@@ -9,23 +13,29 @@ import {
 	lessonFactory,
 	taskBoardElementFactory,
 } from '@shared/testing';
-
-import { MongoMemoryDatabaseModule } from '@infra/database';
-
+import { BoardNodeService } from '@src/modules/board';
 import { LegacyBoardRepo } from './legacy-board.repo';
 
 describe('LegacyRoomBoardRepo', () => {
 	let module: TestingModule;
 	let repo: LegacyBoardRepo;
 	let em: EntityManager;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [LegacyBoardRepo],
+			providers: [
+				LegacyBoardRepo,
+				{
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
+				},
+			],
 		}).compile();
 		repo = module.get(LegacyBoardRepo);
 		em = module.get(EntityManager);
+		boardNodeService = module.get(BoardNodeService);
 	});
 
 	afterAll(async () => {
@@ -115,7 +125,7 @@ describe('LegacyRoomBoardRepo', () => {
 		em.clear();
 
 		const result = await repo.findById(board.id);
-		const resultLesson = result.references.getItems()[0].target as LessonEntity;
+		const resultLesson = result.references.getItems()[0].target as unknown as LessonEntity;
 		expect(resultLesson.hidden).toBeDefined();
 	});
 
@@ -127,7 +137,7 @@ describe('LegacyRoomBoardRepo', () => {
 		em.clear();
 
 		const result = await repo.findById(board.id);
-		const task = result.references.getItems()[0].target as Task;
+		const task = result.references.getItems()[0].target as unknown as Task;
 		expect(task.name).toBeDefined();
 	});
 });

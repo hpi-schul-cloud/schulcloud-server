@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import {
 	LegacyBoard,
@@ -7,12 +8,26 @@ import {
 	TaskBoardElement,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BaseRepo } from '../base.repo';
+import { BoardNodeService, ColumnBoard } from '@src/modules/board';
 
 @Injectable()
-export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
+export class LegacyBoardRepo {
+	constructor(private readonly _em: EntityManager, private readonly boardNodeService: BoardNodeService) {}
+
 	get entityName() {
 		return LegacyBoard;
+	}
+
+	create(entity: LegacyBoard): LegacyBoard {
+		return this._em.create(LegacyBoard, entity);
+	}
+
+	async save(entities: LegacyBoard | LegacyBoard[]): Promise<void> {
+		await this._em.persistAndFlush(entities);
+	}
+
+	async delete(entities: LegacyBoard | LegacyBoard[]): Promise<void> {
+		await this._em.removeAndFlush(entities);
 	}
 
 	async findByCourseId(courseId: EntityId): Promise<LegacyBoard> {
@@ -46,12 +61,25 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 	private async populateBoard(board: LegacyBoard) {
 		await board.references.init();
 		const elements = board.references.getItems();
+
 		const taskElements = elements.filter((el) => el instanceof TaskBoardElement);
 		await this._em.populate(taskElements, ['target']);
+
 		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
 		await this._em.populate(lessonElements, ['target']);
-		const columnBoardElements = elements.filter((el) => el instanceof ColumnboardBoardElement);
-		await this._em.populate(columnBoardElements, ['target']);
+
+		const columnBoardElements = elements.filter(
+			(el) => el instanceof ColumnboardBoardElement
+		) as ColumnboardBoardElement[];
+		const columnBoardIds = columnBoardElements.map((el) => el.id);
+		const columnBoards = await this.boardNodeService.findByClassAndIds(ColumnBoard, columnBoardIds);
+		columnBoards.forEach((cb) => {
+			const match = columnBoardElements.find((el) => el._target.toHexString() === cb.id);
+			if (match) {
+				match._columnBoard = cb;
+			}
+		});
+
 		return board;
 	}
 }

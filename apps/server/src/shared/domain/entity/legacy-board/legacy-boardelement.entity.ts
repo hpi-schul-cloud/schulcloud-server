@@ -1,21 +1,16 @@
 import { Entity, Enum } from '@mikro-orm/core';
-import { EntityId } from '../../types';
+import { ColumnBoard } from '@modules/board';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
-export type LegacyBoardElementReference = Task | LessonEntity | ColumnBoardNode;
+export type LegacyBoardElementReference = Task | LessonEntity | ColumnBoard;
 
 export enum LegacyBoardElementType {
 	'Task' = 'task',
 	'Lesson' = 'lesson',
 	'ColumnBoard' = 'columnboard',
 }
-
-export type LegacyBoardElementProps = {
-	target: EntityId | LegacyBoardElementReference;
-};
 
 @Entity({
 	discriminatorColumn: 'boardElementType',
@@ -24,14 +19,9 @@ export type LegacyBoardElementProps = {
 })
 export abstract class LegacyBoardElement extends BaseEntityWithTimestamps {
 	/** id reference to a collection populated later with name */
-	target!: LegacyBoardElementReference;
+	abstract get target(): LegacyBoardElementReference;
 
 	/** name of a collection which is referenced in target */
 	@Enum()
 	boardElementType!: LegacyBoardElementType;
-
-	constructor(props: LegacyBoardElementProps) {
-		super();
-		Object.assign(this, { target: props.target });
-	}
 }

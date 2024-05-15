@@ -43,10 +43,14 @@ export class RoomsUc {
 		}
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
 		const element = legacyBoard.getByTargetId(elementId);
-		if (visibility) {
-			element.publish();
+		if ('publish' in element && 'unpublish' in element) {
+			if (visibility) {
+				element.publish();
+			} else {
+				element.unpublish();
+			}
 		} else {
-			element.unpublish();
+			// TODO await boardNodeService.updateVisibility(element, visibility)
 		}
 
 		await this.legacyBoardRepo.save(legacyBoard);

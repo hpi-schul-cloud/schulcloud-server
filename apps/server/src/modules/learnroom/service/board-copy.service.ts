@@ -1,15 +1,14 @@
-import { ColumnBoardCopyService } from '@modules/board';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardCopyService, ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
-import { ColumnBoard } from '@shared/domain/domainobject';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
 	ColumnboardBoardElement,
-	ColumnBoardNode,
 	Course,
+	isLesson,
+	isTask,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
@@ -18,15 +17,12 @@ import {
 	Task,
 	TaskBoardElement,
 	User,
-	isLesson,
-	isTask,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { ColumnBoardLinkService } from '@src/modules/board/service';
 import { sortBy } from 'lodash';
-
-import { BoardNodeRepo } from '@modules/board/repo';
 
 type BoardCopyParams = {
 	originalBoard: LegacyBoard;
@@ -42,8 +38,9 @@ export class BoardCopyService {
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
-		private readonly copyHelperService: CopyHelperService,
-		private readonly boardNodeRepo: BoardNodeRepo
+		private readonly columnBoardLinkService: ColumnBoardLinkService,
+		private readonly columnBoardService: ColumnBoardService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
@@ -99,10 +96,7 @@ export class BoardCopyService {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (
-				element.boardElementType === LegacyBoardElementType.ColumnBoard &&
-				element.target instanceof ColumnBoardNode
-			) {
+			if (element.boardElementType === LegacyBoardElementType.ColumnBoard && element.target instanceof ColumnBoard) {
 				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
@@ -134,13 +128,9 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyColumnBoard(
-		columnBoardNode: ColumnBoardNode,
-		user: User,
-		destinationCourse: Course
-	): Promise<CopyStatus> {
+	private async copyColumnBoard(columnBoard: ColumnBoard, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.columnBoardCopyService.copyColumnBoard({
-			originalColumnBoardId: columnBoardNode.id,
+			originalColumnBoardId: columnBoard.id,
 			userId: user.id,
 			destinationExternalReference: {
 				id: destinationCourse.id,
@@ -163,9 +153,9 @@ export class BoardCopyService {
 			}
 			if (status.copyEntity instanceof ColumnBoard) {
 				// eslint-disable-next-line no-await-in-loop
-				const columnBoardNode = (await this.boardNodeRepo.findById(status.copyEntity.id)) as ColumnBoardNode;
+				const columnBoard = await this.columnBoardService.findById(status.copyEntity.id);
 				const columnBoardElement = new ColumnboardBoardElement({
-					target: columnBoardNode,
+					target: columnBoard,
 				});
 				references.push(columnBoardElement);
 			}
@@ -199,7 +189,7 @@ export class BoardCopyService {
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-					el.copyEntity = await this.columnBoardCopyService.swapLinkedIds(el.copyEntity?.id, map);
+					el.copyEntity = await this.columnBoardLinkService.swapLinkedIds(el.copyEntity?.id, map);
 				}
 				return el;
 			})

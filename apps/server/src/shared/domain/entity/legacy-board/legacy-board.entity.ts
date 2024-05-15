@@ -1,4 +1,5 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import { ColumnBoard } from '@modules/board';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
@@ -6,11 +7,10 @@ import { BaseEntityWithTimestamps } from '../base.entity';
 import type { Course } from '../course.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
+import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boardelement.entity';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
-import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];
@@ -31,7 +31,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);
 
-	getByTargetId(id: EntityId): LearnroomElement {
+	getByTargetId(id: EntityId): LearnroomElement | ColumnBoard {
 		const element = this.getElementByTargetId(id);
 		return element.target;
 	}
@@ -98,7 +98,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		if (boardElementTarget instanceof LessonEntity) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof ColumnBoardNode) {
+		if (boardElementTarget instanceof ColumnBoard) {
 			return new ColumnboardBoardElement({ target: boardElementTarget });
 		}
 		throw new Error('not a valid boardElementReference');

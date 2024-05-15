@@ -18,9 +18,11 @@ import {
 	BoardNodeService,
 	ColumnBoardCopyService,
 	ContentElementUpdateService,
+	ColumnBoardService,
+	MediaBoardService,
+	MediaAvailableLineService,
+	UserDeletedEventHandlerService,
 } from './service';
-import { MediaAvailableLineService } from './service/media-board';
-import { ColumnBoardService, MediaBoardService, UserDeletedEventHandlerService } from './service';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 

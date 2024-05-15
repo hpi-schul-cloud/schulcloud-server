@@ -1,9 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { ColumnBoard } from '@modules/board';
 import { Injectable } from '@nestjs/common';
 import {
 	ColumnboardBoardElement,
-	ColumnBoardNode,
 	Course,
 	LegacyBoard,
 	LegacyBoardElement,
@@ -157,7 +157,7 @@ class DtoCreator {
 
 	private mapColumnBoardElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.COLUMN_BOARD;
-		const columnBoardNode = element.target as ColumnBoardNode;
+		const columnBoardNode = element.target as ColumnBoard;
 		const content: ColumnBoardMetaData = {
 			id: columnBoardNode.id,
 			columnBoardId: columnBoardNode.id,
