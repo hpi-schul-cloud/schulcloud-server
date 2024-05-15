@@ -279,7 +279,7 @@ describe('SchoolExternalToolUc', () => {
 			it('should call schoolExternalToolValidationService.validate()', async () => {
 				const { user, tool } = setup();
 
-				await uc.createSchoolExternalTool(user.id, tool);
+				await uc.createSchoolExternalTool(user.id, tool.getProps());
 
 				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(tool);
 			});
@@ -287,7 +287,7 @@ describe('SchoolExternalToolUc', () => {
 			it('should call schoolExternalToolService.createSchoolExternalTool', async () => {
 				const { user, tool } = setup();
 
-				await uc.createSchoolExternalTool(user.id, tool);
+				await uc.createSchoolExternalTool(user.id, tool.getProps());
 
 				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(tool);
 			});
@@ -390,7 +390,7 @@ describe('SchoolExternalToolUc', () => {
 		it('should call schoolExternalToolValidationService.validate()', async () => {
 			const { updatedTool, schoolExternalToolId, user } = setup();
 
-			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool.getProps());
 
 			expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(updatedTool);
 		});
@@ -398,7 +398,7 @@ describe('SchoolExternalToolUc', () => {
 		it('should call the service to update the tool', async () => {
 			const { updatedTool, schoolExternalToolId, user } = setup();
 
-			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool.getProps());
 
 			expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
 		});
@@ -406,7 +406,11 @@ describe('SchoolExternalToolUc', () => {
 		it('should return a schoolExternalTool', async () => {
 			const { updatedTool, schoolExternalToolId, user } = setup();
 
-			const result: SchoolExternalTool = await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+			const result: SchoolExternalTool = await uc.updateSchoolExternalTool(
+				user.id,
+				schoolExternalToolId,
+				updatedTool.getProps()
+			);
 
 			expect(result).toEqual(updatedTool);
 		});
