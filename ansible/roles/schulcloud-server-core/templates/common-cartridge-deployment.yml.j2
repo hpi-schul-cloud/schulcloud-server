@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: course-export-import-deployment
+  name: common-cartridge-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: course-export-import
+    app: common-cartridge
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name: course-export-import
+    app.kubernetes.io/name: common-cartridge
     app.kubernetes.io/component: files
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
-  replicas: {{ COURSE_EXPORT_IMPORT_REPLICAS|default("1", true) }}
+  replicas: {{ COMMON_CARTRIDGE_REPLICAS|default("1", true) }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,14 +23,14 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: course-export-import
+      app: common-cartridge
   template:
     metadata:
       labels:
-        app: course-export-import
+        app: common-cartridge
         app.kubernetes.io/part-of: schulcloud-verbund
         app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-        app.kubernetes.io/name: course-export-import
+        app.kubernetes.io/name: common-cartridge
         app.kubernetes.io/component: files
         app.kubernetes.io/managed-by: ansible
         git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
@@ -42,22 +42,22 @@ spec:
         fsGroup: 1000
         runAsNonRoot: true
       containers:
-      - name: course-export-import
+      - name: common-cartridge
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: course-export-import-configmap
+            name: common-cartridge-configmap
         - secretRef:
-            name: course-export-import-secret
-        command: ['npm', 'run', 'nest:start:course-export-import']
+            name: common-cartridge-secret
+        command: ['npm', 'run', 'nest:start:common-cartridge']
         resources:
           limits:
-            cpu: {{ COURSE_EXPORT_IMPORT_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ COURSE_EXPORT_IMPORT_MEMORY_LIMITS|default("500Mi", true) }}
+            cpu: {{ COMMON_CARTRIDGE_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS|default("500Mi", true) }}
           requests:
-            cpu: {{ COURSE_EXPORT_IMPORT_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ COURSE_EXPORT_IMPORT_MEMORY_REQUESTS|default("50Mi", true) }}
+            cpu: {{ COMMON_CARTRIDGE_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_REQUESTS|default("50Mi", true) }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
@@ -82,7 +82,7 @@ spec:
                 - key: app.kubernetes.io/name
                   operator: In
                   values:
-                  - course-export-import
+                  - common-cartridge
               topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
 {% endif %}
           - weight: 20
@@ -92,6 +92,6 @@ spec:
                 - key: app.kubernetes.io/name
                   operator: In
                   values:
-                  - course-export-import
+                  - common-cartridge
               topologyKey: "topology.kubernetes.io/zone"
 {% endif %}

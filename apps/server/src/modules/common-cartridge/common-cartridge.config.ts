@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 
-const courseExportImportConfig = {
+const commonCartridgeConfig = {
 	NEST_LOG_LEVE: Configuration.get('NEST_LOG_LEVEL') as string,
 };
 
-export const config = () => courseExportImportConfig;
+export const config = () => commonCartridgeConfig;

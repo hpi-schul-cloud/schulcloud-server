@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: course-export-import-configmap
+  name: common-cartridge-configmap
   namespace: {{ NAMESPACE }}
   labels:
-    app: course-export-import
+    app: common-cartridge
 data:
   NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
   EXIT_ON_ERROR: "true"

@@ -144,10 +144,10 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"course-export-import": {
+		"common-cartridge": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/course-export-import.app",
+			"entryFile": "apps/common-cartridge.app",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
