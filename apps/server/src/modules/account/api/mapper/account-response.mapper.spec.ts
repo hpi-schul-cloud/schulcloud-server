@@ -1,7 +1,7 @@
-import { accountDoFactory } from '@shared/testing';
 import { Account } from '../../domain';
 import { AccountResponseMapper } from './account-response.mapper';
 import { ResolvedSearchListAccountDto } from '../dto';
+import { accountDoFactory } from '../../testing';
 
 describe('AccountResponseMapper', () => {
 	describe('mapToAccountResponse', () => {

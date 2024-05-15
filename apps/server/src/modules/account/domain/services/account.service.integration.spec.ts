@@ -9,7 +9,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, cleanupCollections } from '@shared/testing';
+import { cleanupCollections } from '@shared/testing';
 import { v1 } from 'uuid';
 import { Logger } from '@src/core/logger';
 import { Account, AccountSave } from '..';
@@ -21,6 +21,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
+import { accountFactory } from '../../testing';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;

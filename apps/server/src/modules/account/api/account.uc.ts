@@ -209,7 +209,7 @@ export class AccountUc {
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
-		if (!(currentUser.school.id === targetUser.school.id)) {
+		if (currentUser.school.id !== targetUser.school.id) {
 			return false;
 		}
 
@@ -285,8 +285,7 @@ export class AccountUc {
 	private extractRoles(inputRoles: Role[]): string[] {
 		const roles: string[] = [];
 
-		for (let i = 0; i < inputRoles.length; i += 1) {
-			const role = inputRoles[i];
+		for (const role of inputRoles) {
 			roles.push(role.name);
 			const innerRoles = role.roles.getItems().map((x) => x.name);
 			roles.push(...innerRoles);

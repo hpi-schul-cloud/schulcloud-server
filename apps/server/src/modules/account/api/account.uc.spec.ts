@@ -10,7 +10,7 @@ import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.ex
 import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { accountFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../domain/entity/account.entity';
 import { AccountService } from '../domain/services';
@@ -19,6 +19,7 @@ import { AccountEntityToDoMapper } from '../repo/micro-orm/mapper';
 import { AccountUc } from './account.uc';
 import { AccountSearchDto, AccountSearchType, UpdateAccountDto } from './dto';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
+import { accountFactory } from '../testing';
 
 describe('AccountUc', () => {
 	let module: TestingModule;

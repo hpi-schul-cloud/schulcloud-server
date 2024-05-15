@@ -1,5 +1,3 @@
-export * from '../../../modules/account/testing/account-do.factory';
-export * from '../../../modules/account/testing/account.factory';
 export * from './axios-response.factory';
 export * from './base.factory';
 export * from './board.factory';

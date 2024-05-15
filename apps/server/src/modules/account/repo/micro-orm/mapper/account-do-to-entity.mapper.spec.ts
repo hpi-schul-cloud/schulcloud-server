@@ -1,5 +1,5 @@
-import { accountDoFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { accountDoFactory } from '../../../testing';
 import { AccountDoToEntityMapper } from './account-do-to-entity.mapper';
 
 describe('AccountEntityToDoMapper', () => {

@@ -4,7 +4,7 @@ import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import _ from 'lodash';
-import { accountFactory } from '../../../modules/account/testing/account.factory';
+import { accountFactory } from '@src/modules/account/testing/account.factory';
 import { userFactory } from './user.factory';
 
 interface UserParams {

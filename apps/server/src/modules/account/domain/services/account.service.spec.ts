@@ -14,7 +14,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';
@@ -27,6 +27,7 @@ import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { IdmCallbackLoggableException } from '../error';
+import { accountFactory } from '../../testing';
 
 describe('AccountService', () => {
 	let module: TestingModule;

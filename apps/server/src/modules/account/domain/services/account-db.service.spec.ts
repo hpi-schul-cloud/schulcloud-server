@@ -6,15 +6,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { accountDoFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { Account } from '..';
+import { Account } from '../account';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
+import { accountDoFactory } from '../../testing';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;

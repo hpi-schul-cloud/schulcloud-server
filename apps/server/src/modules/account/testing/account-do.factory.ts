@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountProps } from '@modules/account';
-import { DomainObjectFactory } from '../../../shared/testing/factory/domainobject';
+import { DomainObjectFactory } from '@shared/testing/factory/domainobject';
 
 export const accountDoFactory = DomainObjectFactory.define<Account, AccountProps>(Account, ({ sequence, params }) => {
 	return {
