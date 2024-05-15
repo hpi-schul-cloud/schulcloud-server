@@ -1,12 +1,12 @@
+import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
-import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../account-config';
-import { Account, AccountSave } from '../domain/account';
+import { Account, AccountSave } from '../domain';
 import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
@@ -43,12 +43,10 @@ export class AccountServiceDb {
 		let account: Account;
 		if (accountSave.id) {
 			const internalId = await this.getInternalId(accountSave.id);
+
 			account = await this.accountRepo.findById(internalId);
 		} else {
-			account = new Account({
-				id: new ObjectId().toHexString(),
-				username: accountSave.username,
-			});
+			account = this.createAccount(accountSave);
 		}
 		await account.update(accountSave);
 		return this.accountRepo.save(account);
@@ -129,5 +127,18 @@ export class AccountServiceDb {
 
 	async findMany(offset = 0, limit = 100): Promise<Account[]> {
 		return this.accountRepo.findMany(offset, limit);
+	}
+
+	private createAccount(accountSave: AccountSave): Account {
+		if (!accountSave.username) {
+			throw new Error('Username is required');
+		}
+
+		const account = new Account({
+			id: new ObjectId().toHexString(),
+			username: accountSave.username,
+		});
+
+		return account;
 	}
 }
