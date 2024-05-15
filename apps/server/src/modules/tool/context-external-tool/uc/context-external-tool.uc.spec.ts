@@ -114,7 +114,7 @@ describe(ContextExternalToolUc.name, () => {
 			it('should call contextExternalToolService', async () => {
 				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
 			});
@@ -122,7 +122,7 @@ describe(ContextExternalToolUc.name, () => {
 			it('should call contextExternalToolService to ensure permissions', async () => {
 				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					user,
@@ -134,7 +134,7 @@ describe(ContextExternalToolUc.name, () => {
 			it('should check for context restrictions', async () => {
 				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(contextExternalToolService.checkContextRestrictions).toHaveBeenCalledWith(contextExternalTool);
 			});
@@ -142,7 +142,7 @@ describe(ContextExternalToolUc.name, () => {
 			it('should call contextExternalToolValidationService', async () => {
 				const { contextExternalTool, user, schoolId } = setup();
 
-				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool);
+				await uc.createContextExternalTool(user.id, schoolId, contextExternalTool.getProps());
 
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 			});

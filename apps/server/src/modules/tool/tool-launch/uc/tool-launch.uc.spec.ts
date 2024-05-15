@@ -10,17 +10,14 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
+import { externalToolFactory } from '../../external-tool/testing';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
