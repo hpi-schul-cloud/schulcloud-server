@@ -107,12 +107,12 @@ export class Account extends DomainObject<AccountProps> {
 		this.props.activated = accountSave.activated;
 		this.props.expiresAt = accountSave.expiresAt;
 		this.props.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
+		this.props.credentialHash = accountSave.credentialHash;
+		this.props.token = accountSave.token;
 		this.props.deactivatedAt = accountSave.deactivatedAt;
 		if (accountSave.password) {
 			this.props.password = await this.encryptPassword(accountSave.password);
 		}
-		this.props.credentialHash = accountSave.credentialHash;
-		this.props.token = accountSave.token;
 	}
 
 	private encryptPassword(password: string): Promise<string> {
