@@ -73,7 +73,7 @@ export class LegacyBoardRepo {
 			(el) => el instanceof ColumnboardBoardElement
 		) as ColumnboardBoardElement[];
 		const columnBoardIds = columnBoardElements.map((el) => el.id);
-		const columnBoards = await this.boardNodeService.findByClassAndIds(ColumnBoard, columnBoardIds);
+		const columnBoards = await this.boardNodeService.findByClassAndIds(ColumnBoard, columnBoardIds, 0);
 		columnBoards.forEach((cb) => {
 			const match = columnBoardElements.find((el) => el._target.toHexString() === cb.id);
 			if (match) {

@@ -8,8 +8,8 @@ import { BoardNodeService } from './board-node.service';
 export class ColumnBoardService {
 	constructor(private readonly boardNodeRepo: BoardNodeRepo, private readonly boardNodeService: BoardNodeService) {}
 
-	async findById(id: EntityId): Promise<ColumnBoard> {
-		const columnBoard = this.boardNodeService.findByClassAndId(ColumnBoard, id);
+	async findById(id: EntityId, depth?: number): Promise<ColumnBoard> {
+		const columnBoard = this.boardNodeService.findByClassAndId(ColumnBoard, id, depth);
 
 		return columnBoard;
 	}
@@ -20,6 +20,10 @@ export class ColumnBoardService {
 		const boards = boardNodes.filter((bn) => isColumnBoard(bn));
 
 		return boards as ColumnBoard[];
+	}
+
+	async updateVisibility(columbBoard: ColumnBoard, visibility: boolean): Promise<void> {
+		await this.boardNodeService.updateVisibility(columbBoard, visibility);
 	}
 
 	// called from feathers

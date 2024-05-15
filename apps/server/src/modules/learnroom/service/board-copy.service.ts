@@ -153,7 +153,7 @@ export class BoardCopyService {
 			}
 			if (status.copyEntity instanceof ColumnBoard) {
 				// eslint-disable-next-line no-await-in-loop
-				const columnBoard = await this.columnBoardService.findById(status.copyEntity.id);
+				const columnBoard = await this.columnBoardService.findById(status.copyEntity.id, 0);
 				const columnBoardElement = new ColumnboardBoardElement({
 					target: columnBoard,
 				});

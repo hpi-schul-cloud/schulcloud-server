@@ -157,15 +157,15 @@ class DtoCreator {
 
 	private mapColumnBoardElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.COLUMN_BOARD;
-		const columnBoardNode = element.target as ColumnBoard;
+		const columnBoard = element.target as ColumnBoard;
 		const content: ColumnBoardMetaData = {
-			id: columnBoardNode.id,
-			columnBoardId: columnBoardNode.id,
-			title: columnBoardNode.title || '',
-			createdAt: columnBoardNode.createdAt,
-			updatedAt: columnBoardNode.updatedAt,
-			published: columnBoardNode.isVisible,
-			layout: columnBoardNode.layout,
+			id: columnBoard.id,
+			columnBoardId: columnBoard.id,
+			title: columnBoard.title,
+			createdAt: columnBoard.createdAt,
+			updatedAt: columnBoard.updatedAt,
+			published: columnBoard.isVisible,
+			layout: columnBoard.layout,
 		};
 
 		return { type, content };
