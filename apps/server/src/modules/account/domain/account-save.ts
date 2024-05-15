@@ -21,6 +21,8 @@ export class AccountSave {
 
 	public credentialHash: string | undefined;
 
+	public deactivatedAt: Date | undefined;
+
 	constructor(props: Partial<Readonly<AccountSave>>) {
 		this.id = props.id;
 		this.userId = props.userId;
@@ -33,5 +35,6 @@ export class AccountSave {
 		this.expiresAt = props.expiresAt;
 		this.token = props.token;
 		this.credentialHash = props.credentialHash;
+		this.deactivatedAt = props.deactivatedAt;
 	}
 }
