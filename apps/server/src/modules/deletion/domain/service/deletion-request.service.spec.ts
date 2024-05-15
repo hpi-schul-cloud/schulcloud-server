@@ -136,6 +136,33 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
+	describe('countPendingDeletionRequests', () => {
+		describe('when counting all deletionRequests with status pending', () => {
+			const setup = () => {
+				const deletionRequestWithStatusPending = deletionRequestFactory.buildListWithId(5, {
+					status: StatusModel.PENDING,
+				});
+
+				deletionRequestRepo.countPendingDeletionRequests.mockResolvedValue(deletionRequestWithStatusPending.length);
+
+				const numberDeletionRequestsWithStatusPending = deletionRequestWithStatusPending.length;
+				return { numberDeletionRequestsWithStatusPending };
+			};
+
+			it('should call deletionRequestRepo.countPendingDeletionRequests', async () => {
+				await service.countPendingDeletionRequests();
+
+				expect(deletionRequestRepo.countPendingDeletionRequests).toBeCalled();
+			});
+
+			it('should return number of deletionRequests with status pending', async () => {
+				const { numberDeletionRequestsWithStatusPending } = setup();
+				const result = await service.countPendingDeletionRequests();
+
+				expect(result).toEqual(numberDeletionRequestsWithStatusPending);
+			});
+		});
+	});
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = () => {
