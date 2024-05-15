@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { fileRecordFactory } from '@shared/testing';
+import { fileRecordFactory } from '@shared/testing/factory';
 import { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';

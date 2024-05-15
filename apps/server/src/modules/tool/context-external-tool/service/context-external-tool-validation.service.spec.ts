@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
+import { contextExternalToolFactory, externalToolFactory } from '@shared/testing/factory';
 import { ContextExternalToolNameAlreadyExistsLoggableException } from '@modules/tool/common/domain';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';

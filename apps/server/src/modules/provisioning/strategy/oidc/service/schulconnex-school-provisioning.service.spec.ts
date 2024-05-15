@@ -4,7 +4,7 @@ import { FederalStateService, LegacySchoolService, SchoolYearService } from '@mo
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
-import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@shared/testing';
+import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@shared/testing/factory';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
 

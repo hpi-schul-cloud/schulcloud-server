@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
-import { cleanupCollections, systemEntityFactory } from '@shared/testing';
+import { cleanupCollections, systemEntityFactory } from '@shared/testing/factory';
 import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
 import { SystemEntityMapper } from './mapper/system-entity.mapper';
 import { SystemMikroOrmRepo } from './system.repo';

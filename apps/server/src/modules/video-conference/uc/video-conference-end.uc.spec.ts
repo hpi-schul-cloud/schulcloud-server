@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { userDoFactory } from '@shared/testing';
+import { userDoFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';

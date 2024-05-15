@@ -1,4 +1,4 @@
-import { schoolToolConfigurationStatusFactory } from '@shared/testing';
+import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';

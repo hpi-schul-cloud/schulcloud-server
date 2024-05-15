@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
+import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { NewsRepo } from '@shared/repo';
 import { EventBus } from '@nestjs/cqrs';

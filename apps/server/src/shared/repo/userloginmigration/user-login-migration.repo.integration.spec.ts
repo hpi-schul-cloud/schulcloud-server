@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { cleanupCollections, schoolEntityFactory, systemEntityFactory } from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory, systemEntityFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';

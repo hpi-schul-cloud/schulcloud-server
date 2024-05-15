@@ -10,7 +10,7 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { LtiToolRepo } from '@shared/repo';
-import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';

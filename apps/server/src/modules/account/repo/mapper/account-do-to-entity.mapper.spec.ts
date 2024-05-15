@@ -1,4 +1,4 @@
-import { accountDoFactory } from '@shared/testing';
+import { accountDoFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountDoToEntityMapper } from './account-do-to-entity.mapper';
 

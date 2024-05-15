@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { accountDoFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountDoFactory, setupEntities, userFactory } from '@shared/testing/factory';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';

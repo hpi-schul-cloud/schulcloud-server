@@ -14,7 +14,7 @@ import { Course, Role, TeamEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { roleFactory, setupEntities, userDoFactory } from '@shared/testing/factory';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import {
 	BBBBaseMeetingConfig,

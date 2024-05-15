@@ -1,4 +1,4 @@
-import { DomainObjectFactory } from '@shared/testing';
+import { DomainObjectFactory } from '@shared/testing/factory';
 import { ObjectId } from 'bson';
 import { Course, CourseProps } from '../domain';
 

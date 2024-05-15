@@ -1,5 +1,5 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities, systemEntityFactory } from '@shared/testing';
+import { setupEntities, systemEntityFactory } from '@shared/testing/factory';
 import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {

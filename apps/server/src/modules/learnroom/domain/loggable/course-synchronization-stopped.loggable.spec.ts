@@ -1,4 +1,4 @@
-import { groupFactory } from '@shared/testing';
+import { groupFactory } from '@shared/testing/factory';
 import { courseFactory } from '../../testing';
 import { CourseSynchronizationStoppedLoggable } from './course-synchronization-stopped.loggable';
 

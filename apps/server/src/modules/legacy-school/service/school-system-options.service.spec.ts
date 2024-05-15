@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolSystemOptionsFactory } from '@shared/testing';
+import { schoolSystemOptionsFactory } from '@shared/testing/factory';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchulConneXProvisioningOptionsInterface } from '../interface';
 import { ProvisioningOptionsInvalidTypeLoggableException } from '../loggable';

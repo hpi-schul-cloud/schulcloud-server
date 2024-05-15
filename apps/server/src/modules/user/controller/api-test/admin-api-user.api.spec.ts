@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { TestApiClient, schoolEntityFactory } from '@shared/testing';
+import { TestApiClient, schoolEntityFactory } from '@shared/testing/factory';
 import { AccountEntity } from '@modules/account/entity/account.entity';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { nanoid } from 'nanoid';

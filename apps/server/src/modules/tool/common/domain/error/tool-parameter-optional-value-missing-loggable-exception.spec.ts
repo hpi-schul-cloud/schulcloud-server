@@ -1,4 +1,4 @@
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '@shared/testing/factory';
 import { CustomParameter } from '../custom-parameter.do';
 import { ToolParameterOptionalValueMissingLoggableException } from './tool-parameter-optional-value-missing-loggable-exception';
 

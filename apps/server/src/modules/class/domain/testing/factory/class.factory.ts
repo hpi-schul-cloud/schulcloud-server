@@ -1,4 +1,4 @@
-import { DoBaseFactory } from '@shared/testing';
+import { DoBaseFactory } from '@shared/testing/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 import { Class, ClassProps } from '../../class.do';

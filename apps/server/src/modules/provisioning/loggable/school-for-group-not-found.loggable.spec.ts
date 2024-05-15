@@ -1,4 +1,4 @@
-import { externalSchoolDtoFactory } from '@shared/testing';
+import { externalSchoolDtoFactory } from '@shared/testing/factory';
 import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../dto';
 import { SchoolForGroupNotFoundLoggable } from './school-for-group-not-found.loggable';

@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
-import { TestApiClient, federalStateFactory } from '@shared/testing';
+import { TestApiClient, federalStateFactory } from '@shared/testing/factory';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';

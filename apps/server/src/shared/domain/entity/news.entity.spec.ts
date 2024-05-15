@@ -1,4 +1,4 @@
-import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
+import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing/factory';
 import { News } from './news.entity';
 
 describe(News.name, () => {

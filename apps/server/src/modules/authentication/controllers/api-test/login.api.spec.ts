@@ -5,7 +5,13 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { accountFactory, roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
+import {
+	accountFactory,
+	roleFactory,
+	schoolEntityFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing/factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
