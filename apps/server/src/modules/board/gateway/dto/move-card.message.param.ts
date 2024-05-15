@@ -5,9 +5,16 @@ export class MoveCardMessageParams {
 	cardId!: string;
 
 	@IsMongoId()
+	fromColumnId!: string;
+
+	@IsMongoId()
 	toColumnId!: string;
 
 	@IsNumber()
 	@Min(0)
 	newIndex!: number;
+
+	@IsNumber()
+	@Min(0)
+	oldIndex!: number;
 }
