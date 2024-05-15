@@ -379,12 +379,12 @@ import { LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger/logger.module&#x27;;
 import { AccountConfig } from &#x27;./account-config&#x27;;
-import { AccountRepo } from &#x27;./repo/account.repo&#x27;;
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from &#x27;./repo/mapper&#x27;;
-import { AccountServiceDb } from &#x27;./services/account-db.service&#x27;;
-import { AccountServiceIdm } from &#x27;./services/account-idm.service&#x27;;
-import { AccountService } from &#x27;./services/account.service&#x27;;
-import { AccountValidationService } from &#x27;./services/account.validation.service&#x27;;
+import { AccountRepo } from &#x27;./repo/micro-orm/account.repo&#x27;;
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from &#x27;./repo/micro-orm/mapper&#x27;;
+import { AccountServiceDb } from &#x27;./domain/services/account-db.service&#x27;;
+import { AccountServiceIdm } from &#x27;./domain/services/account-idm.service&#x27;;
+import { AccountService } from &#x27;./domain/services/account.service&#x27;;
+import { AccountValidationService } from &#x27;./domain/services/account.validation.service&#x27;;
 
 function accountIdmToDtoMapperFactory(configService: ConfigService&lt;AccountConfig, true&gt;): AccountIdmToDoMapper {
 	if (configService.get&lt;boolean&gt;(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) &#x3D;&#x3D;&#x3D; true) {

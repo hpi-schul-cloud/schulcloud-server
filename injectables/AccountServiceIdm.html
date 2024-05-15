@@ -113,7 +113,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/services/account-idm.service.ts</code>
+            <code>apps/server/src/modules/account/domain/services/account-idm.service.ts</code>
         </p>
 
 
@@ -247,7 +247,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/account/domain/services/account-idm.service.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -362,7 +362,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:184</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-idm.service.ts:184</a></div>
                         </td>
                     </tr>
 
@@ -432,7 +432,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="128"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:128</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-idm.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -1138,7 +1138,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="178"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:178</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-idm.service.ts:178</a></div>
                         </td>
                     </tr>
 
@@ -1208,7 +1208,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:169</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-idm.service.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -1527,7 +1527,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="120"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:120</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account-idm.service.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -1959,10 +1959,10 @@ import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
 import { IdmAccountUpdate } from &#x27;@shared/domain/interface&#x27;;
 import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { AccountConfig } from &#x27;../account-config&#x27;;
-import { Account, AccountSave } from &#x27;../domain&#x27;;
-import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from &#x27;../loggable&#x27;;
-import { AccountIdmToDoMapper } from &#x27;../repo/mapper&#x27;;
+import { Account, AccountSave } from &#x27;..&#x27;;
+import { AccountConfig } from &#x27;../../account-config&#x27;;
+import { AccountIdmToDoMapper } from &#x27;../../repo/micro-orm/mapper&#x27;;
+import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from &#x27;../error&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
 
 @Injectable()

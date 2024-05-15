@@ -322,11 +322,11 @@ import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from &#x27;@
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { AccountEntity } from &#x27;@src/modules/account/domain/entity/account.entity&#x27;;
 import { AuthenticationModule } from &#x27;../authentication/authentication.module&#x27;;
 import { FwuLearningContentsController } from &#x27;./controller/fwu-learning-contents.controller&#x27;;
 import { config, s3Config } from &#x27;./fwu-learning-contents.config&#x27;;
 import { FwuLearningContentsUc } from &#x27;./uc/fwu-learning-contents.uc&#x27;;
-import { AccountEntity } from &#x27;../account/entity/account.entity&#x27;;
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) &#x3D;&gt;

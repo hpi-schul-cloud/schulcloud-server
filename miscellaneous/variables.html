@@ -110,10 +110,10 @@
                 <td class="col-md-4">
                     <ul class="index-list">
                         <li>
-                            <a href="#accountDoFactory" title="apps/server/src/shared/testing/factory/account-do.factory.ts" ><b>accountDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account-do.factory.ts)</a>
+                            <a href="#accountDoFactory" title="apps/server/src/modules/account/testing/account-do.factory.ts" ><b>accountDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account-do.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#accountFactory" title="apps/server/src/shared/testing/factory/account.factory.ts" ><b>accountFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
+                            <a href="#accountFactory" title="apps/server/src/modules/account/testing/account.factory.ts" ><b>accountFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#addPrometheusMetricsMiddlewaresIfEnabled" title="apps/server/src/apps/helpers/prometheus-metrics.ts" ><b>addPrometheusMetricsMiddlewaresIfEnabled</b>&nbsp;&nbsp;&nbsp;(apps/.../prometheus-metrics.ts)</a>
@@ -446,10 +446,10 @@
                             <a href="#defaultSecretReplacementHintText" title="apps/server/src/modules/management/uc/database-management.uc.ts" ><b>defaultSecretReplacementHintText</b>&nbsp;&nbsp;&nbsp;(apps/.../database-management.uc.ts)</a>
                         </li>
                         <li>
-                            <a href="#defaultTestPassword" title="apps/server/src/shared/testing/factory/account.factory.ts" ><b>defaultTestPassword</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
+                            <a href="#defaultTestPassword" title="apps/server/src/modules/account/testing/account.factory.ts" ><b>defaultTestPassword</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#defaultTestPasswordHash" title="apps/server/src/shared/testing/factory/account.factory.ts" ><b>defaultTestPasswordHash</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
+                            <a href="#defaultTestPasswordHash" title="apps/server/src/modules/account/testing/account.factory.ts" ><b>defaultTestPasswordHash</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#defaultVideoConferenceOptions" title="apps/server/src/modules/video-conference/interface/video-conference-options.interface.ts" ><b>defaultVideoConferenceOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-options.interface.ts)</a>
@@ -863,7 +863,7 @@
                             <a href="#parentConsentFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>parentConsentFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#passwordPattern" title="apps/server/src/modules/account/controller/dto/password-pattern.ts" ><b>passwordPattern</b>&nbsp;&nbsp;&nbsp;(apps/.../password-pattern.ts)</a>
+                            <a href="#passwordPattern" title="apps/server/src/modules/account/api/dto/password-pattern.ts" ><b>passwordPattern</b>&nbsp;&nbsp;&nbsp;(apps/.../password-pattern.ts)</a>
                         </li>
                         <li>
                             <a href="#PATH_SEPARATOR" title="apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts" ><b>PATH_SEPARATOR</b>&nbsp;&nbsp;&nbsp;(apps/.../boardnode.entity.ts)</a>
@@ -1352,7 +1352,7 @@
     </table>
 </section>
 
-    <h3>apps/server/src/shared/testing/factory/account-do.factory.ts</h3>
+    <h3>apps/server/src/modules/account/testing/account-do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -1383,7 +1383,7 @@
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/shared/testing/factory/account.factory.ts</h3>
+    <h3>apps/server/src/modules/account/testing/account.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -17658,7 +17658,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/account/controller/dto/password-pattern.ts</h3>
+    <h3>apps/server/src/modules/account/api/dto/password-pattern.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -17673,7 +17673,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>/^(?&#x3D;.*[A-Z])(?&#x3D;.*[0-9])(?&#x3D;.*[a-z])(?&#x3D;.*[-_!&lt;&gt;§$%&amp;/()&#x3D;?\\;:,.#+*~&#x27;])\S.{6,253}\S$/</code>
+                        <i>Default value : </i><code>/^(?&#x3D;.*[A-Z])(?&#x3D;.*\d)(?&#x3D;.*[a-z])(?&#x3D;.*[-_!&lt;&gt;§$%&amp;/()&#x3D;?\\;:,.#+*~&#x27;])\S.{6,253}\S$/</code>
                     </td>
                 </tr>
 

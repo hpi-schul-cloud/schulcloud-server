@@ -113,7 +113,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/services/account.validation.service.ts</code>
+            <code>apps/server/src/modules/account/domain/services/account.validation.service.ts</code>
         </p>
 
 
@@ -168,7 +168,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/account/domain/services/account.validation.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -246,7 +246,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:10</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.validation.service.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -351,7 +351,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:32</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.validation.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -432,7 +432,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/account/services/account.validation.service.ts:27</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.validation.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -499,7 +499,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { AccountRepo } from &#x27;../repo/account.repo&#x27;;
+import { AccountRepo } from &#x27;../../repo/micro-orm/account.repo&#x27;;
 
 @Injectable()
 export class AccountValidationService {

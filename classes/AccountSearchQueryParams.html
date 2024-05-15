@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/controller/dto/account-search.query.params.ts</code>
+            <code>apps/server/src/modules/account/api/dto/param/account-search.query.params.ts</code>
         </p>
 
 
@@ -218,7 +218,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-search.query.params.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/account/api/dto/param/account-search.query.params.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -256,7 +256,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/account/controller/dto/account-search.query.params.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/account/api/dto/param/account-search.query.params.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -381,7 +381,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { IsEnum, IsString } from &#x27;class-validator&#x27;;
 import { PaginationParams, SanitizeHtml } from &#x27;@shared/controller&#x27;;
-import { AccountSearchType } from &#x27;./account-search-type&#x27;;
+import { AccountSearchType } from &#x27;../../../domain/type/account-search-type&#x27;;
 
 export class AccountSearchQueryParams extends PaginationParams {
 	@IsEnum(AccountSearchType)

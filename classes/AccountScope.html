@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/repo/account-scope.ts</code>
+            <code>apps/server/src/modules/account/repo/micro-orm/scope/account-scope.ts</code>
         </p>
 
 
@@ -329,7 +329,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/account/repo/account-scope.ts:6</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/repo/micro-orm/scope/account-scope.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -545,7 +545,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Scope } from &#x27;@shared/repo&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { AccountEntity } from &#x27;../entity/account.entity&#x27;;
+import { AccountEntity } from &#x27;../../../domain/entity/account.entity&#x27;;
 
 export class AccountScope extends Scope&lt;AccountEntity&gt; {
 	byUserIdsAndSystemId(userIds: string[], systemId: string): AccountScope {

@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/account/repo/mapper/account-do-to-entity.mapper.ts</code>
+            <code>apps/server/src/modules/account/repo/micro-orm/mapper/account-do-to-entity.mapper.ts</code>
         </p>
 
 
@@ -184,7 +184,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/account/repo/mapper/account-do-to-entity.mapper.ts:6</a></div>
+                                    class="link-to-prism">apps/server/src/modules/account/repo/micro-orm/mapper/account-do-to-entity.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -241,8 +241,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Account } from &#x27;../../domain&#x27;;
-import { AccountEntity } from &#x27;../../entity/account.entity&#x27;;
+import { Account } from &#x27;../../../domain&#x27;;
+import { AccountEntity } from &#x27;../../../domain/entity/account.entity&#x27;;
 
 export class AccountDoToEntityMapper {
 	public static mapToEntity(account: Account): AccountEntity {

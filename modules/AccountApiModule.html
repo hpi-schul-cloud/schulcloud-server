@@ -284,9 +284,9 @@
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { AccountUc } from &#x27;./uc/account.uc&#x27;;
+import { AccountUc } from &#x27;./api/account.uc&#x27;;
 import { AccountModule } from &#x27;./account.module&#x27;;
-import { AccountController } from &#x27;./controller/account.controller&#x27;;
+import { AccountController } from &#x27;./api/account.controller&#x27;;
 
 @Module({
 	imports: [AccountModule, LoggerModule, AuthorizationModule],
