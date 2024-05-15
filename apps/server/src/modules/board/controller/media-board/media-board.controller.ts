@@ -134,6 +134,6 @@ export class MediaBoardController {
 		@Body() bodyParams: LayoutBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.mediaBoardUc.setLayout(currentUser.userId, urlParams.boardId, bodyParams.type);
+		await this.mediaBoardUc.setLayout(currentUser.userId, urlParams.boardId, bodyParams.layout);
 	}
 }
