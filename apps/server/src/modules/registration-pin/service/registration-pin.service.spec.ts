@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userDoFactory } from '@shared/testing/factory';
+import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	DomainDeletionReportBuilder,

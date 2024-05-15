@@ -13,7 +13,7 @@ import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
-import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing/factory';
+import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { LegacySystemService } from '@src/modules/system';

@@ -1,14 +1,7 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	courseFactory,
-	lessonFactory,
-	roleFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing/factory';
+import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action } from '../type';
 import { CourseGroupRule } from './course-group.rule';

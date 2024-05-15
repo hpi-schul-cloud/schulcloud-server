@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService, UserLicenseType } from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
-import { setupEntities, userFactory } from '@shared/testing/factory';
+import { setupEntities, userFactory } from '@shared/testing';
 import { ExternalLicenseDto } from '../../../dto';
 import { SchulconnexLicenseProvisioningService } from './schulconnex-license-provisioning.service';
 

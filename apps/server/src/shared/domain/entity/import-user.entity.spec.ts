@@ -1,4 +1,4 @@
-import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchCreator } from '.';
 
 describe('ImportUser entity', () => {

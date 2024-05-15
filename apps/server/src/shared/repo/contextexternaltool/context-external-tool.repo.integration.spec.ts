@@ -12,7 +12,7 @@ import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-t
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { cleanupCollections, contextExternalToolFactory, schoolEntityFactory } from '@shared/testing/factory';
+import { cleanupCollections, contextExternalToolFactory, schoolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 

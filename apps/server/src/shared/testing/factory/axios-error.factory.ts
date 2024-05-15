@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { axiosResponseFactory } from '@shared/testing/factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { AxiosError, AxiosHeaders } from 'axios';
 import { Factory } from 'fishery';
 

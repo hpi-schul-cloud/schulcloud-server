@@ -3,13 +3,7 @@ import { System } from '@modules/system';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	schoolEntityFactory,
-	setupEntities,
-	systemEntityFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing/factory';
+import { schoolEntityFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { SystemRule } from './system.rule';

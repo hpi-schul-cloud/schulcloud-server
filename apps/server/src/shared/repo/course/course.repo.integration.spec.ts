@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing/factory';
+import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {

@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
 import {
 	columnBoardFactory,

@@ -17,7 +17,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { axiosResponseFactory } from '@shared/testing/factory';
+import { axiosResponseFactory } from '@shared/testing';
 import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';

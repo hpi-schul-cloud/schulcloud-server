@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { cleanupCollections, h5pContentFactory } from '@shared/testing/factory';
+import { cleanupCollections, h5pContentFactory } from '@shared/testing';
 import { H5PContent } from '../entity';
 import { H5PContentRepo } from './h5p-content.repo';
 

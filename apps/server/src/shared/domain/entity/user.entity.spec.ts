@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
-import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { Role, SchoolEntity } from '.';
 import { LanguageType, Permission, RoleName } from '../interface';
 import { User } from './user.entity';

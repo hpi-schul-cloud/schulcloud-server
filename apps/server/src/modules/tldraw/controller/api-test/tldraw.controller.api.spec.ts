@@ -1,6 +1,6 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing/factory';
+import { courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@modules/server';
 import { Logger } from '@src/core/logger';

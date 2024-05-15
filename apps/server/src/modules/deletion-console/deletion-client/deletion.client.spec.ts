@@ -4,7 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { axiosResponseFactory } from '@shared/testing/factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
 import { DeletionRequestOutput } from './interface';
 import { DeletionClient } from './deletion.client';

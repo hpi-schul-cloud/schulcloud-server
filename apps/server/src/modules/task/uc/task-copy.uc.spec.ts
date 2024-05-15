@@ -8,7 +8,7 @@ import { LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing/factory';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 import { TaskCopyUC } from './task-copy.uc';

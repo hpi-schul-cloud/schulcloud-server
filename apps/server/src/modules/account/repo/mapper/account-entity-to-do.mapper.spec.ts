@@ -1,4 +1,4 @@
-import { accountFactory } from '@shared/testing/factory';
+import { accountFactory } from '@shared/testing';
 import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
 import { AccountEntity } from '../../entity/account.entity';
 

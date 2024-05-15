@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing/factory';
+import { BaseFactory } from '@shared/testing';
 import { DomainOperationReportBuilder, DomainDeletionReportBuilder } from '@src/modules/deletion/domain/builder';
 import { DomainName, OperationType } from '@src/modules/deletion/domain/types';
 import { ObjectId } from 'bson';

@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { cleanupCollections, storageProviderFactory } from '@shared/testing/factory';
+import { cleanupCollections, storageProviderFactory } from '@shared/testing';
 import { StorageProviderRepo } from './storageprovider.repo';
 
 describe('StorageProviderRepo', () => {

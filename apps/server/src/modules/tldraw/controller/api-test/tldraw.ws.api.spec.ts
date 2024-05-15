@@ -11,7 +11,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
-import { axiosResponseFactory } from '@shared/testing/factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { TldrawRedisFactory, TldrawRedisService } from '../../redis';
 import { TldrawDrawing } from '../../entities';
 import { TldrawWsService } from '../../service';

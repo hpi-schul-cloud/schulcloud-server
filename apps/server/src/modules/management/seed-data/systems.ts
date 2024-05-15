@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import { SystemEntityProps } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { systemEntityFactory } from '@shared/testing/factory';
+import { systemEntityFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 
 type SystemPartial = DeepPartial<SystemEntityProps> & {

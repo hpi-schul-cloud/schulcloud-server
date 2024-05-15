@@ -16,7 +16,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing/factory';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 

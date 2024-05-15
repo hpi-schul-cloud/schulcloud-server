@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../domain';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardContextService } from './board-context.service';

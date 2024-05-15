@@ -1,4 +1,4 @@
-import { fileRecordFactory } from '@shared/testing/factory';
+import { fileRecordFactory } from '@shared/testing';
 import { PreviewOutputMimeTypes } from '../interface';
 import { PreviewBuilder } from './preview.builder';
 

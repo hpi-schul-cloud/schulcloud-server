@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain/entity';
-import { systemEntityFactory } from '@shared/testing/factory';
+import { systemEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { LdapService } from './ldap.service';
 

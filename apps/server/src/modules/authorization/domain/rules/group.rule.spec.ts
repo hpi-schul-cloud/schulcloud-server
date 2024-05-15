@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { groupFactory, roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { groupFactory, roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { Action, AuthorizationContext, AuthorizationHelper } from '@src/modules/authorization';
 import { Group } from '@src/modules/group';
 import { ObjectId } from '@mikro-orm/mongodb';

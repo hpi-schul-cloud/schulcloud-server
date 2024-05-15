@@ -1,4 +1,4 @@
-import { BaseFactory } from '@shared/testing/factory';
+import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolYear, SchoolYearProps } from '../domain';
 

@@ -1,4 +1,4 @@
-import { columnBoardNodeFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing/factory';
+import { columnBoardNodeFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyBoardElementType } from './legacy-boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
 import { LessonBoardElement } from './lesson-boardelement.entity';

@@ -11,13 +11,7 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SystemEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
-import {
-	legacySchoolDoFactory,
-	setupEntities,
-	systemEntityFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing/factory';
+import { legacySchoolDoFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
 import { SystemType } from '../domain';
 import { SystemMapper } from '../mapper';
 import { LegacySystemService, SystemService } from '../service';

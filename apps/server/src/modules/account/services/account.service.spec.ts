@@ -5,13 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo';
-import {
-	accountFactory,
-	schoolEntityFactory,
-	setupEntities,
-	systemFactory,
-	userFactory,
-} from '@shared/testing/factory';
+import { accountFactory, schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import 'reflect-metadata';
 import { EventBus } from '@nestjs/cqrs';
 import {

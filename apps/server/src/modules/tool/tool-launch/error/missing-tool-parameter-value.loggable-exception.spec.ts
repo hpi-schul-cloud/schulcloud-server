@@ -1,4 +1,4 @@
-import { contextExternalToolFactory, customParameterFactory } from '@shared/testing/factory';
+import { contextExternalToolFactory, customParameterFactory } from '@shared/testing';
 import { MissingToolParameterValueLoggableException } from './missing-tool-parameter-value.loggable-exception';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { CustomParameter } from '../../common/domain';

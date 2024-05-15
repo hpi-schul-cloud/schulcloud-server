@@ -4,7 +4,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym } from '@shared/domain/domainobject';
-import { cleanupCollections, pseudonymFactory, userFactory } from '@shared/testing/factory';
+import { cleanupCollections, pseudonymFactory, userFactory } from '@shared/testing';
 import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { v4 as uuidv4 } from 'uuid';

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing/factory';
+import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { EventBus } from '@nestjs/cqrs';

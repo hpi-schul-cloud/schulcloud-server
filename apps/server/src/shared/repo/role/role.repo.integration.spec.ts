@@ -4,7 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { cleanupCollections, roleFactory } from '@shared/testing/factory';
+import { cleanupCollections, roleFactory } from '@shared/testing';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {

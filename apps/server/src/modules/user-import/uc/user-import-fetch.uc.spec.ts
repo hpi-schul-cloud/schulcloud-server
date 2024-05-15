@@ -4,7 +4,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { importUserFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing/factory';
+import { importUserFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';

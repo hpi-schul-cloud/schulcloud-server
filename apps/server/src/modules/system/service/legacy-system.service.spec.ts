@@ -5,7 +5,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { LegacySystemRepo } from '@shared/repo';
-import { systemEntityFactory } from '@shared/testing/factory';
+import { systemEntityFactory } from '@shared/testing';
 import { SystemMapper } from '../mapper';
 import { LegacySystemService } from './legacy-system.service';
 

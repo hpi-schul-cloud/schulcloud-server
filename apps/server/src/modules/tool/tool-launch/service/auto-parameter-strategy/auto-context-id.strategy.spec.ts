@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory';
+import { contextExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { AutoContextIdStrategy } from './auto-context-id.strategy';

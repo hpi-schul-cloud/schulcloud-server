@@ -1,4 +1,4 @@
-import { setupEntities, submissionFactory } from '@shared/testing/factory';
+import { setupEntities, submissionFactory } from '@shared/testing';
 import { SubmissionStatusResponse } from '../controller/dto';
 import { SubmissionMapper } from './submission.mapper';
 

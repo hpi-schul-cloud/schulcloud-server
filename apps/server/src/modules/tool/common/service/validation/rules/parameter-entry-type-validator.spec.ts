@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing/factory';
+import { customParameterFactory } from '@shared/testing';
 import { CustomParameter, CustomParameterEntry, ToolParameterTypeMismatchLoggableException } from '../../../domain';
 import { CustomParameterType } from '../../../enum';
 import { ParameterEntryTypeValidator } from './parameter-entry-type-validator';

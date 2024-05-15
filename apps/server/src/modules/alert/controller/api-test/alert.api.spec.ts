@@ -4,7 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { of } from 'rxjs';
-import { axiosResponseFactory } from '@shared/testing/factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { SchulcloudTheme } from '@shared/domain/types';
 import { serverConfig, ServerTestModule } from '../../../server';
 import { createComponent, createIncident } from '../../testing';

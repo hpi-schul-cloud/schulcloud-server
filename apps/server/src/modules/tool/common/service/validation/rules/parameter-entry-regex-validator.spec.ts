@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing/factory';
+import { customParameterFactory } from '@shared/testing';
 import { CustomParameter, CustomParameterEntry, ToolParameterValueRegexLoggableException } from '../../../domain';
 import { ParameterEntryRegexValidator } from './parameter-entry-regex-validator';
 

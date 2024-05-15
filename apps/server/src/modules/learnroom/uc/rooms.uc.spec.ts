@@ -2,14 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo, LegacyBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
-import {
-	boardFactory,
-	courseFactory,
-	lessonFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing/factory';
+import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';

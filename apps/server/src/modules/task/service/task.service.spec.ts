@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '@shared/repo';
-import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing/factory';
+import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';

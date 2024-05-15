@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
-import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing/factory';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { CreateBoardBodyParams } from '../dto';
 
 const baseRouteName = '/boards';

@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory';
+import { userLoginMigrationDOFactory } from '@shared/testing';
 import { UserMigrationSuccessfulLoggable } from './user-migration-successful.loggable';
 
 describe(UserMigrationSuccessfulLoggable.name, () => {

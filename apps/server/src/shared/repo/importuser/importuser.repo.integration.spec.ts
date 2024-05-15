@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IImportUserRoleName, ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { MatchCreatorScope } from '@shared/domain/types';
-import { cleanupCollections, importUserFactory, schoolEntityFactory, userFactory } from '@shared/testing/factory';
+import { cleanupCollections, importUserFactory, schoolEntityFactory, userFactory } from '@shared/testing';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {

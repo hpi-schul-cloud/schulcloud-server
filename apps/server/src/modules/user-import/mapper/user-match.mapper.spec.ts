@@ -1,6 +1,6 @@
 import { MatchCreator } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchType, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserMatchMapper } from './match.mapper';

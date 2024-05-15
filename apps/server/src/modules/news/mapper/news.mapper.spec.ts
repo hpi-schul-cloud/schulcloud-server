@@ -10,7 +10,7 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
-import { courseFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { courseFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	CreateNewsParams,
 	FilterNewsParams,

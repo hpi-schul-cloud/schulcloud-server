@@ -4,7 +4,7 @@ import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { accountDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
+import { accountDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	UserLoginMigrationNotFoundLoggableException,

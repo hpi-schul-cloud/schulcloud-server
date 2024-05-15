@@ -1,4 +1,4 @@
-import { accountDoFactory } from '@shared/testing/factory';
+import { accountDoFactory } from '@shared/testing';
 import { Account } from '../../domain';
 import { AccountResponseMapper } from './account-response.mapper';
 import { ResolvedSearchListAccountDto } from '../../uc/dto/resolved-account.dto';

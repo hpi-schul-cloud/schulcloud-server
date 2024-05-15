@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConverterUtil } from '@shared/common';
-import { axiosResponseFactory } from '@shared/testing/factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';

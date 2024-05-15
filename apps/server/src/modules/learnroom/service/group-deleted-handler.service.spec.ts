@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupDeletedEvent } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
-import { groupFactory } from '@shared/testing/factory';
+import { groupFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { Course } from '../domain';
 import { courseFactory } from '../testing';

@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainObjectFactory } from '@shared/testing/factory';
+import { DomainObjectFactory } from '@shared/testing';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableProps } from '../domain';
 import { columnBoardFactory } from './column-board.factory';
 import { columnFactory } from './column.factory';

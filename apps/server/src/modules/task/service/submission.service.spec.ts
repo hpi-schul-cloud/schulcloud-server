@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
-import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing/factory';
+import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';

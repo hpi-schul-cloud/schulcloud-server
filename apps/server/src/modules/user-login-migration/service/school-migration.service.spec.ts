@@ -5,12 +5,7 @@ import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import {
-	legacySchoolDoFactory,
-	setupEntities,
-	userDoFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing/factory';
+import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,

@@ -3,12 +3,7 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfigEntity, SchoolEntity, SystemEntity } from '@shared/domain/entity';
-import {
-	schoolEntityFactory,
-	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing/factory';
+import { schoolEntityFactory, systemEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Response } from 'supertest';
 import { PublicSystemListResponse, PublicSystemResponse } from '../dto';
 

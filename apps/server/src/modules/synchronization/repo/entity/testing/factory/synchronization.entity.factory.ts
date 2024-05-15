@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing/factory';
+import { BaseFactory } from '@shared/testing';
 import { SynchronizationEntity, SynchronizationEntityProps } from '../../synchronization.entity';
 import { SynchronizationStatusModel } from '../../../../domain/types';
 

@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
-import { cleanupCollections, roleFactory } from '@shared/testing/factory';
+import { cleanupCollections, roleFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 

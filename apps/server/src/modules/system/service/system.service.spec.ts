@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { systemFactory } from '@shared/testing/factory';
+import { systemFactory } from '@shared/testing';
 import { SYSTEM_REPO, SystemRepo } from '../domain';
 import { SystemService } from './system.service';
 

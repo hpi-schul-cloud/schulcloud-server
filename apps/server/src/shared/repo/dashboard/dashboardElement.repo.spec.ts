@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity';
-import { courseFactory, userFactory } from '@shared/testing/factory';
+import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardElementRepo } from './dashboardElement.repo';
 
 describe(DashboardElementRepo.name, () => {

@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { MatchCreator } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { MatchCreatorScope } from '@shared/domain/types';
-import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing/factory';
+import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	FilterImportUserParams,
 	FilterMatchType,

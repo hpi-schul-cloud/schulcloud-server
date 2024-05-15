@@ -1,7 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
-import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing/factory';
+import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { ObjectId } from 'bson';

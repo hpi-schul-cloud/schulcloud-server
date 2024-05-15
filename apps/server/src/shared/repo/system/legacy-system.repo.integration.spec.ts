@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain/entity';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { LegacySystemRepo } from '@shared/repo';
-import { systemEntityFactory } from '@shared/testing/factory';
+import { systemEntityFactory } from '@shared/testing';
 
 describe('system repo', () => {
 	let module: TestingModule;
