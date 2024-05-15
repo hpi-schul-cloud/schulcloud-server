@@ -17,6 +17,7 @@ export class AccountEntityToDoMapper {
 			password: account.password,
 			systemId: account.systemId?.toString(),
 			token: account.token,
+			deactivatedAt: account.deactivatedAt,
 		});
 	}
 

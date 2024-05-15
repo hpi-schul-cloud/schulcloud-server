@@ -26,6 +26,7 @@ describe('AccountEntityToDoMapper', () => {
 					token: 'token',
 					activated: true,
 					idmReferenceId: 'idmReferenceId',
+					deactivatedAt: new Date(),
 				});
 
 				return { account };
@@ -49,6 +50,7 @@ describe('AccountEntityToDoMapper', () => {
 					_id: new ObjectId(account.id),
 					createdAt: account.createdAt,
 					updatedAt: account.updatedAt,
+					deactivatedAt: account.deactivatedAt,
 				};
 
 				expect(ret).toEqual(expect.objectContaining(expected));

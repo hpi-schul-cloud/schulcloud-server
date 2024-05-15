@@ -13,6 +13,7 @@ import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { SchoolInMigrationLoggableException } from '../loggable';
 
 import { Oauth2Strategy } from './oauth2.strategy';
+import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
 
 describe('Oauth2Strategy', () => {
 	let module: TestingModule;
@@ -141,6 +142,38 @@ describe('Oauth2Strategy', () => {
 					});
 
 				await expect(func).rejects.toThrow(new UnauthorizedException('no account found'));
+			});
+		});
+
+		describe('when account is deactivated', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				oauthService.authenticateUser.mockResolvedValue(
+					new OAuthTokenDto({
+						idToken: 'idToken',
+						accessToken: 'accessToken',
+						refreshToken: 'refreshToken',
+					})
+				);
+				oauthService.provisionUser.mockResolvedValue(user);
+				const account: Account = new Account({
+					id: 'accountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'username',
+					deactivatedAt: new Date(),
+				});
+				accountService.findByUserId.mockResolvedValue(account);
+			};
+
+			it('should throw an UserAccountDeactivated exception', async () => {
+				setup();
+				const func = async () =>
+					strategy.validate({
+						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
+					});
+
+				await expect(func).rejects.toThrow(new UserAccountDeactivatedLoggableException());
 			});
 		});
 	});
