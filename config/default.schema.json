@@ -825,6 +825,7 @@
 			"description": "Etherpad feature enabled"
 		},
 		"ETHERPAD_API_KEY": {
+			"default": "",
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
 		},
@@ -869,7 +870,7 @@
 			"default": 28800,
 			"description": "Number of seconds after an etherpad cookie expires."
 		},
-		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+		"ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
@@ -1421,6 +1422,16 @@
 					"type": "number",
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
+				},
+				"MAX_CONCURRENT_DELETION_REQUESTS": {
+					"type": "number",
+					"default": 10,
+					"description": "max amount of deletion requests proccessed concurently"
+				},
+				"DELETION_DELAY_MILLISECONDS": {
+					"type": "number",
+					"default": 10000,
+					"description": "deley in milliseconds to give time modules to perform deletion proccess"
 				}
 			},
 			"default": {}
@@ -1646,12 +1657,6 @@
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
-			"required": [
-				"API_URL",
-				"TOKEN_ENDPOINT",
-				"CLIENT_ID",
-				"CLIENT_SECRET"
-			],
 			"properties": {
 				"API_URL": {
 					"type": "string",
@@ -1728,6 +1733,16 @@
 			"default": "",
 			"description": "URL for fetching lizenz info from moin.schule schulconnex",
 			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
+		},
+		"BOARD_COLLABORATION_URI": {
+			"type": "string",
+			"default": "ws://localhost:4450",
+			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_NEW_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new layout feature"
 		}
 	},
 	"required": []

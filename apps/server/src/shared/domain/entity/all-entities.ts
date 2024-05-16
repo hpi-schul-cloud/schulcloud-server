@@ -1,4 +1,4 @@
-import { AccountEntity } from '@modules/account/entity/account.entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';

@@ -6,7 +6,7 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { RoleService, RoleDto } from '@modules/role';
+import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -652,14 +652,23 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				const externalGroups: ExternalGroupDto[] = [firstExternalGroup, secondExternalGroup];
 
 				userService.findByExternalId.mockResolvedValue(user);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(new Page<Group>(existingGroups, 2));
+				groupService.findGroups.mockResolvedValue(new Page<Group>(existingGroups, 2));
 
 				return {
 					externalGroups,
 					systemId,
 					externalUserId,
+					user,
 				};
 			};
+
+			it('should find groups', async () => {
+				const { externalGroups, systemId, externalUserId, user } = setup();
+
+				await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+
+				expect(groupService.findGroups).toHaveBeenCalledWith({ userId: user.id });
+			});
 
 			it('should not save the group', async () => {
 				const { externalGroups, systemId, externalUserId } = setup();
@@ -709,7 +718,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
 					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(new Page<Group>(existingGroups, 2));
+					groupService.findGroups.mockResolvedValue(new Page<Group>(existingGroups, 2));
 
 					return {
 						externalGroups,
@@ -788,7 +797,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
 					userService.findByExternalId.mockResolvedValueOnce(user);
-					groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(new Page<Group>(existingGroups, 2));
+					groupService.findGroups.mockResolvedValueOnce(new Page<Group>(existingGroups, 2));
 					groupService.save.mockResolvedValueOnce(secondExistingGroup);
 
 					return {

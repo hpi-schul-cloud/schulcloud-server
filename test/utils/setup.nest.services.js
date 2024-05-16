@@ -6,11 +6,11 @@ const { ConfigModule } = require('@nestjs/config');
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
-const { AccountUc } = require('../../dist/apps/server/modules/account/uc/account.uc');
-const { AccountService } = require('../../dist/apps/server/modules/account/services/account.service');
+const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
+const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
 const {
 	AccountValidationService,
-} = require('../../dist/apps/server/modules/account/services/account.validation.service');
+} = require('../../dist/apps/server/modules/account/domain/services/account.validation.service');
 const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/config/database.config');
 const { ALL_ENTITIES } = require('../../dist/apps/server/shared/domain/entity/all-entities');
 const { TeamService } = require('../../dist/apps/server/modules/teams/service/team.service');
