@@ -1,8 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { TypeGuard } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
-import { ServerConfig } from '@src/modules/server';
 import { AxiosResponse } from 'axios';
 import {
 	InlineResponse200,
@@ -22,16 +20,10 @@ import {
 	EtherpadResponseCode,
 	GroupId,
 	PadId,
+	Session,
 	SessionId,
 } from './interface';
 import { EtherpadResponseMapper } from './mappers';
-
-interface Session {
-	id: string;
-	groupId: string;
-	authorId: string;
-	validUntil: number;
-}
 
 @Injectable()
 export class EtherpadClientAdapter {
@@ -39,8 +31,7 @@ export class EtherpadClientAdapter {
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
 		private readonly authorApi: AuthorApi,
-		private readonly padApi: PadApi,
-		private readonly configService: ConfigService<ServerConfig, true>
+		private readonly padApi: PadApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise<AuthorId> {
