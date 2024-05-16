@@ -75,9 +75,9 @@ export class MediaAvailableLineUc {
 		const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
 
 		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
-			const externalToolMediumId = tool[0]?.medium?.mediumId;
-			if (externalToolMediumId) {
-				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMediumId, mediaUserLicenses);
+			const externalToolMedium = tool[0]?.medium;
+			if (externalToolMedium) {
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
 			}
 			return true;
 		});
