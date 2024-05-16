@@ -2,12 +2,12 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 import { ToolConfigurationStatusService } from '../../context-external-tool/service';
-import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
@@ -49,7 +49,7 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<ToolLaunchData> {
+	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalToolLaunchable): Promise<ToolLaunchData> {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
@@ -88,7 +88,7 @@ export class ToolLaunchService {
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): void {
 		const status: ContextExternalToolConfigurationStatus = this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,
