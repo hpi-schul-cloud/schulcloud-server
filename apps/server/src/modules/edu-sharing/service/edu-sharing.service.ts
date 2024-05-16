@@ -31,15 +31,47 @@ export class EduSharingService {
 		private readonly configService: ConfigService<EduSharingConfig, true>,
 		private readonly logger: LegacyLogger
 	) {
-		this.appId = this.configService.get('APP_ID');
-		this.baseUrl = this.configService.get('DOMAIN');
-		this.privateKey = this.configService.get('PRIVATE_KEY');
-		this.publicKey = this.configService.get('PUBLIC_KEY');
+		this.appId = this.configService.get<string>('APP_ID');
+		this.baseUrl = this.configService.get<string>('API_URL');
+		this.privateKey = this.configService.get<string>('PRIVATE_KEY');
+		this.publicKey = this.configService.get<string>('PUBLIC_KEY');
 		this.logger.setContext(EduSharingService.name);
 	}
 
-	getEduAppXMLData(): string {
-		return this.generateEduAppXMLData(this.publicKey);
+	/**
+	 * Function getTicketForUser
+	 *
+	 * Fetches the edu-sharing ticket for a given username
+	 * @param string username
+	 * The username you want to generate a ticket for
+	 * @param array|null additionalFields
+	 * additional post fields to submit
+	 * @return string
+	 * The ticket, which you can use as an authentication header, see @getRESTAuthenticationHeader
+	 * @throws AppAuthException
+	 * @throws Exception
+	 */
+	async getTicketForUser(
+		userName: string = 'admin',
+		additionalFields?: { [key: string]: string | File } | undefined
+	): Promise<string> {
+		const options: AxiosRequestConfig = {
+			method: 'POST',
+			url: `${this.baseUrl}/rest/authentication/v1/appauth/${encodeURIComponent(userName)}`,
+			headers: this.getSignatureHeaders(userName),
+			timeout: 5000,
+		};
+		if (additionalFields !== null) {
+			options.data = additionalFields;
+		}
+		const response = await lastValueFrom(this.httpService.request(options));
+		const data = response.data;
+		const gotError = data.error !== undefined;
+		const responseOk = !gotError;
+		if (responseOk && (data.userId === userName || data.userId.startsWith(userName + '@'))) {
+			return data.ticket;
+		}
+		throw new Error(data.message || '');
 	}
 
 	/**
@@ -60,69 +92,22 @@ export class EduSharingService {
 			Accept: 'application/json',
 			'Content-Type': 'application/json',
 		};
-		try {
-			const response = await lastValueFrom(
-				this.httpService.get(`${this.baseUrl}/rest/authentication/v1/validateSession`, { headers })
-			);
-			const data = response.data;
-			if (data.statusCode !== 'OK') {
-				throw new Error('The given ticket is not valid anymore');
-			}
-			return response;
-		} catch (error) {
-			this.logger.error(`No answer from repository. Possibly a timeout while trying to connect to ${this.baseUrl}`);
-			throw error;
-		}
-	}
-
-	/**
-	 * Function getTicketForUser
-	 *
-	 * Fetches the edu-sharing ticket for a given username
-	 * @param string username
-	 * The username you want to generate a ticket for
-	 * @param array|null additionalFields
-	 * additional post fields to submit
-	 * @return string
-	 * The ticket, which you can use as an authentication header, see @getRESTAuthenticationHeader
-	 * @throws AppAuthException
-	 * @throws Exception
-	 */
-	async getTicketForUser(
-		username: string,
-		additionalFields?: { [key: string]: string | File } | undefined
-	): Promise<string> {
 		const options: AxiosRequestConfig = {
-			method: 'POST',
-			url: `${this.baseUrl}/rest/authentication/v1/appauth/${encodeURIComponent('admin')}`,
-			headers: this.getSignatureHeaders('admin'),
+			method: 'GET',
+			url: `${this.baseUrl}/rest/authentication/v1/validateSession`,
+			headers: headers,
 			timeout: 5000,
 		};
-		console.log(options);
-		if (additionalFields !== null) {
-			options.data = additionalFields;
+		const response = await lastValueFrom(this.httpService.request(options));
+		const data = response.data;
+		if (data.statusCode !== 'OK') {
+			throw new Error('The given ticket is not valid anymore.');
 		}
-		try {
-			const observable = this.httpService.request(options);
-			const response = await lastValueFrom(observable)
-				.then((response) => {
-					console.log('response', response);
-				})
-				.catch((error) => {
-					console.log('message', error.response.data);
-				});
-			// const data = response.data;
-			// const gotError = data.error !== undefined;
-			// const responseOk = !gotError;
-			// if (responseOk && (data.userId === username || data.userId.startsWith(username + '@'))) {
-			// 	return data.ticket;
-			// }
-			// throw new Error(data.message || '');
-			return 'hello world';
-		} catch (error) {
-			this.logger.error(`edu-sharing ticket could not be retrieved for ${username} from ${this.baseUrl}`, error);
-			throw error;
-		}
+		return data;
+	}
+
+	getEduAppXMLData(): string {
+		return this.generateEduAppXMLData(this.publicKey);
 	}
 
 	/**
@@ -134,7 +119,7 @@ export class EduSharingService {
 	 * @return string
 	 */
 	private getRESTAuthenticationHeader(ticket: string): string {
-		return `Authorization: EDU-TICKET ${ticket}`;
+		return `EDU-TICKET ${ticket}`;
 	}
 
 	/**
@@ -162,12 +147,13 @@ export class EduSharingService {
 	/**
 	 * Function sign
 	 *
-	 * @param string toSign
+	 * @param string data
 	 * @return string
 	 */
 	private sign(data: string): string {
-		const sign = createSign('RSA-SHA256');
-		sign.update(data);
+		const sign = createSign('SHA1');
+		sign.write(data);
+		sign.end();
 		return sign.sign(this.privateKey, 'base64');
 	}
 
@@ -179,18 +165,18 @@ export class EduSharingService {
 	 */
 	private generateEduAppXMLData(publicKey: string, type = 'LMS', publicIP = '*'): string {
 		return (
-			'<?xml version="1.0" encoding="UTF-8"?>\r\n' +
-			'<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">\r\n' +
-			'<properties>\r\n' +
-			`    <entry key="appid">${this.appId}</entry>\r\n` +
-			`    <entry key="public_key">${publicKey}</entry>\r\n` +
-			`    <entry key="type">${type}</entry>\r\n` +
-			'    <entry key="domain"></entry>\r\n' +
-			'    <!-- in case of wildcard host: Replace this, if possible, with the public ip from your service -->\r\n' +
-			`    <entry key ="host">${publicIP}</entry>\r\n` +
-			'    <!-- must be true -->\r\n' +
-			'    <entry key="trustedclient">true</entry>\r\n' +
-			'</properties>\r\n'
+			'<?xml version="1.0" encoding="UTF-8"?>\n' +
+			'<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">\n' +
+			'<properties>\n' +
+			`    <entry key="appid">${this.appId}</entry>\n` +
+			`    <entry key="public_key">${publicKey}</entry>\n` +
+			`    <entry key="type">${type}</entry>\n` +
+			'    <entry key="domain"></entry>\n' +
+			'    <!-- in case of wildcard host: Replace this, if possible, with the public ip from your service -->\n' +
+			`    <entry key="host">${publicIP}</entry>\n` +
+			'    <!-- must be true -->\n' +
+			'    <entry key="trustedclient">true</entry>\n' +
+			'</properties>\n'
 		);
 	}
 }
