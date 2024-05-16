@@ -128,19 +128,21 @@ describe(MediaElementService.name, () => {
 
 				const result = await service.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
 
-				expect(result).toEqual({
-					id: contextExternalTool.id,
-					displayName: contextExternalTool.displayName,
-					schoolToolRef: {
-						schoolId: user.school.id,
-						schoolToolId: schoolExternalTool.id,
-					},
-					contextRef: {
-						id: mediaBoard.id,
-						type: ToolContextType.MEDIA_BOARD,
-					},
-					parameters: contextExternalTool.parameters,
-				});
+				expect(result).toEqual(
+					new ContextExternalTool({
+						id: expect.any(String),
+						displayName: contextExternalTool.displayName,
+						schoolToolRef: {
+							schoolId: user.school.id,
+							schoolToolId: schoolExternalTool.id,
+						},
+						contextRef: {
+							id: mediaBoard.id,
+							type: ToolContextType.MEDIA_BOARD,
+						},
+						parameters: contextExternalTool.parameters,
+					})
+				);
 			});
 
 			it('should save the new context external tool', async () => {
@@ -148,17 +150,20 @@ describe(MediaElementService.name, () => {
 
 				await service.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
 
-				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith({
-					schoolToolRef: {
-						schoolId: user.school.id,
-						schoolToolId: schoolExternalTool.id,
-					},
-					contextRef: {
-						id: mediaBoard.id,
-						type: ToolContextType.MEDIA_BOARD,
-					},
-					parameters: [],
-				});
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(
+					new ContextExternalTool({
+						id: expect.any(String),
+						schoolToolRef: {
+							schoolId: user.school.id,
+							schoolToolId: schoolExternalTool.id,
+						},
+						contextRef: {
+							id: mediaBoard.id,
+							type: ToolContextType.MEDIA_BOARD,
+						},
+						parameters: [],
+					})
+				);
 			});
 		});
 	});
