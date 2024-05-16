@@ -8,27 +8,13 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
+import * as utils from '../../utils';
 import { CommonCartridgeResourceFactory } from '../common-cartridge-resource-factory';
 import { CommonCartridgeManifestResourceV110 } from './common-cartridge-manifest-resource';
 
 describe('CommonCartridgeManifestResourceV110', () => {
-	describe('canInline', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
-			const setup = () => {
-				const props = createCommonCartridgeManifestResourcePropsV110();
-				const sut = new CommonCartridgeManifestResourceV110(props);
-
-				return { sut };
-			};
-
-			it('should return false', () => {
-				const { sut } = setup();
-
-				const result = sut.canInline();
-
-				expect(result).toBe(false);
-			});
-		});
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('getFilePath', () => {
@@ -99,6 +85,11 @@ describe('CommonCartridgeManifestResourceV110', () => {
 					organizations: [organization1, organization2],
 					resources: [resource1, resource2],
 				});
+
+				// we need this, otherwise the identifier will be random and we have to updated
+				// the manifest.xml file which we will compare with the expected content in the test
+				const mockValues = ['o1', 'o2'];
+				jest.spyOn(utils, 'createIdentifier').mockImplementation(() => mockValues.shift() ?? '');
 
 				return { sut };
 			};

@@ -1,4 +1,5 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { VersionNotSupportedLoggableException } from '../errors';
 
 type CommonCartridgeBaseProps = {
 	version: CommonCartridgeVersion;
@@ -23,7 +24,7 @@ export abstract class CommonCartridgeBase {
 
 	private checkVersion(target: CommonCartridgeVersion): void {
 		if (this.getSupportedVersion() !== target) {
-			throw new Error(`Version ${target} is not supported.`);
+			throw new VersionNotSupportedLoggableException(target);
 		}
 	}
 }
