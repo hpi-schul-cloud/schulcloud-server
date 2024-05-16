@@ -8,12 +8,9 @@ export class MediaUserLicenseService {
 		externalToolMedium: ExternalToolMedium,
 		mediaUserLicenses: MediaUserLicense[]
 	): boolean {
-		return mediaUserLicenses.some((license: MediaUserLicense) => {
-			if (!externalToolMedium.publisher) {
-				externalToolMedium.publisher = '';
-			}
-
-			return license.mediumId === externalToolMedium.mediumId && license.mediaSourceId === externalToolMedium.publisher;
-		});
+		return mediaUserLicenses.some(
+			(license: MediaUserLicense) =>
+				license.mediumId === externalToolMedium.mediumId && license.mediaSourceId === externalToolMedium.publisher
+		);
 	}
 }

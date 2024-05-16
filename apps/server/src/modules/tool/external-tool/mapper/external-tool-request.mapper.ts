@@ -13,6 +13,7 @@ import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
 	ExternalToolCreateParams,
+	ExternalToolMediumParams,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	Lti11ToolConfigCreateParams,
@@ -20,7 +21,6 @@ import {
 	Oauth2ToolConfigCreateParams,
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
-	ExternalToolMediumParams,
 } from '../controller/dto';
 import { ExternalTool } from '../domain';
 import {
