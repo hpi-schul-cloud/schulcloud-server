@@ -1,6 +1,16 @@
+import { TypeGuard } from '@shared/common';
 import { ErrorUtils } from '@src/core/error/utils';
 import { InlineResponse2003Data, InlineResponse2004Data, InlineResponse200Data } from '../etherpad-api-client';
-import { AuthorId, EtherpadErrorType, EtherpadParams, EtherpadResponse, GroupId, PadId, SessionId } from '../interface';
+import {
+	AuthorId,
+	EtherpadErrorType,
+	EtherpadParams,
+	EtherpadResponse,
+	GroupId,
+	PadId,
+	Session,
+	SessionId,
+} from '../interface';
 import { EtherpadErrorLoggableException } from '../loggable';
 
 export class EtherpadResponseMapper {
@@ -48,5 +58,28 @@ export class EtherpadResponseMapper {
 		response: T | Error
 	): EtherpadErrorLoggableException {
 		return new EtherpadErrorLoggableException(type, payload, ErrorUtils.createHttpExceptionOptions(response.message));
+	}
+
+	static mapEtherpadSessionToSession([etherpadId, etherpadSession]: [string, unknown | undefined]): Session {
+		if (
+			!TypeGuard.isObject(etherpadSession) ||
+			!('groupID' in etherpadSession) ||
+			!('authorID' in etherpadSession) ||
+			!('validUntil' in etherpadSession)
+		)
+			throw new Error('Etherpad session is missing required properties');
+
+		const groupId = TypeGuard.checkString(etherpadSession.groupID);
+		const authorId = TypeGuard.checkString(etherpadSession.authorID);
+		const validUntil = TypeGuard.checkNumber(etherpadSession.validUntil);
+
+		const session: Session = {
+			id: etherpadId,
+			groupId,
+			authorId,
+			validUntil,
+		};
+
+		return session;
 	}
 }
