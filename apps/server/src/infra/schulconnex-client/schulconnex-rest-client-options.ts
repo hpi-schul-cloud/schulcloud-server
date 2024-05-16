@@ -1,11 +1,11 @@
 export interface SchulconnexRestClientOptions {
-	apiUrl: string;
+	apiUrl?: string;
 
-	tokenEndpoint: string;
+	tokenEndpoint?: string;
 
-	clientId: string;
+	clientId?: string;
 
-	clientSecret: string;
+	clientSecret?: string;
 
 	personenInfoTimeoutInMs?: number;
 }

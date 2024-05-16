@@ -13,5 +13,9 @@ spec:
       targetPort: 4030
       protocol: TCP
       name: admin
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+      name: api-metrics
   selector:
     app: api-admin
