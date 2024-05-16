@@ -38,6 +38,7 @@ export class ExternalToolService {
 		}
 
 		const created: ExternalTool = await this.externalToolRepo.save(externalTool);
+
 		return created;
 	}
 

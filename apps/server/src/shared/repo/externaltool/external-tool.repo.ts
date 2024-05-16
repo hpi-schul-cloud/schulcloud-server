@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
 import { ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
+import { EntityId } from '../../domain/types';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
@@ -40,6 +41,17 @@ export class ExternalToolRepo {
 		});
 
 		return savedDomainObject;
+	}
+
+	public async findById(id: EntityId): Promise<ExternalTool> {
+		const entity: ExternalToolEntity = await this.em.findOneOrFail(this.entityName, { id });
+		const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+
+		return domainObject;
+	}
+
+	public deleteById(id: EntityId): void {
+		this.em.remove(this.em.getReference(this.entityName, id));
 	}
 
 	public async findByName(name: string): Promise<ExternalTool | null> {
