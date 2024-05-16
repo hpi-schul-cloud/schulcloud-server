@@ -212,12 +212,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(medium: <a href="../classes/ExternalToolMedium.html" target="_self">ExternalToolMedium</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(medium: <a href="../classes/ExternalToolMedium.html" target="_self">ExternalToolMedium</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-licence.loggable-exception.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-licence.loggable-exception.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -259,14 +259,14 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>contextExternalToolId</td>
+                                                        <td>contextExternalTool</td>
                                                   
                                                         <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                                        <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                                         </td>
                                                   
                                                     <td>
-                                                            Yes
+                                                            No
                                                     </td>
                                                     
                                                 </tr>
@@ -532,8 +532,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-licence.loggable-exception.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-licence.loggable-exception.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -609,12 +609,13 @@ import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { BusinessError } from &#x27;@shared/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { ContextExternalToolLaunchable } from &#x27;../../context-external-tool/domain&#x27;;
 
 export class MissingMediaLicenseLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly medium: ExternalToolMedium,
 		private readonly userId: EntityId,
-		private readonly contextExternalToolId?: string
+		private readonly contextExternalTool: ContextExternalToolLaunchable
 	) {
 		super(
 			{
@@ -632,9 +633,15 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 			message: this.message,
 			stack: this.stack,
 			data: {
-				medium: { mediumId: this.medium.mediumId, publisher: this.medium.publisher },
+				medium: {
+					mediumId: this.medium.mediumId,
+					publisher: this.medium.publisher,
+				},
 				userId: this.userId,
-				contextExternalToolId: this.contextExternalToolId,
+				contextExternalToolId: this.contextExternalTool.id,
+				schoolExternalToolId: this.contextExternalTool.schoolToolRef.schoolToolId,
+				contextType: this.contextExternalTool.contextRef.type,
+				contextId: this.contextExternalTool.contextRef.id,
 			},
 		};
 	}

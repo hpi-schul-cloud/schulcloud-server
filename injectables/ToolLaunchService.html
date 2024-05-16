@@ -372,7 +372,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>getLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -415,7 +415,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -453,7 +453,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isToolStatusLaunchableOrThrow(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>isToolStatusLaunchableOrThrow(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -520,7 +520,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -656,12 +656,12 @@
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalToolConfigurationStatus } from &#x27;../../common/domain&#x27;;
 import { ToolConfigType } from &#x27;../../common/enum&#x27;;
-import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { ContextExternalToolLaunchable } from &#x27;../../context-external-tool/domain&#x27;;
 import { ToolConfigurationStatusService } from &#x27;../../context-external-tool/service&#x27;;
-import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool&#x27;;
-import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
+import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
 import { SchoolExternalToolService } from &#x27;../../school-external-tool&#x27;;
+import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ToolStatusNotLaunchableLoggableException } from &#x27;../error&#x27;;
 import { ToolLaunchMapper } from &#x27;../mapper&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
@@ -703,7 +703,7 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalTool): Promise&lt;ToolLaunchData&gt; {
+	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalToolLaunchable): Promise&lt;ToolLaunchData&gt; {
 		const schoolExternalToolId: EntityId &#x3D; contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool, schoolExternalTool } &#x3D; await this.loadToolHierarchy(schoolExternalToolId);
@@ -742,7 +742,7 @@ export class ToolLaunchService {
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): void {
 		const status: ContextExternalToolConfigurationStatus &#x3D; this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,

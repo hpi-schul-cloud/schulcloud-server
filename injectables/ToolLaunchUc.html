@@ -140,7 +140,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#getToolLaunchRequest" >getToolLaunchRequest</a>
+                                <a href="#getContextExternalToolLaunchRequest" >getContextExternalToolLaunchRequest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSchoolExternalToolLaunchRequest" >getSchoolExternalToolLaunchRequest</a>
                             </li>
                         </ul>
                     </td>
@@ -160,12 +164,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userLicenseService: <a href="../injectables/UserLicenseService.html" target="_self">UserLicenseService</a>, mediaUserLicenseService: <a href="../injectables/MediaUserLicenseService.html" target="_self">MediaUserLicenseService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
+<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userLicenseService: <a href="../injectables/UserLicenseService.html" target="_self">UserLicenseService</a>, mediaUserLicenseService: <a href="../injectables/MediaUserLicenseService.html" target="_self">MediaUserLicenseService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -199,6 +203,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ContextExternalToolService.html" target="_self" >ContextExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolExternalToolService.html" target="_self" >SchoolExternalToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -296,15 +312,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkUserHasLicenseForExternalTool(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>checkUserHasLicenseForExternalTool(contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +343,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -352,7 +368,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -366,26 +382,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getToolLaunchRequest"></a>
+                    <a name="getContextExternalToolLaunchRequest"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>getToolLaunchRequest</b></span>
-                        <a href="#getToolLaunchRequest"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getContextExternalToolLaunchRequest</b></span>
+                        <a href="#getContextExternalToolLaunchRequest"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getToolLaunchRequest(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>getContextExternalToolLaunchRequest(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -443,6 +459,87 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSchoolExternalToolLaunchRequest"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getSchoolExternalToolLaunchRequest</b></span>
+                        <a href="#getSchoolExternalToolLaunchRequest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolExternalToolLaunchRequest(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, pseudoContextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>pseudoContextExternalTool</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ToolLaunchRequest.html" target="_self" >Promise&lt;ToolLaunchRequest&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -459,9 +556,13 @@ import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ToolContextType } from &#x27;../../common/enum&#x27;;
 import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
-import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { type ContextExternalTool, ContextExternalToolLaunchable } from &#x27;../../context-external-tool/domain&#x27;;
 import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
+import { type SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
+import { LaunchContextUnavailableLoggableException } from &#x27;../error&#x27;;
 import { ToolLaunchService } from &#x27;../service&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
 
@@ -470,6 +571,7 @@ export class ToolLaunchUc {
 	constructor(
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly authorizationService: AuthorizationService,
 		private readonly userLicenseService: UserLicenseService,
@@ -477,13 +579,16 @@ export class ToolLaunchUc {
 		private readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;
 	) {}
 
-	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;ToolLaunchRequest&gt; {
+	async getContextExternalToolLaunchRequest(
+		userId: EntityId,
+		contextExternalToolId: EntityId
+	): Promise&lt;ToolLaunchRequest&gt; {
 		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
-		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;)) {
@@ -496,7 +601,48 @@ export class ToolLaunchUc {
 		return launchRequest;
 	}
 
-	private async checkUserHasLicenseForExternalTool(contextExternalTool: ContextExternalTool, userId: EntityId) {
+	async getSchoolExternalToolLaunchRequest(
+		userId: EntityId,
+		pseudoContextExternalTool: ContextExternalToolLaunchable
+	): Promise&lt;ToolLaunchRequest&gt; {
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(
+			pseudoContextExternalTool.schoolToolRef.schoolToolId
+		);
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+		await this.toolPermissionHelper.ensureContextPermissionsForSchool(
+			user,
+			schoolExternalTool,
+			pseudoContextExternalTool.contextRef.id,
+			pseudoContextExternalTool.contextRef.type,
+			context
+		);
+
+		const availableLaunchContexts: ToolContextType[] &#x3D; [ToolContextType.MEDIA_BOARD];
+		if (!availableLaunchContexts.includes(pseudoContextExternalTool.contextRef.type)) {
+			throw new LaunchContextUnavailableLoggableException(pseudoContextExternalTool, userId);
+		}
+
+		await this.contextExternalToolService.checkContextRestrictions(pseudoContextExternalTool);
+
+		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;)) {
+			await this.checkUserHasLicenseForExternalTool(pseudoContextExternalTool, userId);
+		}
+
+		const toolLaunchData: ToolLaunchData &#x3D; await this.toolLaunchService.getLaunchData(
+			userId,
+			pseudoContextExternalTool
+		);
+		const launchRequest: ToolLaunchRequest &#x3D; this.toolLaunchService.generateLaunchRequest(toolLaunchData);
+
+		return launchRequest;
+	}
+
+	private async checkUserHasLicenseForExternalTool(
+		contextExternalTool: ContextExternalToolLaunchable,
+		userId: EntityId
+	): Promise&lt;void&gt; {
 		const schoolExternalToolId: EntityId &#x3D; contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool } &#x3D; await this.toolLaunchService.loadToolHierarchy(schoolExternalToolId);
@@ -507,7 +653,7 @@ export class ToolLaunchUc {
 			externalTool.medium?.mediumId &amp;&amp;
 			!this.mediaUserLicenseService.hasLicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
 		) {
-			throw new MissingMediaLicenseLoggableException(externalTool.medium, userId, contextExternalTool.id);
+			throw new MissingMediaLicenseLoggableException(externalTool.medium, userId, contextExternalTool);
 		}
 	}
 }

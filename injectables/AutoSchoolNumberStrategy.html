@@ -218,7 +218,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getValue(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>getValue(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -261,7 +261,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -293,7 +293,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
-import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
+import { ContextExternalToolLaunchable } from &#x27;../../../context-external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../../school-external-tool/domain&#x27;;
 import { AutoParameterStrategy } from &#x27;./auto-parameter.strategy&#x27;;
 
@@ -304,7 +304,7 @@ export class AutoSchoolNumberStrategy implements AutoParameterStrategy {
 	async getValue(
 		schoolExternalTool: SchoolExternalTool,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise&lt;string | undefined&gt; {
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 

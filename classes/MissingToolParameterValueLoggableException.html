@@ -212,7 +212,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, parameters: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>)</code>
+<code>constructor(contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>, parameters: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -238,7 +238,7 @@
                                                         <td>contextExternalTool</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                                        <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -595,12 +595,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { BusinessError } from &#x27;@shared/common&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
-import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
 import { CustomParameter } from &#x27;../../common/domain&#x27;;
+import { ContextExternalToolLaunchable } from &#x27;../../context-external-tool/domain&#x27;;
 
 export class MissingToolParameterValueLoggableException extends BusinessError implements Loggable {
 	constructor(
-		private readonly contextExternalTool: ContextExternalTool,
+		private readonly contextExternalTool: ContextExternalToolLaunchable,
 		private readonly parameters: CustomParameter[]
 	) {
 		super(

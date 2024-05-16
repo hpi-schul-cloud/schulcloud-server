@@ -392,7 +392,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getValue(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>getValue(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -435,7 +435,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -472,7 +472,7 @@ import { Course } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
 import { CustomParameterType, ToolContextType } from &#x27;../../../common/enum&#x27;;
-import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
+import { ContextExternalToolLaunchable } from &#x27;../../../context-external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../../school-external-tool/domain&#x27;;
 import { ParameterTypeNotImplementedLoggableException } from &#x27;../../error&#x27;;
 import { AutoParameterStrategy } from &#x27;./auto-parameter.strategy&#x27;;
@@ -487,7 +487,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 
 	async getValue(
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise&lt;string | undefined&gt; {
 		switch (contextExternalTool.contextRef.type) {
 			case ToolContextType.COURSE: {

@@ -339,7 +339,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addParameters(propertyData: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>, customParameterDOs: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>, scopes: literal type[], schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>addParameters(propertyData: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>, customParameterDOs: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>, scopes: literal type[], schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -418,7 +418,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -1236,7 +1236,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getParameterValue(customParameter: <a href="../classes/CustomParameter.html" target="_self">CustomParameter</a>, matchingParameterEntry: CustomParameterEntry | undefined, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>getParameterValue(customParameter: <a href="../classes/CustomParameter.html" target="_self">CustomParameter</a>, matchingParameterEntry: CustomParameterEntry | undefined, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -1303,7 +1303,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -1342,7 +1342,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>handleParametersToInclude(propertyData: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>, parametersToInclude: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>, params: CustomParameterEntry[], schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>handleParametersToInclude(propertyData: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>, parametersToInclude: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>, params: CustomParameterEntry[], schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
                 </td>
             </tr>
 
@@ -1421,7 +1421,7 @@
                                         <tr>
                                                 <td>contextExternalTool</td>
                                             <td>
-                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
                                             </td>
 
                                             <td>
@@ -1489,7 +1489,7 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { URLSearchParams } from &#x27;url&#x27;;
 import { CustomParameter, CustomParameterEntry } from &#x27;../../../common/domain&#x27;;
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from &#x27;../../../common/enum&#x27;;
-import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
+import { ContextExternalToolLaunchable } from &#x27;../../../context-external-tool/domain&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../../school-external-tool/domain&#x27;;
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from &#x27;../../error&#x27;;
@@ -1646,7 +1646,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		customParameterDOs: CustomParameter[],
 		scopes: { scope: CustomParameterScope; params: CustomParameterEntry[] }[],
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise&lt;void&gt; {
 		await Promise.all(
 			scopes.map(async ({ scope, params }): Promise&lt;void&gt; &#x3D;&gt; {
@@ -1672,7 +1672,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		parametersToInclude: CustomParameter[],
 		params: CustomParameterEntry[],
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise&lt;void&gt; {
 		const missingParameters: CustomParameter[] &#x3D; [];
 
@@ -1708,7 +1708,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		customParameter: CustomParameter,
 		matchingParameterEntry: CustomParameterEntry | undefined,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise&lt;string | undefined&gt; {
 		if (
 			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.BOOLEAN ||

@@ -4487,6 +4487,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContextExternalTool.html" data-type="entity-link" >ContextExternalTool</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextExternalToolBodyParams.html" data-type="entity-link" >ContextExternalToolBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContextExternalToolConfigurationStatus.html" data-type="entity-link" >ContextExternalToolConfigurationStatus</a>
                             </li>
                             <li class="link">
@@ -4512,6 +4515,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ContextExternalToolIdParams-1.html" data-type="entity-link" >ContextExternalToolIdParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ContextExternalToolLaunchParams.html" data-type="entity-link" >ContextExternalToolLaunchParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ContextExternalToolNameAlreadyExistsLoggableException.html" data-type="entity-link" >ContextExternalToolNameAlreadyExistsLoggableException</a>
@@ -5417,6 +5423,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/KeyFactory.html" data-type="entity-link" >KeyFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/LaunchContextUnavailableLoggableException.html" data-type="entity-link" >LaunchContextUnavailableLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/LdapAlreadyPersistedException.html" data-type="entity-link" >LdapAlreadyPersistedException</a>
                             </li>
                             <li class="link">
@@ -6248,6 +6257,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolExternalToolIdParams-1.html" data-type="entity-link" >SchoolExternalToolIdParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolExternalToolLaunchParams.html" data-type="entity-link" >SchoolExternalToolLaunchParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolExternalToolMetadata.html" data-type="entity-link" >SchoolExternalToolMetadata</a>
                             </li>
                             <li class="link">
@@ -6783,9 +6795,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ToolLaunchMapper.html" data-type="entity-link" >ToolLaunchMapper</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ToolLaunchParams.html" data-type="entity-link" >ToolLaunchParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ToolLaunchRequest.html" data-type="entity-link" >ToolLaunchRequest</a>
@@ -8324,6 +8333,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ConfigurationParameters.html" data-type="entity-link" >ConfigurationParameters</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ContextExternalToolLaunchable.html" data-type="entity-link" >ContextExternalToolLaunchable</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ContextExternalToolProperties.html" data-type="entity-link" >ContextExternalToolProperties</a>

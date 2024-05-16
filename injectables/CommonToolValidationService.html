@@ -388,7 +388,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { ContextExternalTool } from &#x27;../../../context-external-tool/domain&#x27;;
+import { ContextExternalTool, ContextExternalToolLaunchable } from &#x27;../../../context-external-tool/domain&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { SchoolExternalTool } from &#x27;../../../school-external-tool/domain&#x27;;
 import { CustomParameter } from &#x27;../../domain&#x27;;
@@ -400,7 +400,7 @@ import {
 	ParameterArrayValidator,
 } from &#x27;./rules&#x27;;
 
-export type ValidatableTool &#x3D; SchoolExternalTool | ContextExternalTool;
+export type ValidatableTool &#x3D; SchoolExternalTool | ContextExternalTool | ContextExternalToolLaunchable;
 
 @Injectable()
 export class CommonToolValidationService {

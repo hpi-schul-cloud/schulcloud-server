@@ -77,7 +77,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -87,9 +87,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >AutoMediumIdStrategy</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >SchoolExternalToolLaunchParams</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -113,8 +117,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/tool-launch/service/auto-parameter-strategy/auto-medium-id.strategy.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/controller/dto/school-external-tool-launch.params.ts</code>
         </p>
+
 
 
 
@@ -124,18 +129,18 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <h6><b>Properties</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#getValue" >getValue</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#schoolExternalToolId" >schoolExternalToolId</a>
                             </li>
                         </ul>
                     </td>
@@ -145,179 +150,77 @@
 
 
 
+
         </tbody>
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/auto-parameter-strategy/auto-medium-id.strategy.ts:9</a></div>
-                            </td>
-                        </tr>
 
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>externalToolService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ExternalToolService.html" target="_self" >ExternalToolService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
-
-            <section data-compodoc="block-methods">
+            <section data-compodoc="block-properties">
     
-    <h3 id="methods">
-        Methods
+    <h3 id="inputs">
+        Properties
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getValue"></a>
+                    <a name="schoolExternalToolId"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>getValue</b></span>
-                        <a href="#getValue"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>schoolExternalToolId</b></span>
+                        <a href="#schoolExternalToolId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getValue(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
-
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsMongoId()<br />@ApiProperty({description: &#x27;The id of the school external tool&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/auto-parameter-strategy/auto-medium-id.strategy.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/tool-launch/controller/dto/school-external-tool-launch.params.ts:7</a></div>
                         </td>
                     </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolExternalTool</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>contextExternalTool</td>
-                                            <td>
-                                                            <code><a href="../interfaces/ContextExternalToolLaunchable.html" target="_self" >ContextExternalToolLaunchable</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;string | undefined&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
         </tbody>
     </table>
 </section>
+
+
+
+
+
+
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ContextExternalToolLaunchable } from &#x27;@src/modules/tool/context-external-tool/domain&#x27;;
-import { SchoolExternalTool } from &#x27;@src/modules/tool/school-external-tool/domain&#x27;;
-import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
-import { ExternalToolService } from &#x27;../../../external-tool/service&#x27;;
-import { AutoParameterStrategy } from &#x27;./auto-parameter.strategy&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsMongoId } from &#x27;class-validator&#x27;;
 
-@Injectable()
-export class AutoMediumIdStrategy implements AutoParameterStrategy {
-	constructor(private readonly externalToolService: ExternalToolService) {}
-
-	async getValue(
-		schoolExternalTool: SchoolExternalTool,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		contextExternalTool: ContextExternalToolLaunchable
-	): Promise&lt;string | undefined&gt; {
-		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
-		return externalTool.medium?.mediumId;
-	}
+export class SchoolExternalToolLaunchParams {
+	@IsMongoId()
+	@ApiProperty({ description: &#x27;The id of the school external tool&#x27; })
+	schoolExternalToolId!: string;
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -352,8 +255,8 @@ export class AutoMediumIdStrategy implements AutoParameterStrategy {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'AutoMediumIdStrategy.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolLaunchParams.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
