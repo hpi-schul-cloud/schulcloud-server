@@ -36,6 +36,7 @@ export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
+	// TODO: Implement this method correctly with arguments
 	public getManifestXmlObject(): XmlObject {
 		return {
 			manifest: {

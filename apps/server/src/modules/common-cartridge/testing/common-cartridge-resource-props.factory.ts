@@ -5,6 +5,7 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
+import { CommonCartridgeElementFactory } from '../export/elements/common-cartridge-element-factory';
 import { CommonCartridgeElement } from '../export/interfaces/common-cartridge-element.interface';
 import { CommonCartridgeManifestResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-content-resource';
@@ -12,6 +13,7 @@ import { CommonCartridgeWebLinkResourcePropsV110 } from '../export/resources/v1.
 import { CommonCartridgeManifestResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-content-resource';
 import { CommonCartridgeWebLinkResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-link-resource';
+import { createCommonCartridgeMetadataElementPropsV110 } from './common-cartridge-element-props.factory';
 
 export function createCommonCartridgeWeblinkResourcePropsV110(): CommonCartridgeWebLinkResourcePropsV110 {
 	return {
@@ -64,7 +66,7 @@ export function createCommonCartridgeManifestResourcePropsV110(): CommonCartridg
 		type: CommonCartridgeResourceType.MANIFEST,
 		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: faker.string.uuid(),
-		metadata: {} as CommonCartridgeElement,
+		metadata: CommonCartridgeElementFactory.createElement(createCommonCartridgeMetadataElementPropsV110()),
 		organizations: [],
 		resources: [],
 	};
