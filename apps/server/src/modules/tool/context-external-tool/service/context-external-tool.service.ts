@@ -8,7 +8,12 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalTool, ContextRef, RestrictedContextMismatchLoggableException } from '../domain';
+import {
+	ContextExternalTool,
+	ContextRef,
+	RestrictedContextMismatchLoggableException,
+	ContextExternalToolLaunchable,
+} from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
@@ -66,7 +71,7 @@ export class ContextExternalToolService {
 		return contextExternalTools;
 	}
 
-	public async checkContextRestrictions(contextExternalTool: ContextExternalTool): Promise<void> {
+	public async checkContextRestrictions(contextExternalTool: ContextExternalToolLaunchable): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);

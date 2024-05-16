@@ -551,6 +551,56 @@ describe('Lti11ToolLaunchStrategy', () => {
 				);
 			});
 		});
+
+		describe('when context external tool id is undefined', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+					})
+					.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const user: UserDO = userDoFactory.buildWithId({
+					roles: [
+						{
+							id: 'roleId1',
+							name: RoleName.TEACHER,
+						},
+					],
+				});
+
+				userService.findById.mockResolvedValue(user);
+
+				return {
+					data,
+				};
+			};
+
+			it('should use a random id', async () => {
+				const { data } = setup();
+
+				const result = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+
+				expect(result).toContainEqual(
+					new PropertyData({
+						name: 'resource_link_id',
+						value: expect.any(String),
+						location: PropertyLocation.BODY,
+					})
+				);
+			});
+		});
 	});
 
 	describe('buildToolLaunchRequestPayload', () => {

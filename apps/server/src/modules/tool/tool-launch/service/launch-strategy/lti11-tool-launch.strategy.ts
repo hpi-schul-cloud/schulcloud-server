@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
@@ -65,9 +66,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 			new PropertyData({ name: 'lti_message_type', value: config.lti_message_type, location: PropertyLocation.BODY }),
 			new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
+			// When there is no persistent link to a resource, then generate a new one every time
 			new PropertyData({
 				name: 'resource_link_id',
-				value: data.contextExternalTool.id,
+				value: data.contextExternalTool.id || new ObjectId().toHexString(),
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({

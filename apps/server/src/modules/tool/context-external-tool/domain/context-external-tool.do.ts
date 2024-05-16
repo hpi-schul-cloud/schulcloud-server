@@ -3,16 +3,20 @@ import { CustomParameterEntry } from '../../common/domain';
 import { SchoolExternalToolRef } from '../../school-external-tool/domain';
 import { ContextRef } from './context-ref';
 
-export interface ContextExternalToolProps extends AuthorizableObject {
-	id: string;
+export interface ContextExternalToolLaunchable {
+	id?: string;
 
 	schoolToolRef: SchoolExternalToolRef;
 
 	contextRef: ContextRef;
 
-	displayName?: string;
-
 	parameters: CustomParameterEntry[];
+}
+
+export interface ContextExternalToolProps extends AuthorizableObject, ContextExternalToolLaunchable {
+	id: string;
+
+	displayName?: string;
 }
 
 export class ContextExternalTool extends DomainObject<ContextExternalToolProps> {
