@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ContextExternalTool, ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { CustomParameter } from '../../domain';
@@ -12,7 +12,7 @@ import {
 	ParameterArrayValidator,
 } from './rules';
 
-export type ValidatableTool = SchoolExternalTool | ContextExternalTool;
+export type ValidatableTool = SchoolExternalTool | ContextExternalTool | ContextExternalToolLaunchable;
 
 @Injectable()
 export class CommonToolValidationService {
