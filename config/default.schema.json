@@ -232,7 +232,7 @@
 					"description": "The app ID for the edu-sharing repository.",
 					"default": ""
 				},
-				"DOMAIN": {
+				"API_URL": {
 					"type": "string",
 					"format": "uri",
 					"pattern": ".*(?<!/)$",

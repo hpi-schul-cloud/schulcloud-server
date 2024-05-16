@@ -15,7 +15,7 @@ export const defaultConfig = {
 
 const eduSharingConfig: EduSharingConfig = {
 	APP_ID: Configuration.get('EDU_SHARING__APP_ID') as string,
-	API_URL: Configuration.get('EDU_SHARING__DOMAIN') as string,
+	API_URL: Configuration.get('EDU_SHARING__API_URL') as string,
 	PRIVATE_KEY: Configuration.get('EDU_SHARING__PRIVATE_KEY') as string,
 	PUBLIC_KEY: Configuration.get('EDU_SHARING__PUBLIC_KEY') as string,
 	...defaultConfig,
