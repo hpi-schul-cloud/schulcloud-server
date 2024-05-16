@@ -9,6 +9,7 @@ import { BoardDoAuthorizable, MediaAvailableLine, type MediaBoard } from '@share
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 
@@ -65,7 +66,7 @@ export class MediaAvailableLineUc {
 		return user;
 	}
 
-	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: string | undefined) {
+	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: MediaBoardColors) {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);

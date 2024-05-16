@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { MediaBoardColors } from '../types/media-colors.enum';
 import { MediaAvailableLineElementResponse } from './media-available-line-element.response';
 
 export class MediaAvailableLineResponse {
@@ -11,7 +12,7 @@ export class MediaAvailableLineResponse {
 	@ApiProperty({
 		description: 'Background color of available media line',
 	})
-	backgroundColor: string;
+	backgroundColor: MediaBoardColors;
 
 	@ApiProperty({
 		description: 'Collapse available media line',

@@ -1,5 +1,7 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
+import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
 import {
 	type AnyBoardDo,
 	BoardExternalReference,
@@ -20,6 +22,7 @@ export class MediaBoardNode extends BoardNode {
 
 		this._contextType = props.context.type;
 		this._contextId = new ObjectId(props.context.id);
+		this._layout = props.layout;
 		this._mediaAvailableLineCollapsed = props.mediaAvailableLineCollapsed;
 		this._mediaAvailableLineBackgroundColor = props.mediaAvailableLineBackgroundColor;
 	}
@@ -30,8 +33,11 @@ export class MediaBoardNode extends BoardNode {
 	@Property({ fieldName: 'context' })
 	_contextId: ObjectId;
 
+	@Property({ fieldName: 'layout' })
+	_layout: MediaBoardLayoutType;
+
 	@Property({ fieldName: 'mediaAvailableLineBackgroundColor' })
-	_mediaAvailableLineBackgroundColor: string;
+	_mediaAvailableLineBackgroundColor: MediaBoardColors;
 
 	@Property({ fieldName: 'mediaAvailableLineCollapsed' })
 	_mediaAvailableLineCollapsed: boolean;
@@ -51,12 +57,20 @@ export class MediaBoardNode extends BoardNode {
 		this._mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
 	}
 
-	get mediaAvailableLineBackgroundColor(): string {
+	get mediaAvailableLineBackgroundColor(): MediaBoardColors {
 		return this._mediaAvailableLineBackgroundColor;
 	}
 
-	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: string) {
+	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: MediaBoardColors) {
 		this._mediaAvailableLineBackgroundColor = mediaAvailableLineBackgroundColor;
+	}
+
+	get layout(): MediaBoardLayoutType {
+		return this._layout;
+	}
+
+	set layout(layout: MediaBoardLayoutType) {
+		this._layout = layout;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
@@ -68,6 +82,7 @@ export class MediaBoardNode extends BoardNode {
 
 export interface MediaBoardNodeProps extends BoardNodeProps {
 	context: BoardExternalReference;
-	mediaAvailableLineBackgroundColor: string;
+	layout: MediaBoardLayoutType;
+	mediaAvailableLineBackgroundColor: MediaBoardColors;
 	mediaAvailableLineCollapsed: boolean;
 }

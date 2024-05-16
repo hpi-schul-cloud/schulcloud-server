@@ -1,9 +1,10 @@
+import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
 import { MediaAvailableLineElement } from './media-available-line-element.do';
 
 export class MediaAvailableLine {
 	elements: MediaAvailableLineElement[];
 
-	backgroundColor: string;
+	backgroundColor: MediaBoardColors;
 
 	collapsed: boolean;
 
@@ -16,6 +17,6 @@ export class MediaAvailableLine {
 
 export interface MediaAvailableLineProps {
 	elements: MediaAvailableLineElement[];
-	backgroundColor: string;
+	backgroundColor: MediaBoardColors;
 	collapsed: boolean;
 }

@@ -14,6 +14,7 @@ import {
 	Page,
 } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
+import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
 
 @Injectable()
 export class MediaAvailableLineService {
@@ -127,7 +128,7 @@ export class MediaAvailableLineService {
 
 		const line: MediaAvailableLine = new MediaAvailableLine({
 			elements: lineElements,
-			backgroundColor: 'transparent',
+			backgroundColor: MediaBoardColors.TRANSPARENT,
 			collapsed: false,
 		});
 

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AnyBoardDo, BoardExternalReference, ColumnBoard, MediaBoard } from '@shared/domain/domainobject';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardLayoutType } from '../../controller/media-board/types/layout-type.enum';
+import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
 import { BoardNotInstanceOfMediaBoardLoggableException } from '../../loggable';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
@@ -41,7 +42,7 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 			updatedAt: new Date(),
 			context,
 			layout: MediaBoardLayoutType.LIST,
-			mediaAvailableLineBackgroundColor: 'transparent',
+			mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 			mediaAvailableLineCollapsed: false,
 		});
 
@@ -50,7 +51,7 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 		return mediaBoard;
 	}
 
-	public async updateAvailableLineColor(mediaBoard: MediaBoard, color: string | undefined) {
+	public async updateAvailableLineColor(mediaBoard: MediaBoard, color: MediaBoardColors) {
 		if (color) {
 			mediaBoard.mediaAvailableLineBackgroundColor = color;
 		}

@@ -1,4 +1,5 @@
 import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
+import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
 import { BoardComposite, BoardCompositeProps } from '../board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from '../types';
 import { MediaLine } from './media-line.do';
@@ -16,11 +17,11 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 		this.props.layout = layout;
 	}
 
-	get mediaAvailableLineBackgroundColor(): string {
+	get mediaAvailableLineBackgroundColor(): MediaBoardColors {
 		return this.props.mediaAvailableLineBackgroundColor;
 	}
 
-	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: string) {
+	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: MediaBoardColors) {
 		this.props.mediaAvailableLineBackgroundColor = mediaAvailableLineBackgroundColor;
 	}
 
@@ -50,6 +51,6 @@ export class MediaBoard extends BoardComposite<MediaBoardProps> {
 export interface MediaBoardProps extends BoardCompositeProps {
 	context: BoardExternalReference;
 	layout: MediaBoardLayoutType;
-	mediaAvailableLineBackgroundColor: string;
+	mediaAvailableLineBackgroundColor: MediaBoardColors;
 	mediaAvailableLineCollapsed: boolean;
 }

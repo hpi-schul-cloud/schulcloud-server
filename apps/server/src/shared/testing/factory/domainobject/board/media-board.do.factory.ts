@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
+import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
 import {
 	AnyMediaBoardDo,
 	BoardExternalReferenceType,
@@ -29,6 +30,6 @@ export const mediaBoardFactory = MediaBoardFactory.define(MediaBoard, () => {
 		},
 		layout: MediaBoardLayoutType.LIST,
 		mediaAvailableLineCollapsed: false,
-		mediaAvailableLineBackgroundColor: 'transparent',
+		mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 	};
 });
