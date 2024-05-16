@@ -113,13 +113,13 @@ export class MediaBoardController {
 	@ApiForbiddenResponse({ type: ForbiddenException })
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Patch(':boardId/media-available-line/collaps')
-	public async collapsMediaAvailableLine(
+	@Patch(':boardId/media-available-line/collapse')
+	public async collapseMediaAvailableLine(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: CollapsableBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.mediaAvailableLineUc.collapsAvailableLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
+		await this.mediaAvailableLineUc.collapseAvailableLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
 	}
 
 	@ApiOperation({ summary: 'Set layout for media board.' })

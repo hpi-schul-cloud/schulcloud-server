@@ -77,7 +77,7 @@ export class MediaAvailableLineUc {
 		await this.mediaBoardService.updateAvailableLineColor(board, color);
 	}
 
-	public async collapsAvailableLine(userId: EntityId, boardId: EntityId, mediaAvailableLineCollapsed: boolean) {
+	public async collapseAvailableLine(userId: EntityId, boardId: EntityId, mediaAvailableLineCollapsed: boolean) {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);

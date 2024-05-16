@@ -256,6 +256,8 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 			context: mediaBoard.context,
+			mediaAvailableLineCollapsed: mediaBoard.mediaAvailableLineCollapsed,
+			mediaAvailableLineBackgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 		});
 
 		this.saveRecursive(boardNode, mediaBoard);
