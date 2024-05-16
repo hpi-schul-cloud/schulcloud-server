@@ -89,11 +89,12 @@ export class EtherpadClientAdapter {
 		groupId: GroupId,
 		authorId: AuthorId,
 		parentId: EntityId,
-		sessionCookieExpire: Date
+		sessionCookieExpire: Date,
+		durationThreshold: number
 	): Promise<SessionId> {
 		const session = await this.getSessionByGroupAndAuthor(groupId, authorId);
 
-		if (session && this.isSessionDurationSufficient(session)) {
+		if (session && this.isSessionDurationSufficient(session, durationThreshold)) {
 			return session.id;
 		}
 
@@ -105,10 +106,9 @@ export class EtherpadClientAdapter {
 		return sessionId;
 	}
 
-	private isSessionDurationSufficient(session: Session): boolean {
+	private isSessionDurationSufficient(session: Session, durationThreshold: number): boolean {
 		const nowUnixTimestamp = Math.floor(new Date(Date.now()).getTime() / 1000);
 		const timeDiff = session.validUntil - nowUnixTimestamp;
-		const durationThreshold = Number(this.configService.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD'));
 		const isDurationSufficient = timeDiff > durationThreshold;
 
 		return isDurationSufficient;
