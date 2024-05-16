@@ -7,7 +7,7 @@ import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } 
 import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolMediumEntity } from './external-tool-medium.entity';
 
-export interface ExternalToolProps {
+export interface ExternalToolEntityProps {
 	id?: EntityId;
 
 	name: string;
@@ -74,7 +74,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => ExternalToolMediumEntity, { nullable: true, object: true })
 	medium?: ExternalToolMediumEntity;
 
-	constructor(props: ExternalToolProps) {
+	constructor(props: ExternalToolEntityProps) {
 		super();
 		this.name = props.name;
 		this.description = props.description;

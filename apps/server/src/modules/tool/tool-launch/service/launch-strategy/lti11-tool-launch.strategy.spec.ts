@@ -551,39 +551,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 				);
 			});
 		});
-
-		describe('when context external tool id is undefined', () => {
-			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory
-					.withLti11Config({
-						key: 'mockKey',
-						secret: 'mockSecret',
-						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
-					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
-
-				const data: ToolLaunchParams = {
-					contextExternalTool,
-					schoolExternalTool,
-					externalTool,
-				};
-
-				return {
-					data,
-				};
-			};
-
-			it('should throw an InternalServerErrorException', async () => {
-				const { data } = setup();
-
-				const func = async () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
-
-				await expect(func).rejects.toThrow(new InternalServerErrorException());
-			});
-		});
 	});
 
 	describe('buildToolLaunchRequestPayload', () => {

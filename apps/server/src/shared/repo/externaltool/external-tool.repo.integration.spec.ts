@@ -13,11 +13,10 @@ import {
 } from '@modules/tool/common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
+import { externalToolEntityFactory, externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -136,7 +135,7 @@ describe('ExternalToolRepo', () => {
 
 	describe('save', () => {
 		const setupDO = (config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) => {
-			const domainObject: ExternalTool = new ExternalTool({
+			const domainObject: ExternalTool = externalToolFactory.build({
 				name: 'name',
 				url: 'url',
 				logoUrl: 'logoUrl',
@@ -158,7 +157,6 @@ describe('ExternalToolRepo', () => {
 				],
 				isHidden: true,
 				openNewTab: true,
-				version: 2,
 				isDeactivated: false,
 			});
 

@@ -12,9 +12,9 @@ import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocati
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoMediumIdStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
@@ -52,10 +52,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			throw new UnprocessableEntityException(
 				`Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected "lti11"`
 			);
-		}
-
-		if (!data.contextExternalTool.id) {
-			throw new InternalServerErrorException();
 		}
 
 		const user: UserDO = await this.userService.findById(userId);
