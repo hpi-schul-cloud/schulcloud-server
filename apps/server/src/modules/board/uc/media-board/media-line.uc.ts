@@ -63,7 +63,7 @@ export class MediaLineUc {
 		await this.mediaLineService.updateColor(line, color);
 	}
 
-	public async collapsLine(userId: EntityId, lineId: EntityId, collapsed: boolean) {
+	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean) {
 		this.checkFeatureEnabled();
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);

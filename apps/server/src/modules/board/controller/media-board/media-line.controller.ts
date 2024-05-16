@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { MediaLineUc } from '../../uc';
-import { BoardUrlParams, MoveColumnBodyParams, RenameBodyParams } from '../dto';
+import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import { LineUrlParams } from './dto';
 import { CollapsableBodyParams } from './dto/collapsable.body.params';
 import { ColorBodyParams } from './dto/color.body.params';
@@ -85,11 +85,11 @@ export class MediaLineController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Patch(':lineId/collapse')
 	public async collapseMediaLine(
-		@Param() urlParams: BoardUrlParams,
+		@Param() urlParams: LineUrlParams,
 		@Body() bodyParams: CollapsableBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.mediaLineUc.collapsLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
+		await this.mediaLineUc.collapseLine(currentUser.userId, urlParams.lineId, bodyParams.collapsed);
 	}
 
 	@ApiOperation({ summary: 'Delete a single line.' })

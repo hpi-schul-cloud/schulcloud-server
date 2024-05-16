@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsBoolean } from 'class-validator';
 
 export class CollapsableBodyParams {
-	@IsString()
+	@IsBoolean()
 	@ApiProperty({
 		required: true,
 		nullable: false,
