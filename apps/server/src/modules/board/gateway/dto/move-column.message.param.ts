@@ -13,14 +13,7 @@ export class ColumnMove {
 
 export class MoveColumnMessageParams {
 	@IsMongoId()
-	columnId!: string;
-
-	@IsMongoId()
 	targetBoardId!: string;
-
-	@IsNumber()
-	@Min(0)
-	newIndex!: number;
 
 	@ValidateNested()
 	columnMove!: ColumnMove;
