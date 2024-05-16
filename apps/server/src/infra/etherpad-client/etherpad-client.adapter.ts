@@ -1,5 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { TypeGuard } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
+import { ServerConfig } from '@src/modules/server';
 import { AxiosResponse } from 'axios';
 import {
 	InlineResponse200,
@@ -9,7 +12,6 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
-	InlineResponse2006Data,
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import {
@@ -24,13 +26,21 @@ import {
 } from './interface';
 import { EtherpadResponseMapper } from './mappers';
 
+interface Session {
+	id: string;
+	groupId: string;
+	authorId: string;
+	validUntil: number;
+}
+
 @Injectable()
 export class EtherpadClientAdapter {
 	constructor(
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
 		private readonly authorApi: AuthorApi,
-		private readonly padApi: PadApi
+		private readonly padApi: PadApi,
+		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise<AuthorId> {
@@ -56,7 +66,7 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetPadsOfAuthor(authorId);
 		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { authorId });
 
-		if (!this.isObject(pads)) {
+		if (!TypeGuard.isObject(pads)) {
 			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
 		}
 
@@ -81,19 +91,27 @@ export class EtherpadClientAdapter {
 		parentId: EntityId,
 		sessionCookieExpire: Date
 	): Promise<SessionId> {
-		let sessionId: SessionId | undefined;
-		sessionId = await this.getSessionIdByGroupAndAuthor(groupId, authorId);
+		const session = await this.getSessionByGroupAndAuthor(groupId, authorId);
 
-		if (sessionId) {
-			return sessionId;
+		if (session && this.isSessionDurationSufficient(session)) {
+			return session.id;
 		}
 
 		const response = await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
-		const session = this.handleEtherpadResponse<InlineResponse2004>(response, { parentId });
+		const newSession = this.handleEtherpadResponse<InlineResponse2004>(response, { parentId });
 
-		sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
+		const sessionId = EtherpadResponseMapper.mapToSessionResponse(newSession);
 
 		return sessionId;
+	}
+
+	private isSessionDurationSufficient(session: Session): boolean {
+		const nowUnixTimestamp = Math.floor(new Date(Date.now()).getTime() / 1000);
+		const timeDiff = session.validUntil - nowUnixTimestamp;
+		const durationThreshold = Number(this.configService.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD'));
+		const isDurationSufficient = timeDiff > durationThreshold;
+
+		return isDurationSufficient;
 	}
 
 	private async tryCreateSession(
@@ -111,61 +129,84 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private async getSessionIdByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
-		let sessionId: SessionId | undefined;
+	private async getSessionByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<Session | undefined> {
+		let filteredSessions: Session | undefined;
 
-		const response = await this.tryListSessionsOfAuthor(authorId);
-		const sessions = this.handleEtherpadResponse<InlineResponse2006>(response, { groupId, authorId });
+		const sessions = await this.tryListSessionsOfAuthor(authorId);
 
 		if (sessions) {
-			sessionId = this.findSessionId(sessions, groupId, authorId);
+			filteredSessions = this.findSession(sessions, groupId, authorId);
 		}
 
-		return sessionId;
+		return filteredSessions;
 	}
 
-	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string): string | undefined {
-		const sessionEntries = Object.entries(sessions);
-		const sessionId = sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) => {
-			if (value?.groupID === groupId && value?.authorID === authorId) {
-				return key;
-			}
+	private findSession(sessions: Session[], groupId: string, authorId: string): Session | undefined {
+		const filteredAndSortedSessions = sessions
+			.filter((session) => session.groupId === groupId && session.authorId === authorId)
+			.sort((sessionA, sessionB) => sessionB.validUntil - sessionA.validUntil);
 
-			return undefined;
-		});
+		const newestSessionByGroupAndAuthor = filteredAndSortedSessions[0];
 
-		return sessionId[0];
+		return newestSessionByGroupAndAuthor;
 	}
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
-		const response = await this.tryListSessionsOfAuthor(authorId);
-		const sessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		const sessions = await this.tryListSessionsOfAuthor(authorId);
 
-		// InlineResponse2006Data has the wrong type definition. Therefore we savely cast it to an object.
-		if (!this.isObject(sessions)) {
-			throw new InternalServerErrorException('Etherpad session ids response is not an object');
-		}
+		const sessionIds = sessions.map((session) => session.id);
 
-		const validSessionIds = Object.entries(sessions)
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			.filter(([key, value]) => value !== null)
-			.map(([key]) => key);
-
-		return validSessionIds;
+		return sessionIds;
 	}
 
-	private isObject(value: any): value is object {
-		return typeof value === 'object' && !Array.isArray(value) && value !== null;
-	}
-
-	private async tryListSessionsOfAuthor(authorId: string): Promise<AxiosResponse<InlineResponse2006>> {
+	private async tryListSessionsOfAuthor(authorId: AuthorId): Promise<Session[]> {
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
+			const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+			const sessions = this.mapEtherpadSessionsToSessions(etherpadSessions);
 
-			return response;
+			return sessions;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
 		}
+	}
+
+	private mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
+		try {
+			const sessionsObject = TypeGuard.checkObject(etherpadSessions);
+
+			const sessions = Object.entries(sessionsObject)
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				.filter(([key, value]) => value !== null)
+				.map(([key, value]) => this.mapEtherpadSessionToSession([key, value]));
+
+			return sessions;
+		} catch (error) {
+			throw new InternalServerErrorException('Etherpad session data is not valid');
+		}
+	}
+
+	private mapEtherpadSessionToSession([etherpadId, etherpadSession]: [string, unknown | undefined]): Session {
+		if (
+			!TypeGuard.isObject(etherpadSession) ||
+			!('groupID' in etherpadSession) ||
+			!('authorID' in etherpadSession) ||
+			!('validUntil' in etherpadSession)
+		)
+			throw new InternalServerErrorException('Etherpad session is missing required properties');
+
+		const groupId = TypeGuard.checkString(etherpadSession.groupID);
+		const authorId = TypeGuard.checkString(etherpadSession.authorID);
+		const validUntil = TypeGuard.checkNumber(etherpadSession.validUntil);
+
+		const session: Session = {
+			id: etherpadId,
+			groupId,
+			authorId,
+			validUntil,
+		};
+
+		return session;
 	}
 
 	public async getOrCreateGroupId(parentId: EntityId): Promise<GroupId> {
@@ -250,7 +291,7 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetAuthorsOfPad(padId);
 		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
 
-		if (!this.isObject(authors)) {
+		if (!TypeGuard.isObject(authors)) {
 			throw new InternalServerErrorException('Etherpad listAuthorsOfPad response is not an object');
 		}
 
