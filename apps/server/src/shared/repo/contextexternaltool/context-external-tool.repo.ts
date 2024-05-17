@@ -10,7 +10,7 @@ import {
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
@@ -54,12 +54,7 @@ export class ContextExternalToolRepo {
 	}
 
 	public async delete(domainObjects: ContextExternalTool | ContextExternalTool[]): Promise<void> {
-		const ids: Primary<ContextExternalTool>[] = Utils.asArray(domainObjects).map((dob) => {
-			if (!dob.id) {
-				throw new InternalServerErrorException('Cannot delete object without id');
-			}
-			return dob.id;
-		});
+		const ids: Primary<ContextExternalTool>[] = Utils.asArray(domainObjects).map((dob) => dob.id);
 
 		const entities: ContextExternalToolEntity[] = ids.map((id) => this.em.getReference(this.entityName, id));
 

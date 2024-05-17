@@ -29,24 +29,12 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 		return this.props.toolId;
 	}
 
-	set toolId(value: string) {
-		this.props.toolId = value;
-	}
-
 	get schoolId(): string {
 		return this.props.schoolId;
 	}
 
-	set schoolId(value: string) {
-		this.props.schoolId = value;
-	}
-
 	get parameters(): CustomParameterEntry[] {
 		return this.props.parameters;
-	}
-
-	set parameters(value: CustomParameterEntry[]) {
-		this.props.parameters = value;
 	}
 
 	get status(): SchoolExternalToolConfigurationStatus | undefined {
