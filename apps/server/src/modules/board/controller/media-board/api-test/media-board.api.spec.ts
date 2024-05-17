@@ -98,7 +98,7 @@ describe('Media Board (API)', () => {
 								lastUpdatedAt: mediaLine.updatedAt.toISOString(),
 							},
 							collapsed: false,
-							backgroundColor: 'transparent',
+							backgroundColor: MediaBoardColors.TRANSPARENT,
 							title: mediaLine.title,
 							elements: [
 								{
@@ -210,7 +210,7 @@ describe('Media Board (API)', () => {
 						lastUpdatedAt: expect.any(String),
 					},
 					collapsed: false,
-					backgroundColor: 'transparent',
+					backgroundColor: MediaBoardColors.TRANSPARENT,
 					elements: [],
 					title: '',
 				});
@@ -651,7 +651,7 @@ describe('Media Board (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 				const modifiedBoard = await em.findOneOrFail(MediaBoardNode, mediaBoard.id);
-				expect(modifiedBoard._mediaAvailableLineCollapsed).toBe(true);
+				expect(modifiedBoard.mediaAvailableLineCollapsed).toBe(true);
 			});
 		});
 
@@ -812,7 +812,7 @@ describe('Media Board (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 				const modifiedBoard = await em.findOneOrFail(MediaBoardNode, mediaBoard.id);
-				expect(modifiedBoard._layout).toBe(MediaBoardLayoutType.GRID);
+				expect(modifiedBoard.layout).toBe(MediaBoardLayoutType.GRID);
 			});
 		});
 
