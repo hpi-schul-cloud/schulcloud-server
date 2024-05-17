@@ -105,73 +105,217 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		});
 
 		describe('when request is valid', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseFactory.build({ students: [studentUser] });
+			describe('when no session for user exists', () => {
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const course = courseFactory.build({ students: [studentUser] });
 
-				await em.persistAndFlush([studentUser, course]);
+					await em.persistAndFlush([studentUser, course]);
 
-				const columnBoardNode = columnBoardNodeFactory.buildWithId({
-					context: { id: course.id, type: BoardExternalReferenceType.Course },
-				});
-				const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-				const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-				const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
+					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+						context: { id: course.id, type: BoardExternalReferenceType.Course },
+					});
+					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+					const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
 
-				await em.persistAndFlush([
-					studentAccount,
-					collaborativeTextEditorElement,
-					columnBoardNode,
-					columnNode,
-					cardNode,
-				]);
-				em.clear();
+					await em.persistAndFlush([
+						studentAccount,
+						collaborativeTextEditorElement,
+						columnBoardNode,
+						columnNode,
+						cardNode,
+					]);
+					em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await testApiClient.login(studentAccount);
 
-				const editorId = 'editorId';
-				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
-				const otherSessionIds = ['otherSessionId1', 'otherSessionId2'];
-				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
-				const sessionId = 'sessionId';
-				etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
+					const editorId = 'editorId';
+					etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
+					const otherSessionIds = [];
+					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
+					const sessionId = 'sessionId';
+					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
-				const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
-				const expectedPath = `${basePath}/${editorId}`;
+					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
+					const expectedPath = `${basePath}/${editorId}`;
 
-				const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
-				// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
-				const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
+					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
+					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
-				return {
-					loggedInClient,
-					collaborativeTextEditorElement,
-					expectedPath,
-					sessionId,
-					sessionCookieExpiryDate,
-					editorId,
+					return {
+						loggedInClient,
+						collaborativeTextEditorElement,
+						expectedPath,
+						sessionId,
+						sessionCookieExpiryDate,
+						editorId,
+					};
 				};
-			};
 
-			it('should return response and set cookie', async () => {
-				const {
-					loggedInClient,
-					collaborativeTextEditorElement,
-					expectedPath,
-					sessionId,
-					sessionCookieExpiryDate,
-					editorId,
-				} = await setup();
+				it('should return response and set cookie', async () => {
+					const {
+						loggedInClient,
+						collaborativeTextEditorElement,
+						expectedPath,
+						sessionId,
+						sessionCookieExpiryDate,
+						editorId,
+					} = await setup();
 
-				const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
+					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
-				expect(response.status).toEqual(HttpStatus.OK);
-				// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-				expect(response.body['url']).toEqual(expectedPath);
-				// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-				expect(response.headers['set-cookie'][0]).toContain(
-					`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
-				);
+					expect(response.status).toEqual(HttpStatus.OK);
+					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					expect(response.body['url']).toEqual(expectedPath);
+					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					expect(response.headers['set-cookie'][0]).toContain(
+						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
+					);
+				});
+			});
+
+			describe('when other sessions for user already exists', () => {
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const course = courseFactory.build({ students: [studentUser] });
+
+					await em.persistAndFlush([studentUser, course]);
+
+					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+						context: { id: course.id, type: BoardExternalReferenceType.Course },
+					});
+					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+					const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
+
+					await em.persistAndFlush([
+						studentAccount,
+						collaborativeTextEditorElement,
+						columnBoardNode,
+						columnNode,
+						cardNode,
+					]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					const editorId = 'editorId';
+					etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
+					const otherSessionIds = ['otherSessionId1', 'otherSessionId2'];
+					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
+					const sessionId = 'sessionId';
+					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
+
+					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
+					const expectedPath = `${basePath}/${editorId}`;
+
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
+					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
+					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
+
+					return {
+						loggedInClient,
+						collaborativeTextEditorElement,
+						expectedPath,
+						sessionId,
+						sessionCookieExpiryDate,
+						editorId,
+					};
+				};
+
+				it('should return response and set cookie', async () => {
+					const {
+						loggedInClient,
+						collaborativeTextEditorElement,
+						expectedPath,
+						sessionId,
+						sessionCookieExpiryDate,
+						editorId,
+					} = await setup();
+
+					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					expect(response.body['url']).toEqual(expectedPath);
+					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					expect(response.headers['set-cookie'][0]).toContain(
+						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
+					);
+				});
+			});
+
+			describe('when session for user already exists', () => {
+				const setup = async () => {
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					const course = courseFactory.build({ students: [studentUser] });
+
+					await em.persistAndFlush([studentUser, course]);
+
+					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+						context: { id: course.id, type: BoardExternalReferenceType.Course },
+					});
+					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+					const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
+
+					await em.persistAndFlush([
+						studentAccount,
+						collaborativeTextEditorElement,
+						columnBoardNode,
+						columnNode,
+						cardNode,
+					]);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					const editorId = 'editorId';
+					etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
+					const sessionId = 'sessionId';
+					const otherSessionIds = ['sessionId'];
+					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
+					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
+
+					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
+					const expectedPath = `${basePath}/${editorId}`;
+
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
+					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
+					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
+
+					return {
+						loggedInClient,
+						collaborativeTextEditorElement,
+						expectedPath,
+						sessionId,
+						sessionCookieExpiryDate,
+						editorId,
+					};
+				};
+
+				it('should return response and set cookie', async () => {
+					const {
+						loggedInClient,
+						collaborativeTextEditorElement,
+						expectedPath,
+						sessionId,
+						sessionCookieExpiryDate,
+						editorId,
+					} = await setup();
+
+					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					expect(response.body['url']).toEqual(expectedPath);
+					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					expect(response.headers['set-cookie'][0]).toContain(
+						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
+					);
+				});
 			});
 		});
 	});

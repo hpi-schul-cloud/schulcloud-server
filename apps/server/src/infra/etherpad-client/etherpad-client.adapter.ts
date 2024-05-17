@@ -83,11 +83,6 @@ export class EtherpadClientAdapter {
 		sessionCookieExpire: Date,
 		durationThreshold: number
 	): Promise<SessionId> {
-		console.log('groupId', groupId);
-		console.log('authorId', authorId);
-		console.log('parentId', parentId);
-		console.log('sessionCookieExpire', sessionCookieExpire);
-		console.log('durationThreshold', durationThreshold);
 		const session = await this.getSessionByGroupAndAuthor(groupId, authorId);
 
 		if (session && this.isSessionDurationSufficient(session, durationThreshold)) {
@@ -126,18 +121,13 @@ export class EtherpadClientAdapter {
 	}
 
 	private async getSessionByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<Session | undefined> {
-		let filteredSessions: Session | undefined;
-
 		const response = await this.tryListSessionsOfAuthor(authorId);
 		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
-		console.log('etherpadSessions', etherpadSessions);
 		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
-		if (sessions) {
-			filteredSessions = this.findSession(sessions, groupId, authorId);
-		}
+		const session = this.findSession(sessions, groupId, authorId);
 
-		return filteredSessions;
+		return session;
 	}
 
 	private findSession(sessions: Session[], groupId: string, authorId: string): Session | undefined {
@@ -161,10 +151,9 @@ export class EtherpadClientAdapter {
 	}
 
 	private async tryListSessionsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2006>> {
-		console.log('authorId', authorId);
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
-			console.log('response in tryListSessionsOfAuthor', response);
+
 			return response;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);

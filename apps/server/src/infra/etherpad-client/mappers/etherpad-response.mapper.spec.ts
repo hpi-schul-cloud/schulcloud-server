@@ -173,11 +173,12 @@ describe('EtherpadResponseMapper', () => {
 		});
 
 		describe('when etherpadSessions is not an object', () => {
-			it('should throw error', () => {
+			it('should return empty array', () => {
 				const etherpadSessions = 'etherpadSessions';
-				const error = new Error('Type is not an object');
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(error);
+				const result = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+
+				expect(result).toEqual([]);
 			});
 		});
 
@@ -194,18 +195,20 @@ describe('EtherpadResponseMapper', () => {
 		describe('when etherpadSessions is null', () => {
 			it('should throw error', () => {
 				const etherpadSessions = null;
-				const error = new Error('Type is not an object');
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(error);
+				const result = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+
+				expect(result).toEqual([]);
 			});
 		});
 
 		describe('when etherpadSessions is undefined', () => {
 			it('should throw error', () => {
 				const etherpadSessions = undefined;
-				const error = new Error('Type is not an object');
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(error);
+				const result = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+
+				expect(result).toEqual([]);
 			});
 		});
 

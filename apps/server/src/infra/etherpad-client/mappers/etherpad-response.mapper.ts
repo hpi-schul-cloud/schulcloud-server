@@ -63,9 +63,10 @@ export class EtherpadResponseMapper {
 
 	static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
 		try {
-			const sessionsObject = TypeGuard.checkObject(etherpadSessions);
+			const isObject = TypeGuard.isObject(etherpadSessions);
+			if (!isObject) return [];
 
-			const sessions = Object.entries(sessionsObject)
+			const sessions = Object.entries(etherpadSessions)
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.filter(([key, value]) => value !== null)
 				.map(([key, value]) => this.mapEtherpadSessionToSession([key, value]));
