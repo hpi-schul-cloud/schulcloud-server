@@ -7,6 +7,7 @@ import {
 	CommonCartridgeOrganizationsWrapperElementV130,
 	CommonCartridgeResourcesWrapperElementV130,
 } from '../../elements/v1.3.0';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElement, CommonCartridgeResource, XmlObject } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
@@ -29,15 +30,23 @@ export class CommonCartridgeManifestResourceV130 extends CommonCartridgeResource
 	}
 
 	public getFileContent(): string {
-		return buildXmlString(this.getManifestXmlObject());
+		return buildXmlString(this.getManifestXmlObject(CommonCartridgeElementType.MANIFEST));
 	}
 
 	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	// TODO: Implement this method correctly with arguments
-	public getManifestXmlObject(): XmlObject {
+	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
+		switch (elementType) {
+			case CommonCartridgeElementType.MANIFEST:
+				return this.getManifestXmlObjectInternal();
+			default:
+				throw new ElementTypeNotSupportedLoggableException(elementType);
+		}
+	}
+
+	public getManifestXmlObjectInternal(): XmlObject {
 		return {
 			manifest: {
 				$: {

@@ -9,6 +9,7 @@ import {
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
 import { CommonCartridgeElementFactoryV130 } from '../../elements/v1.3.0';
+import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import * as utils from '../../utils';
 import { CommonCartridgeResourceFactory } from '../common-cartridge-resource-factory';
 import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
@@ -133,6 +134,48 @@ describe('CommonCartridgeManifestResourceV130', () => {
 
 			it('should throw error', () => {
 				expect(() => new CommonCartridgeManifestResourceV130(notSupportedProps)).toThrow(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('getManifestXmlObject', () => {
+		describe('when creating manifest xml object', () => {
+			const setup = () => {
+				const props = createCommonCartridgeManifestResourcePropsV130();
+				const sut = new CommonCartridgeManifestResourceV130(props);
+
+				return { sut };
+			};
+
+			it('should return manifest xml object', () => {
+				const { sut } = setup();
+
+				const result = sut.getManifestXmlObject(CommonCartridgeElementType.MANIFEST);
+
+				expect(result).toStrictEqual({
+					manifest: {
+						$: expect.any(Object),
+						metadata: expect.any(Object),
+						organizations: expect.any(Object),
+						resources: expect.any(Object),
+					},
+				});
+			});
+		});
+
+		describe('when element type is not supported', () => {
+			const setup = () => {
+				const unknownElementType = 'unknown' as CommonCartridgeElementType;
+				const props = createCommonCartridgeManifestResourcePropsV130();
+				const sut = new CommonCartridgeManifestResourceV130(props);
+
+				return { sut, unknownElementType };
+			};
+
+			it('should throw error', () => {
+				const { sut, unknownElementType } = setup();
+
+				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrow(ElementTypeNotSupportedLoggableException);
 			});
 		});
 	});
