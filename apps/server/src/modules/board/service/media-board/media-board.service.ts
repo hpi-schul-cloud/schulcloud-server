@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AnyBoardDo, BoardExternalReference, ColumnBoard, MediaBoard } from '@shared/domain/domainobject';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoardColors, MediaBoardLayoutType } from '../../domain';
-import { BoardNotInstanceOfMediaBoardLoggableException } from '../../loggable';
+import { InvalidBoardTypeLoggableException } from '../../loggable';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 
@@ -26,11 +26,12 @@ export class MediaBoardService implements AuthorizationLoaderServiceGeneric<Medi
 
 	public async findByDescendant(descendant: AnyBoardDo): Promise<MediaBoard> {
 		const mediaBoard: MediaBoard | ColumnBoard = await this.boardDoService.getRootBoardDo(descendant);
-		if (mediaBoard instanceof MediaBoard) {
-			return mediaBoard;
+
+		if (!(mediaBoard instanceof MediaBoard)) {
+			throw new InvalidBoardTypeLoggableException(MediaBoard, mediaBoard.id);
 		}
 
-		throw new BoardNotInstanceOfMediaBoardLoggableException(mediaBoard.id);
+		return mediaBoard;
 	}
 
 	public async create(context: BoardExternalReference): Promise<MediaBoard> {

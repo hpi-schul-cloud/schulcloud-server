@@ -30,7 +30,11 @@ export class MediaAvailableLineUc {
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findById(boardId);
 
-		const user: User = await this.checkUsersPermissions(userId, mediaBoard);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
+			mediaBoard
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
 
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
@@ -54,16 +58,6 @@ export class MediaAvailableLineUc {
 		mediaAvailableLine.collapsed = mediaBoard.mediaAvailableLineCollapsed;
 
 		return mediaAvailableLine;
-	}
-
-	private async checkUsersPermissions(userId: EntityId, mediaBoard: MediaBoard): Promise<User> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
-
-		return user;
 	}
 
 	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: MediaBoardColors): Promise<void> {

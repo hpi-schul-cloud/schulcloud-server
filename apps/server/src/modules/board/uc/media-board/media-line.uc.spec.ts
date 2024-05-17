@@ -10,6 +10,7 @@ import {
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
+import { MediaBoardColors } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 import { MediaLineUc } from './media-line.uc';
@@ -283,7 +284,7 @@ describe(MediaLineUc.name, () => {
 			it('should check the authorization', async () => {
 				const { user, mediaLine, boardDoAuthorizable } = setup();
 
-				await uc.updateLineColor(user.id, mediaLine.id, 'blue');
+				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -295,7 +296,7 @@ describe(MediaLineUc.name, () => {
 			it('should set background color', async () => {
 				const { user, mediaLine } = setup();
 
-				await uc.updateLineColor(user.id, mediaLine.id, 'blue');
+				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
 				expect(mediaLineService.updateColor).toHaveBeenCalledWith(mediaLine, 'blue');
 			});
@@ -317,7 +318,7 @@ describe(MediaLineUc.name, () => {
 			it('should throw an exception', async () => {
 				const { user, mediaLine } = setup();
 
-				await expect(uc.updateLineColor(user.id, mediaLine.id, 'blue')).rejects.toThrow(
+				await expect(uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE)).rejects.toThrow(
 					FeatureDisabledLoggableException
 				);
 			});
@@ -346,7 +347,7 @@ describe(MediaLineUc.name, () => {
 			it('should check the authorization', async () => {
 				const { user, mediaLine, boardDoAuthorizable } = setup();
 
-				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
+				await uc.collapseLine(user.id, mediaLine.id, true);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,

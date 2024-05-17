@@ -19,7 +19,7 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
+import { MediaBoardColors } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
 
 describe(MediaAvailableLineService.name, () => {
