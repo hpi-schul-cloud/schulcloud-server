@@ -10,6 +10,7 @@ import {
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
+import { MediaBoardLayoutType } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 import { MediaBoardUc } from './media-board.uc';
@@ -223,6 +224,71 @@ describe(MediaBoardUc.name, () => {
 				const { user, mediaBoard } = setup();
 
 				await expect(uc.createLine(user.id, mediaBoard.id)).rejects.toThrow(FeatureDisabledLoggableException);
+			});
+		});
+	});
+
+	describe('setLayout', () => {
+		describe('when the user changes the layout of the media board', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build({
+					layout: MediaBoardLayoutType.LIST,
+				});
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				return {
+					user,
+					mediaBoard,
+					boardDoAuthorizable,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaBoard, boardDoAuthorizable } = setup();
+
+				await uc.setLayout(user.id, mediaBoard.id, MediaBoardLayoutType.GRID);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					boardDoAuthorizable,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should change the layout', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.setLayout(user.id, mediaBoard.id, MediaBoardLayoutType.GRID);
+
+				expect(mediaBoardService.setLayout).toHaveBeenCalledWith(mediaBoard, MediaBoardLayoutType.GRID);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaBoard,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaBoard } = setup();
+
+				await expect(uc.setLayout(user.id, mediaBoard.id, MediaBoardLayoutType.GRID)).rejects.toThrow(
+					FeatureDisabledLoggableException
+				);
 			});
 		});
 	});

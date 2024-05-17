@@ -17,9 +17,9 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import {
-	BoardNodeType,
 	type BoardDoBuilder,
 	type BoardNode,
+	BoardNodeType,
 	type CardNode,
 	type CollaborativeTextEditorElementNode,
 	type ColumnBoardNode,
@@ -268,6 +268,9 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: lines,
 			context: boardNode.context,
+			layout: boardNode.layout,
+			mediaAvailableLineBackgroundColor: boardNode.mediaAvailableLineBackgroundColor,
+			mediaAvailableLineCollapsed: boardNode.mediaAvailableLineCollapsed,
 		});
 
 		return mediaBoard;
@@ -284,6 +287,8 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: elements,
 			title: boardNode.title,
+			backgroundColor: boardNode.backgroundColor,
+			collapsed: boardNode.collapsed,
 		});
 
 		return mediaLine;
