@@ -38,21 +38,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	// ColumnBoard, MediaBoard
 	// --------------------------------------------------------------------------
 	@Embedded(() => Context, { prefix: false, nullable: true })
-	_context: BoardNodeEntityProps['context'];
-
-	get context(): BoardExternalReference | undefined {
-		return this._context;
-	}
-
-	// We have to make sure that the embedded object is an instance of the embeddable class.
-	// Otherwise the property decorators of the embeddable wouldn't work.
-	set context(context: BoardExternalReference | undefined) {
-		if (context instanceof Context || context === undefined) {
-			this._context = context;
-		} else {
-			this._context = new Context(context);
-		}
-	}
+	context: BoardNodeEntityProps['context'] | undefined;
 
 	// ColumnBoard
 	// --------------------------------------------------------------------------
