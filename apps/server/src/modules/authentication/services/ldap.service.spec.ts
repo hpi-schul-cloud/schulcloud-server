@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain/entity';
 import { systemEntityFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { UserAuthenticatedLoggable, UserCouldNotAuthenticateLoggableException } from '../loggable';
 import { LdapService } from './ldap.service';
 
 const mockClient = {
@@ -47,8 +47,8 @@ describe('LdapService', () => {
 			providers: [
 				LdapService,
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -60,9 +60,9 @@ describe('LdapService', () => {
 		describe('when credentials are correct', () => {
 			it('should login successfully', async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
-				await expect(
-					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')
-				).resolves.not.toThrow();
+				await expect(ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')).rejects.toThrow(
+					new UserAuthenticatedLoggable()
+				);
 			});
 		});
 
@@ -76,19 +76,10 @@ describe('LdapService', () => {
 		});
 
 		describe('when user is not authorized', () => {
-			it('should throw unauthorized error', async () => {
+			it('should throw UserCouldNotAuthenticateLoggableException', async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					new UnauthorizedException('User could not authenticate')
-				);
-			});
-		});
-
-		describe('when connected flag is not set', () => {
-			it('should throw unauthorized error', async () => {
-				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
-				await expect(ldapService.checkLdapCredentials(system, 'connectWithoutFlag', 'mockPassword')).rejects.toThrow(
-					new UnauthorizedException('User could not authenticate')
+					new UserCouldNotAuthenticateLoggableException()
 				);
 			});
 		});
