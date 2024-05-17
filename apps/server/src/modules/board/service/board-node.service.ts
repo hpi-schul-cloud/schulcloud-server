@@ -20,7 +20,7 @@ export class BoardNodeService {
 		await this.boardNodeRepo.persistAndFlush(boardNode);
 	}
 
-	async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position = 0): Promise<void> {
+	async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position?: number): Promise<void> {
 		parent.addChild(child, position);
 		await this.boardNodeRepo.persistAndFlush(parent);
 	}
@@ -47,8 +47,8 @@ export class BoardNodeService {
 
 	async move(childId: EntityId, targetParentId: EntityId, targetPosition?: number): Promise<void> {
 		const child = await this.findById(childId);
-		const parent = await this.findParent(child, 1);
-		const targetParent = await this.findById(targetParentId, 1);
+		const parent = await this.findParent(child);
+		const targetParent = await this.findById(targetParentId);
 
 		// TODO should we make sure child and targetParent belonging to the same board?
 
