@@ -153,10 +153,12 @@ describe('CollaborativeTextEditorService', () => {
 
 		describe('WHEN etherpadClientAdapter.getOrCreateGroup throws an error', () => {
 			const setup = () => {
-				const { userId, userName, params, dateMock, cookieExpiresSeconds } = buildParameter();
+				const { userId, userName, params, dateMock, cookieExpiresSeconds, releaseThreshold } = buildParameter();
 				const error = new Error('error');
 
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
+				configService.get.mockReturnValueOnce(releaseThreshold);
+
 				etherpadClientAdapter.getOrCreateGroupId.mockRejectedValueOnce(error);
 
 				jest.useFakeTimers();
