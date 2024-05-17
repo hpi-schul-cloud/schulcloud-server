@@ -147,8 +147,8 @@ describe('ExternalToolRequestMapper', () => {
 							isProtected: customParameterDO.isProtected,
 						},
 					],
-					isHidden: true,
-					openNewTab: true,
+					isHidden: externalToolDOCreate.isHidden,
+					openNewTab: externalToolDOCreate.openNewTab,
 					config: {
 						type: ToolConfigType.BASIC,
 						baseUrl: 'mockUrl',
@@ -510,8 +510,8 @@ describe('ExternalToolRequestMapper', () => {
 							isProtected: customParameterDO.isProtected,
 						},
 					],
-					isHidden: true,
-					openNewTab: true,
+					isHidden: externalToolDOUpdate.isHidden,
+					openNewTab: externalToolDOUpdate.openNewTab,
 					config: {
 						type: ToolConfigType.BASIC,
 						baseUrl: 'mockUrl',

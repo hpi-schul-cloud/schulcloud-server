@@ -148,12 +148,13 @@ describe(ContextExternalToolRepo.name, () => {
 
 			it('should save a ContextExternalTool', async () => {
 				const { domainObject } = setup();
-				const { id, ...expected } = domainObject;
 
 				const result: ContextExternalTool = await repo.save(domainObject);
 
-				expect(result).toMatchObject(expected);
-				expect(result.id).toBeDefined();
+				expect(result).toMatchObject({
+					...domainObject.getProps(),
+					id: expect.any(String),
+				});
 			});
 		});
 
@@ -179,12 +180,13 @@ describe(ContextExternalToolRepo.name, () => {
 
 			it('should save a ContextExternalTool', async () => {
 				const { domainObject } = setup();
-				const { id, ...expected } = domainObject;
 
 				const result: ContextExternalTool = await repo.save(domainObject);
 
-				expect(result).toMatchObject(expected);
-				expect(result.id).toBeDefined();
+				expect(result).toMatchObject({
+					...domainObject.getProps(),
+					id: expect.any(String),
+				});
 			});
 		});
 

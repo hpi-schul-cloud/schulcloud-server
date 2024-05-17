@@ -23,7 +23,7 @@ export class ContextExternalToolRepo {
 		return ContextExternalToolEntity;
 	}
 
-	async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
+	public async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
 		const count: Promise<number> = this.em.nativeDelete(this.entityName, {
 			schoolTool: { $in: schoolExternalToolIds },
 		});
@@ -46,9 +46,7 @@ export class ContextExternalToolRepo {
 		}
 		await this.em.flush();
 
-		const savedDomainObject: ContextExternalTool = Object.assign(this.mapEntityToDomainObject(entity), {
-			...domainObject,
-		});
+		const savedDomainObject: ContextExternalTool = this.mapEntityToDomainObject(entity);
 
 		return savedDomainObject;
 	}
@@ -131,7 +129,7 @@ export class ContextExternalToolRepo {
 		return scope;
 	}
 
-	mapEntityToDomainObject(entity: ContextExternalToolEntity): ContextExternalTool {
+	private mapEntityToDomainObject(entity: ContextExternalToolEntity): ContextExternalTool {
 		const schoolToolRef: SchoolExternalToolRef = new SchoolExternalToolRef({
 			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
