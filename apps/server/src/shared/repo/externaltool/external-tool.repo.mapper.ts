@@ -113,6 +113,7 @@ export class ExternalToolRepoMapper {
 		}
 
 		return {
+			id: entityDO.id,
 			name: entityDO.name,
 			description: entityDO.description,
 			url: entityDO.url,

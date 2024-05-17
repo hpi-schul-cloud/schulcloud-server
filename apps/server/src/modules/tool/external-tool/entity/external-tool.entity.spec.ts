@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '@shared/testing';
 import {
 	CustomParameterLocation,
@@ -50,6 +51,7 @@ describe('ExternalToolEntity', () => {
 				isProtected: false,
 			});
 			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
+				id: new ObjectId().toHexString(),
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',

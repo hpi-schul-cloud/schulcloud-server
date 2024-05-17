@@ -61,7 +61,6 @@ export class ExternalToolUc {
 		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
 			...externalTool,
-			id: loaded.id,
 			config: configToUpdate,
 		});
 

@@ -4,7 +4,6 @@ import { ToolConfigType } from '@modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity, ExternalToolEntityProps } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
@@ -22,7 +21,7 @@ export class ExternalToolRepo {
 
 	public async save(domainObject: ExternalTool): Promise<ExternalTool> {
 		const existing: ExternalToolEntity | null = await this.em.findOne<ExternalToolEntity>(
-			SchoolExternalToolEntity.name,
+			ExternalToolEntity.name,
 			domainObject.id
 		);
 

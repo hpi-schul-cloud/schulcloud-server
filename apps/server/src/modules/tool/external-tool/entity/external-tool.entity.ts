@@ -76,6 +76,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 
 	constructor(props: ExternalToolEntityProps) {
 		super();
+		if (props.id) {
+			this.id = props.id;
+		}
 		this.name = props.name;
 		this.description = props.description;
 		this.url = props.url;
