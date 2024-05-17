@@ -20,6 +20,7 @@ import {
 import { MediaBoardColors, MediaBoardLayoutType } from '../../../domain';
 import {
 	CollapsableBodyParams,
+	ColorBodyParams,
 	LayoutBodyParams,
 	MediaAvailableLineResponse,
 	type MediaBoardResponse,
@@ -680,7 +681,12 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await testApiClient.get(`${mediaBoard.id}/media-available-line`);
+				const response = await testApiClient.patch<CollapsableBodyParams>(
+					`${mediaBoard.id}/media-available-line/collapse`,
+					{
+						collapsed: true,
+					}
+				);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -720,7 +726,166 @@ describe('Media Board (API)', () => {
 			it('should return forbidden', async () => {
 				const { studentClient, mediaBoard } = await setup();
 
-				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+				const response = await studentClient.patch<CollapsableBodyParams>(
+					`${mediaBoard.id}/media-available-line/collapse`,
+					{
+						collapsed: true,
+					}
+				);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
+			});
+		});
+	});
+
+	describe('[GET] /media-board/:boardId/media-available-line/color', () => {
+		describe('when a valid user requests their available media line', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const externalTool = externalToolEntityFactory.build();
+				const unusedExternalTool = externalToolEntityFactory.build();
+				const schoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: externalTool,
+					school: studentUser.school,
+				});
+				const unusedSchoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: unusedExternalTool,
+					school: studentUser.school,
+				});
+				const contextExternalTool = contextExternalToolEntityFactory.build({
+					schoolTool: schoolExternalTool,
+				});
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard, collapsed: false });
+				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+					parent: mediaLine,
+					contextExternalTool,
+				});
+
+				await em.persistAndFlush([
+					studentAccount,
+					studentUser,
+					externalTool,
+					unusedExternalTool,
+					schoolExternalTool,
+					unusedSchoolExternalTool,
+					contextExternalTool,
+					mediaBoard,
+					mediaLine,
+					mediaElement,
+				]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+					unusedExternalTool,
+					unusedSchoolExternalTool,
+				};
+			};
+
+			it('should set background color for available media line', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
+					backgroundColor: MediaBoardColors.BLUE,
+				});
+
+				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
+				const modifiedBoard = await em.findOneOrFail(MediaBoardNode, mediaBoard.id);
+				expect(modifiedBoard.mediaAvailableLineBackgroundColor).toBe(MediaBoardColors.BLUE);
+			});
+		});
+
+		describe('when the user is unauthorized', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				return {
+					mediaBoard,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { mediaBoard } = await setup();
+
+				const response = await testApiClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
+					backgroundColor: MediaBoardColors.BLUE,
+				});
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+
+		describe('when the user is invalid', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: new ObjectId().toHexString(),
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
+					backgroundColor: MediaBoardColors.BLUE,
+				});
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				expect(response.body).toEqual({
@@ -760,7 +925,9 @@ describe('Media Board (API)', () => {
 			it('should return forbidden', async () => {
 				const { studentClient, mediaBoard } = await setup();
 
-				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+				const response = await studentClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
+					backgroundColor: MediaBoardColors.BLUE,
+				});
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				expect(response.body).toEqual({
