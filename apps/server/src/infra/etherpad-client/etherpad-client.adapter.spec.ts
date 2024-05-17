@@ -503,12 +503,12 @@ describe(EtherpadClientAdapter.name, () => {
 				return authorId;
 			};
 
-			it('should throw an error', async () => {
+			it('should return empty array', async () => {
 				const authorId = setup();
 
-				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrowError(
-					'Etherpad session data is not valid'
-				);
+				const result = await service.listSessionIdsOfAuthor(authorId);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});
