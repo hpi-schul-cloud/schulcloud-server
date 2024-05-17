@@ -255,6 +255,7 @@ describe(MediaAvailableLineService.name, () => {
 
 	describe('createMediaAvailableLine', () => {
 		const setup = () => {
+			const mediaBoard = mediaBoardFactory.build();
 			const externalTool1: ExternalTool = externalToolFactory.buildWithId();
 			const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 			const externalTool2: ExternalTool = externalToolFactory.buildWithId();
@@ -274,13 +275,14 @@ describe(MediaAvailableLineService.name, () => {
 				schoolExternalTool1,
 				schoolExternalTool2,
 				logoUrl,
+				mediaBoard,
 			};
 		};
 
 		it('should call the service to build the logo url', () => {
-			const { availableExternalTools, externalTool1, externalTool2 } = setup();
+			const { availableExternalTools, externalTool1, externalTool2, mediaBoard } = setup();
 
-			service.createMediaAvailableLine(availableExternalTools);
+			service.createMediaAvailableLine(mediaBoard, availableExternalTools);
 
 			expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool1);
 			expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool2);
@@ -294,9 +296,10 @@ describe(MediaAvailableLineService.name, () => {
 				schoolExternalTool1,
 				schoolExternalTool2,
 				logoUrl,
+				mediaBoard,
 			} = setup();
 
-			const line: MediaAvailableLine = service.createMediaAvailableLine(availableExternalTools);
+			const line: MediaAvailableLine = service.createMediaAvailableLine(mediaBoard, availableExternalTools);
 
 			expect(line).toEqual({
 				elements: [
@@ -313,6 +316,8 @@ describe(MediaAvailableLineService.name, () => {
 						logoUrl: undefined,
 					},
 				],
+				backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+				collapsed: mediaBoard.mediaAvailableLineCollapsed,
 			});
 		});
 	});

@@ -1,3 +1,4 @@
+import { MediaBoardColors } from '@modules/board/domain';
 import { BoardComposite, BoardCompositeProps } from '../board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from '../types';
 import { MediaExternalToolElement } from './media-external-tool-element.do';
@@ -9,6 +10,22 @@ export class MediaLine extends BoardComposite<MediaLineProps> {
 
 	set title(title: string) {
 		this.props.title = title;
+	}
+
+	get backgroundColor(): MediaBoardColors {
+		return this.props.backgroundColor;
+	}
+
+	set backgroundColor(backgroundColor: MediaBoardColors) {
+		this.props.backgroundColor = backgroundColor;
+	}
+
+	get collapsed(): boolean {
+		return this.props.collapsed;
+	}
+
+	set collapsed(collapsed: boolean) {
+		this.props.collapsed = collapsed;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
@@ -28,6 +45,8 @@ export class MediaLine extends BoardComposite<MediaLineProps> {
 
 export interface MediaLineProps extends BoardCompositeProps {
 	title: string;
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
 }
 
 export type MediaLineInitProps = Omit<MediaLineProps, keyof BoardCompositeProps>;

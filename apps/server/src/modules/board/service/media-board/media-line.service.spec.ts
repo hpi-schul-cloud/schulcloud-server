@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mediaBoardFactory, mediaLineFactory } from '@shared/testing';
+import { MediaBoardColors } from '../../domain';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 import { MediaLineService } from './media-line.service';
@@ -75,7 +76,11 @@ describe(MediaLineService.name, () => {
 			it('should return the line', async () => {
 				const { board } = setup();
 
-				const result = await service.create(board, { title: 'lineTitle' });
+				const result = await service.create(board, {
+					title: 'lineTitle',
+					backgroundColor: MediaBoardColors.TRANSPARENT,
+					collapsed: false,
+				});
 
 				expect(result).toEqual(
 					expect.objectContaining({
@@ -84,6 +89,8 @@ describe(MediaLineService.name, () => {
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
 						title: 'lineTitle',
+						backgroundColor: MediaBoardColors.TRANSPARENT,
+						collapsed: false,
 					})
 				);
 			});
@@ -163,6 +170,70 @@ describe(MediaLineService.name, () => {
 					expect.objectContaining({
 						id: line.id,
 						title: 'newTitle',
+					}),
+					board
+				);
+			});
+		});
+	});
+
+	describe('updateColor', () => {
+		describe('when updating the color', () => {
+			const setup = () => {
+				const board = mediaBoardFactory.build();
+				const line = mediaLineFactory.build({
+					backgroundColor: MediaBoardColors.TRANSPARENT,
+				});
+
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(board);
+
+				return {
+					line,
+					board,
+				};
+			};
+
+			it('should update the color', async () => {
+				const { line, board } = setup();
+
+				await service.updateColor(line, MediaBoardColors.RED);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: line.id,
+						backgroundColor: MediaBoardColors.RED,
+					}),
+					board
+				);
+			});
+		});
+	});
+
+	describe('collapse', () => {
+		describe('when updating the visibility', () => {
+			const setup = () => {
+				const board = mediaBoardFactory.build();
+				const line = mediaLineFactory.build({
+					collapsed: false,
+				});
+
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(board);
+
+				return {
+					line,
+					board,
+				};
+			};
+
+			it('should update the visibility', async () => {
+				const { line, board } = setup();
+
+				await service.collapse(line, true);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: line.id,
+						collapsed: true,
 					}),
 					board
 				);
