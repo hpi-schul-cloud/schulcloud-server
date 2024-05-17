@@ -12,7 +12,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 /**
  * @deprecated - this is here only for the sake of the legacy-board (lernraum)
  */
-@Entity()
+@Entity({ tableName: 'boardnodes' })
 export class ColumnBoardNode extends BaseEntityWithTimestamps implements LearnroomElement {
 	constructor(props: ColumnBoardNodeProps) {
 		super();
