@@ -48,9 +48,7 @@ export class ToolReferenceUc {
 		try {
 			await this.ensureToolPermissions(user, contextExternalTool);
 
-			const toolReference: ToolReference = await this.toolReferenceService.getToolReference(
-				contextExternalTool.id as string
-			);
+			const toolReference: ToolReference = await this.toolReferenceService.getToolReference(contextExternalTool.id);
 
 			return toolReference;
 		} catch (e: unknown) {
@@ -66,9 +64,7 @@ export class ToolReferenceUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		await this.ensureToolPermissions(user, contextExternalTool);
 
-		const toolReference: ToolReference = await this.toolReferenceService.getToolReference(
-			contextExternalTool.id as string
-		);
+		const toolReference: ToolReference = await this.toolReferenceService.getToolReference(contextExternalTool.id);
 
 		return toolReference;
 	}

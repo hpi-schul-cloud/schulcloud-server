@@ -1,7 +1,7 @@
-import { schoolToolConfigurationStatusFactory } from '@shared/testing';
-import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
+import { schoolExternalToolConfigurationStatusFactory } from '../testing';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 
 describe('SchoolExternalToolRequestMapper', () => {
 	const mapper: SchoolExternalToolRequestMapper = new SchoolExternalToolRequestMapper();
@@ -15,7 +15,6 @@ describe('SchoolExternalToolRequestMapper', () => {
 				};
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
-					version: 1,
 					schoolId: 'schoolId',
 					parameters: [param],
 					isDeactivated: true,
@@ -33,11 +32,11 @@ describe('SchoolExternalToolRequestMapper', () => {
 				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
 				expect(schoolExternalToolDto).toEqual<SchoolExternalToolDto>({
+					id: expect.any(String),
 					toolId: params.toolId,
 					parameters: [{ name: param.name, value: param.value }],
 					schoolId: params.schoolId,
-					toolVersion: params.version,
-					status: schoolToolConfigurationStatusFactory.build({ isDeactivated: true }),
+					status: schoolExternalToolConfigurationStatusFactory.build({ isDeactivated: true }),
 				});
 			});
 		});
@@ -46,7 +45,6 @@ describe('SchoolExternalToolRequestMapper', () => {
 			const setup = () => {
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
-					version: 1,
 					schoolId: 'schoolId',
 					parameters: undefined,
 					isDeactivated: false,
@@ -63,11 +61,11 @@ describe('SchoolExternalToolRequestMapper', () => {
 				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
 				expect(schoolExternalToolDto).toEqual<SchoolExternalToolDto>({
+					id: expect.any(String),
 					toolId: params.toolId,
 					parameters: [],
 					schoolId: params.schoolId,
-					toolVersion: params.version,
-					status: schoolToolConfigurationStatusFactory.build(),
+					status: schoolExternalToolConfigurationStatusFactory.build(),
 				});
 			});
 		});

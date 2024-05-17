@@ -6,14 +6,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	columnBoardNodeFactory,
 	externalToolElementNodeFactory,
 	schoolEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { accountFactory } from '@src/modules/account/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
@@ -21,7 +20,7 @@ import { contextExternalToolEntityFactory } from '../../../context-external-tool
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../entity';
-import { schoolExternalToolEntityFactory } from '../../testing/school-external-tool-entity.factory';
+import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
 	CustomParameterEntryParam,
 	SchoolExternalToolMetadataResponse,
@@ -73,7 +72,6 @@ describe('ToolSchoolController (API)', () => {
 			});
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-				version: 1,
 				parameters: [
 					customParameterEntityFactory.build({
 						name: 'param1',
@@ -93,7 +91,6 @@ describe('ToolSchoolController (API)', () => {
 			const postParams: SchoolExternalToolPostParams = {
 				toolId: externalToolEntity.id,
 				schoolId: school.id,
-				version: 1,
 				parameters: [
 					{ name: 'param1', value: 'value' },
 					{ name: 'param2', value: 'false' },
@@ -144,10 +141,9 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParams.schoolId,
 				toolId: postParams.toolId,
-				status: schoolToolConfigurationStatusFactory.build({
+				status: schoolExternalToolConfigurationStatusFactory.build({
 					isOutdatedOnScopeSchool: false,
 				}),
-				toolVersion: postParams.version,
 				parameters: [
 					{ name: 'param1', value: 'value' },
 					{ name: 'param2', value: 'false' },
@@ -176,7 +172,6 @@ describe('ToolSchoolController (API)', () => {
 			});
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-				version: 1,
 				parameters: [],
 			});
 
@@ -241,7 +236,6 @@ describe('ToolSchoolController (API)', () => {
 			});
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-				version: 1,
 				parameters: [],
 			});
 
@@ -303,10 +297,9 @@ describe('ToolSchoolController (API)', () => {
 							name: externalToolEntity.name,
 							schoolId: school.id,
 							toolId: externalToolEntity.id,
-							status: schoolToolConfigurationStatusFactory.build({
+							status: schoolExternalToolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: true,
 							}),
-							toolVersion: schoolExternalToolEntity.toolVersion,
 							parameters: [
 								{
 									name: schoolExternalToolEntity.schoolParameters[0].name,
@@ -334,7 +327,6 @@ describe('ToolSchoolController (API)', () => {
 			});
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-				version: 1,
 				parameters: [],
 			});
 
@@ -348,10 +340,9 @@ describe('ToolSchoolController (API)', () => {
 				name: '',
 				schoolId: school.id,
 				toolId: externalToolEntity.id,
-				status: schoolToolConfigurationStatusFactory.build({
+				status: schoolExternalToolConfigurationStatusFactory.build({
 					isOutdatedOnScopeSchool: false,
 				}),
-				toolVersion: schoolExternalToolEntity.toolVersion,
 				parameters: [
 					{
 						name: schoolExternalToolEntity.schoolParameters[0].name,
@@ -416,7 +407,6 @@ describe('ToolSchoolController (API)', () => {
 			});
 
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-				version: 1,
 				parameters: [
 					customParameterEntityFactory.build({
 						name: 'param1',
@@ -427,7 +417,6 @@ describe('ToolSchoolController (API)', () => {
 				],
 			});
 			const externalToolEntity2: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-				version: 1,
 				parameters: [],
 			});
 
@@ -459,7 +448,6 @@ describe('ToolSchoolController (API)', () => {
 			const postParams: SchoolExternalToolPostParams = {
 				toolId: externalToolEntity.id,
 				schoolId: school.id,
-				version: 1,
 				parameters: [paramEntry],
 				isDeactivated: false,
 			};
@@ -468,7 +456,6 @@ describe('ToolSchoolController (API)', () => {
 			const postParamsUpdate: SchoolExternalToolPostParams = {
 				toolId: externalToolEntity.id,
 				schoolId: school.id,
-				version: 1,
 				parameters: [updatedParamEntry],
 				isDeactivated: false,
 			};
@@ -478,10 +465,9 @@ describe('ToolSchoolController (API)', () => {
 				name: externalToolEntity.name,
 				schoolId: postParamsUpdate.schoolId,
 				toolId: postParamsUpdate.toolId,
-				status: schoolToolConfigurationStatusFactory.build({
+				status: schoolExternalToolConfigurationStatusFactory.build({
 					isOutdatedOnScopeSchool: false,
 				}),
-				toolVersion: postParamsUpdate.version,
 				parameters: [
 					{
 						name: updatedParamEntry.name,

@@ -12,7 +12,6 @@ import {
 import { InputFormat } from '@shared/domain/types';
 import {
 	cardFactory,
-	contextExternalToolFactory,
 	drawingElementFactory,
 	fileElementFactory,
 	linkElementFactory,
@@ -20,6 +19,7 @@ import {
 	setupEntities,
 	submissionContainerElementFactory,
 } from '@shared/testing';
+import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
 import {
 	DrawingContentBody,
 	FileContentBody,

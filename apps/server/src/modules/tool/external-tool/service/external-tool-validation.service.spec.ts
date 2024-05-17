@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
@@ -212,7 +212,7 @@ describe('ExternalToolValidationService', () => {
 
 				return {
 					externalTool,
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 				};
 			};
 
@@ -231,7 +231,6 @@ describe('ExternalToolValidationService', () => {
 					.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 					.buildWithId();
 
-				externalOauthTool.id = 'toolId';
 				externalToolService.findById.mockResolvedValue(externalOauthTool);
 
 				return {
@@ -273,7 +272,7 @@ describe('ExternalToolValidationService', () => {
 					return {
 						existingExternalOauthTool,
 						newExternalTool,
-						newExternalToolId: newExternalTool.id as string,
+						newExternalToolId: newExternalTool.id,
 					};
 				};
 
@@ -304,7 +303,7 @@ describe('ExternalToolValidationService', () => {
 				it('should pass', async () => {
 					const { externalOauthTool } = setup();
 
-					const result: Promise<void> = service.validateUpdate(externalOauthTool.id as string, externalOauthTool);
+					const result: Promise<void> = service.validateUpdate(externalOauthTool.id, externalOauthTool);
 
 					await expect(result).resolves.not.toThrow();
 				});
@@ -328,7 +327,7 @@ describe('ExternalToolValidationService', () => {
 				it('should throw', async () => {
 					const { externalOauthTool } = setup();
 
-					const result: Promise<void> = service.validateUpdate(externalOauthTool.id as string, externalOauthTool);
+					const result: Promise<void> = service.validateUpdate(externalOauthTool.id, externalOauthTool);
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
@@ -342,7 +341,6 @@ describe('ExternalToolValidationService', () => {
 		describe('when external tool has another config type then oauth', () => {
 			const setup = () => {
 				const externalLtiToolDO: ExternalTool = externalToolFactory.withLti11Config().buildWithId();
-				externalLtiToolDO.id = 'toolId';
 
 				externalToolService.findById.mockResolvedValue(externalLtiToolDO);
 

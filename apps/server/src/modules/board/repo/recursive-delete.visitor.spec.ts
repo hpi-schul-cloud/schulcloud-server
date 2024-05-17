@@ -5,12 +5,12 @@ import { CollaborativeTextEditorService } from '@modules/collaborative-text-edit
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	collaborativeTextEditorElementFactory,
 	columnBoardFactory,
 	columnFactory,
-	contextExternalToolFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
