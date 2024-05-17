@@ -58,10 +58,10 @@ spec:
         resources:
           limits:
             cpu: {{ COMMON_CARTRIDGE_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS|default("500Mi", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS|default("2GI", true) }}
           requests:
             cpu: {{ COMMON_CARTRIDGE_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ COMMON_CARTRIDGE_MEMORY_REQUESTS|default("50Mi", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_REQUESTS|default("150Mi", true) }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
