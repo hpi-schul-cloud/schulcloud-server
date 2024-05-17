@@ -24,16 +24,8 @@ export class ContextExternalTool extends DomainObject<ContextExternalToolProps> 
 		return this.props.schoolToolRef;
 	}
 
-	set schoolToolRef(schoolToolRef: SchoolExternalToolRef) {
-		this.props.schoolToolRef = schoolToolRef;
-	}
-
 	get contextRef(): ContextRef {
 		return this.props.contextRef;
-	}
-
-	set contextRef(contextRef: ContextRef) {
-		this.props.contextRef = contextRef;
 	}
 
 	get displayName(): string | undefined {
@@ -42,9 +34,5 @@ export class ContextExternalTool extends DomainObject<ContextExternalToolProps> 
 
 	get parameters(): CustomParameterEntry[] {
 		return this.props.parameters;
-	}
-
-	set parameters(parameters: CustomParameterEntry[]) {
-		this.props.parameters = parameters;
 	}
 }
