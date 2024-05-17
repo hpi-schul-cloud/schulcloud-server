@@ -18,7 +18,7 @@ export class MediaLineNode extends BoardNode {
 	@Property()
 	title: string;
 
-	@Enum()
+	@Enum(() => MediaBoardColors)
 	backgroundColor: MediaBoardColors;
 
 	@Property()
