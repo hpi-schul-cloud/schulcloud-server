@@ -171,12 +171,10 @@ describe(ExternalToolRepo.name, () => {
 				baseUrl: 'baseUrl',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
-			expect(result).toMatchObject(expected);
-			expect(result.id).toBeDefined();
+			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
 		});
 
 		it('should save an oauth2 tool correctly', async () => {
@@ -187,12 +185,10 @@ describe(ExternalToolRepo.name, () => {
 				skipConsent: true,
 			});
 			const { domainObject } = setupDO(config);
-			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
-			expect(result).toMatchObject(expected);
-			expect(result.id).toBeDefined();
+			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
 		});
 
 		it('should save an lti11 tool correctly', async () => {
@@ -206,12 +202,10 @@ describe(ExternalToolRepo.name, () => {
 				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
-			expect(result).toMatchObject(expected);
-			expect(result.id).toBeDefined();
+			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
 		});
 	});
 
@@ -348,7 +342,7 @@ describe(ExternalToolRepo.name, () => {
 		it('should delete external tool with given id', async () => {
 			const { externalToolEntity } = await setup2();
 
-			repo.deleteById(externalToolEntity.id);
+			await repo.deleteById(externalToolEntity.id);
 
 			await expect(repo.findById(externalToolEntity.id)).rejects.toThrowError();
 		});

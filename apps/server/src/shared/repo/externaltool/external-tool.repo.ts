@@ -4,7 +4,6 @@ import { ToolConfigType } from '@modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity, ExternalToolEntityProps } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
@@ -21,24 +20,12 @@ export class ExternalToolRepo {
 	}
 
 	public async save(domainObject: ExternalTool): Promise<ExternalTool> {
-		const existing: ExternalToolEntity | null = await this.em.findOne<ExternalToolEntity>(
-			SchoolExternalToolEntity.name,
-			domainObject.id
-		);
-
 		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
-		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
+		const entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
 
-		if (existing) {
-			entity = this.em.assign(existing, entity);
-		} else {
-			this.em.persist(entity);
-		}
-		await this.em.flush();
+		await this.em.persistAndFlush(entity);
 
-		const savedDomainObject: ExternalTool = Object.assign(this.mapEntityToDomainObject(entity), {
-			...domainObject,
-		});
+		const savedDomainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 
 		return savedDomainObject;
 	}
@@ -50,8 +37,8 @@ export class ExternalToolRepo {
 		return domainObject;
 	}
 
-	public deleteById(id: EntityId): void {
-		this.em.remove(this.em.getReference(this.entityName, id));
+	public async deleteById(id: EntityId): Promise<void> {
+		await this.em.removeAndFlush(this.em.getReference(this.entityName, id));
 	}
 
 	public async findByName(name: string): Promise<ExternalTool | null> {
