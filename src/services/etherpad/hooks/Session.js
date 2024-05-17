@@ -49,7 +49,7 @@ const getSessionInformation = async (context) => {
 			const responseData = response.data;
 			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000, 10);
 			const foundSessionID = Object.keys(responseData)
-				.filter((session) => session !== null && session !== undefined)
+				.filter((sessionID) => responseData[sessionID] !== null && typeof responseData[sessionID] !== 'undefined')
 				.find((sessionID) => {
 					const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
 					return (
