@@ -119,12 +119,13 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
+		// TODO - should not use course repo
 		const course = await this.courseRepo.findById(board.context.id);
 
 		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 		this.authorizationService.checkPermission(user, course, {
 			action: Action.write,
-			requiredPermissions: [],
+			requiredPermissions: [], // TODO - what permissions are required? COURSE_EDIT?
 		});
 
 		const copyStatus = await this.columnBoardCopyService.copyColumnBoard({

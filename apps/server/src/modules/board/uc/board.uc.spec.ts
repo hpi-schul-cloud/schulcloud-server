@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -10,18 +9,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { courseFactory } from '@shared/testing/factory';
 import { Permission } from '@shared/domain/interface';
 import { BoardUc } from './board.uc';
-import { BoardExternalReferenceType, BoardLayout } from '../domain';
-import { BoardNodePermissionService, ColumnBoardCopyService, ColumnBoardService } from '../service';
+import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardCopyService } from '../service';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardPernmissionService: DeepMocked<BoardNodePermissionService>;
-	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
-	let columnService: DeepMocked<ColumnService>;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,28 +36,24 @@ describe(BoardUc.name, () => {
 					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
 					provide: ColumnBoardCopyService,
 					useValue: createMock<ColumnBoardCopyService>(),
 				},
 				{
-					provide: ColumnService,
-					useValue: createMock<ColumnService>(),
-				},
-				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: BoardNodeFactory,
+					useValue: createMock<BoardNodeFactory>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -65,10 +61,10 @@ describe(BoardUc.name, () => {
 		uc = module.get(BoardUc);
 		authorizationService = module.get(AuthorizationService);
 		boardPernmissionService = module.get(BoardNodePermissionService);
-		columnBoardService = module.get(ColumnBoardService);
+		boardNodeService = module.get(BoardNodeService);
 		columnBoardCopyService = module.get(ColumnBoardCopyService);
-		columnService = module.get(ColumnService);
 		courseRepo = module.get(CourseRepo);
+		boardNodeFactory = module.get(BoardNodeFactory);
 		await setupEntities();
 	});
 
@@ -144,7 +140,7 @@ describe(BoardUc.name, () => {
 				});
 			});
 
-			it('should call the service to create the board', async () => {
+			it('should call factory to build board', async () => {
 				const { user, course } = setup();
 
 				await uc.createBoard(user.id, {
@@ -154,16 +150,34 @@ describe(BoardUc.name, () => {
 					parentType: BoardExternalReferenceType.Course,
 				});
 
-				expect(columnBoardService.create).toHaveBeenCalledWith(
-					{ type: BoardExternalReferenceType.Course, id: course.id },
-					BoardLayout.COLUMNS,
-					'new board'
-				);
+				expect(boardNodeFactory.buildColumnBoard).toHaveBeenCalledWith({
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+					layout: BoardLayout.COLUMNS,
+					title: 'new board',
+				});
+			});
+
+			it('should call the service to create the board', async () => {
+				const { user } = setup();
+
+				const board = columnBoardFactory.build();
+				boardNodeFactory.buildColumnBoard.mockReturnValueOnce(board);
+
+				await uc.createBoard(user.id, {
+					title: 'new board',
+					layout: BoardLayout.COLUMNS,
+					parentId: new ObjectId().toHexString(),
+					parentType: BoardExternalReferenceType.Course,
+				});
+
+				expect(boardNodeService.addRoot).toHaveBeenCalledWith(board);
 			});
 
 			it('should return the column board object', async () => {
-				const { user, board } = globalSetup();
-				columnBoardService.create.mockResolvedValueOnce(board);
+				const { user } = setup();
+
+				const board = columnBoardFactory.build();
+				boardNodeFactory.buildColumnBoard.mockReturnValueOnce(board);
 
 				const result = await uc.createBoard(user.id, {
 					title: 'new board',
@@ -178,62 +192,44 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('findBoard', () => {
-		describe('when loading a board and having required permission', () => {
-			it('should call the Column Board Service to find board ', async () => {
-				const { user, boardId } = globalSetup();
-
-				await uc.findBoard(user.id, boardId);
-
-				expect(columnBoardService.findById).toHaveBeenCalledWith(boardId);
-			});
-
-			it('should call Board Permission Service to check permission', async () => {
-				const { user, board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
-
-				await uc.findBoard(user.id, board.id);
-
-				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
-			});
-
-			it('should return the column board object', async () => {
-				const { user, board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
-
-				const result = await uc.findBoard(user.id, board.id);
-
-				expect(result).toEqual(board);
-			});
-		});
-
-		describe('when loading a board without having permissions', () => {
-			it('should throw Forbidden Exception', async () => {
-				const { board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
-
-				boardPernmissionService.checkPermission.mockImplementationOnce(() => {
-					throw new ForbiddenException();
-				});
-
-				const fakeUserId = new ObjectId().toHexString();
-
-				await expect(uc.findBoard(fakeUserId, board.id)).rejects.toThrow(ForbiddenException);
-			});
-		});
-	});
-
-	describe('getBoardContext', () => {
-		it('should call the Column Board Service to find board ', async () => {
+		it('should call the Board Node Service to find board ', async () => {
 			const { user, boardId } = globalSetup();
 
-			await uc.findBoardContext(user.id, boardId);
+			await uc.findBoard(user.id, boardId);
 
-			expect(columnBoardService.findById).toHaveBeenCalledWith(boardId);
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
 		});
 
 		it('should call Board Permission Service to check permission', async () => {
 			const { user, board } = globalSetup();
-			columnBoardService.findById.mockResolvedValueOnce(board);
+			// boardPermissionService.findById.mockResolvedValueOnce(board);
+
+			await uc.findBoard(user.id, board.id);
+
+			expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+		});
+
+		it('should return the column board object', async () => {
+			const { user, board } = globalSetup();
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+			const result = await uc.findBoard(user.id, board.id);
+
+			expect(result).toEqual(board);
+		});
+	});
+
+	describe('findBoardContext', () => {
+		it('should call the Board Node Service to find board ', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.findBoardContext(user.id, boardId);
+
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
+		});
+
+		it('should call Board Permission Service to check permission', async () => {
+			const { user, board } = globalSetup();
 
 			await uc.findBoardContext(user.id, board.id);
 
@@ -243,7 +239,7 @@ describe(BoardUc.name, () => {
 		it('should return the context object', async () => {
 			const { user, board } = globalSetup();
 
-			columnBoardService.findById.mockResolvedValueOnce(board);
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await uc.findBoardContext(user.id, board.id);
 
@@ -253,17 +249,16 @@ describe(BoardUc.name, () => {
 
 	describe('deleteBoard', () => {
 		describe('when deleting a board', () => {
-			it('should call the service to find the board', async () => {
-				const { user, board } = globalSetup();
+			it('should call the Board Node Service to find board ', async () => {
+				const { user, boardId } = globalSetup();
 
-				await uc.deleteBoard(user.id, board.id);
+				await uc.deleteBoard(user.id, boardId);
 
-				expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
 			});
 
-			it('should call the service to check the permissions', async () => {
+			it('should call Board Permission Service to check permission', async () => {
 				const { user, board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -275,7 +270,7 @@ describe(BoardUc.name, () => {
 
 				await uc.deleteBoard(user.id, board.id);
 
-				expect(columnBoardService.delete).toHaveBeenCalledWith(board);
+				expect(boardNodeService.delete).toHaveBeenCalledWith(board);
 			});
 		});
 	});
@@ -287,12 +282,11 @@ describe(BoardUc.name, () => {
 
 				await uc.updateBoardTitle(user.id, board.id, 'new title');
 
-				expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
 			});
 
 			it('should call the service to check the permissions', async () => {
 				const { user, board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.updateBoardTitle(user.id, board.id, 'new title');
 
@@ -305,7 +299,7 @@ describe(BoardUc.name, () => {
 
 				await uc.updateBoardTitle(user.id, board.id, newTitle);
 
-				expect(columnBoardService.updateTitle).toHaveBeenCalledWith(board, newTitle);
+				expect(boardNodeService.updateTitle).toHaveBeenCalledWith(board, newTitle);
 			});
 		});
 	});
@@ -317,30 +311,38 @@ describe(BoardUc.name, () => {
 
 				await uc.createColumn(user.id, board.id);
 
-				expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
 			});
 
 			it('should call the service to check the permissions', async () => {
 				const { user, board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.createColumn(user.id, board.id);
 
 				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
 			});
 
-			it('should call the service to create the column', async () => {
+			it('should call the factory to build column', async () => {
 				const { user, board } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.createColumn(user.id, board.id);
 
-				expect(columnService.create).toHaveBeenCalledWith(board);
+				expect(boardNodeFactory.buildColumn).toHaveBeenCalled();
+			});
+
+			it('should call the board node service to add the column to board', async () => {
+				const { user, board, column } = globalSetup();
+
+				boardNodeFactory.buildColumn.mockReturnValueOnce(column);
+
+				await uc.createColumn(user.id, board.id);
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(board, column);
 			});
 
 			it('should return the column board object', async () => {
 				const { user, board, column } = globalSetup();
-				columnService.create.mockResolvedValueOnce(column);
+				boardNodeFactory.buildColumn.mockReturnValueOnce(column);
 
 				const result = await uc.createColumn(user.id, board.id);
 
@@ -356,7 +358,7 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
-				expect(columnService.findById).toHaveBeenCalledWith(column.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id, 0);
 			});
 
 			it('should call the service to find the target board', async () => {
@@ -364,12 +366,11 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
-				expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id, 0);
 			});
 
 			it('should call the service to check the permissions for column', async () => {
 				const { user, board, column } = globalSetup();
-				columnService.findById.mockResolvedValueOnce(column);
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
@@ -378,7 +379,6 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to check the permissions for target board', async () => {
 				const { user, board, column } = globalSetup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
@@ -387,17 +387,62 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to move the column', async () => {
 				const { user, board, column } = globalSetup();
-				columnService.findById.mockResolvedValueOnce(column);
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
-				await uc.moveColumn(user.id, board.id, column.id, 7);
+				await uc.moveColumn(user.id, column.id, board.id, 7);
 
-				expect(columnService.move).toHaveBeenCalledWith(column, board, 7);
+				expect(boardNodeService.move).toHaveBeenCalledWith(column.id, board.id, 7);
 			});
 		});
 	});
 
 	describe('copyBoard', () => {
+		it('should call the service to find the user', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.copyBoard(user.id, boardId);
+
+			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+		});
+
+		it('should call the service to find the board', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.copyBoard(user.id, boardId);
+
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
+		});
+
+		it('[deprecated] should call course repo to find the course', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.copyBoard(user.id, boardId);
+
+			expect(courseRepo.findById).toHaveBeenCalled();
+		});
+
+		it('should call Board Permission Service to check permission', async () => {
+			const { user, board } = globalSetup();
+
+			await uc.copyBoard(user.id, board.id);
+
+			expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+		});
+
+		it('should call authorization to check course permissions', async () => {
+			const { user, boardId } = globalSetup();
+
+			const course = courseFactory.build();
+			// TODO should not use course repo
+			courseRepo.findById.mockResolvedValueOnce(course);
+
+			await uc.copyBoard(user.id, boardId);
+
+			expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+		});
+
 		it('should call the service to copy the board', async () => {
 			const { user, boardId } = globalSetup();
 
@@ -406,6 +451,20 @@ describe(BoardUc.name, () => {
 			expect(columnBoardCopyService.copyColumnBoard).toHaveBeenCalledWith(
 				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId })
 			);
+		});
+
+		it('should return the copy status', async () => {
+			const { user, boardId } = globalSetup();
+
+			const copyStatus: CopyStatus = {
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+			};
+			columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
+
+			const result = await uc.copyBoard(user.id, boardId);
+
+			expect(result).toEqual(copyStatus);
 		});
 	});
 
@@ -422,13 +481,11 @@ describe(BoardUc.name, () => {
 
 			await uc.updateVisibility(user.id, board.id, true);
 
-			expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
 		});
 
 		it('should call the service to check the permissions', async () => {
 			const { user, board } = setup();
-
-			columnBoardService.findById.mockResolvedValueOnce(board);
 
 			await uc.updateVisibility(user.id, board.id, true);
 
@@ -440,7 +497,7 @@ describe(BoardUc.name, () => {
 
 			await uc.updateVisibility(user.id, board.id, true);
 
-			expect(columnBoardService.updateBoardVisibility).toHaveBeenCalledWith(board.id, true);
+			expect(boardNodeService.updateVisibility).toHaveBeenCalledWith(board.id, true);
 		});
 	});
 });
