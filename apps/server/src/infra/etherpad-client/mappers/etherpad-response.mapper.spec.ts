@@ -144,4 +144,89 @@ describe('EtherpadResponseMapper', () => {
 			});
 		});
 	});
+
+	describe('mapEtherpadSessionsToSessions', () => {
+		describe('when etherpadSessions is valid', () => {
+			it('should return sessions', () => {
+				const etherpadSessions = {
+					etherpadId1: { groupID: 'groupID1', authorID: 'authorID1', validUntil: 123456789 },
+					etherpadId2: { groupID: 'groupID2', authorID: 'authorID2', validUntil: 123456789 },
+				};
+
+				const result = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+
+				expect(result).toEqual([
+					{
+						id: 'etherpadId1',
+						groupId: 'groupID1',
+						authorId: 'authorID1',
+						validUntil: 123456789,
+					},
+					{
+						id: 'etherpadId2',
+						groupId: 'groupID2',
+						authorId: 'authorID2',
+						validUntil: 123456789,
+					},
+				]);
+			});
+		});
+
+		describe('when etherpadSessions is not an object', () => {
+			it('should throw error', () => {
+				const etherpadSessions = 'etherpadSessions';
+				const error = new Error('Type is not an object');
+
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(error);
+			});
+		});
+
+		describe('when etherpadSessions is empty object', () => {
+			it('should return empty array', () => {
+				const etherpadSessions = {};
+
+				const result = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when etherpadSessions is null', () => {
+			it('should throw error', () => {
+				const etherpadSessions = null;
+				const error = new Error('Type is not an object');
+
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(error);
+			});
+		});
+
+		describe('when etherpadSessions is undefined', () => {
+			it('should throw error', () => {
+				const etherpadSessions = undefined;
+				const error = new Error('Type is not an object');
+
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(error);
+			});
+		});
+
+		describe('when etherpadSession value is null', () => {
+			it('should not include session in result', () => {
+				const etherpadSessions = {
+					etherpadId1: { groupID: 'groupID1', authorID: 'authorID1', validUntil: 123456789 },
+					etherpadId2: null,
+				};
+
+				const result = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+
+				expect(result).toEqual([
+					{
+						id: 'etherpadId1',
+						groupId: 'groupID1',
+						authorId: 'authorID1',
+						validUntil: 123456789,
+					},
+				]);
+			});
+		});
+	});
 });

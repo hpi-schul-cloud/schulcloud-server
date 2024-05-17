@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common';
 import { ErrorUtils } from '@src/core/error/utils';
 import { InlineResponse2003Data, InlineResponse2004Data, InlineResponse200Data } from '../etherpad-api-client';
@@ -58,6 +59,21 @@ export class EtherpadResponseMapper {
 		response: T | Error
 	): EtherpadErrorLoggableException {
 		return new EtherpadErrorLoggableException(type, payload, ErrorUtils.createHttpExceptionOptions(response.message));
+	}
+
+	static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
+		try {
+			const sessionsObject = TypeGuard.checkObject(etherpadSessions);
+
+			const sessions = Object.entries(sessionsObject)
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				.filter(([key, value]) => value !== null)
+				.map(([key, value]) => this.mapEtherpadSessionToSession([key, value]));
+
+			return sessions;
+		} catch (error) {
+			throw new InternalServerErrorException('Etherpad session data is not valid', { cause: error });
+		}
 	}
 
 	static mapEtherpadSessionToSession([etherpadId, etherpadSession]: [string, unknown | undefined]): Session {

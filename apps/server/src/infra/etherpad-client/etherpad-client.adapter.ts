@@ -154,26 +154,11 @@ export class EtherpadClientAdapter {
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
 			const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
-			const sessions = this.mapEtherpadSessionsToSessions(etherpadSessions);
+			const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
 			return sessions;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
-		}
-	}
-
-	private mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
-		try {
-			const sessionsObject = TypeGuard.checkObject(etherpadSessions);
-
-			const sessions = Object.entries(sessionsObject)
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.filter(([key, value]) => value !== null)
-				.map(([key, value]) => EtherpadResponseMapper.mapEtherpadSessionToSession([key, value]));
-
-			return sessions;
-		} catch (error) {
-			throw new InternalServerErrorException('Etherpad session data is not valid', { cause: error });
 		}
 	}
 
