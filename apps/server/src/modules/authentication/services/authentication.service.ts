@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
-import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
+import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { LoginDto } from '../uc/dto';
 
 @Injectable()
@@ -55,9 +55,13 @@ export class AuthenticationService {
 	async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
 
-		if (decodedJwt && decodedJwt.jti && decodedJwt.accountId && typeof decodedJwt.accountId === 'string') {
+		if (this.isValidJwt(decodedJwt)) {
 			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
+	}
+
+	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
+		return typeof decodedJwt?.jti === 'string' && typeof decodedJwt?.accountId === 'string';
 	}
 
 	checkBrutForce(account: Account): void {
