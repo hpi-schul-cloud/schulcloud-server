@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import {
 	LaunchContextUnavailableLoggableException,
 	MissingMediaLicenseLoggableException,
@@ -13,19 +13,16 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolLaunchService } from '../service';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
@@ -374,7 +371,7 @@ describe('ToolLaunchUc', () => {
 					url: 'https://mock.com/',
 				});
 
-				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool as SchoolExternalToolWithId);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				configService.get.mockReturnValueOnce(false);
 				toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
@@ -467,7 +464,7 @@ describe('ToolLaunchUc', () => {
 						url: 'https://mock.com/',
 					});
 
-					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool as SchoolExternalToolWithId);
+					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					configService.get.mockReturnValueOnce(true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
@@ -535,7 +532,7 @@ describe('ToolLaunchUc', () => {
 						url: 'https://mock.com/',
 					});
 
-					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool as SchoolExternalToolWithId);
+					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					configService.get.mockReturnValueOnce(true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
@@ -603,7 +600,7 @@ describe('ToolLaunchUc', () => {
 						url: 'https://mock.com/',
 					});
 
-					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool as SchoolExternalToolWithId);
+					schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 					configService.get.mockReturnValueOnce(true);
 					toolLaunchService.loadToolHierarchy.mockResolvedValue({ externalTool, schoolExternalTool });
@@ -647,7 +644,7 @@ describe('ToolLaunchUc', () => {
 					parameters: [],
 				};
 
-				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool as SchoolExternalToolWithId);
+				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {

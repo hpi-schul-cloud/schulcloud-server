@@ -24,7 +24,6 @@ export class SchoolExternalToolResponseMapper {
 			toolId: schoolExternalTool.toolId,
 			schoolId: schoolExternalTool.schoolId,
 			parameters: this.mapToCustomParameterEntryResponse(schoolExternalTool.parameters),
-			toolVersion: schoolExternalTool.toolVersion,
 			status: SchoolToolConfigurationStatusResponseMapper.mapToResponse(
 				schoolExternalTool.status ?? { isOutdatedOnScopeSchool: false, isDeactivated: false }
 			),

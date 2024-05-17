@@ -1,5 +1,5 @@
 import { setupEntities } from '@shared/testing';
-import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '../testing/school-external-tool-configuration-status-entity.factory';
 import { SchoolExternalToolConfigurationStatusEntity } from './school-external-tool-configuration-status.entity';
 
 describe('SchoolExternalToolConfigurationStatusEntity', () => {

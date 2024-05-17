@@ -2,18 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing';
-import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
 	ToolParameterMandatoryValueMissingLoggableException,
 	ToolParameterOptionalValueMissingLoggableException,
 } from '../../common/domain';
 import { CommonToolValidationService } from '../../common/service';
+import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import { contextExternalToolFactory } from '../testing';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 
 describe(ToolConfigurationStatusService.name, () => {
@@ -50,10 +47,10 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValue([]);
@@ -104,10 +101,10 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
@@ -159,10 +156,10 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
@@ -214,10 +211,10 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
@@ -270,10 +267,10 @@ describe(ToolConfigurationStatusService.name, () => {
 				const customParameter = customParameterFactory.build();
 				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
@@ -314,10 +311,10 @@ describe(ToolConfigurationStatusService.name, () => {
 				const customParameter = customParameterFactory.build();
 				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
@@ -357,10 +354,10 @@ describe(ToolConfigurationStatusService.name, () => {
 				const customParameter = customParameterFactory.build();
 				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
@@ -400,11 +397,11 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 					status: { isDeactivated: true },
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
@@ -440,10 +437,10 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
@@ -479,10 +476,10 @@ describe(ToolConfigurationStatusService.name, () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id as string,
+					toolId: externalTool.id,
 				});
 				const contextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.buildWithId();
 
 				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
