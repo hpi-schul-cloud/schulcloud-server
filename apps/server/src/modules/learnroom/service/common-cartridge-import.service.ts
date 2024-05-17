@@ -1,12 +1,5 @@
-import {
-	BoardExternalReferenceType,
-	BoardLayout,
-	BoardNodeFactory,
-	BoardNodeService,
-	Column,
-	ColumnBoard,
-	ContentElementUpdateService,
-} from '@modules/board';
+import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '@modules/board/domain';
+import { BoardNodeService, ContentElementUpdateService } from '@modules/board/service';
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import {

@@ -1,43 +1,31 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyBoard, LessonEntity, Task } from '@shared/domain/entity';
-
-import { MongoMemoryDatabaseModule } from '@infra/database';
-
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BoardNodeService, ColumnBoard } from '@modules/board';
-import { cleanupCollections } from '@shared/testing';
 import {
 	boardFactory,
-	columnboardBoardElementFactory,
+	cleanupCollections,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	taskBoardElementFactory,
-} from '@shared/testing/factory';
+} from '@shared/testing';
+
+import { MongoMemoryDatabaseModule } from '@infra/database';
+
 import { LegacyBoardRepo } from './legacy-board.repo';
 
-describe(LegacyBoardRepo.name, () => {
+describe('LegacyRoomBoardRepo', () => {
 	let module: TestingModule;
 	let repo: LegacyBoardRepo;
 	let em: EntityManager;
-	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [
-				LegacyBoardRepo,
-				{
-					provide: BoardNodeService,
-					useValue: createMock<BoardNodeService>(),
-				},
-			],
+			providers: [LegacyBoardRepo],
 		}).compile();
-
 		repo = module.get(LegacyBoardRepo);
 		em = module.get(EntityManager);
-		boardNodeService = module.get(BoardNodeService);
 	});
 
 	afterAll(async () => {
@@ -141,19 +129,5 @@ describe(LegacyBoardRepo.name, () => {
 		const result = await repo.findById(board.id);
 		const task = result.references.getItems()[0].target as Task;
 		expect(task.name).toBeDefined();
-	});
-
-	it('should populate column board in element', async () => {
-		const columnBoardElement = columnboardBoardElementFactory.build();
-		const board = boardFactory.build({ references: [columnBoardElement] });
-		await repo.save(board);
-
-		em.clear();
-
-		boardNodeService.findByClassAndIds.mockResolvedValue([columnBoardElement.target]);
-		const result = await repo.findById(board.id);
-
-		const columnBoard = result.references.getItems()[0].target as ColumnBoard;
-		expect(columnBoard.title).toBeDefined();
 	});
 });

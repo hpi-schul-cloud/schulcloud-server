@@ -1,4 +1,6 @@
-import { BoardExternalReferenceType, ColumnBoard, ColumnBoardCopyService, ColumnBoardService } from '@modules/board';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType, ColumnBoard } from '@modules/board/domain';
+import { ColumnBoardCopyService } from '@modules/board/service';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
@@ -6,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
 import {
 	ColumnboardBoardElement,
+	ColumnBoardNode,
 	Course,
 	isLesson,
 	isTask,
@@ -19,7 +22,7 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
+import { ColumnBoardNodeRepo, LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ColumnBoardLinkService } from '@src/modules/board/service';
 import { sortBy } from 'lodash';
@@ -39,8 +42,9 @@ export class BoardCopyService {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly columnBoardLinkService: ColumnBoardLinkService,
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		// TODO comment this, legacy!
+		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
@@ -152,10 +156,11 @@ export class BoardCopyService {
 				references.push(lessonElement);
 			}
 			if (status.copyEntity instanceof ColumnBoard) {
+				// TODO comment this, legacy!
 				// eslint-disable-next-line no-await-in-loop
-				const columnBoard = await this.columnBoardService.findById(status.copyEntity.id, 0);
+				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copyEntity.id);
 				const columnBoardElement = new ColumnboardBoardElement({
-					target: columnBoard,
+					target: columnBoardNode,
 				});
 				references.push(columnBoardElement);
 			}

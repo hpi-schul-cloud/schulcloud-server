@@ -1,15 +1,16 @@
 import { BadRequestException } from '@nestjs/common';
-import { setupEntities } from '@shared/testing';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
+	columnBoardFactory,
+	columnBoardNodeFactory,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
+	setupEntities,
 	taskBoardElementFactory,
 	taskFactory,
-} from '@shared/testing/factory';
-import { columnBoardFactory } from '../../../testing/factory/domainobject/board/column-board.factory';
+} from '@shared/testing';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {
@@ -174,7 +175,7 @@ describe('Board Entity', () => {
 		});
 
 		it('should add columnboards to board', () => {
-			const columnBoardTarget = columnBoardFactory.build();
+			const columnBoardTarget = columnBoardNodeFactory.buildWithId();
 			const board = boardFactory.buildWithId({ references: [] });
 
 			board.syncBoardElementReferences([columnBoardTarget]);
@@ -183,7 +184,7 @@ describe('Board Entity', () => {
 		});
 
 		it('should NOT add columnboards to board that is already there', () => {
-			const target = columnBoardFactory.build();
+			const target = columnBoardNodeFactory.buildWithId();
 			const boardElement = columnboardBoardElementFactory.buildWithId({ target });
 			const board = boardFactory.buildWithId({ references: [boardElement] });
 
@@ -193,8 +194,8 @@ describe('Board Entity', () => {
 		});
 
 		it('should add new columnboards to the beginning of the list', () => {
-			const newTarget = columnBoardFactory.build();
-			const existingTarget = columnBoardFactory.build();
+			const newTarget = columnBoardNodeFactory.buildWithId();
+			const existingTarget = columnBoardNodeFactory.buildWithId();
 			const existingElement = columnboardBoardElementFactory.buildWithId({ target: existingTarget });
 			const board = boardFactory.buildWithId({ references: [existingElement] });
 

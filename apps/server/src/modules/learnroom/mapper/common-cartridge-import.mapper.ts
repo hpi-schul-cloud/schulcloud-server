@@ -1,4 +1,4 @@
-import { ContentElementType } from '@modules/board';
+import { ContentElementType } from '@modules/board/domain';
 import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from '@modules/board/controller/dto';
 import { Injectable } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';

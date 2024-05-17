@@ -1,12 +1,11 @@
-import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType } from '@modules/board/domain';
+import { ColumnBoardService } from '@modules/board/service';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { BoardNodeRepo } from '@modules/board/repo';
+import { ColumnBoardNodeRepo, LegacyBoardRepo } from '@shared/repo';
 
 @Injectable()
 export class RoomsService {
@@ -15,19 +14,20 @@ export class RoomsService {
 		private readonly lessonService: LessonService,
 		private readonly boardRepo: LegacyBoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly boardNodeRepo: BoardNodeRepo
+		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
 	async updateLegacyBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {
 		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 
-		const columnBoards = await this.columnBoardService.findByExternalReference({
+		// TODO comment this, legacy!
+		const columnBoardNodes = await this.columnBoardNodeRepo.findByExternalReference({
 			type: BoardExternalReferenceType.Course,
 			id: roomId,
 		});
 
-		const boardElementTargets = [...courseLessons, ...courseTasks, ...columnBoards];
+		const boardElementTargets = [...courseLessons, ...courseTasks, ...columnBoardNodes];
 
 		board.syncBoardElementReferences(boardElementTargets);
 

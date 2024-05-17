@@ -1,4 +1,4 @@
-import { LinkElement, RichTextElement } from '@modules/board';
+import { LinkElement, RichTextElement } from '@modules/board/domain';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,

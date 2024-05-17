@@ -1,4 +1,5 @@
 import { AccountEntity } from '@modules/account/entity/account.entity';
+import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
@@ -13,7 +14,7 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { BoardNodeEntity } from '@modules/board/repo';
+import { ColumnBoardNode } from './column-board-node.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -48,6 +49,7 @@ export const ALL_ENTITIES = [
 	LegacyBoardElement,
 	BoardNodeEntity,
 	ColumnboardBoardElement,
+	ColumnBoardNode,
 	ClassEntity,
 	DeletionRequestEntity,
 	DeletionLogEntity,

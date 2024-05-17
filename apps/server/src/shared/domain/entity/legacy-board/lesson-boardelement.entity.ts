@@ -5,15 +5,10 @@ import { LegacyBoardElement, LegacyBoardElementType } from './legacy-boardelemen
 @Entity({ discriminatorValue: LegacyBoardElementType.Lesson })
 export class LessonBoardElement extends LegacyBoardElement {
 	constructor(props: { target: LessonEntity }) {
-		super();
+		super(props);
 		this.boardElementType = LegacyBoardElementType.Lesson;
-		this._target = props.target;
 	}
 
-	@ManyToOne({ entity: 'LessonEntity', fieldName: 'target' })
-	_target!: LessonEntity;
-
-	get target() {
-		return this._target;
-	}
+	@ManyToOne('LessonEntity')
+	target!: LessonEntity;
 }

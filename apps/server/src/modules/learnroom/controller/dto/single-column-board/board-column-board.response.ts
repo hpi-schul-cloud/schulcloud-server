@@ -1,4 +1,4 @@
-import { BoardLayout } from '@modules/board';
+import { BoardLayout } from '@modules/board/domain';
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 

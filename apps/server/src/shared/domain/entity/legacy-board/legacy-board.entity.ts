@@ -1,9 +1,9 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
-import { ColumnBoard } from '@modules/board';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
+import { ColumnBoardNode } from '../column-board-node.entity';
 import type { Course } from '../course.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
@@ -31,7 +31,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);
 
-	getByTargetId(id: EntityId): LearnroomElement | ColumnBoard {
+	getByTargetId(id: EntityId): LearnroomElement {
 		const element = this.getElementByTargetId(id);
 		return element.target;
 	}
@@ -98,7 +98,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		if (boardElementTarget instanceof LessonEntity) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof ColumnBoard) {
+		if (boardElementTarget instanceof ColumnBoardNode) {
 			return new ColumnboardBoardElement({ target: boardElementTarget });
 		}
 		throw new Error('not a valid boardElementReference');

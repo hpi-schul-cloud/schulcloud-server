@@ -7,7 +7,7 @@ import {
 	isColumn,
 	isLinkElement,
 	isRichTextElement,
-} from '@modules/board';
+} from '@modules/board/domain';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeOrganizationBuilder,

@@ -1,32 +1,14 @@
-import { Entity, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ColumnBoard } from '@modules/board';
+import { Entity, ManyToOne } from '@mikro-orm/core';
+import { ColumnBoardNode } from '../column-board-node.entity';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-boardelement.entity';
 
 @Entity({ discriminatorValue: LegacyBoardElementType.ColumnBoard })
 export class ColumnboardBoardElement extends LegacyBoardElement {
-	constructor(props: { target: ColumnBoard }) {
-		super();
+	constructor(props: { target: ColumnBoardNode }) {
+		super(props);
 		this.boardElementType = LegacyBoardElementType.ColumnBoard;
-		this.columnBoard = props.target;
 	}
 
-	@Property({ fieldName: 'target' })
-	_target!: ObjectId;
-
-	get target() {
-		return this.columnBoard;
-	}
-
-	@Property({ persist: false })
-	_columnBoard!: ColumnBoard;
-
-	get columnBoard() {
-		return this._columnBoard;
-	}
-
-	set columnBoard(columnBoard: ColumnBoard) {
-		this._columnBoard = columnBoard;
-		this._target = new ObjectId(columnBoard.id);
-	}
+	@ManyToOne('ColumnBoardNode')
+	target!: ColumnBoardNode;
 }

@@ -36,7 +36,6 @@ export interface DrawingElementProps extends BoardNodeProps {
 }
 
 export interface ExternalToolElementProps extends BoardNodeProps {
-	// TODO why is this optional?
 	contextExternalToolId?: string;
 }
 

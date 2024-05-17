@@ -1,7 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo, CourseRepo, UserRepo } from '@shared/repo';
-import { ColumnBoard, ColumnBoardService } from '@src/modules/board';
+import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
 import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
@@ -15,8 +14,7 @@ export class RoomsUc {
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: RoomsAuthorisationService,
-		private readonly roomsService: RoomsService,
-		private readonly columnBoardService: ColumnBoardService
+		private readonly roomsService: RoomsService
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
@@ -45,17 +43,27 @@ export class RoomsUc {
 		}
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
 		const element = legacyBoard.getByTargetId(elementId);
-		if (element instanceof ColumnBoard) {
-			await this.columnBoardService.updateVisibility(element, visibility);
-		} else if (visibility) {
+		if (visibility) {
 			element.publish();
 		} else {
 			element.unpublish();
 		}
 
 		await this.legacyBoardRepo.save(legacyBoard);
+		// TODO if the element is a columnboard, then the visibility must be in sync with it
+		// TODO call columnBoard service to update the visibility of the columnboard, based on reference
+
+		// if (element instanceof ColumnboardBoardElement) {
+		// await this.updateColumnBoardVisibility(element.target._columnBoardId, visibility);
+		// }
 	}
 
+	/*
+	private async updateColumnBoardVisibility(columbBoardId: EntityId, visibility: boolean) {
+		// TODO
+		// await this.columnBoardService.updateBoardVisibility(columbBoardId, visibility);
+	}
+*/
 	async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
 		const user = await this.userRepo.findById(userId);
 		const course = await this.courseRepo.findOne(roomId, userId);

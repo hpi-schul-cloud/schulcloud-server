@@ -19,9 +19,9 @@ import {
 	ColumnBoardCopyService,
 	ContentElementUpdateService,
 	ColumnBoardService,
-	MediaBoardService,
-	MediaAvailableLineService,
 	UserDeletedEventHandlerService,
+	ColumnBoardLinkService,
+	BoardContextService,
 } from './service';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
@@ -42,6 +42,7 @@ import { BoardNodeRepo } from './repo';
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
+		BoardContextService,
 		BoardNodeAuthorizableService,
 		BoardNodeRepo,
 		BoardNodeService,
@@ -52,11 +53,11 @@ import { BoardNodeRepo } from './repo';
 		ContentElementUpdateService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 		ColumnBoardCopyService,
-		MediaBoardService,
-		MediaAvailableLineService,
+		ColumnBoardLinkService,
 		UserDeletedEventHandlerService,
 	],
 	exports: [
+		BoardContextService,
 		BoardNodeAuthorizableService,
 		BoardNodePermissionService,
 		BoardNodeService,
@@ -64,6 +65,7 @@ import { BoardNodeRepo } from './repo';
 		BoardCommonToolService,
 		ColumnBoardService,
 		ColumnBoardCopyService,
+		ColumnBoardLinkService,
 		ContentElementUpdateService,
 		/**
 		 * @deprecated - exported only deprecated learnraum module
