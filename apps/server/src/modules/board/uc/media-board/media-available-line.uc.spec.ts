@@ -2,7 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { MediaUserLicenseService } from '@modules/user-license/service';
 import { ConfigService } from '@nestjs/config';
@@ -18,12 +20,10 @@ import {
 import { User } from '@shared/domain/entity';
 import {
 	boardDoAuthorizableFactory,
-	externalToolFactory,
 	mediaAvailableLineElementFactory,
 	mediaAvailableLineFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	userFactory as userEntityFactory,
 	userFactory,

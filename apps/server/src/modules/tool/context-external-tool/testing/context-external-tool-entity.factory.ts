@@ -1,7 +1,7 @@
 import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
 import {
 	ContextExternalToolEntity,
-	ContextExternalToolProperties,
+	ContextExternalToolEntityProps,
 	ContextExternalToolType,
 } from '@modules/tool/context-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing/school-external-tool-entity.factory';
@@ -10,7 +10,7 @@ import { courseFactory } from '@shared/testing/factory/course.factory';
 
 export const contextExternalToolEntityFactory = BaseFactory.define<
 	ContextExternalToolEntity,
-	ContextExternalToolProperties
+	ContextExternalToolEntityProps
 >(ContextExternalToolEntity, () => {
 	return {
 		contextId: courseFactory.buildWithId().id,
@@ -18,6 +18,5 @@ export const contextExternalToolEntityFactory = BaseFactory.define<
 		displayName: 'My Course Tool 1',
 		schoolTool: schoolExternalToolEntityFactory.buildWithId(),
 		parameters: [new CustomParameterEntryEntity({ name: 'contextMockParameter', value: 'mockValue' })],
-		toolVersion: 1,
 	};
 });

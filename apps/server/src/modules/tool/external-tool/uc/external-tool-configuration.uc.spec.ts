@@ -7,23 +7,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { School, SchoolService } from '@src/modules/school';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ExternalTool } from '../domain';
 import { ExternalToolConfigurationService, ExternalToolLogoService, ExternalToolService } from '../service';
+import { customParameterFactory, externalToolFactory } from '../testing';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 
 describe('ExternalToolConfigurationUc', () => {
@@ -447,7 +443,7 @@ describe('ExternalToolConfigurationUc', () => {
 						schoolId: school.id,
 					},
 					schoolExternalToolId
-				) as SchoolExternalToolWithId;
+				);
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -486,10 +482,7 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when the user has insufficient permission to read an external tool', () => {
 			const setup = () => {
 				const schoolExternalToolId: string = new ObjectId().toHexString();
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId(
-					undefined,
-					schoolExternalToolId
-				) as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId(undefined, schoolExternalToolId);
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				authorizationService.checkPermission.mockImplementation(() => {
@@ -523,7 +516,7 @@ describe('ExternalToolConfigurationUc', () => {
 						schoolId: 'schoolId',
 					},
 					schoolExternalToolId
-				) as SchoolExternalToolWithId;
+				);
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
@@ -551,7 +544,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalToolId: string = new ObjectId().toHexString();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
@@ -636,7 +629,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
-				}) as SchoolExternalToolWithId;
+				});
 
 				const contextExternalToolId: string = new ObjectId().toHexString();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(

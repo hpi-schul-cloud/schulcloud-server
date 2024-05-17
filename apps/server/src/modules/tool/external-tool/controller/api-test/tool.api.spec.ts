@@ -10,7 +10,6 @@ import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	externalToolElementNodeFactory,
-	externalToolFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -28,7 +27,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '../../../con
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
-import { externalToolEntityFactory } from '../../testing';
+import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
 	ExternalToolCreateParams,
 	ExternalToolMetadataResponse,
@@ -157,7 +156,6 @@ describe('ToolController (API)', () => {
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
-					version: 1,
 				});
 			});
 		});
@@ -398,12 +396,12 @@ describe('ToolController (API)', () => {
 
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const toolId: string = new ObjectId().toHexString();
-				const params = { ...postParams, id: toolId };
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
 					.withBase64Logo()
 					.withMedium()
-					.buildWithId({ version: 1 }, toolId);
+					.buildWithId();
+
+				const params = { ...postParams, id: externalToolEntity.id };
 
 				const base64Logo: string = externalToolEntity.logoBase64 as string;
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
@@ -415,7 +413,7 @@ describe('ToolController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, params, toolId };
+				return { loggedInClient, params, toolId: externalToolEntity.id };
 			};
 
 			it('should update a tool', async () => {
@@ -464,7 +462,6 @@ describe('ToolController (API)', () => {
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
-					version: 2,
 					medium: {
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
@@ -517,7 +514,7 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ version: 1 }, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ id: toolId });
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -541,8 +538,7 @@ describe('ToolController (API)', () => {
 	describe('[DELETE] tools/external-tools/:externalToolId', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const toolId: string = new ObjectId().toHexString();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -550,7 +546,7 @@ describe('ToolController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, toolId };
+				return { loggedInClient, toolId: externalToolEntity.id };
 			};
 
 			it('should delete a tool', async () => {

@@ -1,59 +1,92 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityName, Primary, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum/tool-context-type.enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
+import {
+	ContextExternalToolEntity,
+	ContextExternalToolEntityProps,
+	ContextExternalToolType,
+} from '@modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolRefDO } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BaseDORepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 @Injectable()
-export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, ContextExternalToolEntity> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
-		super(_em, logger);
-	}
+export class ContextExternalToolRepo {
+	constructor(protected readonly em: EntityManager) {}
 
 	get entityName(): EntityName<ContextExternalToolEntity> {
 		return ContextExternalToolEntity;
 	}
 
-	async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
-		const count: Promise<number> = this._em.nativeDelete(this.entityName, {
+	public async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
+		const count: Promise<number> = this.em.nativeDelete(this.entityName, {
 			schoolTool: { $in: schoolExternalToolIds },
 		});
 		return count;
 	}
 
-	async find(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
+	public async save(domainObject: ContextExternalTool): Promise<ContextExternalTool> {
+		const existing: ContextExternalToolEntity | null = await this.em.findOne<ContextExternalToolEntity>(
+			ContextExternalToolEntity.name,
+			domainObject.id
+		);
+
+		const entityProps: ContextExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
+		let entity: ContextExternalToolEntity = new ContextExternalToolEntity(entityProps);
+
+		if (existing) {
+			entity = this.em.assign(existing, entity);
+		} else {
+			this.em.persist(entity);
+		}
+		await this.em.flush();
+
+		const savedDomainObject: ContextExternalTool = this.mapEntityToDomainObject(entity);
+
+		return savedDomainObject;
+	}
+
+	public async delete(domainObjects: ContextExternalTool | ContextExternalTool[]): Promise<void> {
+		const ids: Primary<ContextExternalTool>[] = Utils.asArray(domainObjects).map((dob) => dob.id);
+
+		const entities: ContextExternalToolEntity[] = ids.map((id) => this.em.getReference(this.entityName, id));
+
+		await this.em.remove(entities).flush();
+	}
+
+	public async find(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
 		const scope: ContextExternalToolScope = this.buildScope(query);
 
-		const entities: ContextExternalToolEntity[] = await this._em.find(this.entityName, scope.query, {
+		const entities: ContextExternalToolEntity[] = await this.em.find(this.entityName, scope.query, {
 			populate: ['schoolTool.school'],
 		});
 
-		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) => this.mapEntityToDO(entity));
+		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) =>
+			this.mapEntityToDomainObject(entity)
+		);
 		return dos;
 	}
 
-	async findBySchoolToolIdsAndContextType(
+	public async findBySchoolToolIdsAndContextType(
 		schoolExternalToolIds: string[],
 		contextType: ContextExternalToolType
 	): Promise<ContextExternalTool[]> {
-		const entities = await this._em.find(this.entityName, { schoolTool: { $in: schoolExternalToolIds }, contextType });
+		const entities = await this.em.find(this.entityName, { schoolTool: { $in: schoolExternalToolIds }, contextType });
 
-		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) => this.mapEntityToDO(entity));
+		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) =>
+			this.mapEntityToDomainObject(entity)
+		);
 
 		return dos;
 	}
 
-	public override async findById(id: EntityId): Promise<ContextExternalTool> {
-		const entity: ContextExternalToolEntity = await this._em.findOneOrFail(
+	public async findById(id: EntityId): Promise<ContextExternalTool> {
+		const entity: ContextExternalToolEntity = await this.em.findOneOrFail(
 			this.entityName,
 			{ id },
 			{
@@ -61,13 +94,13 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 			}
 		);
 
-		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
+		const mapped: ContextExternalTool = this.mapEntityToDomainObject(entity);
 
 		return mapped;
 	}
 
 	public async findByIdOrNull(id: EntityId): Promise<ContextExternalTool | null> {
-		const entity: ContextExternalToolEntity | null = await this._em.findOne(
+		const entity: ContextExternalToolEntity | null = await this.em.findOne(
 			this.entityName,
 			{ id },
 			{
@@ -79,7 +112,7 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 			return null;
 		}
 
-		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
+		const mapped: ContextExternalTool = this.mapEntityToDomainObject(entity);
 
 		return mapped;
 	}
@@ -96,15 +129,15 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 		return scope;
 	}
 
-	mapEntityToDO(entity: ContextExternalToolEntity): ContextExternalTool {
-		const schoolToolRef: SchoolExternalToolRefDO = new SchoolExternalToolRefDO({
+	private mapEntityToDomainObject(entity: ContextExternalToolEntity): ContextExternalTool {
+		const schoolToolRef: SchoolExternalToolRef = new SchoolExternalToolRef({
 			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
 		});
 
 		const contextRef: ContextRef = new ContextRef({
 			id: entity.contextId,
-			type: this.mapContextTypeToDoType(entity.contextType),
+			type: this.mapContextTypeToDomainObjectType(entity.contextType),
 		});
 
 		return new ContextExternalTool({
@@ -112,18 +145,16 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 			schoolToolRef,
 			contextRef,
 			displayName: entity.displayName,
-			toolVersion: entity.toolVersion,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ContextExternalTool): EntityData<ContextExternalToolEntity> {
+	private mapDomainObjectToEntityProps(entityDO: ContextExternalTool): ContextExternalToolEntityProps {
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			displayName: entityDO.displayName,
-			schoolTool: this._em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
-			toolVersion: entityDO.toolVersion,
+			schoolTool: this.em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}
@@ -141,7 +172,7 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 		}
 	}
 
-	private mapContextTypeToDoType(type: ContextExternalToolType): ToolContextType {
+	private mapContextTypeToDomainObjectType(type: ContextExternalToolType): ToolContextType {
 		switch (type) {
 			case ContextExternalToolType.COURSE:
 				return ToolContextType.COURSE;

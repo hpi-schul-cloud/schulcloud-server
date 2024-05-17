@@ -16,14 +16,14 @@ import { BoardDoAuthorizable, ExternalToolElement } from '@shared/domain/domaino
 import { Permission } from '@shared/domain/interface';
 import {
 	boardDoAuthorizableFactory,
-	contextExternalToolFactory,
 	courseFactory,
 	externalToolElementFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolContextType } from '../enum';
 import { ToolPermissionHelper } from './tool-permission-helper';
 

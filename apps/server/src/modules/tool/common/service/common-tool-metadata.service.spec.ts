@@ -3,10 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ContentElementService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { contextExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolMetadata } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { CommonToolMetadataService } from './common-tool-metadata.service';
 
 describe(CommonToolMetadataService.name, () => {

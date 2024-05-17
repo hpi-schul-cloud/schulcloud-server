@@ -83,7 +83,7 @@ export class FeathersRosterService {
 		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 
 		let courses: Course[] = await this.getCoursesFromUsersPseudonym(loadedPseudonym);
-		courses = await this.filterCoursesByToolAvailability(courses, externalTool.id as string);
+		courses = await this.filterCoursesByToolAvailability(courses, externalTool.id);
 
 		const userGroups: UserGroups = {
 			data: {
@@ -104,7 +104,7 @@ export class FeathersRosterService {
 		const course: Course = await this.courseService.findById(courseId);
 		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 
-		await this.validateSchoolExternalTool(course.school.id, externalTool.id as string);
+		await this.validateSchoolExternalTool(course.school.id, externalTool.id);
 		await this.validateContextExternalTools(courseId);
 
 		const [studentEntities, teacherEntities, substitutionTeacherEntities] = await Promise.all([

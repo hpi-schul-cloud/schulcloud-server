@@ -1,15 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import {
-	customParameterFactory,
-	externalToolDatasheetTemplateDataFactory,
-	externalToolFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { userDoFactory } from '@shared/testing';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { CustomParameter } from '../../common/domain';
 import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
+import { customParameterFactory, externalToolDatasheetTemplateDataFactory, externalToolFactory } from '../testing';
 import { DatasheetPdfService } from './datasheet-pdf.service';
 
 jest.mock('pdfmake/build/pdfmake');
