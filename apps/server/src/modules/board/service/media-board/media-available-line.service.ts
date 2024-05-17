@@ -14,7 +14,7 @@ import {
 	Page,
 } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
+import { MediaBoardColors } from '../../domain';
 
 @Injectable()
 export class MediaAvailableLineService {

@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { type AnyBoardDo, MediaBoard, MediaLine, MediaLineInitProps } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { MediaBoardColors } from '../../domain';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 
@@ -19,7 +20,7 @@ export class MediaLineService {
 		const line: MediaLine = new MediaLine({
 			id: new ObjectId().toHexString(),
 			title: props?.title ?? '',
-			backgroundColor: props?.backgroundColor ?? 'transparent',
+			backgroundColor: props?.backgroundColor ?? MediaBoardColors.TRANSPARENT,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -49,7 +50,7 @@ export class MediaLineService {
 		await this.boardDoRepo.save(line, parent);
 	}
 
-	public async updateColor(line: MediaLine, color: string): Promise<void> {
+	public async updateColor(line: MediaLine, color: MediaBoardColors): Promise<void> {
 		const parent: AnyBoardDo | undefined = await this.boardDoRepo.findParentOfId(line.id);
 
 		line.backgroundColor = color;

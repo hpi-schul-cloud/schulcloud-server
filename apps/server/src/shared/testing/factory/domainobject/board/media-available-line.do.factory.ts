@@ -1,4 +1,4 @@
-import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
+import { MediaBoardColors } from '@modules/board/domain';
 import { MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps } from '@shared/domain/domainobject';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from '../../base.factory';

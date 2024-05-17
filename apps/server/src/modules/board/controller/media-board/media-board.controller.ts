@@ -25,10 +25,14 @@ import { ApiValidationError } from '@shared/common';
 import { MediaAvailableLine, MediaBoard, MediaLine } from '@shared/domain/domainobject';
 import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';
-import { MediaAvailableLineResponse, MediaBoardResponse, MediaLineResponse } from './dto';
-import { CollapsableBodyParams } from './dto/collapsable.body.params';
-import { ColorBodyParams } from './dto/color.body.params';
-import { LayoutBodyParams } from './dto/layout.body.params';
+import {
+	CollapsableBodyParams,
+	ColorBodyParams,
+	LayoutBodyParams,
+	MediaAvailableLineResponse,
+	MediaBoardResponse,
+	MediaLineResponse,
+} from './dto';
 import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from './mapper';
 
 @ApiTags('Media Board')

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { MediaBoardLayoutType } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
-import { MediaBoardLayoutType } from '../types/layout-type.enum';
 import { MediaLineResponse } from './media-line.response';
 
 export class MediaBoardResponse {

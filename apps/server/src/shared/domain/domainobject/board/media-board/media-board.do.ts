@@ -1,5 +1,4 @@
-import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
-import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
+import { MediaBoardColors, MediaBoardLayoutType } from '@modules/board/domain';
 import { BoardComposite, BoardCompositeProps } from '../board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from '../types';
 import { MediaLine } from './media-line.do';

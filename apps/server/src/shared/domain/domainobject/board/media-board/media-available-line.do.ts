@@ -1,4 +1,4 @@
-import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
+import { MediaBoardColors } from '@modules/board/domain';
 import { MediaAvailableLineElement } from './media-available-line-element.do';
 
 export class MediaAvailableLine {

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { MediaBoardColors } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
 import { MediaExternalToolElementResponse } from './media-external-tool-element.response';
 
@@ -20,8 +21,12 @@ export class MediaLineResponse {
 	@ApiProperty({ description: 'The timestamps of the media line' })
 	timestamps: TimestampsResponse;
 
-	@ApiProperty({ description: 'The background color of the media line' })
-	backgroundColor: string;
+	@ApiProperty({
+		enum: MediaBoardColors,
+		enumName: 'MediaBoardColors',
+		description: 'The background color of the media line',
+	})
+	backgroundColor: MediaBoardColors;
 
 	@ApiProperty({ description: 'Collapse the media line' })
 	collapsed: boolean;

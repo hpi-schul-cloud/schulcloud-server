@@ -1,7 +1,6 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
-import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
+import { MediaBoardColors, MediaBoardLayoutType } from '@modules/board/domain';
 import {
 	type AnyBoardDo,
 	BoardExternalReference,
@@ -22,9 +21,9 @@ export class MediaBoardNode extends BoardNode {
 
 		this._contextType = props.context.type;
 		this._contextId = new ObjectId(props.context.id);
-		this._layout = props.layout;
-		this._mediaAvailableLineCollapsed = props.mediaAvailableLineCollapsed;
-		this._mediaAvailableLineBackgroundColor = props.mediaAvailableLineBackgroundColor;
+		this.layout = props.layout;
+		this.mediaAvailableLineCollapsed = props.mediaAvailableLineCollapsed;
+		this.mediaAvailableLineBackgroundColor = props.mediaAvailableLineBackgroundColor;
 	}
 
 	@Property({ fieldName: 'contextType' })
@@ -33,44 +32,20 @@ export class MediaBoardNode extends BoardNode {
 	@Property({ fieldName: 'context' })
 	_contextId: ObjectId;
 
-	@Property({ fieldName: 'layout' })
-	_layout: MediaBoardLayoutType;
+	@Property()
+	layout: MediaBoardLayoutType;
 
-	@Property({ fieldName: 'mediaAvailableLineBackgroundColor' })
-	_mediaAvailableLineBackgroundColor: MediaBoardColors;
+	@Enum()
+	mediaAvailableLineBackgroundColor: MediaBoardColors;
 
-	@Property({ fieldName: 'mediaAvailableLineCollapsed' })
-	_mediaAvailableLineCollapsed: boolean;
+	@Property()
+	mediaAvailableLineCollapsed: boolean;
 
 	get context(): BoardExternalReference {
 		return {
 			type: this._contextType,
 			id: this._contextId.toHexString(),
 		};
-	}
-
-	get mediaAvailableLineCollapsed(): boolean {
-		return this._mediaAvailableLineCollapsed;
-	}
-
-	set mediaAvailableLineCollapsed(mediaAvailableLineCollapsed: boolean) {
-		this._mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
-	}
-
-	get mediaAvailableLineBackgroundColor(): MediaBoardColors {
-		return this._mediaAvailableLineBackgroundColor;
-	}
-
-	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: MediaBoardColors) {
-		this._mediaAvailableLineBackgroundColor = mediaAvailableLineBackgroundColor;
-	}
-
-	get layout(): MediaBoardLayoutType {
-		return this._layout;
-	}
-
-	set layout(layout: MediaBoardLayoutType) {
-		this._layout = layout;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {

@@ -35,8 +35,7 @@ import {
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
 } from '@shared/domain/entity';
-import { MediaBoardLayoutType } from '../controller/media-board/types/layout-type.enum';
-import { MediaBoardColors } from '../controller/media-board/types/media-colors.enum';
+import { MediaBoardColors, MediaBoardLayoutType } from '../domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};

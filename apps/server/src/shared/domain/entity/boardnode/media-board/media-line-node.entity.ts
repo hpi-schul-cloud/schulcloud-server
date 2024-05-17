@@ -1,4 +1,5 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
+import { MediaBoardColors } from '@modules/board/domain';
 import type { AnyBoardDo, MediaLine } from '../../../domainobject';
 import { BoardNode, type BoardNodeProps } from '../boardnode.entity';
 import { type BoardDoBuilder, BoardNodeType } from '../types';
@@ -14,13 +15,13 @@ export class MediaLineNode extends BoardNode {
 		this.collapsed = props.collapsed;
 	}
 
-	@Property({ nullable: false })
+	@Property()
 	title: string;
 
-	@Property({ nullable: false })
-	backgroundColor: string;
+	@Enum()
+	backgroundColor: MediaBoardColors;
 
-	@Property({ nullable: false })
+	@Property()
 	collapsed: boolean;
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
@@ -31,6 +32,6 @@ export class MediaLineNode extends BoardNode {
 
 export interface MediaLineNodeProps extends BoardNodeProps {
 	title: string;
-	backgroundColor: string;
+	backgroundColor: MediaBoardColors;
 	collapsed: boolean;
 }

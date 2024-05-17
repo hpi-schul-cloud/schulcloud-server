@@ -22,9 +22,7 @@ import {
 import { ApiValidationError } from '@shared/common';
 import { MediaLineUc } from '../../uc';
 import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
-import { LineUrlParams } from './dto';
-import { CollapsableBodyParams } from './dto/collapsable.body.params';
-import { ColorBodyParams } from './dto/color.body.params';
+import { CollapsableBodyParams, ColorBodyParams, LineUrlParams } from './dto';
 
 @ApiTags('Media Line')
 @Authenticate('jwt')

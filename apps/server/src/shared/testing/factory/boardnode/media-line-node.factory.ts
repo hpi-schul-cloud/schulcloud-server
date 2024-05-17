@@ -1,3 +1,4 @@
+import { MediaBoardColors } from '@modules/board/domain';
 import { MediaLineNode, type MediaLineNodeProps } from '@shared/domain/entity';
 import { BaseFactory } from '../base.factory';
 
@@ -6,7 +7,7 @@ export const mediaLineNodeFactory = BaseFactory.define<MediaLineNode, MediaLineN
 	({ sequence }) => {
 		return {
 			title: `Line ${sequence}`,
-			backgroundColor: 'transparent',
+			backgroundColor: MediaBoardColors.TRANSPARENT,
 			collapsed: false,
 		};
 	}

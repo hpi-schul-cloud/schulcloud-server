@@ -10,7 +10,7 @@ import {
 } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
-import { MediaBoardLayoutType } from '../../controller/media-board/types/layout-type.enum';
+import { MediaBoardLayoutType } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 
@@ -62,7 +62,7 @@ export class MediaBoardUc {
 		return line;
 	}
 
-	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType) {
+	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType): Promise<void> {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
@@ -74,7 +74,7 @@ export class MediaBoardUc {
 		await this.mediaBoardService.setLayout(board, layout);
 	}
 
-	private checkFeatureEnabled() {
+	private checkFeatureEnabled(): void {
 		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}

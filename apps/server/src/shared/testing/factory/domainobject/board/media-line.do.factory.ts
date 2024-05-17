@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaBoardColors } from '@modules/board/domain';
 import { AnyMediaBoardDo, type MediaBoardProps, MediaLine, type MediaLineProps } from '@shared/domain/domainobject';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from '../../base.factory';
@@ -18,7 +19,7 @@ export const mediaLineFactory = MediaLineFactory.define(MediaLine, ({ sequence }
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		title: `Line ${sequence}`,
-		backgroundColor: '#ffffff',
+		backgroundColor: MediaBoardColors.TRANSPARENT,
 		collapsed: false,
 	};
 });

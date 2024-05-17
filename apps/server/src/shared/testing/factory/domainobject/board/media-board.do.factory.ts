@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaBoardLayoutType } from '@modules/board/controller/media-board/types/layout-type.enum';
-import { MediaBoardColors } from '@modules/board/controller/media-board/types/media-colors.enum';
+import { MediaBoardColors, MediaBoardLayoutType } from '@modules/board/domain';
 import {
 	AnyMediaBoardDo,
 	BoardExternalReferenceType,

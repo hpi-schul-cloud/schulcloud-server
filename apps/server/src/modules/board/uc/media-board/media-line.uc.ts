@@ -5,6 +5,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { BoardDoAuthorizable, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoardColors } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 
@@ -51,7 +52,7 @@ export class MediaLineUc {
 		await this.mediaLineService.updateTitle(line, title);
 	}
 
-	public async updateLineColor(userId: EntityId, lineId: EntityId, color: string) {
+	public async updateLineColor(userId: EntityId, lineId: EntityId, color: MediaBoardColors): Promise<void> {
 		this.checkFeatureEnabled();
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
@@ -63,7 +64,7 @@ export class MediaLineUc {
 		await this.mediaLineService.updateColor(line, color);
 	}
 
-	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean) {
+	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean): Promise<void> {
 		this.checkFeatureEnabled();
 
 		const line: MediaLine = await this.mediaLineService.findById(lineId);
