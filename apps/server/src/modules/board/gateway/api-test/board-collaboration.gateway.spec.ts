@@ -354,7 +354,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('move-column-request', moveColumnProps);
 				const success = await waitForEvent(ioClient, 'move-column-success');
 
-				expect(success).toEqual(expect.objectContaining(moveColumnProps));
+				expect(success).toEqual(moveColumnProps);
 			});
 		});
 		describe('when column does not exist', () => {
@@ -499,12 +499,12 @@ describe(BoardCollaborationGateway.name, () => {
 			expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'newElement']));
 		});
 
-		describe('when element does not exist', () => {
+		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const elementId = new ObjectId().toHexString();
+				const cardId = new ObjectId().toHexString();
 
-				ioClient.emit('create-element-request', { elementId });
+				ioClient.emit('create-element-request', { cardId });
 				const failure = await waitForEvent(ioClient, 'create-element-failure');
 
 				expect(failure).toBeDefined();

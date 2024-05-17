@@ -1,4 +1,4 @@
-import { IsMongoId, IsNumber, IsString, Min, ValidateNested } from 'class-validator';
+import { IsMongoId, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 export class ColumnMove {
 	@IsNumber()
