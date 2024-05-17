@@ -1,8 +1,9 @@
-import { CustomParameterEntry } from '@modules/tool/common/domain';
-import { SchoolExternalTool, SchoolExternalToolProps } from '@modules/tool/school-external-tool/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
 import { DeepPartial } from 'fishery';
-import { DoBaseFactory } from '../do-base.factory';
-import { schoolToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
+import { CustomParameterEntry } from '../../common/domain';
+import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
+import { schoolExternalToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
 
 class SchoolExternalToolFactory extends DoBaseFactory<SchoolExternalTool, SchoolExternalToolProps> {
 	withSchoolId(schoolId: string): this {
@@ -15,9 +16,9 @@ class SchoolExternalToolFactory extends DoBaseFactory<SchoolExternalTool, School
 
 export const schoolExternalToolFactory = SchoolExternalToolFactory.define(SchoolExternalTool, ({ sequence }) => {
 	return {
+		id: new ObjectId().toHexString(),
 		name: `schoolExternal-${sequence}`,
 		schoolId: `schoolId-${sequence}`,
-		toolVersion: 1,
 		parameters: [
 			new CustomParameterEntry({
 				name: 'name',
@@ -25,6 +26,6 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 			}),
 		],
 		toolId: 'toolId',
-		status: schoolToolConfigurationStatusFactory.build(),
+		status: schoolExternalToolConfigurationStatusFactory.build(),
 	};
 });

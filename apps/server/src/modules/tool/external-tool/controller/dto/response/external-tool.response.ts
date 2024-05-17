@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { BasicToolConfigParams, Lti11ToolConfigCreateParams, Oauth2ToolConfigCreateParams } from '../request';
-import { BasicToolConfigResponse, Oauth2ToolConfigResponse, Lti11ToolConfigResponse } from './config';
-import { CustomParameterResponse } from './custom-parameter.response';
 import { ToolContextType } from '../../../../common/enum';
+import { BasicToolConfigParams, Lti11ToolConfigCreateParams, Oauth2ToolConfigCreateParams } from '../request';
+import { BasicToolConfigResponse, Lti11ToolConfigResponse, Oauth2ToolConfigResponse } from './config';
+import { CustomParameterResponse } from './custom-parameter.response';
 import { ExternalToolMediumResponse } from './external-tool-medium.response';
 
 export class ExternalToolResponse {
@@ -43,9 +43,6 @@ export class ExternalToolResponse {
 	@ApiProperty({ type: Boolean, description: 'Should the external tool be opened in a new tab' })
 	openNewTab: boolean;
 
-	@ApiProperty({ type: Number, description: 'Version of the external tool' })
-	version: number;
-
 	@ApiPropertyOptional({
 		enum: ToolContextType,
 		enumName: 'ToolContextType',
@@ -68,7 +65,6 @@ export class ExternalToolResponse {
 		this.isHidden = response.isHidden;
 		this.isDeactivated = response.isDeactivated;
 		this.openNewTab = response.openNewTab;
-		this.version = response.version;
 		this.restrictToContexts = response.restrictToContexts;
 		this.medium = response.medium;
 	}

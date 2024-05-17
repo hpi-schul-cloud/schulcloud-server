@@ -1,4 +1,4 @@
-import { toolConfigurationStatusFactory } from '@shared/testing';
+import { toolConfigurationStatusFactory } from '../../external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from './tool-status-not-launchable.loggable-exception';
 
 describe('ToolStatusNotLaunchableLoggableException', () => {

@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory, setupEntities } from '@shared/testing';
 
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
@@ -12,9 +13,10 @@ import { externalToolEntityFactory } from '../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';
 import { contextExternalToolEntityFactory } from '../testing';
+import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 
-describe('ExternalToolEntity', () => {
+describe(ExternalToolEntity.name, () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
@@ -24,6 +26,20 @@ describe('ExternalToolEntity', () => {
 			// @ts-expect-error: Test case
 			const test = () => new ContextExternalToolEntity();
 			expect(test).toThrow();
+		});
+
+		describe('when id is passed', () => {
+			it('should set id', () => {
+				const contextExternalToolEntity: ContextExternalToolEntity = new ContextExternalToolEntity({
+					id: new ObjectId().toHexString(),
+					schoolTool: schoolExternalToolEntityFactory.buildWithId(),
+					contextId: 'mockContextId',
+					contextType: ContextExternalToolType.MEDIA_BOARD,
+					parameters: [],
+				});
+
+				expect(contextExternalToolEntity.id).toBeDefined();
+			});
 		});
 
 		it('should create an external course Tool by passing required properties', () => {
@@ -51,18 +67,15 @@ describe('ExternalToolEntity', () => {
 				parameters: [customParameter],
 				isHidden: true,
 				openNewTab: true,
-				version: 1,
 			});
 			const schoolTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
-				toolVersion: 1,
 			});
 			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 				schoolTool,
 				parameters: [],
-				toolVersion: 1,
 			});
 
 			expect(contextExternalToolEntity instanceof ContextExternalToolEntity).toEqual(true);

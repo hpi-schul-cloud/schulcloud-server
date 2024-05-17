@@ -1,11 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
+import { customParameterFactory, externalToolFactory } from '../../../external-tool/testing';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { CustomParameterEntry } from '../../domain';
 import { CustomParameterScope } from '../../enum';
 import { CommonToolValidationService } from './common-tool-validation.service';

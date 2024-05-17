@@ -1,19 +1,19 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { ContextExternalToolWithId } from '@modules//tool/context-external-tool/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
-import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { MediaExternalToolElement } from '@shared/domain/domainobject';
 import {
 	boardDoAuthorizableFactory,
-	contextExternalToolFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
 	mediaLineFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	userFactory as userEntityFactory,
 } from '@shared/testing';
@@ -164,11 +164,10 @@ describe(MediaElementUc.name, () => {
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
-				const schoolExternalTool: SchoolExternalToolWithId =
-					schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
-				const contextExternalTool: ContextExternalToolWithId = contextExternalToolFactory
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
-					.buildWithId() as ContextExternalToolWithId;
+					.buildWithId();
 				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -235,11 +234,10 @@ describe(MediaElementUc.name, () => {
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
-				const schoolExternalTool: SchoolExternalToolWithId =
-					schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
-				const contextExternalTool: ContextExternalToolWithId = contextExternalToolFactory
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
-					.buildWithId() as ContextExternalToolWithId;
+					.buildWithId();
 				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);

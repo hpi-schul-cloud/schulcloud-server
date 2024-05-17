@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { AutoSchoolIdStrategy } from './auto-school-id.strategy';
 
 describe(AutoSchoolIdStrategy.name, () => {
@@ -33,7 +34,7 @@ describe(AutoSchoolIdStrategy.name, () => {
 			});
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 				schoolToolRef: {
-					schoolToolId: schoolExternalTool.id as string,
+					schoolToolId: schoolExternalTool.id,
 					schoolId,
 				},
 			});
