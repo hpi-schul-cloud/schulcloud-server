@@ -98,8 +98,8 @@ export class EtherpadClientAdapter {
 	}
 
 	private isSessionDurationSufficient(session: Session, durationThreshold: number): boolean {
-		const nowUnixTimestamp = Math.floor(new Date(Date.now()).getTime() / 1000);
-		const timeDiff = session.validUntil - nowUnixTimestamp;
+		const nowUnixTimestampInSeconds = Math.floor(new Date(Date.now()).getTime() / 1000);
+		const timeDiff = session.validUntil - nowUnixTimestampInSeconds;
 		const isDurationSufficient = timeDiff > durationThreshold;
 
 		return isDurationSufficient;
