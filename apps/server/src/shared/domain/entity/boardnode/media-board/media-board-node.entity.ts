@@ -32,10 +32,10 @@ export class MediaBoardNode extends BoardNode {
 	@Property({ fieldName: 'context' })
 	_contextId: ObjectId;
 
-	@Property()
+	@Enum(() => MediaBoardLayoutType)
 	layout: MediaBoardLayoutType;
 
-	@Enum()
+	@Enum(() => MediaBoardColors)
 	mediaAvailableLineBackgroundColor: MediaBoardColors;
 
 	@Property()
