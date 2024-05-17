@@ -507,7 +507,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = setup();
 
 				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrowError(
-					'Etherpad session ids response is not an object'
+					'Etherpad session data is not valid'
 				);
 			});
 		});
