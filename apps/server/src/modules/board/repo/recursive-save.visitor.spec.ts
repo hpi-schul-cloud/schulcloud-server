@@ -36,6 +36,8 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
+import { MediaBoardLayoutType } from '../controller/media-board/types/layout-type.enum';
+import { MediaBoardColors } from '../controller/media-board/types/media-colors.enum';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
 
@@ -294,6 +296,9 @@ describe(RecursiveSaveVisitor.name, () => {
 			const expectedNode: Partial<MediaBoardNode> = {
 				id: board.id,
 				type: BoardNodeType.MEDIA_BOARD,
+				_mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
+				_mediaAvailableLineCollapsed: false,
+				_layout: MediaBoardLayoutType.LIST,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

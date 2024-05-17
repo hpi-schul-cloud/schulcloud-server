@@ -8,6 +8,7 @@ import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { MediaBoardNode } from '@shared/domain/entity';
 import {
 	type DatesToStrings,
 	mediaBoardNodeFactory,
@@ -17,6 +18,10 @@ import {
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { MediaAvailableLineResponse, type MediaBoardResponse, MediaLineResponse } from '../dto';
+import { CollapsableBodyParams } from '../dto/collapsable.body.params';
+import { LayoutBodyParams } from '../dto/layout.body.params';
+import { MediaBoardLayoutType } from '../types/layout-type.enum';
+import { MediaBoardColors } from '../types/media-colors.enum';
 
 const baseRouteName = '/media-boards';
 
@@ -81,6 +86,7 @@ describe('Media Board (API)', () => {
 						createdAt: mediaBoard.createdAt.toISOString(),
 						lastUpdatedAt: mediaBoard.updatedAt.toISOString(),
 					},
+					layout: MediaBoardLayoutType.LIST,
 					lines: [
 						{
 							id: mediaLine.id,
@@ -88,6 +94,8 @@ describe('Media Board (API)', () => {
 								createdAt: mediaLine.createdAt.toISOString(),
 								lastUpdatedAt: mediaLine.updatedAt.toISOString(),
 							},
+							collapsed: false,
+							backgroundColor: 'transparent',
 							title: mediaLine.title,
 							elements: [
 								{
@@ -198,6 +206,8 @@ describe('Media Board (API)', () => {
 						createdAt: expect.any(String),
 						lastUpdatedAt: expect.any(String),
 					},
+					collapsed: false,
+					backgroundColor: 'transparent',
 					elements: [],
 					title: '',
 				});
@@ -351,6 +361,8 @@ describe('Media Board (API)', () => {
 							description: unusedExternalTool.description,
 						},
 					],
+					collapsed: false,
+					backgroundColor: MediaBoardColors.TRANSPARENT,
 				});
 			});
 		});
@@ -558,6 +570,362 @@ describe('Media Board (API)', () => {
 							description: licensedUnusedExternalTool.description,
 						},
 					],
+					collapsed: false,
+					backgroundColor: MediaBoardColors.TRANSPARENT,
+				});
+			});
+		});
+	});
+
+	describe('[GET] /media-board/:boardId/media-available-line/collapse', () => {
+		describe('when a valid user requests their available media line', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const externalTool = externalToolEntityFactory.build();
+				const unusedExternalTool = externalToolEntityFactory.build();
+				const schoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: externalTool,
+					school: studentUser.school,
+				});
+				const unusedSchoolExternalTool = schoolExternalToolEntityFactory.build({
+					tool: unusedExternalTool,
+					school: studentUser.school,
+				});
+				const contextExternalTool = contextExternalToolEntityFactory.build({
+					schoolTool: schoolExternalTool,
+				});
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard, collapsed: false });
+				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+					parent: mediaLine,
+					contextExternalTool,
+				});
+
+				await em.persistAndFlush([
+					studentAccount,
+					studentUser,
+					externalTool,
+					unusedExternalTool,
+					schoolExternalTool,
+					unusedSchoolExternalTool,
+					contextExternalTool,
+					mediaBoard,
+					mediaLine,
+					mediaElement,
+				]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+					unusedExternalTool,
+					unusedSchoolExternalTool,
+				};
+			};
+
+			it('should set background color for available media line', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.patch<CollapsableBodyParams>(
+					`${mediaBoard.id}/media-available-line/collapse`,
+					{
+						collapsed: true,
+					}
+				);
+
+				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
+				const modifiedBoard = await em.findOneOrFail(MediaBoardNode, mediaBoard.id);
+				expect(modifiedBoard._mediaAvailableLineCollapsed).toBe(true);
+			});
+		});
+
+		describe('when the user is unauthorized', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				return {
+					mediaBoard,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { mediaBoard } = await setup();
+
+				const response = await testApiClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+
+		describe('when the user is invalid', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: new ObjectId().toHexString(),
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
+			});
+		});
+
+		describe('when the media board feature is disabled', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Feature Disabled',
+					type: 'FEATURE_DISABLED',
+				});
+			});
+		});
+	});
+
+	describe('[GET] /media-board/:boardId/layout', () => {
+		describe('when a valid user set layout for media board', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
+				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({ parent: mediaLine });
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+					mediaLine,
+					mediaElement,
+				};
+			};
+
+			it('should set grid layout for media board ', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.patch<LayoutBodyParams>(`${mediaBoard.id}/layout`, {
+					layout: MediaBoardLayoutType.GRID,
+				});
+
+				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
+				const modifiedBoard = await em.findOneOrFail(MediaBoardNode, mediaBoard.id);
+				expect(modifiedBoard._layout).toBe(MediaBoardLayoutType.GRID);
+			});
+		});
+
+		describe('when the user is unauthorized', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				return {
+					mediaBoard,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { mediaBoard } = await setup();
+
+				const response = await testApiClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+
+		describe('when the user is invalid', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: new ObjectId().toHexString(),
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Forbidden',
+					type: 'FORBIDDEN',
+				});
+			});
+		});
+
+		describe('when the media board feature is disabled', () => {
+			const setup = async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+					context: {
+						id: studentUser.id,
+						type: BoardExternalReferenceType.User,
+					},
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				em.clear();
+
+				const studentClient = await testApiClient.login(studentAccount);
+
+				return {
+					studentClient,
+					mediaBoard,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { studentClient, mediaBoard } = await setup();
+
+				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual({
+					code: HttpStatus.FORBIDDEN,
+					message: 'Forbidden',
+					title: 'Feature Disabled',
+					type: 'FEATURE_DISABLED',
 				});
 			});
 		});

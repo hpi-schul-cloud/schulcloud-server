@@ -3,6 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { mediaBoardFactory, mediaLineFactory } from '@shared/testing';
+import { MediaBoardLayoutType } from '../../controller/media-board/types/layout-type.enum';
+import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 import { MediaBoardService } from './media-board.service';
@@ -113,6 +115,9 @@ describe(MediaBoardService.name, () => {
 							type: BoardExternalReferenceType.User,
 							id: userId,
 						},
+						layout: MediaBoardLayoutType.LIST,
+						mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
+						mediaAvailableLineCollapsed: false,
 					})
 				);
 			});
