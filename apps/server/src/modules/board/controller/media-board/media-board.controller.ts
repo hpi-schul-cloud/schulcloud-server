@@ -107,7 +107,7 @@ export class MediaBoardController {
 		);
 	}
 
-	@ApiOperation({ summary: 'Collaps available line in media board.' })
+	@ApiOperation({ summary: 'Collapse available line in media board.' })
 	@ApiNoContentResponse()
 	@ApiBadRequestResponse({ type: ApiValidationError })
 	@ApiForbiddenResponse({ type: ForbiddenException })

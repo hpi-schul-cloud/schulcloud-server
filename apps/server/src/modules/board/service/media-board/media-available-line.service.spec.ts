@@ -19,6 +19,7 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
+import { MediaBoardColors } from '../../controller/media-board/types/media-colors.enum';
 import { MediaAvailableLineService } from './media-available-line.service';
 
 describe(MediaAvailableLineService.name, () => {
@@ -318,6 +319,8 @@ describe(MediaAvailableLineService.name, () => {
 						logoUrl: undefined,
 					},
 				],
+				backgroundColor: MediaBoardColors.TRANSPARENT,
+				collapsed: false,
 			});
 		});
 	});
