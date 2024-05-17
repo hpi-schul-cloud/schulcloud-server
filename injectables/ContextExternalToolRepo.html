@@ -118,12 +118,6 @@
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -144,16 +138,22 @@
                                 <a href="#buildScope" >buildScope</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteBySchoolExternalToolIds" >deleteBySchoolExternalToolIds</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#find" >find</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
@@ -163,51 +163,30 @@
                                 <a href="#findByIdOrNull" >findByIdOrNull</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findBySchoolToolIdsAndContextType" >findBySchoolToolIdsAndContextType</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#mapContextTypeToDoType" >mapContextTypeToDoType</a>
+                                <a href="#mapContextTypeToDomainObjectType" >mapContextTypeToDomainObjectType</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#mapContextTypeToEntityType" >mapContextTypeToEntityType</a>
                             </li>
                             <li>
-                                <a href="#mapDOToEntityProperties" >mapDOToEntityProperties</a>
-                            </li>
-                            <li>
-                                <a href="#mapEntityToDO" >mapEntityToDO</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapDomainObjectToEntityProps" >mapDomainObjectToEntityProps</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#createOrUpdateEntity" >createOrUpdateEntity</a>
+                                <a href="#mapEntityToDomainObject" >mapEntityToDomainObject</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#delete" >delete</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#deleteById" class="deprecated-name">deleteById</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#remapProtectedEntityFields" >remapProtectedEntityFields</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#removeProtectedEntityFields" >removeProtectedEntityFields</a>
-                            </li>
-                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#saveAll" >saveAll</a>
                             </li>
                         </ul>
                     </td>
@@ -241,12 +220,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(_em: EntityManager, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(em: EntityManager)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -264,22 +243,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>_em</td>
+                                                        <td>em</td>
                                                   
                                                         <td>
                                                                     <code>EntityManager</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>logger</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -323,8 +290,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -374,8 +341,79 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="delete"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>delete(domainObjects: ContextExternalTool | ContextExternalTool[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>domainObjects</td>
+                                            <td>
+                                                        <code>ContextExternalTool | ContextExternalTool[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteBySchoolExternalToolIds"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>deleteBySchoolExternalToolIds</b></span>
                         <a href="#deleteBySchoolExternalToolIds"><span class="icon ion-ios-link"></span></a>
@@ -445,6 +483,7 @@
                 <td class="col-md-4">
                     <a name="find"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>find</b></span>
                         <a href="#find"><span class="icon ion-ios-link"></span></a>
@@ -461,8 +500,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -515,7 +554,6 @@
                     <a name="findById"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
-                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>findById</b></span>
                         <a href="#findById"><span class="icon ion-ios-link"></span></a>
@@ -532,14 +570,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:55</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -608,8 +640,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -661,6 +693,7 @@
                 <td class="col-md-4">
                     <a name="findBySchoolToolIdsAndContextType"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findBySchoolToolIdsAndContextType</b></span>
                         <a href="#findBySchoolToolIdsAndContextType"><span class="icon ion-ios-link"></span></a>
@@ -677,8 +710,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -740,26 +773,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapContextTypeToDoType"></a>
+                    <a name="mapContextTypeToDomainObjectType"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>mapContextTypeToDoType</b></span>
-                        <a href="#mapContextTypeToDoType"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapContextTypeToDomainObjectType</b></span>
+                        <a href="#mapContextTypeToDomainObjectType"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapContextTypeToDoType(type: <a href="../undefineds/ContextExternalToolType.html" target="_self">ContextExternalToolType</a>)</code>
+                    <code>mapContextTypeToDomainObjectType(type: <a href="../undefineds/ContextExternalToolType.html" target="_self">ContextExternalToolType</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="144"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:144</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -827,8 +860,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:162</a></div>
                         </td>
                     </tr>
 
@@ -878,30 +911,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapDOToEntityProperties"></a>
+                    <a name="mapDomainObjectToEntityProps"></a>
                     <span class="name">
-                        <span ><b>mapDOToEntityProperties</b></span>
-                        <a href="#mapDOToEntityProperties"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>mapDomainObjectToEntityProps</b></span>
+                        <a href="#mapDomainObjectToEntityProps"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapDOToEntityProperties(entityDO: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapDomainObjectToEntityProps(entityDO: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:120</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:152</a></div>
                         </td>
                     </tr>
 
@@ -937,7 +966,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>EntityData&lt;ContextExternalToolEntity&gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ContextExternalToolEntityProps.html" target="_self" >ContextExternalToolEntityProps</a></code>
 
                         </div>
                             <div class="io-description">
@@ -951,30 +980,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapEntityToDO"></a>
+                    <a name="mapEntityToDomainObject"></a>
                     <span class="name">
-                        <span ><b>mapEntityToDO</b></span>
-                        <a href="#mapEntityToDO"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>mapEntityToDomainObject</b></span>
+                        <a href="#mapEntityToDomainObject"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapEntityToDO(entity: <a href="../entitys/ContextExternalToolEntity.html" target="_self">ContextExternalToolEntity</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapEntityToDomainObject(entity: <a href="../entitys/ContextExternalToolEntity.html" target="_self">ContextExternalToolEntity</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:99</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -1024,403 +1049,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createOrUpdateEntity"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>createOrUpdateEntity</b></span>
-                        <a href="#createOrUpdateEntity"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createOrUpdateEntity(domainObject: DO)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:38</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>domainObject</td>
-                                            <td>
-                                                        <code>DO</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="delete"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>delete</b></span>
-                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(domainObjects: DO[] | DO)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:55</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>domainObjects</td>
-                                            <td>
-                                                        <code>DO[] | DO</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteById"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span class="deprecated-name"><b>deleteById</b></span>
-                        <a href="#deleteById"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4 deprecated">
-                    [object Object],[object Object],[object Object]
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId | EntityId[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:72</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>id</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | EntityId[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="remapProtectedEntityFields"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>remapProtectedEntityFields</b></span>
-                        <a href="#remapProtectedEntityFields"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>remapProtectedEntityFields(domainObject: DO, persistedEntity: E)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:100</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>domainObject</td>
-                                            <td>
-                                                        <code>DO</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>persistedEntity</td>
-                                            <td>
-                                                        <code>E</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>DO</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeProtectedEntityFields"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>removeProtectedEntityFields</b></span>
-                        <a href="#removeProtectedEntityFields"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeProtectedEntityFields(entityData: EntityData<E>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:92</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-description"><p>Ignore base entity properties when updating entity</p>
-</div>
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>entityData</td>
-                                            <td>
-                                                        <code>EntityData&lt;E&gt;</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>save</b></span>
                         <a href="#save"><span class="icon ion-ios-link"></span></a>
@@ -1430,21 +1061,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(domainObject: DO)</code>
+                    <code>save(domainObject: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:19</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -1467,7 +1092,7 @@
                                         <tr>
                                                 <td>domainObject</td>
                                             <td>
-                                                        <code>DO</code>
+                                                            <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                             </td>
 
                                             <td>
@@ -1480,82 +1105,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;DO&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="saveAll"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>saveAll</b></span>
-                        <a href="#saveAll"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>saveAll(domainObjects: DO[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:24</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>domainObjects</td>
-                                            <td>
-                                                        <code>DO[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;DO[]&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;ContextExternalTool&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1598,62 +1148,95 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData, EntityName } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName, Primary, Utils } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { ToolContextType } from &#x27;@modules/tool/common/enum/tool-context-type.enum&#x27;;
 import { ContextExternalTool, ContextRef } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
-import { ContextExternalToolEntity, ContextExternalToolType } from &#x27;@modules/tool/context-external-tool/entity&#x27;;
+import {
+	ContextExternalToolEntity,
+	ContextExternalToolEntityProps,
+	ContextExternalToolType,
+} from &#x27;@modules/tool/context-external-tool/entity&#x27;;
 import { ContextExternalToolQuery } from &#x27;@modules/tool/context-external-tool/uc/dto/context-external-tool.types&#x27;;
-import { SchoolExternalToolRefDO } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
+import { SchoolExternalToolRef } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { BaseDORepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
 import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x27;;
 
 @Injectable()
-export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, ContextExternalToolEntity&gt; {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
-		super(_em, logger);
-	}
+export class ContextExternalToolRepo {
+	constructor(protected readonly em: EntityManager) {}
 
 	get entityName(): EntityName&lt;ContextExternalToolEntity&gt; {
 		return ContextExternalToolEntity;
 	}
 
-	async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise&lt;number&gt; {
-		const count: Promise&lt;number&gt; &#x3D; this._em.nativeDelete(this.entityName, {
+	public async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise&lt;number&gt; {
+		const count: Promise&lt;number&gt; &#x3D; this.em.nativeDelete(this.entityName, {
 			schoolTool: { $in: schoolExternalToolIds },
 		});
 		return count;
 	}
 
-	async find(query: ContextExternalToolQuery): Promise&lt;ContextExternalTool[]&gt; {
+	public async save(domainObject: ContextExternalTool): Promise&lt;ContextExternalTool&gt; {
+		const existing: ContextExternalToolEntity | null &#x3D; await this.em.findOne&lt;ContextExternalToolEntity&gt;(
+			ContextExternalToolEntity.name,
+			domainObject.id
+		);
+
+		const entityProps: ContextExternalToolEntityProps &#x3D; this.mapDomainObjectToEntityProps(domainObject);
+		let entity: ContextExternalToolEntity &#x3D; new ContextExternalToolEntity(entityProps);
+
+		if (existing) {
+			entity &#x3D; this.em.assign(existing, entity);
+		} else {
+			this.em.persist(entity);
+		}
+		await this.em.flush();
+
+		const savedDomainObject: ContextExternalTool &#x3D; this.mapEntityToDomainObject(entity);
+
+		return savedDomainObject;
+	}
+
+	public async delete(domainObjects: ContextExternalTool | ContextExternalTool[]): Promise&lt;void&gt; {
+		const ids: Primary&lt;ContextExternalTool&gt;[] &#x3D; Utils.asArray(domainObjects).map((dob) &#x3D;&gt; dob.id);
+
+		const entities: ContextExternalToolEntity[] &#x3D; ids.map((id) &#x3D;&gt; this.em.getReference(this.entityName, id));
+
+		await this.em.remove(entities).flush();
+	}
+
+	public async find(query: ContextExternalToolQuery): Promise&lt;ContextExternalTool[]&gt; {
 		const scope: ContextExternalToolScope &#x3D; this.buildScope(query);
 
-		const entities: ContextExternalToolEntity[] &#x3D; await this._em.find(this.entityName, scope.query, {
+		const entities: ContextExternalToolEntity[] &#x3D; await this.em.find(this.entityName, scope.query, {
 			populate: [&#x27;schoolTool.school&#x27;],
 		});
 
-		const dos: ContextExternalTool[] &#x3D; entities.map((entity: ContextExternalToolEntity) &#x3D;&gt; this.mapEntityToDO(entity));
+		const dos: ContextExternalTool[] &#x3D; entities.map((entity: ContextExternalToolEntity) &#x3D;&gt;
+			this.mapEntityToDomainObject(entity)
+		);
 		return dos;
 	}
 
-	async findBySchoolToolIdsAndContextType(
+	public async findBySchoolToolIdsAndContextType(
 		schoolExternalToolIds: string[],
 		contextType: ContextExternalToolType
 	): Promise&lt;ContextExternalTool[]&gt; {
-		const entities &#x3D; await this._em.find(this.entityName, { schoolTool: { $in: schoolExternalToolIds }, contextType });
+		const entities &#x3D; await this.em.find(this.entityName, { schoolTool: { $in: schoolExternalToolIds }, contextType });
 
-		const dos: ContextExternalTool[] &#x3D; entities.map((entity: ContextExternalToolEntity) &#x3D;&gt; this.mapEntityToDO(entity));
+		const dos: ContextExternalTool[] &#x3D; entities.map((entity: ContextExternalToolEntity) &#x3D;&gt;
+			this.mapEntityToDomainObject(entity)
+		);
 
 		return dos;
 	}
 
-	public override async findById(id: EntityId): Promise&lt;ContextExternalTool&gt; {
-		const entity: ContextExternalToolEntity &#x3D; await this._em.findOneOrFail(
+	public async findById(id: EntityId): Promise&lt;ContextExternalTool&gt; {
+		const entity: ContextExternalToolEntity &#x3D; await this.em.findOneOrFail(
 			this.entityName,
 			{ id },
 			{
@@ -1661,13 +1244,13 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 			}
 		);
 
-		const mapped: ContextExternalTool &#x3D; this.mapEntityToDO(entity);
+		const mapped: ContextExternalTool &#x3D; this.mapEntityToDomainObject(entity);
 
 		return mapped;
 	}
 
 	public async findByIdOrNull(id: EntityId): Promise&lt;ContextExternalTool | null&gt; {
-		const entity: ContextExternalToolEntity | null &#x3D; await this._em.findOne(
+		const entity: ContextExternalToolEntity | null &#x3D; await this.em.findOne(
 			this.entityName,
 			{ id },
 			{
@@ -1679,7 +1262,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 			return null;
 		}
 
-		const mapped: ContextExternalTool &#x3D; this.mapEntityToDO(entity);
+		const mapped: ContextExternalTool &#x3D; this.mapEntityToDomainObject(entity);
 
 		return mapped;
 	}
@@ -1696,15 +1279,15 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 		return scope;
 	}
 
-	mapEntityToDO(entity: ContextExternalToolEntity): ContextExternalTool {
-		const schoolToolRef: SchoolExternalToolRefDO &#x3D; new SchoolExternalToolRefDO({
+	private mapEntityToDomainObject(entity: ContextExternalToolEntity): ContextExternalTool {
+		const schoolToolRef: SchoolExternalToolRef &#x3D; new SchoolExternalToolRef({
 			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
 		});
 
 		const contextRef: ContextRef &#x3D; new ContextRef({
 			id: entity.contextId,
-			type: this.mapContextTypeToDoType(entity.contextType),
+			type: this.mapContextTypeToDomainObjectType(entity.contextType),
 		});
 
 		return new ContextExternalTool({
@@ -1712,18 +1295,16 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 			schoolToolRef,
 			contextRef,
 			displayName: entity.displayName,
-			toolVersion: entity.toolVersion,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ContextExternalTool): EntityData&lt;ContextExternalToolEntity&gt; {
+	private mapDomainObjectToEntityProps(entityDO: ContextExternalTool): ContextExternalToolEntityProps {
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			displayName: entityDO.displayName,
-			schoolTool: this._em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
-			toolVersion: entityDO.toolVersion,
+			schoolTool: this.em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}
@@ -1741,7 +1322,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;ContextExternalTool, 
 		}
 	}
 
-	private mapContextTypeToDoType(type: ContextExternalToolType): ToolContextType {
+	private mapContextTypeToDomainObjectType(type: ContextExternalToolType): ToolContextType {
 		switch (type) {
 			case ContextExternalToolType.COURSE:
 				return ToolContextType.COURSE;

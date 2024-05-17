@@ -168,11 +168,6 @@
                                     <span class="modifier"></span>
                                 <a href="#schoolToolId" >schoolToolId</a>
                             </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#toolVersion" >toolVersion</a>
-                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -383,43 +378,6 @@
 
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="toolVersion"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>toolVersion</b></span>
-                        <a href="#toolVersion"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty()<br />@IsNumber()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool-post.params.ts:34</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
 </section>
 
 
@@ -434,9 +392,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
-import { CustomParameterEntryParam } from &#x27;../../../school-external-tool/controller/dto&#x27;;
+import { IsArray, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 import { ToolContextType } from &#x27;../../../common/enum&#x27;;
+import { CustomParameterEntryParam } from &#x27;../../../school-external-tool/controller/dto&#x27;;
 
 export class ContextExternalToolPostParams {
 	@ApiProperty()
@@ -462,10 +420,6 @@ export class ContextExternalToolPostParams {
 	@ApiPropertyOptional({ type: [CustomParameterEntryParam] })
 	@Type(() &#x3D;&gt; CustomParameterEntryParam)
 	parameters?: CustomParameterEntryParam[];
-
-	@ApiProperty()
-	@IsNumber()
-	toolVersion!: number;
 }
 </code></pre>
     </div>

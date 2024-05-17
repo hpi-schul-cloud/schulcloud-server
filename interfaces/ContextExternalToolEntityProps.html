@@ -96,7 +96,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  SchoolExternalToolProperties</li>
+  ContextExternalToolEntityProps</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -120,7 +120,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/entity/context-external-tool.entity.ts</code>
         </p>
 
 
@@ -139,35 +139,42 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#school" 
+                                        <a href="#contextId" 
 >
-                                            school
+                                            contextId
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#contextType" 
+>
+                                            contextType
                                         </a>
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
-                                        <a href="#schoolParameters" 
+                                        <a href="#displayName" 
 >
-                                            schoolParameters
+                                            displayName
                                         </a>
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
-                                        <a href="#status" 
+                                        <a href="#id" 
 >
-                                            status
+                                            id
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#tool" 
+                                            <span class="modifier">Optional</span>
+                                        <a href="#parameters" 
 >
-                                            tool
+                                            parameters
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#toolVersion" 
+                                        <a href="#schoolTool" 
 >
-                                            toolVersion
+                                            schoolTool
                                         </a>
                                 </li>
                             </ul>
@@ -185,9 +192,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="school"></a>
-                                        <span class="name "><b>school</b>
-                                            <a href="#school">
+                                        <a name="contextId"></a>
+                                        <span class="name "><b>contextId</b>
+                                            <a href="#contextId">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -195,7 +202,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>school:         <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
+                                        <code>contextId:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -203,7 +210,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                                         </td>
                                     </tr>
@@ -218,9 +225,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="schoolParameters"></a>
-                                        <span class="name "><b>schoolParameters</b>
-                                            <a href="#schoolParameters">
+                                        <a name="contextType"></a>
+                                        <span class="name "><b>contextType</b>
+                                            <a href="#contextType">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -228,7 +235,116 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>schoolParameters:     <code>CustomParameterEntryEntity[]</code>
+                                        <code>contextType:         <code><a href="../miscellaneous/enumerations.html#ContextExternalToolType" target="_self" >ContextExternalToolType</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#ContextExternalToolType" target="_self" >ContextExternalToolType</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="displayName"></a>
+                                        <span class="name "><b>displayName</b>
+                                            <a href="#displayName">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>displayName:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="id"></a>
+                                        <span class="name "><b>id</b>
+                                            <a href="#id">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>id:         <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="parameters"></a>
+                                        <span class="name "><b>parameters</b>
+                                            <a href="#parameters">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>parameters:     <code>CustomParameterEntryEntity[]</code>
 </code>
                                     </td>
                                 </tr>
@@ -256,9 +372,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="status"></a>
-                                        <span class="name "><b>status</b>
-                                            <a href="#status">
+                                        <a name="schoolTool"></a>
+                                        <span class="name "><b>schoolTool</b>
+                                            <a href="#schoolTool">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -266,7 +382,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>status:         <code><a href="../classes/SchoolExternalToolConfigurationStatusEntity.html" target="_self" >SchoolExternalToolConfigurationStatusEntity</a></code>
+                                        <code>schoolTool:         <code><a href="../entitys/SchoolExternalToolEntity.html" target="_self" >SchoolExternalToolEntity</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -274,78 +390,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/SchoolExternalToolConfigurationStatusEntity.html" target="_self" >SchoolExternalToolConfigurationStatusEntity</a></code>
-
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="tool"></a>
-                                        <span class="name "><b>tool</b>
-                                            <a href="#tool">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>tool:         <code><a href="../entitys/ExternalToolEntity.html" target="_self" >ExternalToolEntity</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../entitys/ExternalToolEntity.html" target="_self" >ExternalToolEntity</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="toolVersion"></a>
-                                        <span class="name "><b>toolVersion</b>
-                                            <a href="#toolVersion">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>toolVersion:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            <i>Type : </i>        <code><a href="../entitys/SchoolExternalToolEntity.html" target="_self" >SchoolExternalToolEntity</a></code>
 
                                         </td>
                                     </tr>
@@ -363,43 +408,52 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embedded, Entity, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
-import { SchoolEntity } from &#x27;@shared/domain/entity/school.entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CustomParameterEntryEntity } from &#x27;../../common/entity&#x27;;
-import { ExternalToolEntity } from &#x27;../../external-tool/entity&#x27;;
-import { SchoolExternalToolConfigurationStatusEntity } from &#x27;./school-external-tool-configuration-status.entity&#x27;;
+import { SchoolExternalToolEntity } from &#x27;../../school-external-tool/entity&#x27;;
+import { ContextExternalToolType } from &#x27;./context-external-tool-type.enum&#x27;;
 
-export interface SchoolExternalToolProperties {
-	tool: ExternalToolEntity;
-	school: SchoolEntity;
-	schoolParameters?: CustomParameterEntryEntity[];
-	toolVersion: number;
-	status?: SchoolExternalToolConfigurationStatusEntity;
+export interface ContextExternalToolEntityProps {
+	id?: EntityId;
+
+	schoolTool: SchoolExternalToolEntity;
+
+	contextId: string;
+
+	contextType: ContextExternalToolType;
+
+	displayName?: string;
+
+	parameters?: CustomParameterEntryEntity[];
 }
 
-@Entity({ tableName: &#x27;school-external-tools&#x27; })
-export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
+@Entity({ tableName: &#x27;context-external-tools&#x27; })
+export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()
-	tool: ExternalToolEntity;
-
-	@ManyToOne(() &#x3D;&gt; SchoolEntity, { eager: true })
-	school: SchoolEntity;
-
-	@Embedded(() &#x3D;&gt; CustomParameterEntryEntity, { array: true })
-	schoolParameters: CustomParameterEntryEntity[];
+	schoolTool: SchoolExternalToolEntity;
 
 	@Property()
-	toolVersion: number;
+	contextId: string;
 
-	@Embedded(() &#x3D;&gt; SchoolExternalToolConfigurationStatusEntity, { object: true, nullable: true })
-	status?: SchoolExternalToolConfigurationStatusEntity;
+	@Property()
+	contextType: ContextExternalToolType;
 
-	constructor(props: SchoolExternalToolProperties) {
+	@Property({ nullable: true })
+	displayName?: string;
+
+	@Embedded(() &#x3D;&gt; CustomParameterEntryEntity, { array: true })
+	parameters: CustomParameterEntryEntity[];
+
+	constructor(props: ContextExternalToolEntityProps) {
 		super();
-		this.tool &#x3D; props.tool;
-		this.school &#x3D; props.school;
-		this.schoolParameters &#x3D; props.schoolParameters ?? [];
-		this.toolVersion &#x3D; props.toolVersion;
-		this.status &#x3D; props.status;
+		if (props.id) {
+			this.id &#x3D; props.id;
+		}
+		this.schoolTool &#x3D; props.schoolTool;
+		this.contextId &#x3D; props.contextId;
+		this.contextType &#x3D; props.contextType;
+		this.displayName &#x3D; props.displayName;
+		this.parameters &#x3D; props.parameters ?? [];
 	}
 }
 </code></pre>
@@ -439,7 +493,7 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolProperties.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolEntityProps.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

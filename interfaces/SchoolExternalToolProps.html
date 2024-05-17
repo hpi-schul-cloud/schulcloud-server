@@ -125,6 +125,12 @@
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject</a></code>
+            </p>
 
         <section data-compodoc="block-index">
             <h3 id="index">Index</h3>
@@ -139,7 +145,6 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#id" 
 >
                                             id
@@ -175,12 +180,6 @@
                                         <a href="#toolId" 
 >
                                             toolId
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#toolVersion" 
->
-                                            toolVersion
                                         </a>
                                 </li>
                             </ul>
@@ -221,11 +220,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -407,51 +401,17 @@
 
                         </tbody>
                     </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="toolVersion"></a>
-                                        <span class="name "><b>toolVersion</b>
-                                            <a href="#toolVersion">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>toolVersion:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
             </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO } from &#x27;@shared/domain/domainobject/base.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
-import { ToolVersion } from &#x27;../../common/interface&#x27;;
 import { SchoolExternalToolConfigurationStatus } from &#x27;../controller/dto&#x27;;
 
-export interface SchoolExternalToolProps {
-	id?: string;
+export interface SchoolExternalToolProps extends AuthorizableObject {
+	id: string;
 
 	name?: string;
 
@@ -461,41 +421,38 @@ export interface SchoolExternalToolProps {
 
 	parameters: CustomParameterEntry[];
 
-	toolVersion: number;
-
 	status?: SchoolExternalToolConfigurationStatus;
 }
 
-export class SchoolExternalTool extends BaseDO implements ToolVersion {
-	name?: string;
-
-	toolId: string;
-
-	schoolId: string;
-
-	parameters: CustomParameterEntry[];
-
-	toolVersion: number;
-
-	status?: SchoolExternalToolConfigurationStatus;
-
-	constructor(props: SchoolExternalToolProps) {
-		super(props.id);
-		this.name &#x3D; props.name;
-		this.toolId &#x3D; props.toolId;
-		this.schoolId &#x3D; props.schoolId;
-		this.parameters &#x3D; props.parameters;
-		this.toolVersion &#x3D; props.toolVersion;
-		this.status &#x3D; props.status;
+export class SchoolExternalTool extends DomainObject&lt;SchoolExternalToolProps&gt; {
+	get name(): string | undefined {
+		return this.props.name;
 	}
 
-	getVersion(): number {
-		return this.toolVersion;
+	set name(value: string | undefined) {
+		this.props.name &#x3D; value;
+	}
+
+	get toolId(): string {
+		return this.props.toolId;
+	}
+
+	get schoolId(): string {
+		return this.props.schoolId;
+	}
+
+	get parameters(): CustomParameterEntry[] {
+		return this.props.parameters;
+	}
+
+	get status(): SchoolExternalToolConfigurationStatus | undefined {
+		return this.props.status;
+	}
+
+	set status(value: SchoolExternalToolConfigurationStatus | undefined) {
+		this.props.status &#x3D; value;
 	}
 }
-
-// TODO: N21-1885: Remove this type and alls its usages
-export type SchoolExternalToolWithId &#x3D; SchoolExternalTool &amp; { id: string };
 </code></pre>
     </div>
 </div>

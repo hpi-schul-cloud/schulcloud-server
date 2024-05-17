@@ -1309,7 +1309,7 @@ export class FeathersRosterService {
 		const externalTool: ExternalTool &#x3D; await this.validateAndGetExternalTool(oauth2ClientId);
 
 		let courses: Course[] &#x3D; await this.getCoursesFromUsersPseudonym(loadedPseudonym);
-		courses &#x3D; await this.filterCoursesByToolAvailability(courses, externalTool.id as string);
+		courses &#x3D; await this.filterCoursesByToolAvailability(courses, externalTool.id);
 
 		const userGroups: UserGroups &#x3D; {
 			data: {
@@ -1330,7 +1330,7 @@ export class FeathersRosterService {
 		const course: Course &#x3D; await this.courseService.findById(courseId);
 		const externalTool: ExternalTool &#x3D; await this.validateAndGetExternalTool(oauth2ClientId);
 
-		await this.validateSchoolExternalTool(course.school.id, externalTool.id as string);
+		await this.validateSchoolExternalTool(course.school.id, externalTool.id);
 		await this.validateContextExternalTools(courseId);
 
 		const [studentEntities, teacherEntities, substitutionTeacherEntities] &#x3D; await Promise.all([

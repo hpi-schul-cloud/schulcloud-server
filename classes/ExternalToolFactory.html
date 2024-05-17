@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts</code>
         </p>
 
 
@@ -295,8 +295,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +323,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="101"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:101</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -395,8 +395,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -455,8 +455,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="116"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:116</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -515,8 +515,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/testing/external-tool.factory.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -1579,7 +1579,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameter } from &#x27;@modules/tool/common/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { CustomParameter } from &#x27;@modules/tool/common/domain&#x27;;
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -1597,8 +1598,8 @@ import {
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from &#x27;@modules/tool/external-tool/domain&#x27;;
+import { DoBaseFactory } from &#x27;@shared/testing/factory/domainobject/do-base.factory&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
-import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 export const basicToolConfigFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfig, BasicToolConfig&gt;(BasicToolConfig, () &#x3D;&gt; {
 	return {
@@ -1709,6 +1710,7 @@ class ExternalToolFactory extends DoBaseFactory&lt;ExternalTool, ExternalToolPro
 
 export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool, ({ sequence }) &#x3D;&gt; {
 	return {
+		id: new ObjectId().toHexString(),
 		name: &#x60;external-tool-${sequence}&#x60;,
 		description: &#x27;description&#x27;,
 		url: &#x27;https://url.com/&#x27;,
@@ -1717,7 +1719,6 @@ export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool,
 		isHidden: false,
 		isDeactivated: false,
 		openNewTab: false,
-		version: 1,
 		createdAt: new Date(2020, 1, 1),
 	};
 });

@@ -183,8 +183,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -396,7 +396,6 @@ export class SchoolExternalToolResponseMapper {
 			toolId: schoolExternalTool.toolId,
 			schoolId: schoolExternalTool.schoolId,
 			parameters: this.mapToCustomParameterEntryResponse(schoolExternalTool.parameters),
-			toolVersion: schoolExternalTool.toolVersion,
 			status: SchoolToolConfigurationStatusResponseMapper.mapToResponse(
 				schoolExternalTool.status ?? { isOutdatedOnScopeSchool: false, isDeactivated: false }
 			),

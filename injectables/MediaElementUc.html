@@ -311,15 +311,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkElementExistsAlreadyOnBoardAndThrow(mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>, schoolExternalTool: <a href="../undefineds/SchoolExternalToolWithId.html" target="_self">SchoolExternalToolWithId</a>)</code>
+                    <code>checkElementExistsAlreadyOnBoardAndThrow(mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -354,7 +354,7 @@
                                         <tr>
                                                 <td>schoolExternalTool</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolWithId" target="_self" >SchoolExternalToolWithId</a></code>
+                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
                                             </td>
 
                                             <td>
@@ -545,8 +545,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="105"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:105</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-element.uc.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -717,9 +717,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
-import { ContextExternalToolWithId } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { ContextExternalTool } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
 import { SchoolExternalToolService } from &#x27;@modules/tool/school-external-tool&#x27;;
-import { SchoolExternalToolWithId } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
+import { SchoolExternalTool } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { FeatureDisabledLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
@@ -791,13 +791,11 @@ export class MediaElementUc {
 
 		const mediaBoard: MediaBoard &#x3D; await this.mediaBoardService.findByDescendant(line);
 
-		const schoolExternalTool: SchoolExternalToolWithId &#x3D; await this.schoolExternalToolService.findById(
-			schoolExternalToolId
-		);
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(schoolExternalToolId);
 
 		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
 
-		const createdContexExternalTool: ContextExternalToolWithId &#x3D;
+		const createdContexExternalTool: ContextExternalTool &#x3D;
 			await this.mediaElementService.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
 
 		const createdElement: AnyMediaContentElementDo &#x3D; await this.mediaElementService.createExternalToolElement(
@@ -811,7 +809,7 @@ export class MediaElementUc {
 
 	private async checkElementExistsAlreadyOnBoardAndThrow(
 		mediaBoard: MediaBoard,
-		schoolExternalTool: SchoolExternalToolWithId
+		schoolExternalTool: SchoolExternalTool
 	): Promise&lt;void&gt; {
 		const exists &#x3D; await this.mediaElementService.checkElementExists(mediaBoard, schoolExternalTool);
 

@@ -167,10 +167,6 @@
                                     <span class="modifier"></span>
                                 <a href="#schoolToolId" >schoolToolId</a>
                             </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#toolVersion" >toolVersion</a>
-                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -195,7 +191,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool.response.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool.response.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -413,7 +409,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool.response.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool.response.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -497,42 +493,6 @@
 
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="toolVersion"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>toolVersion</b></span>
-                        <a href="#toolVersion"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/dto/context-external-tool.response.ts:25</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
 </section>
 
 
@@ -546,8 +506,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
-import { CustomParameterEntryResponse } from &#x27;../../../school-external-tool/controller/dto&#x27;;
 import { ToolContextType } from &#x27;../../../common/enum&#x27;;
+import { CustomParameterEntryResponse } from &#x27;../../../school-external-tool/controller/dto&#x27;;
 
 export class ContextExternalToolResponse {
 	@ApiProperty()
@@ -568,9 +528,6 @@ export class ContextExternalToolResponse {
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[] &#x3D; [];
 
-	@ApiProperty()
-	toolVersion: number;
-
 	@ApiPropertyOptional()
 	logoUrl?: string;
 
@@ -581,7 +538,6 @@ export class ContextExternalToolResponse {
 		this.contextType &#x3D; response.contextType;
 		this.displayName &#x3D; response.displayName;
 		this.parameters &#x3D; response.parameters;
-		this.toolVersion &#x3D; response.toolVersion;
 		this.logoUrl &#x3D; response.logoUrl;
 	}
 }

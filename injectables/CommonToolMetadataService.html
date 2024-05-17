@@ -264,8 +264,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -346,8 +346,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -484,8 +484,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -561,9 +561,7 @@ export class CommonToolMetadataService {
 		const schoolExternalTools: SchoolExternalTool[] &#x3D; await this.schoolToolRepo.findByExternalToolId(toolId);
 
 		const schoolExternalToolIds: string[] &#x3D; schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string &#x3D;&gt;
-				// We can be sure that the repo returns the id
-				schoolExternalTool.id as string
+			(schoolExternalTool: SchoolExternalTool): string &#x3D;&gt; schoolExternalTool.id
 		);
 
 		const externalToolMetadata: ExternalToolMetadata &#x3D; await this.getMetadata(schoolExternalToolIds);

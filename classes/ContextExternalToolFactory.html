@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/testing/context-external-tool.factory.ts</code>
         </p>
 
 
@@ -287,7 +287,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts:16</a></div>
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/testing/context-external-tool.factory.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -359,7 +359,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts:9</a></div>
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/testing/context-external-tool.factory.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -1435,11 +1435,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { CustomParameterEntry } from &#x27;@modules/tool/common/domain&#x27;;
-import { ToolContextType } from &#x27;@modules/tool/common/enum&#x27;;
-import { ContextExternalTool, ContextExternalToolProps } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { DoBaseFactory } from &#x27;@shared/testing/factory/domainobject/do-base.factory&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
-import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
+import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
+import { ToolContextType } from &#x27;../../common/enum&#x27;;
+import { ContextExternalTool, ContextExternalToolProps } from &#x27;../domain&#x27;;
 
 class ContextExternalToolFactory extends DoBaseFactory&lt;ContextExternalTool, ContextExternalToolProps&gt; {
 	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
@@ -1459,11 +1459,11 @@ class ContextExternalToolFactory extends DoBaseFactory&lt;ContextExternalTool, C
 
 export const contextExternalToolFactory &#x3D; ContextExternalToolFactory.define(ContextExternalTool, ({ sequence }) &#x3D;&gt; {
 	return {
+		id: new ObjectId().toHexString(),
 		schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
 		contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },
 		displayName: &#x27;My Course Tool 1&#x27;,
 		parameters: [new CustomParameterEntry({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
-		toolVersion: 1,
 	};
 });
 </code></pre>

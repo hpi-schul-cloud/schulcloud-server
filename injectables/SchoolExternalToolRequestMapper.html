@@ -180,8 +180,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -247,8 +247,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -300,7 +300,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
 import {
 	CustomParameterEntryParam,
@@ -313,9 +314,9 @@ import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types
 export class SchoolExternalToolRequestMapper {
 	mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalToolDto {
 		return {
+			id: new ObjectId().toHexString(),
 			toolId: request.toolId,
 			schoolId: request.schoolId,
-			toolVersion: request.version,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 			status: new SchoolExternalToolConfigurationStatus({
 				isOutdatedOnScopeSchool: false,
