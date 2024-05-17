@@ -5,7 +5,8 @@ import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ColumnBoardNodeRepo, LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
+import { ColumnBoardNodeRepo } from '../repo';
 
 @Injectable()
 export class RoomsService {

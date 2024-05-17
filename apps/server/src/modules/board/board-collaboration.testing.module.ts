@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { ConsoleWriterModule } from '@src/infra/console';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { AuthenticationModule } from '../authentication';
@@ -23,7 +22,6 @@ const config = () => {
 		CoreModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		RabbitMQWrapperModule,
-		ConsoleWriterModule,
 		MongoMemoryDatabaseModule.forRoot({
 			...defaultMikroOrmOptions,
 			entities: ALL_ENTITIES,

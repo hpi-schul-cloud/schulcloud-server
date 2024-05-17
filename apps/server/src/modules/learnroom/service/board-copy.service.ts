@@ -20,10 +20,11 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ColumnBoardNodeRepo, LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ColumnBoardLinkService } from '@src/modules/board/service';
 import { sortBy } from 'lodash';
+import { ColumnBoardNodeRepo } from '../repo';
 
 type BoardCopyParams = {
 	originalBoard: LegacyBoard;

@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReference } from '@modules/board/domain/types/board-external-reference';
+import { BoardExternalReference } from '@modules/board';
 import { Injectable } from '@nestjs/common';
 import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity';
 import { EntityId } from '@shared/domain/types/entity-id';

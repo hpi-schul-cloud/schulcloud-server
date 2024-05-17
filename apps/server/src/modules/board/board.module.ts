@@ -1,4 +1,3 @@
-import { ConsoleWriterModule } from '@infra/console';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
@@ -9,7 +8,7 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ColumnBoardNodeRepo, CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
@@ -22,12 +21,15 @@ import {
 	ColumnBoardLinkService,
 	ColumnBoardService,
 	ContentElementUpdateService,
+	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
+import { BoardNodeCopyService } from './service/board-node-copy.service';
+import { BoardNodeDeleteHooksService } from './service/board-node-delete-hooks.service';
+import { ColumnBoardTitleService } from './service/column-board-title.service';
 
 @Module({
 	imports: [
-		ConsoleWriterModule,
 		CopyHelperModule,
 		FilesStorageClientModule,
 		LoggerModule,
@@ -46,14 +48,18 @@ import {
 		BoardNodeRepo,
 		BoardNodeService,
 		BoardNodeFactory,
+		BoardNodeCopyService,
 		BoardCommonToolService,
+		BoardNodeDeleteHooksService,
 		ColumnBoardService,
 		ContentElementUpdateService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 		ColumnBoardCopyService,
 		ColumnBoardLinkService,
+		ColumnBoardTitleService,
 		UserDeletedEventHandlerService,
-		ColumnBoardNodeRepo,
+		// TODO replace by import of MediaBoardModule (fix dependency cycle)
+		MediaBoardService,
 	],
 	exports: [
 		BoardNodeAuthorizableService,
