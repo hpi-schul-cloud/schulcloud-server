@@ -498,6 +498,18 @@ describe(BoardCollaborationGateway.name, () => {
 
 			expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'newElement']));
 		});
+
+		describe('when element does not exist', () => {
+			it('should answer with failure', async () => {
+				await setup();
+				const elementId = new ObjectId().toHexString();
+
+				ioClient.emit('create-element-request', { elementId });
+				const failure = await waitForEvent(ioClient, 'create-element-failure');
+
+				expect(failure).toBeDefined();
+			});
+		});
 	});
 
 	describe('delete element', () => {
