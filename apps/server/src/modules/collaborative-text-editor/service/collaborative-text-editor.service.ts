@@ -40,8 +40,8 @@ export class CollaborativeTextEditorService {
 
 		return {
 			sessionId,
-			url,
-			path: `/p/${padId}`,
+			url: url.toString(),
+			path: url.pathname,
 			sessionExpiryDate,
 		};
 	}
@@ -68,9 +68,9 @@ export class CollaborativeTextEditorService {
 		return sessionCookieExpiryDate;
 	}
 
-	private buildPath(editorId: string): string {
+	private buildPath(editorId: string): URL {
 		const basePath = this.configService.get<string>('ETHERPAD__PAD_URI');
-		const url = `${basePath}/${editorId}`;
+		const url = new URL(`${basePath}/${editorId}`);
 
 		return url;
 	}

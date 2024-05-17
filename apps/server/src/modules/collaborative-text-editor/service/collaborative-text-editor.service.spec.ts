@@ -50,8 +50,9 @@ describe('CollaborativeTextEditorService', () => {
 			const authorId = 'authorId';
 			const sessionId = 'sessionId1';
 			const authorsSessionIds = ['sessionId1', 'sessionId2'];
-			const url = 'url';
+			const url = 'http://localhost:9001/p';
 			const cookieExpiresSeconds = 2;
+			const releaseThreshold = 5;
 			const dateMock = new Date(2022, 1, 22);
 			const sessionExpiryDate = new Date(dateMock.getTime() + cookieExpiresSeconds * 1000);
 
@@ -66,6 +67,7 @@ describe('CollaborativeTextEditorService', () => {
 				authorsSessionIds,
 				url,
 				cookieExpiresSeconds,
+				releaseThreshold,
 				sessionExpiryDate,
 				dateMock,
 			};
@@ -86,9 +88,11 @@ describe('CollaborativeTextEditorService', () => {
 					cookieExpiresSeconds,
 					sessionExpiryDate,
 					dateMock,
+					releaseThreshold,
 				} = buildParameter();
 
 				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
+				configService.get.mockReturnValueOnce(releaseThreshold);
 				configService.get.mockReturnValueOnce(url);
 				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
 				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(padId);
@@ -111,6 +115,7 @@ describe('CollaborativeTextEditorService', () => {
 					url,
 					cookieExpiresSeconds,
 					sessionExpiryDate,
+					releaseThreshold,
 					dateMock,
 				};
 			};
@@ -129,7 +134,7 @@ describe('CollaborativeTextEditorService', () => {
 			});
 
 			it('should call etherpadClientAdapter methods with correct parameter', async () => {
-				const { userId, userName, params, groupId, authorId, sessionExpiryDate } = setup();
+				const { userId, userName, params, groupId, authorId, sessionExpiryDate, releaseThreshold } = setup();
 
 				await service.getOrCreateCollaborativeTextEditor(userId, userName, params);
 
@@ -140,7 +145,8 @@ describe('CollaborativeTextEditorService', () => {
 					groupId,
 					authorId,
 					params.parentId,
-					sessionExpiryDate
+					sessionExpiryDate,
+					releaseThreshold
 				);
 			});
 		});
