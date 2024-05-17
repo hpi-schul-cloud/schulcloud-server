@@ -1,9 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { cleanupCollections, cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
+import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { ColumnBoard } from '../domain';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { BoardNodeEntity } from './entity/board-node.entity';
 
@@ -59,6 +60,16 @@ describe('BoardNodeRepo', () => {
 
 			const nodeCount = await em.count(BoardNodeEntity);
 			expect(nodeCount).toBe(10);
+		});
+
+		it('should persist embedded context', async () => {
+			const { board } = setup();
+
+			await repo.persistAndFlush(board);
+			em.clear();
+
+			const result = await em.findOneOrFail(BoardNodeEntity, board.id);
+			expect(result.context).toBeDefined();
 		});
 	});
 

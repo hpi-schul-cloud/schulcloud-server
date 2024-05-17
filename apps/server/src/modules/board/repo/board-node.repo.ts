@@ -104,6 +104,10 @@ export class BoardNodeRepo {
 
 			if (!(props instanceof BoardNodeEntity)) {
 				const entity = this.em.create(BoardNodeEntity, props);
+				// TODO generic assignment of embeddables
+				if ('context' in props) {
+					entity.context = (props as { context: BoardExternalReference }).context;
+				}
 				entity.type = getBoardNodeType(bn);
 				this.setProps(bn, entity);
 				this.em.persist(entity);

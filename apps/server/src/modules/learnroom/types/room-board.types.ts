@@ -1,4 +1,4 @@
-import { BoardLayout } from '@modules/board/domain';
+import { BoardLayout } from '@modules/board';
 import { TaskWithStatusVo } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 

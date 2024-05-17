@@ -1,5 +1,4 @@
-import { BoardExternalReferenceType, ColumnBoard } from '@modules/board/domain';
-import { ColumnBoardCopyService } from '@modules/board/service';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardCopyService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';

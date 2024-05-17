@@ -1,5 +1,4 @@
-import { BoardExternalReferenceType } from '@modules/board/domain';
-import { ColumnBoardService } from '@modules/board/service';
+import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
