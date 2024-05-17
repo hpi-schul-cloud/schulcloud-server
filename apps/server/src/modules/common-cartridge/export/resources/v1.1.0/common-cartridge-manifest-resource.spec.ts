@@ -153,10 +153,10 @@ describe('CommonCartridgeManifestResourceV110', () => {
 
 				expect(result).toStrictEqual({
 					manifest: {
-						$: expect.any(Object),
-						metadata: expect.any(Object),
-						organizations: expect.any(Object),
-						resources: expect.any(Object),
+						$: expect.any(Object) as unknown,
+						metadata: expect.any(Object) as unknown,
+						organizations: expect.any(Object) as unknown,
+						resources: expect.any(Object) as unknown,
 					},
 				});
 			});
