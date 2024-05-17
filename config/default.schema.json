@@ -545,6 +545,11 @@
 			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
 		},
+		"ALERT_CACHE_INTERVAL_MIN": {
+			"type": "number",
+			"default": 1,
+			"description": "Time between updating alerts (in minutes)"
+		},
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
@@ -779,6 +784,7 @@
 			"description": "Etherpad feature enabled"
 		},
 		"ETHERPAD_API_KEY": {
+			"default": "",
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
 		},
@@ -805,10 +811,12 @@
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
-					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				}
+			},
+			"default": {
+				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
@@ -821,7 +829,7 @@
 			"default": 28800,
 			"description": "Number of seconds after an etherpad cookie expires."
 		},
-		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+		"ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
@@ -1126,6 +1134,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable collaborative text editor in column board."
+		},
 		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1159,6 +1172,16 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the column board sharing feature."
+		},
+		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board web socket feature."
+		},
+		"FEATURE_BOARD_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board layout feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
@@ -1358,8 +1381,17 @@
 					"type": "number",
 					"default": 60000,
 					"description": "threshold in milliseconds to get deletionRequest to delete"
+				},
+				"MAX_CONCURRENT_DELETION_REQUESTS": {
+					"type": "number",
+					"default": 10,
+					"description": "max amount of deletion requests proccessed concurently"
+				},
+				"DELETION_DELAY_MILLISECONDS": {
+					"type": "number",
+					"default": 10000,
+					"description": "deley in milliseconds to give time modules to perform deletion proccess"
 				}
-
 			},
 			"default": {}
 		},
@@ -1639,6 +1671,37 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
+		},
+		"FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard to use the user login migration process"
+		},
+		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the provisioning of other groupusers"
+		},
+		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the storing and checking media license of users"
+		},
+		"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": {
+			"type": "string",
+			"default": "",
+			"description": "URL for fetching lizenz info from moin.schule schulconnex",
+			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/lizenz-info"]
+		},
+		"BOARD_COLLABORATION_URI": {
+			"type": "string",
+			"default": "ws://localhost:4450",
+			"description": "URL for connecting to the WebSocketServer"
+		},
+		"FEATURE_NEW_LAYOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new layout feature"
 		}
 	},
 	"required": []

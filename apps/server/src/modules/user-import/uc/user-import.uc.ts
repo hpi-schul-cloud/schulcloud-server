@@ -1,6 +1,7 @@
-import { AccountService, Account, AccountSave } from '@modules/account';
+import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
@@ -98,7 +99,9 @@ export class UserImportUc {
 
 		// check user is not already assigned
 		const hasMatch = await this.importUserRepo.hasMatch(userMatch);
-		if (hasMatch !== null) throw new UserAlreadyAssignedToImportUserError();
+		if (hasMatch !== null) {
+			throw new UserAlreadyAssignedToImportUserError();
+		}
 
 		importUser.setMatch(userMatch, MatchCreator.MANUAL);
 		await this.importUserRepo.save(importUser);
@@ -165,7 +168,7 @@ export class UserImportUc {
 		this.userImportService.checkFeatureEnabled(school);
 
 		// TODO Change to UserService to fix this workaround
-		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
+		const unmatchedCountedUsers = await this.userRepo.findForImportUser(currentUser.school, query, options);
 
 		return unmatchedCountedUsers;
 	}
@@ -230,7 +233,7 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.isNbc();
+		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			useCentralLdap = false;
@@ -246,6 +249,7 @@ export class UserImportUc {
 		this.checkSchoolNotInMigration(school);
 		if (useWithUserLoginMigration) {
 			await this.checkSchoolMigrated(currentUser.school.id, school);
+			await this.checkMigrationActive(currentUser.school.id);
 		} else {
 			await this.checkNoExistingLdapBeforeStart(school);
 		}
@@ -284,6 +288,16 @@ export class UserImportUc {
 		}
 	}
 
+	private async checkMigrationActive(schoolId: EntityId): Promise<void> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
+		);
+
+		if (!userLoginMigration || userLoginMigration?.closedAt) {
+			throw new UserLoginMigrationNotActiveLoggableException(schoolId);
+		}
+	}
+
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
@@ -297,7 +311,7 @@ export class UserImportUc {
 
 		school.inMaintenanceSince = undefined;
 
-		const isMigrationRestartable: boolean = this.isNbc();
+		const isMigrationRestartable: boolean = this.userImportFeatures.useWithUserLoginMigration;
 		if (isMigrationRestartable) {
 			school.inUserMigration = undefined;
 		}
@@ -315,7 +329,7 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.isNbc();
+		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
 			await this.updateUserAndAccountWithUserLoginMigration(importUser);
@@ -393,9 +407,5 @@ export class UserImportUc {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
 		}
-	}
-
-	private isNbc(): boolean {
-		return this.userImportFeatures.instance === 'n21';
 	}
 }

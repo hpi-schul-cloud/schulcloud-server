@@ -1,4 +1,4 @@
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
 import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { BoardNode } from './boardnode.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
@@ -18,6 +18,7 @@ describe(BoardNode.name, () => {
 					title: 'column #1',
 					context: { type: BoardExternalReferenceType.Course, id: 'course1' },
 					isVisible: true,
+					layout: BoardLayout.COLUMNS,
 				});
 				column.title = 'hate to get useless sonar lint errors';
 			}).toThrowError();

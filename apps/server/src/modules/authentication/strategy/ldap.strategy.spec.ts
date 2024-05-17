@@ -9,9 +9,6 @@ import { RoleName } from '@shared/domain/interface';
 import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 
 import {
-	accountDoFactory,
-	defaultTestPassword,
-	defaultTestPasswordHash,
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
@@ -19,6 +16,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { accountDoFactory, defaultTestPassword, defaultTestPasswordHash } from '@src/modules/account/testing';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';

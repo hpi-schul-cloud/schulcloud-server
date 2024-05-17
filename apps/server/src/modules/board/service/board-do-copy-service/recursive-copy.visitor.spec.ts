@@ -2,8 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LinkElement } from '@shared/domain/domainobject';
+import { CollaborativeTextEditorElement, LinkElement } from '@shared/domain/domainobject';
 import {
+	collaborativeTextEditorElementFactory,
 	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -50,6 +51,10 @@ describe(RecursiveCopyVisitor.name, () => {
 		toolFeatures = module.get(ToolFeatures);
 
 		await setupEntities();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('visitLinkElementAsync', () => {
@@ -170,6 +175,57 @@ describe(RecursiveCopyVisitor.name, () => {
 					},
 				],
 			});
+		});
+	});
+
+	describe('visitCollaborativeTextEditorElementAsync', () => {
+		const setup = () => {
+			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+			const visitor = new RecursiveCopyVisitor(
+				createMock<SchoolSpecificFileCopyService>(),
+				contextExternalToolService,
+				toolFeatures
+			);
+			const nowMock = new Date(2020, 1, 1, 0, 0, 0);
+
+			jest.useFakeTimers();
+			jest.setSystemTime(nowMock);
+
+			return {
+				collaborativeTextEditorElement,
+				visitor,
+				nowMock,
+			};
+		};
+
+		it('should add status to the resultMap', async () => {
+			const { visitor, collaborativeTextEditorElement, nowMock } = setup();
+
+			await visitor.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
+
+			const status = visitor.resultMap.get(collaborativeTextEditorElement.id);
+			const expectedCopyEntity = expect.objectContaining({
+				id: expect.any(String),
+				createdAt: nowMock,
+				updatedAt: nowMock,
+			}) as CollaborativeTextEditorElement;
+
+			expect(status).toEqual<CopyStatus>({
+				copyEntity: expectedCopyEntity,
+				type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+				status: CopyStatusEnum.SUCCESS,
+			});
+		});
+
+		it('should add the element to the copyMap', async () => {
+			const { visitor, collaborativeTextEditorElement, nowMock } = setup();
+
+			await visitor.visitCollaborativeTextEditorElementAsync(collaborativeTextEditorElement);
+
+			const copyMapElement = visitor.copyMap.get(collaborativeTextEditorElement.id);
+			expect(copyMapElement?.id).toBeDefined();
+			expect(copyMapElement?.createdAt).toEqual(nowMock);
+			expect(copyMapElement?.updatedAt).toEqual(nowMock);
 		});
 	});
 });

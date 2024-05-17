@@ -156,6 +156,13 @@
       template: data-deletion-trigger-cronjob.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
+  - name: Data deletion trigger CronJob ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: data-deletion-trigger-cronjob-configmap.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: amqp files storage Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -204,7 +211,6 @@
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
 
-
   - name: admin api server deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -219,12 +225,19 @@
       template: admin-api-server-svc.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
+  - name: admin api server service monitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc-monitor.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: TlDraw server Secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-onepassword.yml.j2
-    when: 
+    when:
      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
      - WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
@@ -256,3 +269,32 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc-monitor.yml.j2
     when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: BoardCollaboration configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-configmap.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-deployment.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-service.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaboration ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: board-collaboration-ingress.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"

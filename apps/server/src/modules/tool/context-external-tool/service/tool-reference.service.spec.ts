@@ -12,8 +12,8 @@ import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
-import { ToolReferenceService } from './tool-reference.service';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
+import { ToolReferenceService } from './tool-reference.service';
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -118,10 +118,7 @@ describe('ToolReferenceService', () => {
 
 				await service.getToolReference(contextExternalToolId);
 
-				expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(
-					'/v3/tools/external-tools/{id}/logo',
-					externalTool
-				);
+				expect(externalToolLogoService.buildLogoUrl).toHaveBeenCalledWith(externalTool);
 			});
 
 			it('should return the tool reference', async () => {

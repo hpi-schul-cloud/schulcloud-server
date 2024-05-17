@@ -2,6 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -16,10 +17,11 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import {
+	BoardNodeType,
 	type BoardDoBuilder,
 	type BoardNode,
-	BoardNodeType,
 	type CardNode,
+	type CollaborativeTextEditorElementNode,
 	type ColumnBoardNode,
 	type ColumnNode,
 	type DrawingElementNode,
@@ -61,6 +63,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			context: boardNode.context,
 			isVisible: boardNode.isVisible ?? false,
+			layout: boardNode.layout,
 		});
 
 		return columnBoard;
@@ -89,6 +92,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.DRAWING_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 			BoardNodeType.EXTERNAL_TOOL,
+			BoardNodeType.COLLABORATIVE_TEXT_EDITOR,
 		]);
 
 		const elements = this.buildChildren<
@@ -204,6 +208,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 			contextExternalToolId: boardNode.contextExternalTool?.id,
+		});
+
+		return element;
+	}
+
+	buildCollaborativeTextEditorElement(boardNode: CollaborativeTextEditorElementNode): CollaborativeTextEditorElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: CollaborativeTextEditorElement = new CollaborativeTextEditorElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
 		});
 
 		return element;

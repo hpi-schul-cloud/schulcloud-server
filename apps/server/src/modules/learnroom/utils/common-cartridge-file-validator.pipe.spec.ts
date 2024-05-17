@@ -37,6 +37,26 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 	});
 
 	describe('transform', () => {
+		describe('when the file is valid', () => {
+			const setup = async () => {
+				const archive = new AdmZip();
+				const buffer = await readFile('./apps/server/src/modules/common-cartridge/testing/assets/v1.1.0/manifest.xml');
+
+				archive.addFile('imsmanifest.xml', buffer);
+				configServiceMock.getOrThrow.mockReturnValue(1000);
+
+				return {
+					file: { size: 1000, buffer: archive.toBuffer() } as unknown as Express.Multer.File,
+				};
+			};
+
+			it('should return the file', async () => {
+				const { file } = await setup();
+
+				expect(sut.transform(file)).toBe(file);
+			});
+		});
+
 		describe('when no file is provided', () => {
 			const setup = () => {
 				return { file: undefined as unknown as Express.Multer.File };
@@ -75,45 +95,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			it('should throw', () => {
 				const { file } = setup();
 
-				expect(() => sut.transform(file)).toThrow('Invalid or unsupported zip format. No END header found');
-			});
-		});
-
-		describe('when the file does not contain a manifest file', () => {
-			const setup = () => {
-				const buffer = new AdmZip().toBuffer();
-
-				configServiceMock.get.mockReturnValue(1000);
-
-				return {
-					file: { size: 1000, buffer } as unknown as Express.Multer.File,
-				};
-			};
-
-			it('should throw', () => {
-				const { file } = setup();
-
-				expect(() => sut.transform(file)).toThrow('No manifest file found in the archive');
-			});
-		});
-
-		describe('when the file is valid', () => {
-			const setup = async () => {
-				const buffer = await readFile(
-					'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
-				);
-
-				configServiceMock.getOrThrow.mockReturnValue(1000);
-
-				return {
-					file: { size: 1000, buffer } as unknown as Express.Multer.File,
-				};
-			};
-
-			it('should return the file', async () => {
-				const { file } = await setup();
-
-				expect(sut.transform(file)).toBe(file);
+				expect(() => sut.transform(file)).toThrow('File is not a zip archive');
 			});
 		});
 	});

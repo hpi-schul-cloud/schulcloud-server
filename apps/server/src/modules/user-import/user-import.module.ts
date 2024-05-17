@@ -24,7 +24,7 @@ import { UserImportConfigModule } from './user-import-config.module';
 		HttpModule,
 		UserModule,
 		OauthModule,
-		SchulconnexClientModule,
+		SchulconnexClientModule.registerAsync(),
 		UserLoginMigrationModule,
 	],
 	controllers: [ImportUserController],

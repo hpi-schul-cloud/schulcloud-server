@@ -55,7 +55,7 @@ describe(UserImportFetchUc.name, () => {
 		Object.assign<IUserImportFeatures, IUserImportFeatures>(userImportFeatures, {
 			userMigrationEnabled: true,
 			userMigrationSystemId: new ObjectId().toHexString(),
-			instance: 'n21',
+			useWithUserLoginMigration: true,
 		});
 	});
 

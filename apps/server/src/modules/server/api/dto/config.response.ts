@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerConfig } from '../..';
-import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
@@ -102,6 +102,9 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -109,6 +112,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
@@ -121,6 +127,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_TASK_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_USER_MIGRATION_ENABLED: boolean;
@@ -197,6 +206,12 @@ export class ConfigResponse {
 	@ApiProperty()
 	FEATURE_MEDIA_SHELF_ENABLED: boolean;
 
+	@ApiProperty()
+	BOARD_COLLABORATION_URI: string;
+
+	@ApiProperty()
+	FEATURE_NEW_LAYOUT_ENABLED: boolean;
+
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
@@ -215,13 +230,17 @@ export class ConfigResponse {
 		this.FEATURE_NEXBOARD_COPY_ENABLED = config.FEATURE_NEXBOARD_COPY_ENABLED;
 		this.FEATURE_COLUMN_BOARD_ENABLED = config.FEATURE_COLUMN_BOARD_ENABLED;
 		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED;
+		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
+			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
+		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
 		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
 		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
 		this.FEATURE_TASK_SHARE = config.FEATURE_TASK_SHARE;
+		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;
 		this.FEATURE_USER_MIGRATION_ENABLED = config.userMigrationEnabled;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
 		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
@@ -260,5 +279,7 @@ export class ConfigResponse {
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.enabled;
 		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED;
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
+		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
+		this.FEATURE_NEW_LAYOUT_ENABLED = config.FEATURE_NEW_LAYOUT_ENABLED;
 	}
 }

@@ -8,6 +8,7 @@ import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -57,6 +58,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			updatedAt: new Date(),
 			children: this.getCopiesForChildrenOf(original),
 			isVisible: false,
+			layout: original.layout,
 		});
 
 		this.resultMap.set(original.id, {
@@ -146,7 +148,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 		});
 		this.copyMap.set(original.id, copy);
 
@@ -247,9 +249,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
-		let status: CopyStatusEnum = CopyStatusEnum.SUCCESS;
-
-		const copy = new ExternalToolElement({
+		const boardElementCopy: ExternalToolElement = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
 			children: [],
@@ -257,27 +257,48 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			updatedAt: new Date(),
 		});
 
+		let status: CopyStatusEnum;
 		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
-			const tool: ContextExternalTool | null = await this.contextExternalToolService.findById(
+			const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
 				original.contextExternalToolId
 			);
 
-			if (tool) {
-				const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
-					tool,
-					copy.id
-				);
+			if (linkedTool) {
+				const contextExternalToolCopy: ContextExternalTool =
+					await this.contextExternalToolService.copyContextExternalTool(linkedTool, boardElementCopy.id);
 
-				copy.contextExternalToolId = copiedTool.id;
+				boardElementCopy.contextExternalToolId = contextExternalToolCopy.id;
+
+				status = CopyStatusEnum.SUCCESS;
 			} else {
 				status = CopyStatusEnum.FAIL;
 			}
+		} else {
+			status = CopyStatusEnum.SUCCESS;
 		}
 
 		this.resultMap.set(original.id, {
-			copyEntity: copy,
+			copyEntity: boardElementCopy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 			status,
+		});
+		this.copyMap.set(original.id, boardElementCopy);
+
+		return Promise.resolve();
+	}
+
+	async visitCollaborativeTextEditorElementAsync(original: CollaborativeTextEditorElement): Promise<void> {
+		const now = new Date();
+		const copy = new CollaborativeTextEditorElement({
+			id: new ObjectId().toHexString(),
+			createdAt: now,
+			updatedAt: now,
+		});
+
+		this.resultMap.set(original.id, {
+			copyEntity: copy,
+			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
 		});
 		this.copyMap.set(original.id, copy);
 

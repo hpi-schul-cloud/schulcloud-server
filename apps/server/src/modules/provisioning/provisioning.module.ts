@@ -8,6 +8,8 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
+import { UserLicenseModule } from '../user-license';
 import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
 import {
@@ -19,6 +21,7 @@ import {
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
+	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
@@ -35,6 +38,8 @@ import {
 		LoggerModule,
 		GroupModule,
 		LearnroomModule,
+		SchulconnexClientModule.registerAsync(),
+		UserLicenseModule,
 	],
 	providers: [
 		ProvisioningService,
@@ -43,6 +48,7 @@ import {
 		SchulconnexUserProvisioningService,
 		SchulconnexGroupProvisioningService,
 		SchulconnexCourseSyncService,
+		SchulconnexLicenseProvisioningService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,

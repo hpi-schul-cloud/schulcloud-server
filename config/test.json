@@ -86,12 +86,19 @@
 	},
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
-		"MODIFICATION_THRESHOLD_MS": 60000
+		"MODIFICATION_THRESHOLD_MS": 60000,
+		"MAX_AMOUNT_OF_DELETIONREQUESTS_DO_CONCURENTLY": 10,
+		"DELETION_DELAY_MILLISECONDS": 10000
 	},
 	"EXIT_ON_ERROR": false,
 	"TEACHER_STUDENT_VISIBILITY": {
 		"IS_CONFIGURABLE": false,
 		"IS_ENABLED_BY_DEFAULT": true,
 		"IS_VISIBLE": true
+	},
+	"ETHERPAD_URI": "http://localhost:9001/api/1/",
+	"ETHERPAD_API_KEY": "381d67e6347d235ac9446",
+	"ETHERPAD": {
+		"PAD_URI": "http://localhost:9001/p"
 	}
 }

@@ -4,6 +4,7 @@ import { contextExternalToolEntityFactory } from '@modules/tool/context-external
 import {
 	BoardNodeType,
 	CardNode,
+	CollaborativeTextEditorElementNode,
 	ColumnBoardNode,
 	ColumnNode,
 	DrawingElementNode,
@@ -19,6 +20,7 @@ import {
 } from '@shared/domain/entity';
 import {
 	cardFactory,
+	collaborativeTextEditorElementFactory,
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
@@ -168,6 +170,21 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: linkElement.id,
 				type: BoardNodeType.LINK_ELEMENT,
 				url: linkElement.url,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a collaborative text editor element composite', () => {
+		it('should create or update the node', () => {
+			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitCollaborativeTextEditorElement(collaborativeTextEditorElement);
+
+			const expectedNode: Partial<CollaborativeTextEditorElementNode> = {
+				id: collaborativeTextEditorElement.id,
+				type: BoardNodeType.COLLABORATIVE_TEXT_EDITOR,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
@@ -8,6 +9,7 @@ import type {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
 	DrawingElement,
@@ -29,7 +31,8 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		private readonly em: EntityManager,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly drawingElementAdapterService: DrawingElementAdapterService
+		private readonly drawingElementAdapterService: DrawingElementAdapterService,
+		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
 	) {}
 
 	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
@@ -98,6 +101,16 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);
+	}
+
+	async visitCollaborativeTextEditorElementAsync(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise<void> {
+		await this.collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId(
+			collaborativeTextEditorElement.id
+		);
+		this.deleteNode(collaborativeTextEditorElement);
+		await this.visitChildrenAsync(collaborativeTextEditorElement);
 	}
 
 	async visitMediaBoardAsync(mediaBoard: MediaBoard): Promise<void> {
