@@ -1,0 +1,44 @@
+/* istanbul ignore file */
+/* eslint-disable no-console */
+import { NestFactory } from '@nestjs/core';
+import { Logger } from '@src/core/logger';
+import { install as sourceMapInstall } from 'source-map-support';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { CommonCartridgeApiModule } from '@src/modules/common-cartridge/common-cartridge-api.module';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from '@src/apps/helpers/prometheus-metrics';
+import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
+import express from 'express';
+
+async function bootstrap() {
+	sourceMapInstall();
+
+	const nestExpress = express();
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(CommonCartridgeApiModule, nestExpressAdapter);
+	const logger = await nestApp.resolve(Logger);
+
+	nestApp.useLogger(await nestApp.resolve(Logger));
+	await nestApp.init();
+
+	const rootExpress = express();
+
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+
+	const basePath = '/api/v3';
+	const port = 3350;
+
+	rootExpress.use(basePath, nestExpress);
+	rootExpress.listen(port, () => {
+		logger.info(
+			new AppStartLoggable({
+				appName: 'course export & import service',
+				port,
+			})
+		);
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
+	});
+}
+void bootstrap();
