@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CustomParameterEntryParam } from './custom-parameter-entry.params';
 
 export class SchoolExternalToolPostParams {
@@ -28,8 +28,4 @@ export class SchoolExternalToolPostParams {
 	})
 	@IsBoolean()
 	isDeactivated!: boolean;
-
-	@ApiProperty()
-	@IsNumber()
-	version!: number;
 }

@@ -1,4 +1,4 @@
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '@modules/tool/external-tool/testing';
 import { CustomParameter } from '../custom-parameter.do';
 import { ToolParameterValueRegexLoggableException } from './tool-parameter-value-regex.loggable-exception';
 

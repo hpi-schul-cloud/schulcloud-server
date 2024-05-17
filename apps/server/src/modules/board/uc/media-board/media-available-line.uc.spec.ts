@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { MediaUserLicenseService } from '@modules/user-license/service';
 import { ConfigService } from '@nestjs/config';
@@ -18,15 +20,15 @@ import {
 import { User } from '@shared/domain/entity';
 import {
 	boardDoAuthorizableFactory,
-	externalToolFactory,
 	mediaAvailableLineElementFactory,
 	mediaAvailableLineFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
-	schoolExternalToolFactory,
 	setupEntities,
+	userFactory as userEntityFactory,
 	userFactory,
 } from '@shared/testing';
+import { MediaBoardColors } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 import { MediaAvailableLineUc } from './media-available-line.uc';
@@ -206,7 +208,9 @@ describe(MediaAvailableLineUc.name, () => {
 
 				const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-				expect(line).toEqual({
+				expect(line).toEqual<MediaAvailableLine>({
+					collapsed: mediaBoard.mediaAvailableLineCollapsed,
+					backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 					elements: [
 						{
 							schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
@@ -276,7 +280,9 @@ describe(MediaAvailableLineUc.name, () => {
 
 					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-					expect(line).toEqual({
+					expect(line).toEqual<MediaAvailableLine>({
+						collapsed: mediaBoard.mediaAvailableLineCollapsed,
+						backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 						elements: [
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
@@ -349,7 +355,9 @@ describe(MediaAvailableLineUc.name, () => {
 
 					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-					expect(line).toEqual({
+					expect(line).toEqual<MediaAvailableLine>({
+						collapsed: mediaBoard.mediaAvailableLineCollapsed,
+						backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 						elements: [
 							{
 								schoolExternalToolId: mediaAvailableLineElement.schoolExternalToolId,
@@ -398,7 +406,9 @@ describe(MediaAvailableLineUc.name, () => {
 
 					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-					expect(line).toEqual({
+					expect(line).toEqual<MediaAvailableLine>({
+						collapsed: mediaBoard.mediaAvailableLineCollapsed,
+						backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 						elements: [],
 					});
 				});
@@ -422,6 +432,132 @@ describe(MediaAvailableLineUc.name, () => {
 				const { userId, mediaBoardId } = setup();
 
 				await expect(uc.getMediaAvailableLine(userId, mediaBoardId)).rejects.toThrowError(
+					FeatureDisabledLoggableException
+				);
+			});
+		});
+	});
+
+	describe('updateAvailableLineColor', () => {
+		describe('when changes the color of the available line', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+
+				return {
+					user,
+					mediaBoard,
+					boardDoAuthorizable,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaBoard, boardDoAuthorizable } = setup();
+
+				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					boardDoAuthorizable,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should collapse the line', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
+
+				expect(mediaBoardService.updateAvailableLineColor).toHaveBeenCalledWith(mediaBoard, MediaBoardColors.RED);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaBoard,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaBoard } = setup();
+
+				await expect(uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED)).rejects.toThrow(
+					FeatureDisabledLoggableException
+				);
+			});
+		});
+	});
+
+	describe('collapseAvailableLine', () => {
+		describe('when changing the visibility of the available line', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+
+				return {
+					user,
+					mediaBoard,
+					boardDoAuthorizable,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaBoard, boardDoAuthorizable } = setup();
+
+				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					boardDoAuthorizable,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should collapse the line', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
+
+				expect(mediaBoardService.collapseAvailableLine).toHaveBeenCalledWith(mediaBoard, true);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaBoard,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaBoard } = setup();
+
+				await expect(uc.collapseAvailableLine(user.id, mediaBoard.id, true)).rejects.toThrow(
 					FeatureDisabledLoggableException
 				);
 			});

@@ -18,9 +18,6 @@ export class SchoolExternalToolResponse {
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[];
 
-	@ApiProperty()
-	toolVersion: number;
-
 	@ApiProperty({ type: SchoolExternalToolConfigurationStatusResponse })
 	status: SchoolExternalToolConfigurationStatusResponse;
 
@@ -33,7 +30,6 @@ export class SchoolExternalToolResponse {
 		this.toolId = response.toolId;
 		this.schoolId = response.schoolId;
 		this.parameters = response.parameters;
-		this.toolVersion = response.toolVersion;
 		this.status = response.status;
 		this.logoUrl = response.logoUrl;
 	}

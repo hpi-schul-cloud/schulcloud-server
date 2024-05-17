@@ -3,12 +3,13 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { contextExternalToolFactory, externalToolFactory, toolConfigurationStatusFactory } from '@shared/testing';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ExternalTool } from '../../external-tool/domain';
+import { externalToolFactory, toolConfigurationStatusFactory } from '../../external-tool/testing';
 import { ContextExternalTool, ToolReference } from '../domain';
 import { ContextExternalToolService, ToolReferenceService } from '../service';
+import { contextExternalToolFactory } from '../testing';
 import { ToolReferenceUc } from './tool-reference.uc';
 
 describe('ToolReferenceUc', () => {
@@ -62,7 +63,7 @@ describe('ToolReferenceUc', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 				const toolReference: ToolReference = new ToolReference({
 					logoUrl: externalTool.logoUrl,
-					contextToolId: contextExternalTool.id as string,
+					contextToolId: contextExternalTool.id,
 					displayName: contextExternalTool.displayName as string,
 					status: toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: false,
@@ -151,7 +152,7 @@ describe('ToolReferenceUc', () => {
 				);
 				const toolReference: ToolReference = new ToolReference({
 					logoUrl: externalTool.logoUrl,
-					contextToolId: contextExternalTool.id as string,
+					contextToolId: contextExternalTool.id,
 					displayName: contextExternalTool.displayName as string,
 					status: toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: false,

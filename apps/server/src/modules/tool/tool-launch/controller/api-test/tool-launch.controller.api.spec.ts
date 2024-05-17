@@ -7,16 +7,12 @@ import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { Course, MediaBoardNode, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	basicToolConfigFactory,
-	contextExternalToolFactory,
 	courseFactory,
-	customParameterFactory,
-	mediaBoardNodeFactory,
 	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
+	mediaBoardNodeFactory,
 } from '@shared/testing';
-import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { Response } from 'supertest';
 import {
 	CustomParameterLocation,
@@ -26,11 +22,18 @@ import {
 	ToolContextType,
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
+import { contextExternalToolEntityFactory, contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalToolEntity } from '../../../external-tool/entity';
-import { externalToolEntityFactory } from '../../../external-tool/testing';
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolEntityFactory,
+} from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import {
+	schoolExternalToolConfigurationStatusEntityFactory,
+	schoolExternalToolEntityFactory,
+} from '../../../school-external-tool/testing';
 import { LaunchRequestMethod } from '../../types';
 import { ContextExternalToolBodyParams, ContextExternalToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
 
@@ -75,7 +78,6 @@ describe('ToolLaunchController (API)', () => {
 
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
-					version: 0,
 					parameters: [
 						customParameterFactory.build({
 							name: 'schoolMockParameter',
@@ -143,18 +145,15 @@ describe('ToolLaunchController (API)', () => {
 
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
-					version: 1,
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
-					toolVersion: 0,
 				});
 				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
-					toolVersion: 0,
 				});
 
 				const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
@@ -195,19 +194,16 @@ describe('ToolLaunchController (API)', () => {
 
 					const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
-						version: 1,
 						isDeactivated: true,
 					});
 					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 						tool: externalToolEntity,
 						school,
-						toolVersion: 0,
 					});
 					const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 						schoolTool: schoolExternalToolEntity,
 						contextId: course.id,
 						contextType: ContextExternalToolType.COURSE,
-						toolVersion: 0,
 					});
 
 					const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
@@ -247,12 +243,10 @@ describe('ToolLaunchController (API)', () => {
 
 					const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
-						version: 1,
 					});
 					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 						tool: externalToolEntity,
 						school,
-						toolVersion: 0,
 						status: schoolExternalToolConfigurationStatusEntityFactory.build({
 							isDeactivated: true,
 						}),
@@ -261,7 +255,6 @@ describe('ToolLaunchController (API)', () => {
 						schoolTool: schoolExternalToolEntity,
 						contextId: course.id,
 						contextType: ContextExternalToolType.COURSE,
-						toolVersion: 0,
 					});
 
 					const params: ContextExternalToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
@@ -347,7 +340,7 @@ describe('ToolLaunchController (API)', () => {
 			const setup = () => {
 				const contextExternalTool = contextExternalToolFactory.buildWithId();
 				const params: ContextExternalToolLaunchParams = {
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 				};
 
 				return { params };
