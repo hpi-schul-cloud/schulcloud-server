@@ -58,7 +58,7 @@ spec:
         resources:
           limits:
             cpu: {{ COMMON_CARTRIDGE_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS|default("2GI", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS|default("2Gi", true) }}
           requests:
             cpu: {{ COMMON_CARTRIDGE_CPU_REQUESTS|default("100m", true) }}
             memory: {{ COMMON_CARTRIDGE_MEMORY_REQUESTS|default("150Mi", true) }}
