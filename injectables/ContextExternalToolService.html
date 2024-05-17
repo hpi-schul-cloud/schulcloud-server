@@ -602,8 +602,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -683,8 +683,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:122</a></div>
                         </td>
                     </tr>
 
@@ -1110,9 +1110,9 @@ import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;
 import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
 import {
 	ContextExternalTool,
+	ContextExternalToolLaunchable,
 	ContextRef,
 	RestrictedContextMismatchLoggableException,
-	ContextExternalToolLaunchable,
 } from &#x27;../domain&#x27;;
 import { ContextExternalToolQuery } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 
@@ -1188,11 +1188,8 @@ export class ContextExternalToolService {
 		contextCopyId: EntityId
 	): Promise&lt;ContextExternalTool&gt; {
 		const copy &#x3D; new ContextExternalTool({
+			...contextExternalTool.getProps(),
 			id: new ObjectId().toHexString(),
-			schoolToolRef: contextExternalTool.schoolToolRef,
-			contextRef: contextExternalTool.contextRef,
-			displayName: contextExternalTool.displayName,
-			parameters: contextExternalTool.parameters,
 		});
 
 		copy.contextRef.id &#x3D; contextCopyId;
@@ -1213,11 +1210,11 @@ export class ContextExternalToolService {
 
 		externalTool.parameters?.forEach((parameter: CustomParameter): void &#x3D;&gt; {
 			if (parameter.isProtected) {
-				this.deleteProtectedValues(contextExternalTool, parameter.name);
+				this.deleteProtectedValues(copy, parameter.name);
 			}
 		});
 
-		const copiedTool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.save(contextExternalTool);
+		const copiedTool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.save(copy);
 
 		return copiedTool;
 	}
