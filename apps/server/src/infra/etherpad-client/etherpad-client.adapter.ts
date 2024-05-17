@@ -130,6 +130,7 @@ export class EtherpadClientAdapter {
 
 		const response = await this.tryListSessionsOfAuthor(authorId);
 		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		console.log('etherpadSessions', etherpadSessions);
 		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
 		if (sessions) {
@@ -150,13 +151,9 @@ export class EtherpadClientAdapter {
 	}
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
-		console.log('authorId', authorId);
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		console.log('response', response);
 		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
-		console.log('etherpadSessions', etherpadSessions);
 		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
-		console.log('sessions', sessions);
 
 		const sessionIds = sessions.map((session) => session.id);
 
@@ -164,9 +161,10 @@ export class EtherpadClientAdapter {
 	}
 
 	private async tryListSessionsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2006>> {
+		console.log('authorId', authorId);
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
-
+			console.log('response in tryListSessionsOfAuthor', response);
 			return response;
 		} catch (error) {
 			throw EtherpadResponseMapper.mapResponseToException(EtherpadErrorType.CONNECTION_ERROR, { authorId }, error);
