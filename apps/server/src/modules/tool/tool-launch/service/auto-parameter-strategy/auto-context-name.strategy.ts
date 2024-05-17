@@ -6,7 +6,7 @@ import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ParameterTypeNotImplementedLoggableException } from '../../error';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
@@ -21,7 +21,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 
 	async getValue(
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {
 		switch (contextExternalTool.contextRef.type) {
 			case ToolContextType.COURSE: {
