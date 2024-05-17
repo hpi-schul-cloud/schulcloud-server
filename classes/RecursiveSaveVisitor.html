@@ -1363,8 +1363,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="277"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:277</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="282"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:282</a></div>
                         </td>
                     </tr>
 
@@ -1430,8 +1430,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="264"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:264</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="267"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:267</a></div>
                         </td>
                     </tr>
 
@@ -1946,6 +1946,9 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 			context: mediaBoard.context,
+			layout: mediaBoard.layout,
+			mediaAvailableLineCollapsed: mediaBoard.mediaAvailableLineCollapsed,
+			mediaAvailableLineBackgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 		});
 
 		this.saveRecursive(boardNode, mediaBoard);
@@ -1959,6 +1962,8 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 			title: mediaLine.title,
+			backgroundColor: mediaLine.backgroundColor,
+			collapsed: mediaLine.collapsed,
 		});
 
 		this.saveRecursive(boardNode, mediaLine);

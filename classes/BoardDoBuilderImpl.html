@@ -1118,8 +1118,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="292"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:292</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="297"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:297</a></div>
                         </td>
                     </tr>
 
@@ -1185,8 +1185,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="276"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:276</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="279"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:279</a></div>
                         </td>
                     </tr>
 
@@ -1681,9 +1681,9 @@ import {
 	SubmissionItem,
 } from &#x27;@shared/domain/domainobject&#x27;;
 import {
-	BoardNodeType,
 	type BoardDoBuilder,
 	type BoardNode,
+	BoardNodeType,
 	type CardNode,
 	type CollaborativeTextEditorElementNode,
 	type ColumnBoardNode,
@@ -1932,6 +1932,9 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: lines,
 			context: boardNode.context,
+			layout: boardNode.layout,
+			mediaAvailableLineBackgroundColor: boardNode.mediaAvailableLineBackgroundColor,
+			mediaAvailableLineCollapsed: boardNode.mediaAvailableLineCollapsed,
 		});
 
 		return mediaBoard;
@@ -1948,6 +1951,8 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: elements,
 			title: boardNode.title,
+			backgroundColor: boardNode.backgroundColor,
+			collapsed: boardNode.collapsed,
 		});
 
 		return mediaLine;

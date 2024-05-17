@@ -293,7 +293,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createMediaAvailableLine(availableExternalTools: [])</code>
+                    <code>createMediaAvailableLine(mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>, availableExternalTools: [])</code>
                 </td>
             </tr>
 
@@ -321,6 +321,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                                <td>mediaBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                         <tr>
                                                 <td>availableExternalTools</td>
                                             <td>
@@ -369,8 +381,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="133"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:133</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -972,8 +984,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="149"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:149</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:156</a></div>
                         </td>
                     </tr>
 
@@ -1158,13 +1170,20 @@ export class MediaAvailableLineService {
 		return matchedTuples;
 	}
 
-	public createMediaAvailableLine(availableExternalTools: [ExternalTool, SchoolExternalTool][]): MediaAvailableLine {
+	public createMediaAvailableLine(
+		mediaBoard: MediaBoard,
+		availableExternalTools: [ExternalTool, SchoolExternalTool][]
+	): MediaAvailableLine {
 		const lineElements: MediaAvailableLineElement[] &#x3D; availableExternalTools.map(
 			([externalTool, schoolExternalTool]: [ExternalTool, SchoolExternalTool]) &#x3D;&gt;
 				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
 		);
 
-		const line: MediaAvailableLine &#x3D; new MediaAvailableLine({ elements: lineElements });
+		const line: MediaAvailableLine &#x3D; new MediaAvailableLine({
+			elements: lineElements,
+			backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+			collapsed: mediaBoard.mediaAvailableLineCollapsed,
+		});
 
 		return line;
 	}

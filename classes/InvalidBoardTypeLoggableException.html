@@ -93,7 +93,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >MediaBoardResponseMapper</li>
+  <li class="breadcrumb-item" >InvalidBoardTypeLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -117,12 +117,24 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/controller/media-board/mapper/media-board-response.mapper.ts</code>
+            <code>apps/server/src/modules/board/loggable/media-board/invalid-board-type.loggable-exception.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>BadRequestException</code>
+            </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -139,8 +151,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapToResponse" >mapToResponse</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -154,6 +165,65 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(expectedType, mediaBoardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/board/loggable/media-board/invalid-board-type.loggable-exception.ts:6</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>expectedType</td>
+                                                  
+                                                        <td>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaBoardId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
             <section data-compodoc="block-methods">
@@ -165,26 +235,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToResponse"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapToResponse</b></span>
-                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(board: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/mapper/media-board-response.mapper.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/board/loggable/media-board/invalid-board-type.loggable-exception.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -192,40 +260,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>board</td>
-                                            <td>
-                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/MediaBoardResponse.html" target="_self" >MediaBoardResponse</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Message.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -240,28 +278,29 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { type AnyBoardDo, isMediaLine, type MediaBoard, type MediaLine } from &#x27;@shared/domain/domainobject&#x27;;
-import { TimestampsResponse } from &#x27;../../dto&#x27;;
-import { MediaBoardResponse, MediaLineResponse } from &#x27;../dto&#x27;;
-import { MediaLineResponseMapper } from &#x27;./media-line-response.mapper&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException } from &#x27;@nestjs/common&#x27;;
+import { ColumnBoard, MediaBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class MediaBoardResponseMapper {
-	static mapToResponse(board: MediaBoard): MediaBoardResponse {
-		const lines: MediaLineResponse[] &#x3D; board.children
-			.filter((line: AnyBoardDo): line is MediaLine &#x3D;&gt; isMediaLine(line))
-			.map((line: MediaLine) &#x3D;&gt; MediaLineResponseMapper.mapToResponse(line));
+export class InvalidBoardTypeLoggableException extends BadRequestException implements Loggable {
+	constructor(
+		private readonly expectedType: new (...args: never[]) &#x3D;&gt; MediaBoard | ColumnBoard,
+		private readonly mediaBoardId: EntityId
+	) {
+		super();
+	}
 
-		const boardResponse: MediaBoardResponse &#x3D; new MediaBoardResponse({
-			id: board.id,
-			lines,
-			timestamps: new TimestampsResponse({
-				lastUpdatedAt: board.updatedAt,
-				createdAt: board.createdAt,
-			}),
-			layout: board.layout,
-		});
-
-		return boardResponse;
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			type: &#x27;INVALID_BOARD_TYPE&#x27;,
+			message: &#x27;Board does not have the expected type&#x27;,
+			stack: this.stack,
+			data: {
+				mediaBoardId: this.mediaBoardId,
+				expectedType: this.expectedType.name,
+			},
+		};
 	}
 }
 </code></pre>
@@ -302,7 +341,7 @@ export class MediaBoardResponseMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'MediaBoardResponseMapper.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'InvalidBoardTypeLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -96,7 +96,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  MediaBoardProps</li>
+  MediaBoardNodeProps</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -120,7 +120,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts</code>
+            <code>apps/server/src/shared/domain/entity/boardnode/media-board/media-board-node.entity.ts</code>
         </p>
 
 
@@ -129,7 +129,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/BoardCompositeProps.html" target="_self" >BoardCompositeProps</a></code>
+                            <code><a href="../interfaces/BoardNodeProps.html" target="_self" >BoardNodeProps</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -316,56 +316,64 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaBoardColors, MediaBoardLayoutType } from &#x27;@modules/board/domain&#x27;;
-import { BoardComposite, BoardCompositeProps } from &#x27;../board-composite.do&#x27;;
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from &#x27;../types&#x27;;
-import { MediaLine } from &#x27;./media-line.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum, Index, Property } from &#x27;@mikro-orm/core&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { MediaBoardColors, MediaBoardLayoutType } from &#x27;@modules/board/domain&#x27;;
+import {
+	type AnyBoardDo,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	type MediaBoard,
+} from &#x27;../../../domainobject&#x27;;
+import { BoardNode, BoardNodeProps } from &#x27;../boardnode.entity&#x27;;
+import { type BoardDoBuilder, BoardNodeType } from &#x27;../types&#x27;;
 
-export class MediaBoard extends BoardComposite&lt;MediaBoardProps&gt; {
+// TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
+@Entity({ discriminatorValue: BoardNodeType.MEDIA_BOARD })
+@Index({ properties: [&#x27;_contextId&#x27;] })
+@Index({ properties: [&#x27;_contextType&#x27;] })
+export class MediaBoardNode extends BoardNode {
+	constructor(props: MediaBoardNodeProps) {
+		super(props);
+		this.type &#x3D; BoardNodeType.MEDIA_BOARD;
+
+		this._contextType &#x3D; props.context.type;
+		this._contextId &#x3D; new ObjectId(props.context.id);
+		this.layout &#x3D; props.layout;
+		this.mediaAvailableLineCollapsed &#x3D; props.mediaAvailableLineCollapsed;
+		this.mediaAvailableLineBackgroundColor &#x3D; props.mediaAvailableLineBackgroundColor;
+	}
+
+	@Property({ fieldName: &#x27;contextType&#x27; })
+	_contextType: BoardExternalReferenceType;
+
+	@Property({ fieldName: &#x27;context&#x27; })
+	_contextId: ObjectId;
+
+	@Property()
+	layout: MediaBoardLayoutType;
+
+	@Enum()
+	mediaAvailableLineBackgroundColor: MediaBoardColors;
+
+	@Property()
+	mediaAvailableLineCollapsed: boolean;
+
 	get context(): BoardExternalReference {
-		return this.props.context;
+		return {
+			type: this._contextType,
+			id: this._contextId.toHexString(),
+		};
 	}
 
-	get layout(): MediaBoardLayoutType {
-		return this.props.layout;
-	}
+	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
+		const domainObject: MediaBoard &#x3D; builder.buildMediaBoard(this);
 
-	set layout(layout: MediaBoardLayoutType) {
-		this.props.layout &#x3D; layout;
-	}
-
-	get mediaAvailableLineBackgroundColor(): MediaBoardColors {
-		return this.props.mediaAvailableLineBackgroundColor;
-	}
-
-	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: MediaBoardColors) {
-		this.props.mediaAvailableLineBackgroundColor &#x3D; mediaAvailableLineBackgroundColor;
-	}
-
-	get mediaAvailableLineCollapsed(): boolean {
-		return this.props.mediaAvailableLineCollapsed;
-	}
-
-	set mediaAvailableLineCollapsed(collapsed: boolean) {
-		this.props.mediaAvailableLineCollapsed &#x3D; collapsed;
-	}
-
-	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed: boolean &#x3D; domainObject instanceof MediaLine;
-
-		return allowed;
-	}
-
-	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitMediaBoard(this);
-	}
-
-	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
-		await visitor.visitMediaBoardAsync(this);
+		return domainObject;
 	}
 }
 
-export interface MediaBoardProps extends BoardCompositeProps {
+export interface MediaBoardNodeProps extends BoardNodeProps {
 	context: BoardExternalReference;
 	layout: MediaBoardLayoutType;
 	mediaAvailableLineBackgroundColor: MediaBoardColors;
@@ -408,7 +416,7 @@ export interface MediaBoardProps extends BoardCompositeProps {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'MediaBoardProps.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'MediaBoardNodeProps.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

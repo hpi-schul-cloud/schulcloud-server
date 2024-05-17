@@ -93,7 +93,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >MediaBoardResponseMapper</li>
+  <li class="breadcrumb-item" >LayoutBodyParams</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/controller/media-board/mapper/media-board-response.mapper.ts</code>
+            <code>apps/server/src/modules/board/controller/media-board/dto/layout.body.params.ts</code>
         </p>
 
 
@@ -129,18 +129,18 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <h6><b>Properties</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapToResponse" >mapToResponse</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#layout" >layout</a>
                             </li>
                         </ul>
                     </td>
@@ -150,87 +150,57 @@
 
 
 
+
         </tbody>
     </table>
 </section>
 
 
-
-            <section data-compodoc="block-methods">
+            <section data-compodoc="block-properties">
     
-    <h3 id="methods">
-        Methods
+    <h3 id="inputs">
+        Properties
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToResponse"></a>
+                    <a name="layout"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapToResponse</b></span>
-                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>layout</b></span>
+                        <a href="#layout"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(board: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>)</code>
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#MediaBoardLayoutType" target="_self" >MediaBoardLayoutType</a></code>
 
-
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsEnum(MediaBoardLayoutType)<br />@ApiProperty({enum: MediaBoardLayoutType, enumName: &#x27;MediaBoardLayoutType&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/mapper/media-board-response.mapper.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/controller/media-board/dto/layout.body.params.ts:8</a></div>
                         </td>
                     </tr>
 
 
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>board</td>
-                                            <td>
-                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/MediaBoardResponse.html" target="_self" >MediaBoardResponse</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
         </tbody>
     </table>
 </section>
+
+
 
 
 
@@ -240,29 +210,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { type AnyBoardDo, isMediaLine, type MediaBoard, type MediaLine } from &#x27;@shared/domain/domainobject&#x27;;
-import { TimestampsResponse } from &#x27;../../dto&#x27;;
-import { MediaBoardResponse, MediaLineResponse } from &#x27;../dto&#x27;;
-import { MediaLineResponseMapper } from &#x27;./media-line-response.mapper&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsEnum } from &#x27;class-validator&#x27;;
+import { MediaBoardLayoutType } from &#x27;../../../domain&#x27;;
 
-export class MediaBoardResponseMapper {
-	static mapToResponse(board: MediaBoard): MediaBoardResponse {
-		const lines: MediaLineResponse[] &#x3D; board.children
-			.filter((line: AnyBoardDo): line is MediaLine &#x3D;&gt; isMediaLine(line))
-			.map((line: MediaLine) &#x3D;&gt; MediaLineResponseMapper.mapToResponse(line));
-
-		const boardResponse: MediaBoardResponse &#x3D; new MediaBoardResponse({
-			id: board.id,
-			lines,
-			timestamps: new TimestampsResponse({
-				lastUpdatedAt: board.updatedAt,
-				createdAt: board.createdAt,
-			}),
-			layout: board.layout,
-		});
-
-		return boardResponse;
-	}
+export class LayoutBodyParams {
+	@IsEnum(MediaBoardLayoutType)
+	@ApiProperty({ enum: MediaBoardLayoutType, enumName: &#x27;MediaBoardLayoutType&#x27; })
+	layout!: MediaBoardLayoutType;
 }
 </code></pre>
     </div>
@@ -302,7 +257,7 @@ export class MediaBoardResponseMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'MediaBoardResponseMapper.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'LayoutBodyParams.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

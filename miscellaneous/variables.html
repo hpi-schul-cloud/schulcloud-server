@@ -14369,6 +14369,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>MediaAvailableLineFactory.define(MediaAvailableLine, () &#x3D;&gt; {
 	return {
 		elements: [],
+		backgroundColor: MediaBoardColors.TRANSPARENT,
+		collapsed: false,
 	};
 })</code>
                     </td>
@@ -14403,6 +14405,9 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			type: BoardExternalReferenceType.User,
 			id: new ObjectId().toHexString(),
 		},
+		layout: MediaBoardLayoutType.LIST,
+		mediaAvailableLineCollapsed: false,
+		mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 	};
 })</code>
                     </td>
@@ -14427,12 +14432,15 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;MediaBoardNode, RootBoardNodeProps&gt;(MediaBoardNode, () &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaBoardNode, MediaBoardNodeProps&gt;(MediaBoardNode, () &#x3D;&gt; {
 	return {
 		context: {
 			type: BoardExternalReferenceType.User,
 			id: new ObjectId().toHexString(),
 		},
+		mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
+		mediaAvailableLineCollapsed: false,
+		layout: MediaBoardLayoutType.LIST,
 	};
 })</code>
                     </td>
@@ -14528,6 +14536,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		title: &#x60;Line ${sequence}&#x60;,
+		backgroundColor: MediaBoardColors.TRANSPARENT,
+		collapsed: false,
 	};
 })</code>
                     </td>
@@ -14557,6 +14567,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	({ sequence }) &#x3D;&gt; {
 		return {
 			title: &#x60;Line ${sequence}&#x60;,
+			backgroundColor: MediaBoardColors.TRANSPARENT,
+			collapsed: false,
 		};
 	}
 )</code>

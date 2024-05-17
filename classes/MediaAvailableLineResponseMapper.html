@@ -189,8 +189,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/mapper/media-available-line-response.mapper.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/mapper/media-available-line-response.mapper.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -322,6 +322,8 @@ export class MediaAvailableLineResponseMapper {
 	static mapToResponse(mediaAvailableLine: MediaAvailableLine): MediaAvailableLineResponse {
 		const result &#x3D; new MediaAvailableLineResponse({
 			elements: this.mapMediaAvailableLineElementToResponse(mediaAvailableLine.elements),
+			backgroundColor: mediaAvailableLine.backgroundColor,
+			collapsed: mediaAvailableLine.collapsed,
 		});
 
 		return result;

@@ -147,6 +147,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getMediaBoardForUser" >getMediaBoardForUser</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setLayout" >setLayout</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -170,7 +175,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -283,8 +288,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -405,8 +410,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -452,6 +457,100 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setLayout"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>setLayout</b></span>
+                        <a href="#setLayout"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setLayout(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, layout: <a href="../undefineds/MediaBoardLayoutType.html" target="_self">MediaBoardLayoutType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>boardId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>layout</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#MediaBoardLayoutType" target="_self" >MediaBoardLayoutType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -470,6 +569,7 @@ import {
 } from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import type { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { MediaBoardLayoutType } from &#x27;../../domain&#x27;;
 import type { MediaBoardConfig } from &#x27;../../media-board.config&#x27;;
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from &#x27;../../service&#x27;;
 
@@ -521,7 +621,19 @@ export class MediaBoardUc {
 		return line;
 	}
 
-	private checkFeatureEnabled() {
+	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType): Promise&lt;void&gt; {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard &#x3D; await this.mediaBoardService.findById(boardId);
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.setLayout(board, layout);
+	}
+
+	private checkFeatureEnabled(): void {
 		if (!this.configService.get(&#x27;FEATURE_MEDIA_SHELF_ENABLED&#x27;)) {
 			throw new FeatureDisabledLoggableException(&#x27;FEATURE_MEDIA_SHELF_ENABLED&#x27;);
 		}

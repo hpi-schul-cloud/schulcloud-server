@@ -138,9 +138,9 @@
                                 <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkUsersPermissions" >checkUsersPermissions</a>
+                                <a href="#collapseAvailableLine" >collapseAvailableLine</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -151,6 +151,11 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getMediaAvailableLine" >getMediaAvailableLine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateAvailableLineColor" >updateAvailableLineColor</a>
                             </li>
                         </ul>
                     </td>
@@ -175,7 +180,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -312,8 +317,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -333,27 +338,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkUsersPermissions"></a>
+                    <a name="collapseAvailableLine"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>checkUsersPermissions</b></span>
-                        <a href="#checkUsersPermissions"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>collapseAvailableLine</b></span>
+                        <a href="#collapseAvailableLine"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkUsersPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, mediaBoard: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>)</code>
+                    <code>collapseAvailableLine(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, mediaAvailableLineCollapsed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -386,9 +391,21 @@
 
                                         </tr>
                                         <tr>
-                                                <td>mediaBoard</td>
+                                                <td>boardId</td>
                                             <td>
-                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mediaAvailableLineCollapsed</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                             </td>
 
                                             <td>
@@ -401,7 +418,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;User&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -434,8 +451,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -516,8 +533,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -575,6 +592,100 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateAvailableLineColor"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateAvailableLineColor</b></span>
+                        <a href="#updateAvailableLineColor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateAvailableLineColor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, color: <a href="../undefineds/MediaBoardColors.html" target="_self">MediaBoardColors</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-available-line.uc.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>boardId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>color</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#MediaBoardColors" target="_self" >MediaBoardColors</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -592,6 +703,7 @@ import { BoardDoAuthorizable, MediaAvailableLine, type MediaBoard } from &#x27;@
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
+import { MediaBoardColors } from &#x27;../../domain&#x27;;
 import type { MediaBoardConfig } from &#x27;../../media-board.config&#x27;;
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from &#x27;../../service&#x27;;
 
@@ -612,7 +724,11 @@ export class MediaAvailableLineUc {
 
 		const mediaBoard: MediaBoard &#x3D; await this.mediaBoardService.findById(boardId);
 
-		const user: User &#x3D; await this.checkUsersPermissions(userId, mediaBoard);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(
+			mediaBoard
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
 
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] &#x3D;
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
@@ -629,20 +745,40 @@ export class MediaAvailableLineUc {
 			matchedTools &#x3D; await this.filterUnlicensedTools(userId, matchedTools);
 		}
 
-		const mediaAvailableLine: MediaAvailableLine &#x3D;
-			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
+		const mediaAvailableLine: MediaAvailableLine &#x3D; this.mediaAvailableLineService.createMediaAvailableLine(
+			mediaBoard,
+			matchedTools
+		);
 
 		return mediaAvailableLine;
 	}
 
-	private async checkUsersPermissions(userId: EntityId, mediaBoard: MediaBoard): Promise&lt;User&gt; {
-		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
+	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: MediaBoardColors): Promise&lt;void&gt; {
+		this.checkFeatureEnabled();
 
-		return user;
+		const board: MediaBoard &#x3D; await this.mediaBoardService.findById(boardId);
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.updateAvailableLineColor(board, color);
+	}
+
+	public async collapseAvailableLine(
+		userId: EntityId,
+		boardId: EntityId,
+		mediaAvailableLineCollapsed: boolean
+	): Promise&lt;void&gt; {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard &#x3D; await this.mediaBoardService.findById(boardId);
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.collapseAvailableLine(board, mediaAvailableLineCollapsed);
 	}
 
 	private checkFeatureEnabled(): void {

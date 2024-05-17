@@ -282,8 +282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/board/media-board.do.factory.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/board/media-board.do.factory.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -1348,6 +1348,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { MediaBoardColors, MediaBoardLayoutType } from &#x27;@modules/board/domain&#x27;;
 import {
 	AnyMediaBoardDo,
 	BoardExternalReferenceType,
@@ -1375,6 +1376,9 @@ export const mediaBoardFactory &#x3D; MediaBoardFactory.define(MediaBoard, () &#
 			type: BoardExternalReferenceType.User,
 			id: new ObjectId().toHexString(),
 		},
+		layout: MediaBoardLayoutType.LIST,
+		mediaAvailableLineCollapsed: false,
+		mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 	};
 });
 </code></pre>

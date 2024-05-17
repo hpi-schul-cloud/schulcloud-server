@@ -145,6 +145,18 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#collapseMediaAvailableLine" >collapseMediaAvailableLine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#createLine" >createLine</a>
@@ -168,6 +180,30 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getMediaBoardForUser" >getMediaBoardForUser</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setMediaBoardLayout" >setMediaBoardLayout</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateMediaAvailableLineColor" >updateMediaAvailableLineColor</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -185,6 +221,114 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="collapseMediaAvailableLine"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>collapseMediaAvailableLine</b></span>
+                        <a href="#collapseMediaAvailableLine"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>collapseMediaAvailableLine(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/CollapsableBodyParams.html" target="_self">CollapsableBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Collapse available line in media board.&#x27;})<br />@ApiNoContentResponse()<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@ApiNotFoundResponse({type: NotFoundException})<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@Patch(&#x27;:boardId/media-available-line/collapse&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/CollapsableBodyParams.html" target="_self" >CollapsableBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -221,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -314,8 +458,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -408,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -455,16 +599,244 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setMediaBoardLayout"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>setMediaBoardLayout</b></span>
+                        <a href="#setMediaBoardLayout"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setMediaBoardLayout(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/LayoutBodyParams.html" target="_self">LayoutBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Set layout for media board.&#x27;})<br />@ApiNoContentResponse()<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@ApiNotFoundResponse({type: NotFoundException})<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@Patch(&#x27;:boardId/layout&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:136</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/LayoutBodyParams.html" target="_self" >LayoutBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateMediaAvailableLineColor"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateMediaAvailableLineColor</b></span>
+                        <a href="#updateMediaAvailableLineColor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateMediaAvailableLineColor(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/ColorBodyParams.html" target="_self">ColorBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Update the color of available line in media board.&#x27;})<br />@ApiNoContentResponse()<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@ApiNotFoundResponse({type: NotFoundException})<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@Patch(&#x27;:boardId/media-available-line/color&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-board.controller.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ColorBodyParams.html" target="_self" >ColorBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
-import { Controller, ForbiddenException, Get, NotFoundException, Param, Post } from &#x27;@nestjs/common&#x27;;
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	HttpStatus,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+} from &#x27;@nestjs/common&#x27;;
 import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -474,7 +846,14 @@ import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { MediaAvailableLine, MediaBoard, MediaLine } from &#x27;@shared/domain/domainobject&#x27;;
 import { MediaAvailableLineUc, MediaBoardUc } from &#x27;../../uc&#x27;;
 import { BoardUrlParams } from &#x27;../dto&#x27;;
-import { MediaAvailableLineResponse, MediaBoardResponse, MediaLineResponse } from &#x27;./dto&#x27;;
+import {
+	CollapsableBodyParams,
+	ColorBodyParams,
+	LayoutBodyParams,
+	MediaAvailableLineResponse,
+	MediaBoardResponse,
+	MediaLineResponse,
+} from &#x27;./dto&#x27;;
 import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Media Board&#x27;)
@@ -532,6 +911,55 @@ export class MediaBoardController {
 		const response: MediaAvailableLineResponse &#x3D; MediaAvailableLineResponseMapper.mapToResponse(mediaAvailableLine);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: &#x27;Update the color of available line in media board.&#x27; })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(&#x27;:boardId/media-available-line/color&#x27;)
+	public async updateMediaAvailableLineColor(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: ColorBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.mediaAvailableLineUc.updateAvailableLineColor(
+			currentUser.userId,
+			urlParams.boardId,
+			bodyParams.backgroundColor
+		);
+	}
+
+	@ApiOperation({ summary: &#x27;Collapse available line in media board.&#x27; })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(&#x27;:boardId/media-available-line/collapse&#x27;)
+	public async collapseMediaAvailableLine(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: CollapsableBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.mediaAvailableLineUc.collapseAvailableLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
+	}
+
+	@ApiOperation({ summary: &#x27;Set layout for media board.&#x27; })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(&#x27;:boardId/layout&#x27;)
+	public async setMediaBoardLayout(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: LayoutBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.mediaBoardUc.setLayout(currentUser.userId, urlParams.boardId, bodyParams.layout);
 	}
 }
 </code></pre>

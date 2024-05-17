@@ -4316,6 +4316,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CollaborativeTextEditorResponse.html" data-type="entity-link" >CollaborativeTextEditorResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CollapsableBodyParams.html" data-type="entity-link" >CollapsableBodyParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ColorBodyParams.html" data-type="entity-link" >ColorBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/Column.html" data-type="entity-link" >Column</a>
                             </li>
                             <li class="link">
@@ -5390,6 +5396,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/IncidentsResponse.html" data-type="entity-link" >IncidentsResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/InvalidBoardTypeLoggableException.html" data-type="entity-link" >InvalidBoardTypeLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/InvalidOriginForLogoutUrlLoggableException.html" data-type="entity-link" >InvalidOriginForLogoutUrlLoggableException</a>
                             </li>
                             <li class="link">
@@ -5421,6 +5430,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/LaunchContextUnavailableLoggableException.html" data-type="entity-link" >LaunchContextUnavailableLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LayoutBodyParams.html" data-type="entity-link" >LayoutBodyParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/LdapAlreadyPersistedException.html" data-type="entity-link" >LdapAlreadyPersistedException</a>
@@ -8909,6 +8921,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/MediaBoardConfig.html" data-type="entity-link" >MediaBoardConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/MediaBoardNodeProps.html" data-type="entity-link" >MediaBoardNodeProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/MediaBoardProps.html" data-type="entity-link" >MediaBoardProps</a>

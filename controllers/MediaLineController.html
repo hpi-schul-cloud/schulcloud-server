@@ -146,6 +146,18 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#collapseMediaLine" >collapseMediaLine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteLine" >deleteLine</a>
                             </li>
@@ -160,6 +172,18 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#moveLine" >moveLine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateBackgroundColor" >updateBackgroundColor</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -190,6 +214,114 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="collapseMediaLine"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>collapseMediaLine</b></span>
+                        <a href="#collapseMediaLine"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>collapseMediaLine(urlParams: <a href="../classes/LineUrlParams.html" target="_self">LineUrlParams</a>, bodyParams: <a href="../classes/CollapsableBodyParams.html" target="_self">CollapsableBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Collapse available line in media board.&#x27;})<br />@ApiNoContentResponse()<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@ApiNotFoundResponse({type: NotFoundException})<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@Patch(&#x27;:lineId/collapse&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-line.controller.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/LineUrlParams.html" target="_self" >LineUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/CollapsableBodyParams.html" target="_self" >CollapsableBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -226,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-line.controller.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-line.controller.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -359,6 +491,114 @@
                                                 <td>bodyParams</td>
                                             <td>
                                                             <code><a href="../classes/MoveColumnBodyParams.html" target="_self" >MoveColumnBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateBackgroundColor"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateBackgroundColor</b></span>
+                        <a href="#updateBackgroundColor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateBackgroundColor(urlParams: <a href="../classes/LineUrlParams.html" target="_self">LineUrlParams</a>, bodyParams: <a href="../classes/ColorBodyParams.html" target="_self">ColorBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Update the color of a single line.&#x27;})<br />@ApiNoContentResponse()<br />@ApiBadRequestResponse({type: ApiValidationError})<br />@ApiForbiddenResponse({type: ForbiddenException})<br />@ApiNotFoundResponse({type: NotFoundException})<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@Patch(&#x27;:lineId/color&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/media-board/media-line.controller.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/LineUrlParams.html" target="_self" >LineUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ColorBodyParams.html" target="_self" >ColorBodyParams</a></code>
                                             </td>
 
                                             <td>
@@ -529,7 +769,7 @@ import {
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { MediaLineUc } from &#x27;../../uc&#x27;;
 import { MoveColumnBodyParams, RenameBodyParams } from &#x27;../dto&#x27;;
-import { LineUrlParams } from &#x27;./dto&#x27;;
+import { CollapsableBodyParams, ColorBodyParams, LineUrlParams } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;Media Line&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -565,6 +805,36 @@ export class MediaLineController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
 		await this.mediaLineUc.updateLineTitle(currentUser.userId, urlParams.lineId, bodyParams.title);
+	}
+
+	@ApiOperation({ summary: &#x27;Update the color of a single line.&#x27; })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(&#x27;:lineId/color&#x27;)
+	public async updateBackgroundColor(
+		@Param() urlParams: LineUrlParams,
+		@Body() bodyParams: ColorBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.mediaLineUc.updateLineColor(currentUser.userId, urlParams.lineId, bodyParams.backgroundColor);
+	}
+
+	@ApiOperation({ summary: &#x27;Collapse available line in media board.&#x27; })
+	@ApiNoContentResponse()
+	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiForbiddenResponse({ type: ForbiddenException })
+	@ApiNotFoundResponse({ type: NotFoundException })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Patch(&#x27;:lineId/collapse&#x27;)
+	public async collapseMediaLine(
+		@Param() urlParams: LineUrlParams,
+		@Body() bodyParams: CollapsableBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.mediaLineUc.collapseLine(currentUser.userId, urlParams.lineId, bodyParams.collapsed);
 	}
 
 	@ApiOperation({ summary: &#x27;Delete a single line.&#x27; })
