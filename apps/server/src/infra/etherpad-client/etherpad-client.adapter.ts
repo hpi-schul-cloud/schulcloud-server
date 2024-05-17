@@ -83,6 +83,11 @@ export class EtherpadClientAdapter {
 		sessionCookieExpire: Date,
 		durationThreshold: number
 	): Promise<SessionId> {
+		console.log('groupId', groupId);
+		console.log('authorId', authorId);
+		console.log('parentId', parentId);
+		console.log('sessionCookieExpire', sessionCookieExpire);
+		console.log('durationThreshold', durationThreshold);
 		const session = await this.getSessionByGroupAndAuthor(groupId, authorId);
 
 		if (session && this.isSessionDurationSufficient(session, durationThreshold)) {
@@ -145,9 +150,13 @@ export class EtherpadClientAdapter {
 	}
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
+		console.log('authorId', authorId);
 		const response = await this.tryListSessionsOfAuthor(authorId);
+		console.log('response', response);
 		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		console.log('etherpadSessions', etherpadSessions);
 		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
+		console.log('sessions', sessions);
 
 		const sessionIds = sessions.map((session) => session.id);
 
