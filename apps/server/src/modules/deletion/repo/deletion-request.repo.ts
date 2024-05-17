@@ -47,6 +47,14 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
+	async countPendingDeletionRequests(): Promise<number> {
+		const scope = new DeletionRequestScope().byStatusPending();
+
+		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+
+		return numberItemsWithStatusPending;
+	}
+
 	async update(deletionRequest: DeletionRequest): Promise<void> {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
 		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);

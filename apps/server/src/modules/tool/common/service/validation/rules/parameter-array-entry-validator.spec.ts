@@ -1,10 +1,10 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '../../../../external-tool/testing';
 import {
 	CustomParameter,
 	CustomParameterEntry,
-	ToolParameterRequiredLoggableException,
 	ToolParameterMandatoryValueMissingLoggableException,
+	ToolParameterRequiredLoggableException,
 } from '../../../domain';
 import { ParameterArrayEntryValidator } from './parameter-array-entry-validator';
 

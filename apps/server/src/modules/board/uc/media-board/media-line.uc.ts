@@ -5,6 +5,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { BoardDoAuthorizable, type MediaBoard, type MediaLine } from '@shared/domain/domainobject';
 import type { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoardColors } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from '../../service';
 
@@ -49,6 +50,30 @@ export class MediaLineUc {
 		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
 
 		await this.mediaLineService.updateTitle(line, title);
+	}
+
+	public async updateLineColor(userId: EntityId, lineId: EntityId, color: MediaBoardColors): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaLineService.updateColor(line, color);
+	}
+
+	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.mediaLineService.findById(lineId);
+
+		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(line);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaLineService.collapse(line, collapsed);
 	}
 
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {

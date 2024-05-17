@@ -33,6 +33,8 @@ spec:
           - name: data-deletion-trigger-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
+            - configMapRef:
+                name: data-deletion-trigger-cronjob-configmap
             - secretRef:
                 name: admin-api-client-secret
             command: ['/bin/sh', '-c']

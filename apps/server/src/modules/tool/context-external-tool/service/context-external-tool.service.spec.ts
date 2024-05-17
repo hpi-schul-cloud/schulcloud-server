@@ -5,24 +5,27 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
-import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	legacySchoolDoFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing/factory/domainobject';
+import { legacySchoolDoFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
+import { externalToolFactory } from '../../external-tool/testing';
+import { customParameterFactory } from '../../external-tool/testing/external-tool.factory';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '../../school-external-tool/domain';
-import { ContextExternalTool, ContextRef, RestrictedContextMismatchLoggableException } from '../domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
+import {
+	ContextExternalTool,
+	ContextExternalToolProps,
+	ContextRef,
+	RestrictedContextMismatchLoggableException,
+} from '../domain';
+import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolService } from './context-external-tool.service';
 
-describe('ContextExternalToolService', () => {
+describe(ContextExternalToolService.name, () => {
 	let module: TestingModule;
 	let service: ContextExternalToolService;
 	let externalToolService: DeepMocked<ExternalToolService>;
@@ -99,7 +102,7 @@ describe('ContextExternalToolService', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const schoolExternalToolId = schoolExternalTool.id as string;
+				const schoolExternalToolId = schoolExternalTool.id;
 				const contextExternalTool1: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalToolId)
 					.buildWithId();
@@ -165,7 +168,7 @@ describe('ContextExternalToolService', () => {
 					schoolId,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.build();
 
 				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);
@@ -178,7 +181,7 @@ describe('ContextExternalToolService', () => {
 			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool } = setup();
 
-				const result: ContextExternalTool = await service.findByIdOrFail(contextExternalTool.id as string);
+				const result: ContextExternalTool = await service.findByIdOrFail(contextExternalTool.id);
 
 				expect(result).toEqual(contextExternalTool);
 			});
@@ -207,7 +210,7 @@ describe('ContextExternalToolService', () => {
 					schoolId,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.build();
 
 				contextExternalToolRepo.findByIdOrNull.mockResolvedValue(contextExternalTool);
@@ -220,7 +223,7 @@ describe('ContextExternalToolService', () => {
 			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool } = setup();
 
-				const result: ContextExternalTool | null = await service.findById(contextExternalTool.id as string);
+				const result: ContextExternalTool | null = await service.findById(contextExternalTool.id);
 
 				expect(result).toEqual(contextExternalTool);
 			});
@@ -290,7 +293,7 @@ describe('ContextExternalToolService', () => {
 		describe('when contexts are not restricted', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
-				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.build();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
@@ -344,7 +347,7 @@ describe('ContextExternalToolService', () => {
 				const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
 				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [ToolContextType.COURSE] });
-				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.build();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: { type: ToolContextType.COURSE },
 				});
@@ -375,7 +378,7 @@ describe('ContextExternalToolService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
 				});
-				const schoolExternalTool = schoolExternalToolFactory.build() as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.build();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: { type: ToolContextType.COURSE },
 				});
@@ -415,7 +418,7 @@ describe('ContextExternalToolService', () => {
 
 			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 				toolId: externalTool.id,
-			}) as SchoolExternalToolWithId;
+			});
 
 			const unusedParam: CustomParameter = customParameterFactory.build();
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
@@ -463,23 +466,24 @@ describe('ContextExternalToolService', () => {
 
 			const copiedTool: ContextExternalTool = await service.copyContextExternalTool(contextExternalTool, contextCopyId);
 
-			expect(copiedTool).toEqual<Partial<ContextExternalTool>>({
-				id: undefined,
-				contextRef: { id: contextCopyId, type: ToolContextType.COURSE },
-				displayName: contextExternalTool.displayName,
-				schoolToolRef: contextExternalTool.schoolToolRef,
-				toolVersion: contextExternalTool.toolVersion,
-				parameters: [
-					{
-						name: contextExternalTool.parameters[0].name,
-						value: undefined,
-					},
-					{
-						name: contextExternalTool.parameters[1].name,
-						value: contextExternalTool.parameters[1].value,
-					},
-				],
-			});
+			expect(copiedTool).toEqual(
+				expect.objectContaining<ContextExternalToolProps>({
+					id: expect.any(String),
+					contextRef: { id: contextCopyId, type: ToolContextType.COURSE },
+					displayName: contextExternalTool.displayName,
+					schoolToolRef: contextExternalTool.schoolToolRef,
+					parameters: [
+						{
+							name: contextExternalTool.parameters[0].name,
+							value: undefined,
+						},
+						{
+							name: contextExternalTool.parameters[1].name,
+							value: contextExternalTool.parameters[1].value,
+						},
+					],
+				})
+			);
 		});
 
 		it('should not copy unused parameter', async () => {
