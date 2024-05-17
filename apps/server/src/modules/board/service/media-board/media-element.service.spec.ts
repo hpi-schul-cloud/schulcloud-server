@@ -1,17 +1,17 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum';
-import type { ContextExternalToolWithId } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	contextExternalToolFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
 	mediaLineFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
@@ -106,14 +106,12 @@ describe(MediaElementService.name, () => {
 		describe('when creating a new context external tool', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const schoolExternalTool = schoolExternalToolFactory
-					.withSchoolId(user.school.id)
-					.build() as SchoolExternalToolWithId;
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.withSchoolId(user.school.id).build();
 				const mediaBoard = mediaBoardFactory.build();
-				const contextExternalTool = contextExternalToolFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.withContextRef(mediaBoard.id, ToolContextType.MEDIA_BOARD)
-					.buildWithId() as ContextExternalToolWithId;
+					.buildWithId();
 
 				contextExternalToolService.saveContextExternalTool.mockResolvedValueOnce(contextExternalTool);
 
@@ -130,20 +128,21 @@ describe(MediaElementService.name, () => {
 
 				const result = await service.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
 
-				expect(result).toEqual({
-					id: contextExternalTool.id,
-					displayName: contextExternalTool.displayName,
-					schoolToolRef: {
-						schoolId: user.school.id,
-						schoolToolId: schoolExternalTool.id,
-					},
-					contextRef: {
-						id: mediaBoard.id,
-						type: ToolContextType.MEDIA_BOARD,
-					},
-					toolVersion: contextExternalTool.toolVersion,
-					parameters: contextExternalTool.parameters,
-				});
+				expect(result).toEqual(
+					new ContextExternalTool({
+						id: expect.any(String),
+						displayName: contextExternalTool.displayName,
+						schoolToolRef: {
+							schoolId: user.school.id,
+							schoolToolId: schoolExternalTool.id,
+						},
+						contextRef: {
+							id: mediaBoard.id,
+							type: ToolContextType.MEDIA_BOARD,
+						},
+						parameters: contextExternalTool.parameters,
+					})
+				);
 			});
 
 			it('should save the new context external tool', async () => {
@@ -151,18 +150,20 @@ describe(MediaElementService.name, () => {
 
 				await service.createContextExternalToolForMediaBoard(user, schoolExternalTool, mediaBoard);
 
-				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith({
-					schoolToolRef: {
-						schoolId: user.school.id,
-						schoolToolId: schoolExternalTool.id,
-					},
-					contextRef: {
-						id: mediaBoard.id,
-						type: ToolContextType.MEDIA_BOARD,
-					},
-					toolVersion: 0,
-					parameters: [],
-				});
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(
+					new ContextExternalTool({
+						id: expect.any(String),
+						schoolToolRef: {
+							schoolId: user.school.id,
+							schoolToolId: schoolExternalTool.id,
+						},
+						contextRef: {
+							id: mediaBoard.id,
+							type: ToolContextType.MEDIA_BOARD,
+						},
+						parameters: [],
+					})
+				);
 			});
 		});
 	});
@@ -171,7 +172,7 @@ describe(MediaElementService.name, () => {
 		describe('when creating a new element', () => {
 			const setup = () => {
 				const line = mediaLineFactory.build();
-				const contextExternalTool = contextExternalToolFactory.buildWithId() as ContextExternalToolWithId;
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
 				return {
 					line,
@@ -250,8 +251,10 @@ describe(MediaElementService.name, () => {
 	describe('checkElementExists', () => {
 		describe('when an element exists', () => {
 			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
-				const contextExternalTool = contextExternalToolFactory.withSchoolExternalToolRef(schoolExternalTool.id).build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.build();
 				const element = mediaExternalToolElementFactory.build({ contextExternalToolId: contextExternalTool.id });
 				const line = mediaLineFactory.addChild(element).build();
 				const mediaBoard = mediaBoardFactory.addChild(line).build();
@@ -275,8 +278,10 @@ describe(MediaElementService.name, () => {
 
 		describe('when an element does not exist', () => {
 			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
-				const contextExternalTool = contextExternalToolFactory.withSchoolExternalToolRef(schoolExternalTool.id).build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.build();
 				const element = mediaExternalToolElementFactory.build({ contextExternalToolId: new ObjectId().toHexString() });
 				const line = mediaLineFactory.addChild(element).build();
 				const mediaBoard = mediaBoardFactory.addChild(line).build();

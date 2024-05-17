@@ -1,7 +1,8 @@
-import { basicToolConfigFactory, externalToolFactory } from '@shared/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { basicToolConfigFactory, externalToolFactory } from '../testing';
 import { ExternalTool } from './external-tool.do';
 
-describe('ExternalTool', () => {
+describe(ExternalTool.name, () => {
 	describe('isLti11Config', () => {
 		describe('when external tool with config.type Lti11 is given', () => {
 			it('should return true', () => {
@@ -55,8 +56,8 @@ describe('ExternalTool', () => {
 					expect(() => {
 						// eslint-disable-next-line no-new
 						new ExternalTool({
+							id: new ObjectId().toHexString(),
 							name: 'tool',
-							version: 1,
 							isHidden: false,
 							openNewTab: false,
 							config: basicToolConfigFactory.build(),

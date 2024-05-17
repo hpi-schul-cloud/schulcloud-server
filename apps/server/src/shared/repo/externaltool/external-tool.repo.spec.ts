@@ -13,16 +13,15 @@ import {
 } from '@modules/tool/common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
+import { externalToolEntityFactory, externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 
-describe('ExternalToolRepo', () => {
+describe(ExternalToolRepo.name, () => {
 	let module: TestingModule;
 	let repo: ExternalToolRepo;
 	let em: EntityManager;
@@ -136,7 +135,7 @@ describe('ExternalToolRepo', () => {
 
 	describe('save', () => {
 		const setupDO = (config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) => {
-			const domainObject: ExternalTool = new ExternalTool({
+			const domainObject: ExternalTool = externalToolFactory.build({
 				name: 'name',
 				url: 'url',
 				logoUrl: 'logoUrl',
@@ -158,7 +157,6 @@ describe('ExternalToolRepo', () => {
 				],
 				isHidden: true,
 				openNewTab: true,
-				version: 2,
 				isDeactivated: false,
 			});
 
@@ -173,12 +171,10 @@ describe('ExternalToolRepo', () => {
 				baseUrl: 'baseUrl',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
-			expect(result).toMatchObject(expected);
-			expect(result.id).toBeDefined();
+			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
 		});
 
 		it('should save an oauth2 tool correctly', async () => {
@@ -189,12 +185,10 @@ describe('ExternalToolRepo', () => {
 				skipConsent: true,
 			});
 			const { domainObject } = setupDO(config);
-			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
-			expect(result).toMatchObject(expected);
-			expect(result.id).toBeDefined();
+			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
 		});
 
 		it('should save an lti11 tool correctly', async () => {
@@ -208,12 +202,10 @@ describe('ExternalToolRepo', () => {
 				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, createdAt, ...expected } = domainObject;
 
 			const result: ExternalTool = await repo.save(domainObject);
 
-			expect(result).toMatchObject(expected);
-			expect(result.id).toBeDefined();
+			expect(result).toMatchObject({ ...domainObject.getProps(), id: expect.any(String), createdAt: expect.any(Date) });
 		});
 	});
 
@@ -301,6 +293,58 @@ describe('ExternalToolRepo', () => {
 					expect(page.data[1].name).toEqual(ltiTools[1].name);
 				});
 			});
+		});
+	});
+
+	describe('findById', () => {
+		const setup2 = async () => {
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+
+			await em.persistAndFlush(externalToolEntity);
+			em.clear();
+
+			return {
+				externalToolEntity,
+			};
+		};
+
+		describe('when external tool is found', () => {
+			it('should return external tool with given id', async () => {
+				const { externalToolEntity } = await setup2();
+
+				const result: ExternalTool | null = await repo.findById(externalToolEntity.id);
+
+				expect(result?.name).toEqual(externalToolEntity.name);
+			});
+		});
+
+		describe('when external tool is not found', () => {
+			it('should throw not found error', async () => {
+				await setup2();
+
+				await expect(repo.findById('not-existing-id')).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('deleteById', () => {
+		const setup2 = async () => {
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+
+			await em.persistAndFlush(externalToolEntity);
+			em.clear();
+
+			return {
+				externalToolEntity,
+			};
+		};
+
+		it('should delete external tool with given id', async () => {
+			const { externalToolEntity } = await setup2();
+
+			await repo.deleteById(externalToolEntity.id);
+
+			await expect(repo.findById(externalToolEntity.id)).rejects.toThrowError();
 		});
 	});
 });
