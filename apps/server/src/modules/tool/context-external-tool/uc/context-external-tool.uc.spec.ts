@@ -18,7 +18,7 @@ import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { ContextExternalTool } from '../domain';
+import { ContextExternalTool, ContextExternalToolProps } from '../domain';
 import { ContextExternalToolService } from '../service';
 import { ContextExternalToolValidationService } from '../service/context-external-tool-validation.service';
 import { contextExternalToolFactory } from '../testing';
@@ -375,19 +375,27 @@ describe(ContextExternalToolUc.name, () => {
 			it('should call contextExternalToolService', async () => {
 				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool);
+				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
-				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 
 			it('should call contextExternalToolService to ensure permissions', async () => {
 				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool);
+				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					user,
-					contextExternalTool,
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					}),
 					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
@@ -395,9 +403,14 @@ describe(ContextExternalToolUc.name, () => {
 			it('should call contextExternalToolValidationService', async () => {
 				const { contextExternalTool, user, schoolId, contextExternalToolId } = setup();
 
-				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool);
+				await uc.updateContextExternalTool(user.id, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
-				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 
 			it('should return the saved object', async () => {
@@ -407,10 +420,15 @@ describe(ContextExternalToolUc.name, () => {
 					user.id,
 					schoolId,
 					contextExternalToolId,
-					contextExternalTool
+					contextExternalTool.getProps()
 				);
 
-				expect(result).toEqual(contextExternalTool);
+				expect(result).toEqual(
+					expect.objectContaining<ContextExternalToolProps>({
+						...contextExternalTool.getProps(),
+						id: expect.any(String),
+					})
+				);
 			});
 		});
 
@@ -505,7 +523,8 @@ describe(ContextExternalToolUc.name, () => {
 			it('should return forbidden and not save', async () => {
 				const { contextExternalTool, userId, error, schoolId, contextExternalToolId } = setup();
 
-				const func = () => uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				const func = () =>
+					uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
 				await expect(func).rejects.toThrow(error);
 				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
@@ -551,7 +570,8 @@ describe(ContextExternalToolUc.name, () => {
 			it('should return UnprocessableEntity and not save', async () => {
 				const { contextExternalTool, userId, error, schoolId, contextExternalToolId } = setup();
 
-				const func = () => uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool);
+				const func = () =>
+					uc.updateContextExternalTool(userId, schoolId, contextExternalToolId, contextExternalTool.getProps());
 
 				await expect(func).rejects.toThrow(error);
 				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
