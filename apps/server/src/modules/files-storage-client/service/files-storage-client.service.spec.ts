@@ -23,6 +23,7 @@ describe('FilesStorageClientAdapterService', () => {
 	let service: FilesStorageClientAdapterService;
 	let client: DeepMocked<FilesStorageProducer>;
 	let eventBus: DeepMocked<EventBus>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -50,6 +51,7 @@ describe('FilesStorageClientAdapterService', () => {
 		service = module.get(FilesStorageClientAdapterService);
 		client = module.get(FilesStorageProducer);
 		eventBus = module.get(EventBus);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterAll(async () => {
@@ -272,7 +274,7 @@ describe('FilesStorageClientAdapterService', () => {
 		};
 
 		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in classService', async () => {
+			it('should call deleteUserData', async () => {
 				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
@@ -290,6 +292,19 @@ describe('FilesStorageClientAdapterService', () => {
 				await service.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+
+		describe('when an error occurred', () => {
+			it('should log this error', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+				eventBus.publish.mockRejectedValueOnce(new Error());
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(logger.error).toHaveBeenCalled();
 			});
 		});
 	});

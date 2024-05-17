@@ -3,12 +3,13 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class MissingMediaLicenseLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly medium: ExternalToolMedium,
 		private readonly userId: EntityId,
-		private readonly contextExternalToolId?: string
+		private readonly contextExternalTool: ContextExternalToolLaunchable
 	) {
 		super(
 			{
@@ -26,9 +27,15 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 			message: this.message,
 			stack: this.stack,
 			data: {
-				medium: { mediumId: this.medium.mediumId, publisher: this.medium.publisher },
+				medium: {
+					mediumId: this.medium.mediumId,
+					publisher: this.medium.publisher,
+				},
 				userId: this.userId,
-				contextExternalToolId: this.contextExternalToolId,
+				contextExternalToolId: this.contextExternalTool.id,
+				schoolExternalToolId: this.contextExternalTool.schoolToolRef.schoolToolId,
+				contextType: this.contextExternalTool.contextRef.type,
+				contextId: this.contextExternalTool.contextRef.id,
 			},
 		};
 	}

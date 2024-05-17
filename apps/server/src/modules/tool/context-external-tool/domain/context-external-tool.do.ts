@@ -4,16 +4,18 @@ import { ToolVersion } from '../../common/interface';
 import { SchoolExternalToolRefDO } from '../../school-external-tool/domain';
 import { ContextRef } from './context-ref';
 
-export interface ContextExternalToolProps {
+export interface ContextExternalToolLaunchable {
 	id?: string;
 
 	schoolToolRef: SchoolExternalToolRefDO;
 
 	contextRef: ContextRef;
 
-	displayName?: string;
-
 	parameters: CustomParameterEntry[];
+}
+
+export interface ContextExternalToolProps extends ContextExternalToolLaunchable {
+	displayName?: string;
 
 	toolVersion: number;
 }

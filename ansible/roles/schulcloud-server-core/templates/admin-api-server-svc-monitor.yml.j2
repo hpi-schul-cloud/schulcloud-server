@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: api-admin-svc-monitor
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-admin
+spec:
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: in
+        values:
+          - api-admin-svc
+  endpoints:
+    - path: /metrics
+      port: api-metrics
