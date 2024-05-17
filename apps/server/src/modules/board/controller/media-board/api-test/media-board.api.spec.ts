@@ -17,11 +17,14 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { MediaAvailableLineResponse, type MediaBoardResponse, MediaLineResponse } from '../dto';
-import { CollapsableBodyParams } from '../dto/collapsable.body.params';
-import { LayoutBodyParams } from '../dto/layout.body.params';
-import { MediaBoardLayoutType } from '../types/layout-type.enum';
-import { MediaBoardColors } from '../types/media-colors.enum';
+import { MediaBoardColors, MediaBoardLayoutType } from '../../../domain';
+import {
+	CollapsableBodyParams,
+	LayoutBodyParams,
+	MediaAvailableLineResponse,
+	type MediaBoardResponse,
+	MediaLineResponse,
+} from '../dto';
 
 const baseRouteName = '/media-boards';
 

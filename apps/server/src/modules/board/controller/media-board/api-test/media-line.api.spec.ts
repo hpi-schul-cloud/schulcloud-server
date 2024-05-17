@@ -5,10 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { BoardNode, MediaLineNode } from '@shared/domain/entity';
 import { mediaBoardNodeFactory, mediaLineNodeFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { MediaBoardColors } from '../../../domain';
 import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
-import { CollapsableBodyParams } from '../dto/collapsable.body.params';
-import { ColorBodyParams } from '../dto/color.body.params';
-import { MediaBoardColors } from '../types/media-colors.enum';
+import { CollapsableBodyParams, ColorBodyParams } from '../dto';
 
 const baseRouteName = '/media-lines';
 
