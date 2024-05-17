@@ -1,12 +1,32 @@
 export { BoardModule } from './board.module';
 export { BoardConfig } from './board.config';
-export * from './domain';
-export * from './service/board-common-tool.service';
-export * from './service/board-node-authorizable.service';
-export * from './service/board-node-permission.service';
-export * from './service/board-node.service';
-export * from './service/column-board-copy.service';
-export * from './service/column-board.service';
-export * from './service/content-element-create.service';
-export * from './service/content-element-update.service';
-export { MediaAvailableLineService, MediaBoardService } from './service/media-board';
+export {
+	BoardNode,
+	BoardNodeAuthorizable,
+	BoardExternalReferenceType,
+	BoardExternalReference,
+	BoardLayout,
+	BoardNodeFactory,
+	ColumnBoard,
+	// @modules/authorization/domain/rules/board-node.rule.ts
+	BoardRoles,
+	isDrawingElement,
+	isSubmissionItem,
+	isSubmissionItemContent,
+	SubmissionItem,
+	UserWithBoardRoles,
+	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
+	MediaBoard,
+} from './domain';
+
+export {
+	BoardNodeAuthorizableService,
+	BoardNodeService,
+	BoardCommonToolService,
+	ColumnBoardService,
+	ColumnBoardCopyService,
+	ColumnBoardLinkService,
+	ContentElementUpdateService,
+	MediaAvailableLineService,
+	MediaBoardService,
+} from './service';

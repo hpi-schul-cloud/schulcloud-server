@@ -1,5 +1,5 @@
 import { ContentElementType } from '@modules/board/domain';
-import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from '@modules/board/controller/dto';
+import { AnyElementContentBody, LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
 import { Injectable } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeResourceTypeV1P1 } from '@src/modules/common-cartridge';

@@ -9,22 +9,21 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CourseRepo } from '@shared/repo';
+import { ColumnBoardNodeRepo, CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import {
-	BoardCommonToolService,
-	BoardNodeAuthorizableService,
-	BoardNodePermissionService,
-	BoardNodeService,
-	ColumnBoardCopyService,
-	ContentElementUpdateService,
-	ColumnBoardService,
-	UserDeletedEventHandlerService,
-	ColumnBoardLinkService,
-	BoardContextService,
-} from './service';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
+import {
+	BoardCommonToolService,
+	BoardContextService,
+	BoardNodeAuthorizableService,
+	BoardNodeService,
+	ColumnBoardCopyService,
+	ColumnBoardLinkService,
+	ColumnBoardService,
+	ContentElementUpdateService,
+	UserDeletedEventHandlerService,
+} from './service';
 
 @Module({
 	imports: [
@@ -47,7 +46,6 @@ import { BoardNodeRepo } from './repo';
 		BoardNodeRepo,
 		BoardNodeService,
 		BoardNodeFactory,
-		BoardNodePermissionService,
 		BoardCommonToolService,
 		ColumnBoardService,
 		ContentElementUpdateService,
@@ -55,11 +53,10 @@ import { BoardNodeRepo } from './repo';
 		ColumnBoardCopyService,
 		ColumnBoardLinkService,
 		UserDeletedEventHandlerService,
+		ColumnBoardNodeRepo,
 	],
 	exports: [
-		BoardContextService,
 		BoardNodeAuthorizableService,
-		BoardNodePermissionService,
 		BoardNodeService,
 		BoardNodeFactory,
 		BoardCommonToolService,
@@ -67,13 +64,6 @@ import { BoardNodeRepo } from './repo';
 		ColumnBoardCopyService,
 		ColumnBoardLinkService,
 		ContentElementUpdateService,
-		/**
-		 * @deprecated - exported only deprecated learnraum module
-		 */
-		// BoardNodeRepo,
-		// MediaBoardService,
-		// MediaLineService,
-		// MediaElementService,
 	],
 })
 export class BoardModule {}

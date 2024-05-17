@@ -1,4 +1,3 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, ColumnBoard } from '@modules/board/domain';
 import { ColumnBoardCopyService } from '@modules/board/service';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -8,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
 import {
 	ColumnboardBoardElement,
-	ColumnBoardNode,
 	Course,
 	isLesson,
 	isTask,

@@ -1,5 +1,4 @@
 import {
-	AnyContentElement,
 	BoardCommonToolService,
 	BoardExternalReferenceType,
 	BoardNodeService,
@@ -55,7 +54,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 	}
 
 	private async getBoardValue(elementId: EntityId): Promise<string | undefined> {
-		const element: AnyContentElement = await this.boardNodeService.findContentElementById(elementId);
+		const element = await this.boardNodeService.findContentElementById(elementId);
 
 		const board: ColumnBoard | MediaBoard = await this.boardCommonToolService.findByDescendant(element);
 

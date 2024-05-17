@@ -1,5 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardRoles, UserWithBoardRoles } from '../domain';
@@ -8,6 +8,7 @@ import { BoardNodeAuthorizableService } from './board-node-authorizable.service'
 @Injectable()
 export class BoardNodePermissionService {
 	constructor(
+		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
