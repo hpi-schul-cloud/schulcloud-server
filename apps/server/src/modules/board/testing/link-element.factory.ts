@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { LinkElement, LinkElementProps, ROOT_PATH } from '@modules/board/domain';
-import { BaseFactory } from '../../base.factory';
+import { BaseFactory } from '@shared/testing';
+import { LinkElement, LinkElementProps, ROOT_PATH } from '../domain';
 
 export const linkElementFactory = BaseFactory.define<LinkElement, LinkElementProps>(LinkElement, ({ sequence }) => {
 	return {

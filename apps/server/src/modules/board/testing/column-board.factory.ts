@@ -1,13 +1,7 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	BoardExternalReferenceType,
-	BoardLayout,
-	ColumnBoard,
-	ColumnBoardProps,
-	ROOT_PATH,
-} from '@modules/board/domain';
-import { BaseFactory } from '../../base.factory';
+import { BaseFactory } from '@shared/testing';
+import { BoardExternalReferenceType, BoardLayout, ColumnBoard, ColumnBoardProps, ROOT_PATH } from '../domain';
 
 class ColumnBoardFactory extends BaseFactory<ColumnBoard, ColumnBoardProps> {
 	withoutContext(): this {

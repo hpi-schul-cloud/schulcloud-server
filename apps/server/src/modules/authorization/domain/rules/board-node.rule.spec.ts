@@ -8,7 +8,7 @@ import {
 	drawingElementFactory,
 	fileElementFactory,
 	submissionItemFactory,
-} from 'apps/server/src/shared/testing/factory/domainobject/board';
+} from '@src/modules/board/testing';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action } from '../type';
 import { BoardNodeRule } from './board-node.rule';

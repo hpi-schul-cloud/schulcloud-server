@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject/board';
-import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { courseFactory } from '@shared/testing/factory';
-import { Permission } from '@shared/domain/interface';
-import { BoardUc } from './board.uc';
+import { LegacyLogger } from '@src/core/logger';
 import { BoardExternalReferenceType, BoardLayout } from '../domain';
 import { BoardNodePermissionService, ColumnBoardCopyService, ColumnBoardService } from '../service';
+import { columnBoardFactory, columnFactory } from '../testing';
+import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;

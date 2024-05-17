@@ -39,3 +39,4 @@
   [+] `deleteByExternalReference`
       - was used by `UserDeletedEventHandler` => refactored to `findByExternalReference`
 
+17.05.2024 14:28 ✖ Found 154 circular dependencies!

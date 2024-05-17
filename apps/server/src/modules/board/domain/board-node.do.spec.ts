@@ -1,4 +1,4 @@
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject/board';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ROOT_PATH, joinPath } from './path-utils';
 
 describe('BoardNode', () => {

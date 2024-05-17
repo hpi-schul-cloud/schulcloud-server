@@ -11,7 +11,7 @@ import {
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
-import { mediaBoardFactory } from '@shared/testing/factory/domainobject/board';
+import { mediaBoardFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';
 import { MediaBoardService } from '../media-board';
 import { UserDeletedEventHandlerService } from './user-deleted-event-handler.service';
