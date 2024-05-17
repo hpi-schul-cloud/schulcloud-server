@@ -51,11 +51,10 @@ export class MediaAvailableLineUc {
 			matchedTools = await this.filterUnlicensedTools(userId, matchedTools);
 		}
 
-		const mediaAvailableLine: MediaAvailableLine =
-			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
-
-		mediaAvailableLine.backgroundColor = mediaBoard.mediaAvailableLineBackgroundColor;
-		mediaAvailableLine.collapsed = mediaBoard.mediaAvailableLineCollapsed;
+		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
+			mediaBoard,
+			matchedTools
+		);
 
 		return mediaAvailableLine;
 	}

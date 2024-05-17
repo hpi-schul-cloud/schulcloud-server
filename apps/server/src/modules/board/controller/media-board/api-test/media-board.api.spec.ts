@@ -320,6 +320,8 @@ describe('Media Board (API)', () => {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
+					mediaAvailableLineBackgroundColor: MediaBoardColors.RED,
+					mediaAvailableLineCollapsed: true,
 				});
 				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
 				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
@@ -365,8 +367,8 @@ describe('Media Board (API)', () => {
 							description: unusedExternalTool.description,
 						},
 					],
-					collapsed: false,
-					backgroundColor: MediaBoardColors.TRANSPARENT,
+					collapsed: mediaBoard.mediaAvailableLineCollapsed,
+					backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
 				});
 			});
 		});

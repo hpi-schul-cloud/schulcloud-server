@@ -14,7 +14,6 @@ import {
 	Page,
 } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { MediaBoardColors } from '../../domain';
 
 @Injectable()
 export class MediaAvailableLineService {
@@ -120,7 +119,10 @@ export class MediaAvailableLineService {
 		return matchedTuples;
 	}
 
-	public createMediaAvailableLine(availableExternalTools: [ExternalTool, SchoolExternalTool][]): MediaAvailableLine {
+	public createMediaAvailableLine(
+		mediaBoard: MediaBoard,
+		availableExternalTools: [ExternalTool, SchoolExternalTool][]
+	): MediaAvailableLine {
 		const lineElements: MediaAvailableLineElement[] = availableExternalTools.map(
 			([externalTool, schoolExternalTool]: [ExternalTool, SchoolExternalTool]) =>
 				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
@@ -128,8 +130,8 @@ export class MediaAvailableLineService {
 
 		const line: MediaAvailableLine = new MediaAvailableLine({
 			elements: lineElements,
-			backgroundColor: MediaBoardColors.TRANSPARENT,
-			collapsed: false,
+			backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+			collapsed: mediaBoard.mediaAvailableLineCollapsed,
 		});
 
 		return line;

@@ -35,7 +35,6 @@ import {
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
 } from '@shared/domain/entity';
-import { MediaBoardColors, MediaBoardLayoutType } from '../domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -269,9 +268,9 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			children: lines,
 			context: boardNode.context,
-			layout: MediaBoardLayoutType.LIST,
-			mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
-			mediaAvailableLineCollapsed: false,
+			layout: boardNode.layout,
+			mediaAvailableLineBackgroundColor: boardNode.mediaAvailableLineBackgroundColor,
+			mediaAvailableLineCollapsed: boardNode.mediaAvailableLineCollapsed,
 		});
 
 		return mediaBoard;
