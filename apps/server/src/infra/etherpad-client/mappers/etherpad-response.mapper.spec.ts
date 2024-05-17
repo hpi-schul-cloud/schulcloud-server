@@ -231,5 +231,18 @@ describe('EtherpadResponseMapper', () => {
 				]);
 			});
 		});
+
+		describe('when mapEtherpadSessionToSession throws an error', () => {
+			it('should throw error', () => {
+				const etherpadSessions = {
+					etherpadId1: { groupID: 'groupID1', authorID: 'authorID1', validUntil: 123456789 },
+					etherpadId2: { groupID: 'groupID2', authorID: 'authorID2' },
+				};
+
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(
+					'Etherpad session data is not valid'
+				);
+			});
+		});
 	});
 });

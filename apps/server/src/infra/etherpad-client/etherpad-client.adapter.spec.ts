@@ -287,6 +287,54 @@ describe(EtherpadClientAdapter.name, () => {
 			});
 		});
 
+		describe('when two sessions already exist', () => {
+			const setup = () => {
+				const groupId = 'groupId';
+				const authorId = 'authorId';
+				const parentId = 'parentId';
+				const sessionCookieExpire = new Date();
+				const response = createMock<AxiosResponse<InlineResponse2004>>({
+					data: {
+						code: EtherpadResponseCode.OK,
+						data: { sessionID: 'sessionId' },
+					},
+				});
+
+				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+					data: {
+						code: EtherpadResponseCode.OK,
+						data: {
+							// @ts-expect-error wrong type mapping
+							'session-id-1': { groupID: groupId, authorID: authorId, validUntil: 20 },
+							'session-id-2': { groupID: groupId, authorID: authorId, validUntil: 30 },
+						},
+					},
+				});
+
+				const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 15;
+				jest.setSystemTime(10 * 1000);
+
+				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
+				sessionApi.createSessionUsingGET.mockResolvedValue(response);
+
+				return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
+			};
+
+			it('should return the session with longer validUntil', async () => {
+				const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
+
+				const result = await service.getOrCreateSessionId(
+					groupId,
+					authorId,
+					parentId,
+					sessionCookieExpire,
+					ETHERPAD_COOKIE_RELEASE_THRESHOLD
+				);
+
+				expect(result).toBe('session-id-2');
+			});
+		});
+
 		describe('when session does not exist', () => {
 			const setup = () => {
 				const groupId = 'groupId';
