@@ -793,6 +793,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/CommonCartridgeApiModule.html" data-type="entity-link" >CommonCartridgeApiModule</a>
+                            </li>
+                            <li class="link">
                                 <a href="modules/CommonToolModule.html" data-type="entity-link" >CommonToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -8318,6 +8321,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ColumnProps.html" data-type="entity-link" >ColumnProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CommonCartridgeConfig.html" data-type="entity-link" >CommonCartridgeConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ComponentEtherpadProperties.html" data-type="entity-link" >ComponentEtherpadProperties</a>
