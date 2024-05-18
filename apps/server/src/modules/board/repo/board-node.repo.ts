@@ -1,5 +1,5 @@
-import { Utils } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { FilterQuery, Utils } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
@@ -40,7 +40,10 @@ export class BoardNodeRepo {
 
 	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
-			context: { id: reference.id, type: reference.type },
+			context: {
+				_contextId: new ObjectId(reference.id),
+				_contextType: reference.type,
+			} as FilterQuery<BoardExternalReference>,
 		});
 
 		// TODO refactor descendants mapping
