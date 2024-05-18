@@ -29,15 +29,6 @@ export class ColumnBoardCopyService {
 	}): Promise<CopyStatus> {
 		const originalBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
 
-		if (props.copyTitle) {
-			originalBoard.title = props.copyTitle;
-		} else {
-			originalBoard.title = await this.columnBoardTitleService.deriveColumnBoardTitle(
-				originalBoard.title,
-				props.destinationExternalReference
-			);
-		}
-
 		const user = await this.userService.findById(props.userId);
 		/* istanbul ignore next */
 		if (originalBoard.context.type !== BoardExternalReferenceType.Course) {
@@ -59,6 +50,14 @@ export class ColumnBoardCopyService {
 			throw new InternalServerErrorException('expected copy of columnboard to be a columnboard');
 		}
 
+		if (props.copyTitle) {
+			copyStatus.copyEntity.title = props.copyTitle;
+		} else {
+			copyStatus.copyEntity.title = await this.columnBoardTitleService.deriveColumnBoardTitle(
+				originalBoard.title,
+				props.destinationExternalReference
+			);
+		}
 		copyStatus.copyEntity.context = props.destinationExternalReference;
 		await this.boardNodeService.addRoot(copyStatus.copyEntity);
 
