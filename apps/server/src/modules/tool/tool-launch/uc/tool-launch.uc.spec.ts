@@ -505,8 +505,8 @@ describe('ToolLaunchUc', () => {
 				const setup = () => {
 					const user: User = userFactory.build();
 					const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
-					const externalTool: ExternalTool = externalToolFactory.build({
-						medium: { mediumId: mediaUserLicense.mediumId },
+					const externalTool: ExternalTool = externalToolFactory.withMedium().build({
+						medium: { mediumId: mediaUserLicense.mediumId, mediaSourceId: mediaUserLicense.mediaSourceId },
 					});
 					const schoolExternalToolId = new ObjectId().toHexString();
 					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({ id: schoolExternalToolId });
@@ -543,6 +543,7 @@ describe('ToolLaunchUc', () => {
 
 					return {
 						user,
+						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
 						toolLaunchData,
@@ -552,11 +553,11 @@ describe('ToolLaunchUc', () => {
 				};
 
 				it('should check license', async () => {
-					const { user, contextExternalTool, mediaUserLicense } = setup();
+					const { user, contextExternalTool, mediaUserLicense, externalTool } = setup();
 
 					await uc.getSchoolExternalToolLaunchRequest(user.id, contextExternalTool);
 
-					expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalledWith(mediaUserLicense.mediumId, [
+					expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalledWith(externalTool.medium, [
 						mediaUserLicense,
 					]);
 				});
