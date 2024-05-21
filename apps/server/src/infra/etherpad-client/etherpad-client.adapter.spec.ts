@@ -61,8 +61,9 @@ describe(EtherpadClientAdapter.name, () => {
 		await module.close();
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
 		jest.resetAllMocks();
+		jest.useFakeTimers();
 	});
 
 	it('should be defined', () => {
@@ -85,20 +86,40 @@ describe(EtherpadClientAdapter.name, () => {
 				return { userId, username };
 			};
 
-			it('should return author id', async () => {
-				const { userId, username } = setup();
+			describe('When user name parameter is set', () => {
+				it('should return author id', async () => {
+					const { userId, username } = setup();
 
-				const result = await service.getOrCreateAuthorId(userId, username);
+					const result = await service.getOrCreateAuthorId(userId, username);
 
-				expect(result).toBe('authorId');
+					expect(result).toBe('authorId');
+				});
+
+				it('should call createAuthorIfNotExistsForUsingGET with correct params', async () => {
+					const { userId, username } = setup();
+
+					await service.getOrCreateAuthorId(userId, username);
+
+					expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, username);
+				});
 			});
 
-			it('should call createAuthorIfNotExistsForUsingGET with correct params', async () => {
-				const { userId, username } = setup();
+			describe('When user name parameter is not set', () => {
+				it('should return author id', async () => {
+					const { userId } = setup();
 
-				await service.getOrCreateAuthorId(userId, username);
+					const result = await service.getOrCreateAuthorId(userId);
 
-				expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, username);
+					expect(result).toBe('authorId');
+				});
+
+				it('should call createAuthorIfNotExistsForUsingGET with correct params', async () => {
+					const { userId } = setup();
+
+					await service.getOrCreateAuthorId(userId);
+
+					expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, undefined);
+				});
 			});
 		});
 
@@ -146,6 +167,127 @@ describe(EtherpadClientAdapter.name, () => {
 
 	describe('getOrCreateSessionId', () => {
 		describe('when session already exists', () => {
+			describe('when session duration is sufficient', () => {
+				const setup = () => {
+					const groupId = 'groupId';
+					const authorId = 'authorId';
+					const parentId = 'parentId';
+					const sessionCookieExpire = new Date();
+
+					const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+						data: {
+							code: EtherpadResponseCode.OK,
+							data: {
+								// @ts-expect-error wrong type mapping
+								'session-id-1': { groupID: groupId, authorID: authorId, validUntil: 20 },
+								'session-id-2': { groupID: 'other-group-id', authorID: 'other-author-id', validUntil: 20 },
+							},
+						},
+					});
+
+					const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 5;
+					jest.setSystemTime(10 * 1000);
+
+					authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
+
+					return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
+				};
+
+				it('should return session id', async () => {
+					const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
+
+					const result = await service.getOrCreateSessionId(
+						groupId,
+						authorId,
+						parentId,
+						sessionCookieExpire,
+						ETHERPAD_COOKIE_RELEASE_THRESHOLD
+					);
+
+					expect(result).toBe('session-id-1');
+				});
+
+				it('should not call createSessionUsingGET', async () => {
+					const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
+
+					await service.getOrCreateSessionId(
+						groupId,
+						authorId,
+						parentId,
+						sessionCookieExpire,
+						ETHERPAD_COOKIE_RELEASE_THRESHOLD
+					);
+
+					expect(sessionApi.createSessionUsingGET).not.toBeCalled();
+				});
+			});
+
+			describe('when session duration is not sufficient', () => {
+				const setup = () => {
+					const groupId = 'groupId';
+					const authorId = 'authorId';
+					const parentId = 'parentId';
+					const sessionCookieExpire = new Date();
+					const response = createMock<AxiosResponse<InlineResponse2004>>({
+						data: {
+							code: EtherpadResponseCode.OK,
+							data: { sessionID: 'sessionId' },
+						},
+					});
+
+					const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+						data: {
+							code: EtherpadResponseCode.OK,
+							data: {
+								// @ts-expect-error wrong type mapping
+								'session-id-1': { groupID: groupId, authorID: authorId, validUntil: 20 },
+								'session-id-2': { groupID: 'other-group-id', authorID: 'other-author-id', validUntil: 20 },
+							},
+						},
+					});
+
+					const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 15;
+					jest.setSystemTime(10 * 1000);
+
+					authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
+
+					sessionApi.createSessionUsingGET.mockResolvedValue(response);
+
+					return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
+				};
+
+				it('should return session id', async () => {
+					const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
+
+					const result = await service.getOrCreateSessionId(
+						groupId,
+						authorId,
+						parentId,
+						sessionCookieExpire,
+						ETHERPAD_COOKIE_RELEASE_THRESHOLD
+					);
+
+					expect(result).toBe('sessionId');
+				});
+
+				it('should call createSessionUsingGET with correct params', async () => {
+					const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
+
+					await service.getOrCreateSessionId(
+						groupId,
+						authorId,
+						parentId,
+						sessionCookieExpire,
+						ETHERPAD_COOKIE_RELEASE_THRESHOLD
+					);
+
+					const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000).toString();
+					expect(sessionApi.createSessionUsingGET).toBeCalledWith(groupId, authorId, unixTimeInSeconds);
+				});
+			});
+		});
+
+		describe('when two sessions already exist', () => {
 			const setup = () => {
 				const groupId = 'groupId';
 				const authorId = 'authorId';
@@ -163,32 +305,33 @@ describe(EtherpadClientAdapter.name, () => {
 						code: EtherpadResponseCode.OK,
 						data: {
 							// @ts-expect-error wrong type mapping
-							'session-id-1': { groupID: groupId, authorID: authorId },
-							'session-id-2': { groupID: 'other-group-id', authorID: 'other-author-id' },
+							'session-id-1': { groupID: groupId, authorID: authorId, validUntil: 20 },
+							'session-id-2': { groupID: groupId, authorID: authorId, validUntil: 30 },
 						},
 					},
 				});
 
-				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
+				const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 15;
+				jest.setSystemTime(10 * 1000);
 
+				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
 				sessionApi.createSessionUsingGET.mockResolvedValue(response);
-				return { groupId, authorId, parentId, sessionCookieExpire };
+
+				return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
 			};
 
-			it('should return session id', async () => {
-				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
+			it('should return the session with longer validUntil', async () => {
+				const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
 
-				const result = await service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire);
+				const result = await service.getOrCreateSessionId(
+					groupId,
+					authorId,
+					parentId,
+					sessionCookieExpire,
+					ETHERPAD_COOKIE_RELEASE_THRESHOLD
+				);
 
-				expect(result).toBe('session-id-1');
-			});
-
-			it('should not call createSessionUsingGET', async () => {
-				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
-
-				await service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire);
-
-				expect(sessionApi.createSessionUsingGET).not.toBeCalled();
+				expect(result).toBe('session-id-2');
 			});
 		});
 
@@ -212,29 +355,41 @@ describe(EtherpadClientAdapter.name, () => {
 					},
 				});
 
+				const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 15;
+
 				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
 				sessionApi.createSessionUsingGET.mockResolvedValue(response);
-				return { groupId, authorId, parentId, sessionCookieExpire };
+
+				return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
 			};
 
 			it('should return session id', async () => {
-				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
+				const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
 
-				const result = await service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire);
+				const result = await service.getOrCreateSessionId(
+					groupId,
+					authorId,
+					parentId,
+					sessionCookieExpire,
+					ETHERPAD_COOKIE_RELEASE_THRESHOLD
+				);
 
 				expect(result).toBe('sessionId');
 			});
 
 			it('should call createSessionUsingGET with correct params', async () => {
-				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
+				const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
 
-				await service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire);
-
-				expect(sessionApi.createSessionUsingGET).toBeCalledWith(
+				await service.getOrCreateSessionId(
 					groupId,
 					authorId,
-					sessionCookieExpire.getTime().toString()
+					parentId,
+					sessionCookieExpire,
+					ETHERPAD_COOKIE_RELEASE_THRESHOLD
 				);
+
+				const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000).toString();
+				expect(sessionApi.createSessionUsingGET).toBeCalledWith(groupId, authorId, unixTimeInSeconds);
 			});
 		});
 
@@ -259,16 +414,24 @@ describe(EtherpadClientAdapter.name, () => {
 						data: {},
 					},
 				});
+				const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 15;
 
 				sessionApi.createSessionUsingGET.mockResolvedValue(response);
-				return { groupId, authorId, parentId, sessionCookieExpire };
+
+				return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
 			};
 
 			it('should throw an error', async () => {
-				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
+				const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
 
 				await expect(
-					service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire)
+					service.getOrCreateSessionId(
+						groupId,
+						authorId,
+						parentId,
+						sessionCookieExpire,
+						ETHERPAD_COOKIE_RELEASE_THRESHOLD
+					)
 				).rejects.toThrowError('Session could not be created');
 			});
 		});
@@ -285,18 +448,25 @@ describe(EtherpadClientAdapter.name, () => {
 						data: {},
 					},
 				});
+				const ETHERPAD_COOKIE_RELEASE_THRESHOLD = 15;
 
 				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
 
 				sessionApi.createSessionUsingGET.mockRejectedValueOnce(new Error('error'));
-				return { groupId, authorId, parentId, sessionCookieExpire };
+				return { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD };
 			};
 
 			it('should throw EtherpadErrorLoggableException', async () => {
-				const { groupId, authorId, parentId, sessionCookieExpire } = setup();
+				const { groupId, authorId, parentId, sessionCookieExpire, ETHERPAD_COOKIE_RELEASE_THRESHOLD } = setup();
 
 				await expect(
-					service.getOrCreateSessionId(groupId, authorId, parentId, sessionCookieExpire)
+					service.getOrCreateSessionId(
+						groupId,
+						authorId,
+						parentId,
+						sessionCookieExpire,
+						ETHERPAD_COOKIE_RELEASE_THRESHOLD
+					)
 				).rejects.toThrowError(EtherpadErrorLoggableException);
 			});
 		});
@@ -310,7 +480,7 @@ describe(EtherpadClientAdapter.name, () => {
 					data: {
 						code: EtherpadResponseCode.OK,
 						// @ts-expect-error wrong type mapping
-						data: { 'session-id-1': { groupID: 'groupId', authorID: authorId } },
+						data: { 'session-id-1': { groupID: 'groupId', authorID: authorId, validUntil: 10 }, 'session-id-2': null },
 					},
 				});
 
@@ -381,12 +551,12 @@ describe(EtherpadClientAdapter.name, () => {
 				return authorId;
 			};
 
-			it('should throw an error', async () => {
+			it('should return empty array', async () => {
 				const authorId = setup();
 
-				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrowError(
-					'Etherpad session ids response is not an object'
-				);
+				const result = await service.listSessionIdsOfAuthor(authorId);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});
