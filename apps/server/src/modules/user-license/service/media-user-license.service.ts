@@ -10,7 +10,7 @@ export class MediaUserLicenseService {
 	): boolean {
 		return mediaUserLicenses.some(
 			(license: MediaUserLicense) =>
-				license.mediumId === externalToolMedium.mediumId && license.mediaSourceId === externalToolMedium.publisher
+				license.mediumId === externalToolMedium.mediumId && license.mediaSourceId === externalToolMedium.mediaSourceId
 		);
 	}
 }

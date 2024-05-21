@@ -64,6 +64,7 @@ export class ExternalToolRepoMapper {
 		return new ExternalToolMedium({
 			mediumId: entity.mediumId,
 			publisher: entity.publisher,
+			mediaSourceId: entity.mediaSourceId,
 		});
 	}
 
@@ -137,6 +138,7 @@ export class ExternalToolRepoMapper {
 		return new ExternalToolMediumEntity({
 			mediumId: medium.mediumId,
 			publisher: medium.publisher,
+			mediaSourceId: medium.mediaSourceId,
 		});
 	}
 
