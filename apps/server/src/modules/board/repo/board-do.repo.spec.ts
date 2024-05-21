@@ -6,7 +6,10 @@ import { CollaborativeTextEditorService } from '@modules/collaborative-text-edit
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
+import {
+	contextExternalToolEntityFactory,
+	contextExternalToolFactory,
+} from '@modules/tool/context-external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -33,7 +36,6 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
-	contextExternalToolFactory,
 	courseFactory,
 	externalToolElementNodeFactory,
 	fileElementFactory,

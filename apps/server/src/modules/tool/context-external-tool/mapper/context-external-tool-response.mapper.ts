@@ -11,7 +11,6 @@ export class ContextExternalToolResponseMapper {
 			contextType: contextExternalTool.contextRef.type,
 			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
 			displayName: contextExternalTool.displayName,
-			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
 		});
 

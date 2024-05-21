@@ -1,3 +1,4 @@
+import { MediaBoardColors } from '@modules/board/domain';
 import { MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps } from '@shared/domain/domainobject';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from '../../base.factory';
@@ -13,5 +14,7 @@ class MediaAvailableLineFactory extends BaseFactory<MediaAvailableLine, MediaAva
 export const mediaAvailableLineFactory = MediaAvailableLineFactory.define(MediaAvailableLine, () => {
 	return {
 		elements: [],
+		backgroundColor: MediaBoardColors.TRANSPARENT,
+		collapsed: false,
 	};
 });

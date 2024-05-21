@@ -19,3 +19,10 @@ export interface EtherpadResponse {
 	message?: string;
 	data?: unknown;
 }
+
+export interface Session {
+	id: string;
+	groupId: string;
+	authorId: string;
+	validUntil: number;
+}

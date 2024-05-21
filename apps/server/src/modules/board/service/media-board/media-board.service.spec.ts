@@ -1,8 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { mediaBoardFactory, mediaLineFactory } from '@shared/testing';
+import { BoardExternalReferenceType, MediaBoard } from '@shared/domain/domainobject';
+import { columnBoardFactory, mediaBoardFactory, mediaLineFactory } from '@shared/testing';
+import { MediaBoardColors, MediaBoardLayoutType } from '../../domain';
+import { InvalidBoardTypeLoggableException } from '../../loggable';
 import { BoardDoRepo } from '../../repo';
 import { BoardDoService } from '../board-do.service';
 import { MediaBoardService } from './media-board.service';
@@ -113,6 +115,9 @@ describe(MediaBoardService.name, () => {
 							type: BoardExternalReferenceType.User,
 							id: userId,
 						},
+						layout: MediaBoardLayoutType.LIST,
+						mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
+						mediaAvailableLineCollapsed: false,
 					})
 				);
 			});
@@ -123,6 +128,84 @@ describe(MediaBoardService.name, () => {
 				const result = await service.create({ type: BoardExternalReferenceType.User, id: userId });
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(result);
+			});
+		});
+	});
+
+	describe('updateAvailableLineColor', () => {
+		describe('when changing the color of the available line', () => {
+			const setup = () => {
+				const board = mediaBoardFactory.build({
+					mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
+				});
+
+				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
+
+				return {
+					board,
+				};
+			};
+
+			it('should set the color of the line', async () => {
+				const { board } = setup();
+
+				await service.updateAvailableLineColor(board, MediaBoardColors.RED);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					new MediaBoard({ ...board.getProps(), mediaAvailableLineBackgroundColor: MediaBoardColors.RED })
+				);
+			});
+		});
+	});
+
+	describe('collapseAvailableLine', () => {
+		describe('when changing the visibility of the available line', () => {
+			const setup = () => {
+				const board = mediaBoardFactory.build({
+					mediaAvailableLineCollapsed: false,
+				});
+
+				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
+
+				return {
+					board,
+				};
+			};
+
+			it('should set the visibility of the line', async () => {
+				const { board } = setup();
+
+				await service.collapseAvailableLine(board, true);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					new MediaBoard({ ...board.getProps(), mediaAvailableLineCollapsed: true })
+				);
+			});
+		});
+	});
+
+	describe('setLayout', () => {
+		describe('when changing the layout of the board', () => {
+			const setup = () => {
+				const board = mediaBoardFactory.build({
+					layout: MediaBoardLayoutType.LIST,
+				});
+
+				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
+
+				return {
+					board,
+				};
+			};
+
+			it('should set the layout of the board', async () => {
+				const { board } = setup();
+
+				await service.setLayout(board, MediaBoardLayoutType.GRID);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					new MediaBoard({ ...board.getProps(), layout: MediaBoardLayoutType.GRID })
+				);
 			});
 		});
 	});
@@ -190,6 +273,26 @@ describe(MediaBoardService.name, () => {
 				const result = await service.findByDescendant(line);
 
 				expect(result).toEqual(board);
+			});
+		});
+
+		describe('when the board does not have the correct type', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build();
+				const line = mediaLineFactory.build();
+
+				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
+
+				return {
+					board,
+					line,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { line } = setup();
+
+				await expect(service.findByDescendant(line)).rejects.toThrow(InvalidBoardTypeLoggableException);
 			});
 		});
 	});

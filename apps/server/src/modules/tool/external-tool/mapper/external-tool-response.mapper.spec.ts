@@ -1,10 +1,3 @@
-import {
-	basicToolConfigFactory,
-	customParameterFactory,
-	externalToolFactory,
-	lti11ToolConfigFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -26,6 +19,13 @@ import {
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '../testing';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 describe('ExternalToolResponseMapper', () => {
@@ -77,7 +77,6 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameter],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: basicToolConfig,
 					isDeactivated: true,
 				});
@@ -90,7 +89,6 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameterResponse],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: basicToolConfigResponse,
 					isDeactivated: true,
 					description: externalTool.description,
@@ -171,7 +169,6 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameter],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: oauth2ToolConfigDO,
 					isDeactivated: false,
 				});
@@ -184,7 +181,6 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameterResponse],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: oauth2ToolConfigResponse,
 					isDeactivated: false,
 					description: externalTool.description,
@@ -260,7 +256,6 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameter],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: lti11ToolConfigDO,
 					isDeactivated: false,
 				});
@@ -273,7 +268,6 @@ describe('ExternalToolResponseMapper', () => {
 					parameters: [customParameterResponse],
 					isHidden: true,
 					openNewTab: true,
-					version: 1,
 					config: lti11ToolConfigResponse,
 					isDeactivated: false,
 					description: externalTool.description,

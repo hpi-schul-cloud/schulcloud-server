@@ -5,17 +5,12 @@ import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, ColumnBoard, ExternalToolElement } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
-import {
-	columnBoardFactory,
-	contextExternalToolFactory,
-	courseFactory,
-	externalToolElementFactory,
-	schoolExternalToolFactory,
-	setupEntities,
-} from '@shared/testing';
+import { columnBoardFactory, courseFactory, externalToolElementFactory, setupEntities } from '@shared/testing';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { ParameterTypeNotImplementedLoggableException } from '../../error';
 import { AutoContextNameStrategy } from './auto-context-name.strategy';
 
