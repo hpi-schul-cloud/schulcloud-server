@@ -16,11 +16,11 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
+import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
@@ -227,6 +227,7 @@ const config: ServerConfig = {
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
 	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
 	ETHERPAD_COOKIE__EXPIRES_SECONDS: Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS') as number,
+	ETHERPAD_COOKIE_RELEASE_THRESHOLD: Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD') as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,

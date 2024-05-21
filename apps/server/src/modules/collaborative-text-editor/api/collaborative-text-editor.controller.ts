@@ -1,5 +1,5 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, ForbiddenException, Get, NotFoundException, Param, Res } from '@nestjs/common';
+import { Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Response } from 'express';
@@ -30,13 +30,22 @@ export class CollaborativeTextEditorController {
 			getCollaborativeTextEditorForParentParams
 		);
 
-		res.cookie('sessionID', textEditor.sessions.toString(), {
+		res.cookie('sessionID', textEditor.sessionId, {
 			expires: textEditor.sessionExpiryDate,
 			secure: true,
+			path: textEditor.path,
 		});
 
 		const dto = CollaborativeTextEditorMapper.mapCollaborativeTextEditorToResponse(textEditor);
 
 		return dto;
+	}
+
+	@ApiOperation({ summary: 'Delete all etherpad sessions for user' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@Delete('/delete-sessions')
+	async deleteSessionsByUser(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.collaborativeTextEditorUc.deleteSessionsByUser(currentUser.userId);
 	}
 }
