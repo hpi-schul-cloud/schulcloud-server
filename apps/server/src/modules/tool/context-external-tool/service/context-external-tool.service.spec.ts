@@ -500,7 +500,9 @@ describe(ContextExternalToolService.name, () => {
 
 			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
 
-			expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
+			expect(contextExternalToolRepo.save).toHaveBeenCalledWith(
+				new ContextExternalTool({ ...contextExternalTool.getProps(), id: expect.any(String) })
+			);
 		});
 	});
 });
