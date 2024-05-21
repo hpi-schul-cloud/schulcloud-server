@@ -60,9 +60,9 @@ describe('LdapService', () => {
 		describe('when credentials are correct', () => {
 			it('should login successfully', async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
-				await expect(ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')).rejects.toThrow(
-					new UserAuthenticatedLoggable()
-				);
+				await expect(
+					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')
+				).resolves.not.toThrow();
 			});
 		});
 
