@@ -10,9 +10,9 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import {
 	ContextExternalTool,
+	ContextExternalToolLaunchable,
 	ContextRef,
 	RestrictedContextMismatchLoggableException,
-	ContextExternalToolLaunchable,
 } from '../domain';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
@@ -88,11 +88,8 @@ export class ContextExternalToolService {
 		contextCopyId: EntityId
 	): Promise<ContextExternalTool> {
 		const copy = new ContextExternalTool({
+			...contextExternalTool.getProps(),
 			id: new ObjectId().toHexString(),
-			schoolToolRef: contextExternalTool.schoolToolRef,
-			contextRef: contextExternalTool.contextRef,
-			displayName: contextExternalTool.displayName,
-			parameters: contextExternalTool.parameters,
 		});
 
 		copy.contextRef.id = contextCopyId;
@@ -113,11 +110,11 @@ export class ContextExternalToolService {
 
 		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
 			if (parameter.isProtected) {
-				this.deleteProtectedValues(contextExternalTool, parameter.name);
+				this.deleteProtectedValues(copy, parameter.name);
 			}
 		});
 
-		const copiedTool: ContextExternalTool = await this.contextExternalToolRepo.save(contextExternalTool);
+		const copiedTool: ContextExternalTool = await this.contextExternalToolRepo.save(copy);
 
 		return copiedTool;
 	}
