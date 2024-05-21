@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain/entity';
 import { systemEntityFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { UserAuthenticatedLoggable, UserCouldNotAuthenticateLoggableException } from '../loggable';
+import { UserCouldNotAuthenticateLoggableException } from '../loggable';
 import { LdapService } from './ldap.service';
 
 const mockClient = {
