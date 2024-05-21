@@ -1,9 +1,9 @@
-export class SchoolExternalToolRefDO {
+export class SchoolExternalToolRef {
 	schoolToolId: string;
 
 	schoolId?: string;
 
-	constructor(props: SchoolExternalToolRefDO) {
+	constructor(props: SchoolExternalToolRef) {
 		this.schoolToolId = props.schoolToolId;
 		this.schoolId = props.schoolId;
 	}

@@ -1,8 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Card,
@@ -28,7 +31,6 @@ import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
-	contextExternalToolFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
@@ -38,8 +40,6 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ToolFeatures } from '@modules/tool/tool-config';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 

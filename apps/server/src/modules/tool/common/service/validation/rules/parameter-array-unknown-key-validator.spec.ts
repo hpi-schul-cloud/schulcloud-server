@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { customParameterFactory } from '@shared/testing';
+import { customParameterFactory } from '../../../../external-tool/testing';
 import { CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from '../../../domain';
 import { ParameterArrayUnknownKeyValidator } from './parameter-array-unknown-key-validator';
 

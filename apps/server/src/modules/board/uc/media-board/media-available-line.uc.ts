@@ -9,6 +9,7 @@ import { BoardDoAuthorizable, MediaAvailableLine, type MediaBoard } from '@share
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { MediaBoardColors } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
 
@@ -29,7 +30,11 @@ export class MediaAvailableLineUc {
 
 		const mediaBoard: MediaBoard = await this.mediaBoardService.findById(boardId);
 
-		const user: User = await this.checkUsersPermissions(userId, mediaBoard);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
+			mediaBoard
+		);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
 
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
@@ -46,20 +51,40 @@ export class MediaAvailableLineUc {
 			matchedTools = await this.filterUnlicensedTools(userId, matchedTools);
 		}
 
-		const mediaAvailableLine: MediaAvailableLine =
-			this.mediaAvailableLineService.createMediaAvailableLine(matchedTools);
+		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
+			mediaBoard,
+			matchedTools
+		);
 
 		return mediaAvailableLine;
 	}
 
-	private async checkUsersPermissions(userId: EntityId, mediaBoard: MediaBoard): Promise<User> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
+	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: MediaBoardColors): Promise<void> {
+		this.checkFeatureEnabled();
 
-		return user;
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.updateAvailableLineColor(board, color);
+	}
+
+	public async collapseAvailableLine(
+		userId: EntityId,
+		boardId: EntityId,
+		mediaAvailableLineCollapsed: boolean
+	): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.collapseAvailableLine(board, mediaAvailableLineCollapsed);
 	}
 
 	private checkFeatureEnabled(): void {

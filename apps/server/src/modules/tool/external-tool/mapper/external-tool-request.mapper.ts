@@ -60,7 +60,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	public mapUpdateRequest(externalToolUpdateParams: ExternalToolUpdateParams, version = 1): ExternalToolUpdate {
+	public mapUpdateRequest(externalToolUpdateParams: ExternalToolUpdateParams): ExternalToolUpdate {
 		let mappedConfig: BasicToolConfigDto | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate;
 		if (externalToolUpdateParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfig(externalToolUpdateParams.config);
@@ -85,13 +85,12 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolUpdateParams.isHidden,
 			isDeactivated: externalToolUpdateParams.isDeactivated,
 			openNewTab: externalToolUpdateParams.openNewTab,
-			version,
 			restrictToContexts: externalToolUpdateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolUpdateParams.medium),
 		};
 	}
 
-	public mapCreateRequest(externalToolCreateParams: ExternalToolCreateParams, version = 1): ExternalToolCreate {
+	public mapCreateRequest(externalToolCreateParams: ExternalToolCreateParams): ExternalToolCreate {
 		let mappedConfig: BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate;
 		if (externalToolCreateParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfig(externalToolCreateParams.config);
@@ -114,7 +113,6 @@ export class ExternalToolRequestMapper {
 			isHidden: externalToolCreateParams.isHidden,
 			isDeactivated: externalToolCreateParams.isDeactivated,
 			openNewTab: externalToolCreateParams.openNewTab,
-			version,
 			restrictToContexts: externalToolCreateParams.restrictToContexts,
 			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
 			description: externalToolCreateParams.description,

@@ -3,17 +3,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import {
-	contextExternalToolFactory,
-	customParameterFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-} from '@shared/testing';
 import { CustomParameterEntry } from '../../../common/domain';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalTool } from '../../../external-tool/domain';
+import { customParameterFactory, externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -26,9 +23,9 @@ import {
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
+	AutoMediumIdStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
-	AutoMediumIdStrategy,
 } from '../auto-parameter-strategy';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { ToolLaunchParams } from './tool-launch-params.interface';
