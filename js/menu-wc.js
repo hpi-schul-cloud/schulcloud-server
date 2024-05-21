@@ -9202,6 +9202,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ServerConfig.html" data-type="entity-link" >ServerConfig</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/Session.html" data-type="entity-link" >Session</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SessionApiInterface.html" data-type="entity-link" >SessionApiInterface</a>
                             </li>
                             <li class="link">

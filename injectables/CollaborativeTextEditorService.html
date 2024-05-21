@@ -147,11 +147,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#getOrCreateCollaborativeTextEditor" >getOrCreateCollaborativeTextEditor</a>
+                                <a href="#deleteSessionsByUser" >deleteSessionsByUser</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#removeDuplicateSessions" >removeDuplicateSessions</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#getOrCreateCollaborativeTextEditor" >getOrCreateCollaborativeTextEditor</a>
                             </li>
                         </ul>
                     </td>
@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -302,7 +302,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                            <b>Returns : </b>    <code>URL</code>
 
                         </div>
                             <div class="io-description">
@@ -334,8 +334,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -373,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -396,6 +396,75 @@
                                     <tbody>
                                         <tr>
                                                 <td>parentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteSessionsByUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteSessionsByUser</b></span>
+                        <a href="#deleteSessionsByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteSessionsByUser(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -513,75 +582,6 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeDuplicateSessions"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>removeDuplicateSessions</b></span>
-                        <a href="#removeDuplicateSessions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeDuplicateSessions(sessions: string[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/service/collaborative-text-editor.service.ts:54</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>sessions</td>
-                                            <td>
-                                                        <code>string[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>string[]</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
@@ -612,6 +612,7 @@ export class CollaborativeTextEditorService {
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise&lt;CollaborativeTextEditor&gt; {
 		const sessionExpiryDate &#x3D; this.buildSessionExpiryDate();
+		const durationThreshold &#x3D; Number(this.configService.get(&#x27;ETHERPAD_COOKIE_RELEASE_THRESHOLD&#x27;));
 		const { parentId } &#x3D; params;
 
 		const groupId &#x3D; await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
@@ -621,16 +622,16 @@ export class CollaborativeTextEditorService {
 			groupId,
 			authorId,
 			parentId,
-			sessionExpiryDate
+			sessionExpiryDate,
+			durationThreshold
 		);
-		const authorsSessionIds &#x3D; await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
 		const url &#x3D; this.buildPath(padId);
-		const uniqueSessionIds &#x3D; this.removeDuplicateSessions([...authorsSessionIds, sessionId]);
 
 		return {
-			sessions: uniqueSessionIds,
-			url,
+			sessionId,
+			url: url.toString(),
+			path: url.pathname,
 			sessionExpiryDate,
 		};
 	}
@@ -641,10 +642,13 @@ export class CollaborativeTextEditorService {
 		await this.collaborativeTextEditorAdapter.deleteGroup(groupId);
 	}
 
-	private removeDuplicateSessions(sessions: string[]): string[] {
-		const uniqueSessions &#x3D; [...new Set(sessions)];
+	async deleteSessionsByUser(userId: string): Promise&lt;void&gt; {
+		const authorId &#x3D; await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId);
+		const sessionIds &#x3D; await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
 
-		return uniqueSessions;
+		const promises &#x3D; sessionIds.map((sessionId) &#x3D;&gt; this.collaborativeTextEditorAdapter.deleteSession(sessionId));
+
+		await Promise.all(promises);
 	}
 
 	private buildSessionExpiryDate(): Date {
@@ -654,9 +658,9 @@ export class CollaborativeTextEditorService {
 		return sessionCookieExpiryDate;
 	}
 
-	private buildPath(editorId: string): string {
+	private buildPath(editorId: string): URL {
 		const basePath &#x3D; this.configService.get&lt;string&gt;(&#x27;ETHERPAD__PAD_URI&#x27;);
-		const url &#x3D; &#x60;${basePath}/${editorId}&#x60;;
+		const url &#x3D; new URL(&#x60;${basePath}/${editorId}&#x60;);
 
 		return url;
 	}

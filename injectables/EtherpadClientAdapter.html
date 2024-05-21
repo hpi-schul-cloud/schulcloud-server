@@ -150,7 +150,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#findSessionId" >findSessionId</a>
+                                <a href="#findSession" >findSession</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -180,7 +180,7 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getSessionIdByGroupAndAuthor" >getSessionIdByGroupAndAuthor</a>
+                                <a href="#getSessionByGroupAndAuthor" >getSessionByGroupAndAuthor</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -188,7 +188,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#isObject" >isObject</a>
+                                <a href="#isSessionDurationSufficient" >isSessionDurationSufficient</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -283,7 +283,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:29</a></div>
                             </td>
                         </tr>
 
@@ -385,8 +385,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="234"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:234</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="226"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:226</a></div>
                         </td>
                     </tr>
 
@@ -455,8 +455,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="289"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:289</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="279"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:279</a></div>
                         </td>
                     </tr>
 
@@ -525,8 +525,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="272"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:272</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="264"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:264</a></div>
                         </td>
                     </tr>
 
@@ -562,7 +562,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;InlineResponse2001 | undefined&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -576,26 +576,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findSessionId"></a>
+                    <a name="findSession"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>findSessionId</b></span>
-                        <a href="#findSessionId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findSession</b></span>
+                        <a href="#findSession"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findSessionId(sessions: <a href="../interfaces/InlineResponse2006Data.html" target="_self">InlineResponse2006Data</a>, groupId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>findSession(sessions: <a href="../interfaces/Session.html" target="_self">Session[]</a>, groupId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="133"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:133</a></div>
                         </td>
                     </tr>
 
@@ -618,7 +618,7 @@
                                         <tr>
                                                 <td>sessions</td>
                                             <td>
-                                                            <code><a href="../interfaces/InlineResponse2006Data.html" target="_self" >InlineResponse2006Data</a></code>
+                                                            <code><a href="../interfaces/Session.html" target="_self" >Session[]</a></code>
                                             </td>
 
                                             <td>
@@ -655,7 +655,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>string | undefined</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Session.html" target="_self" >Session | undefined</a></code>
 
                         </div>
                             <div class="io-description">
@@ -681,15 +681,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getOrCreateAuthorId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getOrCreateAuthorId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, username?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -728,7 +728,7 @@
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -770,8 +770,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="182"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:182</a></div>
                         </td>
                     </tr>
 
@@ -852,8 +852,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="171"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:171</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="163"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:163</a></div>
                         </td>
                     </tr>
 
@@ -915,15 +915,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getOrCreateSessionId(groupId: <a href="../undefineds/GroupId.html" target="_self">GroupId</a>, authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, sessionCookieExpire: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                    <code>getOrCreateSessionId(groupId: <a href="../undefineds/GroupId.html" target="_self">GroupId</a>, authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, sessionCookieExpire: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, durationThreshold: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -991,11 +991,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>durationThreshold</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SessionId" target="_self" >Promise&lt;SessionId&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Session.html" target="_self" >Promise&lt;SessionId&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1028,8 +1040,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="215"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:215</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="207"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:207</a></div>
                         </td>
                     </tr>
 
@@ -1091,27 +1103,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getSessionIdByGroupAndAuthor"></a>
+                    <a name="getSessionByGroupAndAuthor"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>getSessionIdByGroupAndAuthor</b></span>
-                        <a href="#getSessionIdByGroupAndAuthor"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getSessionByGroupAndAuthor</b></span>
+                        <a href="#getSessionByGroupAndAuthor"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getSessionIdByGroupAndAuthor(groupId: <a href="../undefineds/GroupId.html" target="_self">GroupId</a>, authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>)</code>
+                    <code>getSessionByGroupAndAuthor(groupId: <a href="../undefineds/GroupId.html" target="_self">GroupId</a>, authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -1159,7 +1171,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SessionId" target="_self" >Promise&lt;SessionId | undefined&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Session.html" target="_self" >Promise&lt;Session | undefined&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1191,8 +1203,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="306"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:306</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="296"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:296</a></div>
                         </td>
                     </tr>
 
@@ -1255,26 +1267,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isObject"></a>
+                    <a name="isSessionDurationSufficient"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>isObject</b></span>
-                        <a href="#isObject"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isSessionDurationSufficient</b></span>
+                        <a href="#isSessionDurationSufficient"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isObject(value: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                    <code>isSessionDurationSufficient(session: <a href="../interfaces/Session.html" target="_self">Session</a>, durationThreshold: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="157"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:157</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -1295,9 +1307,21 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>value</td>
+                                                <td>session</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                            <code><a href="../interfaces/Session.html" target="_self" >Session</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>durationThreshold</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                             </td>
 
                                             <td>
@@ -1310,7 +1334,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1343,8 +1367,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="249"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:249</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="241"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:241</a></div>
                         </td>
                     </tr>
 
@@ -1413,8 +1437,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -1520,7 +1544,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SessionId" target="_self" >Promise&lt;SessionId[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/Session.html" target="_self" >Promise&lt;SessionId[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1546,15 +1570,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>tryCreateAuthor(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>tryCreateAuthor(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, username?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -1593,7 +1617,7 @@
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -1635,8 +1659,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="205"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:205</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="197"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:197</a></div>
                         </td>
                     </tr>
 
@@ -1717,8 +1741,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -1811,8 +1835,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="239"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:239</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="231"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:231</a></div>
                         </td>
                     </tr>
 
@@ -1881,8 +1905,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="296"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:296</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="286"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:286</a></div>
                         </td>
                     </tr>
 
@@ -1951,8 +1975,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="279"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:279</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="269"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:269</a></div>
                         </td>
                     </tr>
 
@@ -2021,8 +2045,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="262"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:262</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:254</a></div>
                         </td>
                     </tr>
 
@@ -2091,8 +2115,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:172</a></div>
                         </td>
                     </tr>
 
@@ -2161,8 +2185,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -2231,8 +2255,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="224"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:224</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="216"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:216</a></div>
                         </td>
                     </tr>
 
@@ -2294,15 +2318,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>tryListSessionsOfAuthor(authorId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>tryListSessionsOfAuthor(authorId: <a href="../undefineds/AuthorId.html" target="_self">AuthorId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="161"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:161</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-client.adapter.ts:153</a></div>
                         </td>
                     </tr>
 
@@ -2325,7 +2349,7 @@
                                         <tr>
                                                 <td>authorId</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AuthorId" target="_self" >AuthorId</a></code>
                                             </td>
 
                                             <td>
@@ -2355,6 +2379,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { TypeGuard } from &#x27;@shared/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { AxiosResponse } from &#x27;axios&#x27;;
 import {
@@ -2365,7 +2390,6 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
-	InlineResponse2006Data,
 } from &#x27;./etherpad-api-client&#x27;;
 import { AuthorApi, GroupApi, PadApi, SessionApi } from &#x27;./etherpad-api-client/api&#x27;;
 import {
@@ -2376,6 +2400,7 @@ import {
 	EtherpadResponseCode,
 	GroupId,
 	PadId,
+	Session,
 	SessionId,
 } from &#x27;./interface&#x27;;
 import { EtherpadResponseMapper } from &#x27;./mappers&#x27;;
@@ -2389,7 +2414,7 @@ export class EtherpadClientAdapter {
 		private readonly padApi: PadApi
 	) {}
 
-	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise&lt;AuthorId&gt; {
+	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise&lt;AuthorId&gt; {
 		const response &#x3D; await this.tryCreateAuthor(userId, username);
 		const user &#x3D; this.handleEtherpadResponse&lt;InlineResponse2003&gt;(response, { userId });
 
@@ -2398,7 +2423,7 @@ export class EtherpadClientAdapter {
 		return authorId;
 	}
 
-	private async tryCreateAuthor(userId: string, username: string): Promise&lt;AxiosResponse&lt;InlineResponse2003&gt;&gt; {
+	private async tryCreateAuthor(userId: string, username?: string): Promise&lt;AxiosResponse&lt;InlineResponse2003&gt;&gt; {
 		try {
 			const response &#x3D; await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
 
@@ -2412,7 +2437,7 @@ export class EtherpadClientAdapter {
 		const response &#x3D; await this.tryGetPadsOfAuthor(authorId);
 		const pads &#x3D; this.handleEtherpadResponse&lt;InlineResponse2002&gt;(response, { authorId });
 
-		if (!this.isObject(pads)) {
+		if (!TypeGuard.isObject(pads)) {
 			throw new InternalServerErrorException(&#x27;Etherpad listPadsOfAuthor response is not an object&#x27;);
 		}
 
@@ -2435,21 +2460,29 @@ export class EtherpadClientAdapter {
 		groupId: GroupId,
 		authorId: AuthorId,
 		parentId: EntityId,
-		sessionCookieExpire: Date
+		sessionCookieExpire: Date,
+		durationThreshold: number
 	): Promise&lt;SessionId&gt; {
-		let sessionId: SessionId | undefined;
-		sessionId &#x3D; await this.getSessionIdByGroupAndAuthor(groupId, authorId);
+		const session &#x3D; await this.getSessionByGroupAndAuthor(groupId, authorId);
 
-		if (sessionId) {
-			return sessionId;
+		if (session &amp;&amp; this.isSessionDurationSufficient(session, durationThreshold)) {
+			return session.id;
 		}
 
 		const response &#x3D; await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
-		const session &#x3D; this.handleEtherpadResponse&lt;InlineResponse2004&gt;(response, { parentId });
+		const newSession &#x3D; this.handleEtherpadResponse&lt;InlineResponse2004&gt;(response, { parentId });
 
-		sessionId &#x3D; EtherpadResponseMapper.mapToSessionResponse(session);
+		const sessionId &#x3D; EtherpadResponseMapper.mapToSessionResponse(newSession);
 
 		return sessionId;
+	}
+
+	private isSessionDurationSufficient(session: Session, durationThreshold: number): boolean {
+		const nowUnixTimestampInSeconds &#x3D; Math.floor(new Date(Date.now()).getTime() / 1000);
+		const timeDiff &#x3D; session.validUntil - nowUnixTimestampInSeconds;
+		const isDurationSufficient &#x3D; timeDiff &gt; durationThreshold;
+
+		return isDurationSufficient;
 	}
 
 	private async tryCreateSession(
@@ -2458,11 +2491,8 @@ export class EtherpadClientAdapter {
 		sessionCookieExpire: Date
 	): Promise&lt;AxiosResponse&lt;InlineResponse2004&gt;&gt; {
 		try {
-			const response &#x3D; await this.sessionApi.createSessionUsingGET(
-				groupId,
-				authorId,
-				sessionCookieExpire.getTime().toString()
-			);
+			const unixTimeInSeconds &#x3D; Math.floor(sessionCookieExpire.getTime() / 1000);
+			const response &#x3D; await this.sessionApi.createSessionUsingGET(groupId, authorId, unixTimeInSeconds.toString());
 
 			return response;
 		} catch (error) {
@@ -2470,51 +2500,37 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private async getSessionIdByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise&lt;SessionId | undefined&gt; {
-		let sessionId: SessionId | undefined;
-
+	private async getSessionByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise&lt;Session | undefined&gt; {
 		const response &#x3D; await this.tryListSessionsOfAuthor(authorId);
-		const sessions &#x3D; this.handleEtherpadResponse&lt;InlineResponse2006&gt;(response, { groupId, authorId });
+		const etherpadSessions &#x3D; this.handleEtherpadResponse&lt;InlineResponse2006&gt;(response, { authorId });
+		const sessions &#x3D; EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
-		if (sessions) {
-			sessionId &#x3D; this.findSessionId(sessions, groupId, authorId);
-		}
+		const session &#x3D; this.findSession(sessions, groupId, authorId);
 
-		return sessionId;
+		return session;
 	}
 
-	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string): string | undefined {
-		const sessionEntries &#x3D; Object.entries(sessions);
-		const sessionId &#x3D; sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) &#x3D;&gt; {
-			if (value?.groupID &#x3D;&#x3D;&#x3D; groupId &amp;&amp; value?.authorID &#x3D;&#x3D;&#x3D; authorId) {
-				return key;
-			}
+	private findSession(sessions: Session[], groupId: string, authorId: string): Session | undefined {
+		const filteredAndSortedSessions &#x3D; sessions
+			.filter((session) &#x3D;&gt; session.groupId &#x3D;&#x3D;&#x3D; groupId &amp;&amp; session.authorId &#x3D;&#x3D;&#x3D; authorId)
+			.sort((sessionA, sessionB) &#x3D;&gt; sessionB.validUntil - sessionA.validUntil);
 
-			return undefined;
-		});
+		const newestSessionByGroupAndAuthor &#x3D; filteredAndSortedSessions[0];
 
-		return sessionId[0];
+		return newestSessionByGroupAndAuthor;
 	}
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise&lt;SessionId[]&gt; {
 		const response &#x3D; await this.tryListSessionsOfAuthor(authorId);
-		const sessions &#x3D; this.handleEtherpadResponse&lt;InlineResponse2006&gt;(response, { authorId });
+		const etherpadSessions &#x3D; this.handleEtherpadResponse&lt;InlineResponse2006&gt;(response, { authorId });
+		const sessions &#x3D; EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
-		// InlineResponse2006Data has the wrong type definition. Therefore we savely cast it to an object.
-		if (!this.isObject(sessions)) {
-			throw new InternalServerErrorException(&#x27;Etherpad session ids response is not an object&#x27;);
-		}
-
-		const sessionIds &#x3D; Object.keys(sessions);
+		const sessionIds &#x3D; sessions.map((session) &#x3D;&gt; session.id);
 
 		return sessionIds;
 	}
 
-	private isObject(value: any): value is object {
-		return typeof value &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp; !Array.isArray(value) &amp;&amp; value !&#x3D;&#x3D; null;
-	}
-
-	private async tryListSessionsOfAuthor(authorId: string): Promise&lt;AxiosResponse&lt;InlineResponse2006&gt;&gt; {
+	private async tryListSessionsOfAuthor(authorId: AuthorId): Promise&lt;AxiosResponse&lt;InlineResponse2006&gt;&gt; {
 		try {
 			const response &#x3D; await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
 
@@ -2606,7 +2622,7 @@ export class EtherpadClientAdapter {
 		const response &#x3D; await this.tryGetAuthorsOfPad(padId);
 		const authors &#x3D; this.handleEtherpadResponse&lt;InlineResponse20013&gt;(response, { padId });
 
-		if (!this.isObject(authors)) {
+		if (!TypeGuard.isObject(authors)) {
 			throw new InternalServerErrorException(&#x27;Etherpad listAuthorsOfPad response is not an object&#x27;);
 		}
 
@@ -2625,11 +2641,9 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async deleteSession(sessionId: SessionId): Promise&lt;InlineResponse2001 | undefined&gt; {
+	public async deleteSession(sessionId: SessionId): Promise&lt;void&gt; {
 		const response &#x3D; await this.tryDeleteSession(sessionId);
-		const responseData &#x3D; this.handleEtherpadResponse&lt;InlineResponse2001&gt;(response, { sessionId });
-
-		return responseData;
+		this.handleEtherpadResponse&lt;InlineResponse2001&gt;(response, { sessionId });
 	}
 
 	private async tryDeleteSession(sessionId: SessionId): Promise&lt;AxiosResponse&lt;InlineResponse2001&gt;&gt; {

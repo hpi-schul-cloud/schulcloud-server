@@ -145,6 +145,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteSessionsByUser" >deleteSessionsByUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getOrCreateCollaborativeTextEditorForParent" >getOrCreateCollaborativeTextEditorForParent</a>
                             </li>
                         </ul>
@@ -170,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -272,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -417,6 +421,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteSessionsByUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteSessionsByUser</b></span>
+                        <a href="#deleteSessionsByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteSessionsByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getOrCreateCollaborativeTextEditorForParent"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -435,8 +508,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/collaborative-text-editor/api/collaborative-text-editor.uc.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -503,6 +576,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { BoardDoAuthorizableService, ContentElementService } from &#x27;@src/modules/board&#x27;;
 import { CollaborativeTextEditor } from &#x27;../domain/do/collaborative-text-editor&#x27;;
@@ -536,6 +610,12 @@ export class CollaborativeTextEditorUc {
 		);
 
 		return textEditor;
+	}
+
+	async deleteSessionsByUser(userId: EntityId): Promise&lt;void&gt; {
+		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+
+		await this.collaborativeTextEditorService.deleteSessionsByUser(user.id);
 	}
 
 	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User) {

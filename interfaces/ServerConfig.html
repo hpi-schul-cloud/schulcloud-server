@@ -2314,11 +2314,11 @@ import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
 import type { SchoolConfig } from &#x27;@modules/school&#x27;;
 import type { SharingConfig } from &#x27;@modules/sharing&#x27;;
 import { getTldrawClientConfig, type TldrawClientConfig } from &#x27;@modules/tldraw-client&#x27;;
-import { type IToolFeatures, ToolConfiguration } from &#x27;@modules/tool&#x27;;
+import { ToolConfiguration, type IToolFeatures } from &#x27;@modules/tool&#x27;;
 import type { UserConfig } from &#x27;@modules/user&#x27;;
-import { type IUserImportFeatures, UserImportConfiguration } from &#x27;@modules/user-import&#x27;;
+import { UserImportConfiguration, type IUserImportFeatures } from &#x27;@modules/user-import&#x27;;
 import type { UserLoginMigrationConfig } from &#x27;@modules/user-login-migration&#x27;;
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from &#x27;@modules/video-conference&#x27;;
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from &#x27;@modules/video-conference&#x27;;
 import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import { SchulcloudTheme } from &#x27;@shared/domain/types&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
@@ -2525,6 +2525,7 @@ const config: ServerConfig &#x3D; {
 	FEATURE_ETHERPAD_ENABLED: Configuration.get(&#x27;FEATURE_ETHERPAD_ENABLED&#x27;) as boolean,
 	ETHERPAD__PAD_URI: Configuration.get(&#x27;ETHERPAD__PAD_URI&#x27;) as string,
 	ETHERPAD_COOKIE__EXPIRES_SECONDS: Configuration.get(&#x27;ETHERPAD_COOKIE__EXPIRES_SECONDS&#x27;) as number,
+	ETHERPAD_COOKIE_RELEASE_THRESHOLD: Configuration.get(&#x27;ETHERPAD_COOKIE_RELEASE_THRESHOLD&#x27;) as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;) as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as unknown as LanguageType,

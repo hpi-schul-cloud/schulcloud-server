@@ -24,59 +24,59 @@
 <title>cluster_ErrorModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="76,-70 76,-268 420,-268 420,-70 76,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ErrorModule_providers</title>
-<polygon fill="none" stroke="black" points="208,-78 208,-130 412,-130 412,-78 208,-78"/>
+<g id="clust3" class="cluster">
+<title>cluster_ErrorModule_imports</title>
+<polygon fill="none" stroke="black" points="296,-78 296,-130 412,-130 412,-78 296,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_ErrorModule_exports</title>
-<polygon fill="none" stroke="black" points="158,-208 158,-260 314,-260 314,-208 158,-208"/>
+<polygon fill="none" stroke="black" points="182,-208 182,-260 338,-260 338,-208 182,-208"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_ErrorModule_imports</title>
-<polygon fill="none" stroke="black" points="84,-78 84,-130 200,-130 200,-78 84,-78"/>
+<g id="clust6" class="cluster">
+<title>cluster_ErrorModule_providers</title>
+<polygon fill="none" stroke="black" points="84,-78 84,-130 288,-130 288,-78 84,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="191.98,-122 188.98,-126 167.98,-126 164.98,-122 92.02,-122 92.02,-86 191.98,-86 191.98,-122"/>
-<text text-anchor="middle" x="142" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="403.98,-122 400.98,-126 379.98,-126 376.98,-122 304.02,-122 304.02,-86 403.98,-86 403.98,-122"/>
+<text text-anchor="middle" x="354" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- ErrorModule -->
 <g id="node2" class="node">
 <title>ErrorModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="280.58,-187 277.58,-191 256.58,-191 253.58,-187 191.42,-187 191.42,-151 280.58,-151 280.58,-187"/>
-<text text-anchor="middle" x="236" y="-164.8" font-family="Times,serif" font-size="14.00">ErrorModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="304.58,-187 301.58,-191 280.58,-191 277.58,-187 215.42,-187 215.42,-151 304.58,-151 304.58,-187"/>
+<text text-anchor="middle" x="260" y="-164.8" font-family="Times,serif" font-size="14.00">ErrorModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;ErrorModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;ErrorModule</title>
-<path fill="none" stroke="black" d="M192.19,-104C199.27,-104 204.18,-104 204.18,-104 204.18,-104 204.18,-140.89 204.18,-140.89"/>
-<polygon fill="black" stroke="black" points="200.68,-140.89 204.18,-150.89 207.68,-140.89 200.68,-140.89"/>
+<path fill="none" stroke="black" d="M303.81,-104C296.73,-104 291.82,-104 291.82,-104 291.82,-104 291.82,-140.89 291.82,-140.89"/>
+<polygon fill="black" stroke="black" points="288.32,-140.89 291.82,-150.89 295.32,-140.89 288.32,-140.89"/>
 </g>
 <!-- DomainErrorHandler  -->
 <g id="node3" class="node">
 <title>DomainErrorHandler </title>
-<polygon fill="#fb8072" stroke="black" points="305.72,-252 166.28,-252 166.28,-216 305.72,-216 305.72,-252"/>
-<text text-anchor="middle" x="236" y="-229.8" font-family="Times,serif" font-size="14.00">DomainErrorHandler </text>
+<polygon fill="#fb8072" stroke="black" points="329.72,-252 190.28,-252 190.28,-216 329.72,-216 329.72,-252"/>
+<text text-anchor="middle" x="260" y="-229.8" font-family="Times,serif" font-size="14.00">DomainErrorHandler </text>
 </g>
 <!-- ErrorModule&#45;&gt;DomainErrorHandler  -->
 <g id="edge2" class="edge">
 <title>ErrorModule&#45;&gt;DomainErrorHandler </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M236,-187.11C236,-187.11 236,-205.99 236,-205.99"/>
-<polygon fill="black" stroke="black" points="232.5,-205.99 236,-215.99 239.5,-205.99 232.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M260,-187.11C260,-187.11 260,-205.99 260,-205.99"/>
+<polygon fill="black" stroke="black" points="256.5,-205.99 260,-215.99 263.5,-205.99 256.5,-205.99"/>
 </g>
 <!-- DomainErrorHandler -->
 <g id="node4" class="node">
 <title>DomainErrorHandler</title>
-<ellipse fill="#fdb462" stroke="black" cx="310" cy="-104" rx="93.74" ry="18"/>
-<text text-anchor="middle" x="310" y="-99.8" font-family="Times,serif" font-size="14.00">DomainErrorHandler</text>
+<ellipse fill="#fdb462" stroke="black" cx="186" cy="-104" rx="93.74" ry="18"/>
+<text text-anchor="middle" x="186" y="-99.8" font-family="Times,serif" font-size="14.00">DomainErrorHandler</text>
 </g>
 <!-- DomainErrorHandler&#45;&gt;ErrorModule -->
 <g id="edge3" class="edge">
 <title>DomainErrorHandler&#45;&gt;ErrorModule</title>
-<path fill="none" stroke="black" d="M248.46,-117.78C248.46,-117.78 248.46,-140.55 248.46,-140.55"/>
-<polygon fill="black" stroke="black" points="244.96,-140.55 248.46,-150.55 251.96,-140.55 244.96,-140.55"/>
+<path fill="none" stroke="black" d="M247.54,-117.78C247.54,-117.78 247.54,-140.55 247.54,-140.55"/>
+<polygon fill="black" stroke="black" points="244.04,-140.55 247.54,-150.55 251.04,-140.55 244.04,-140.55"/>
 </g>
 </g>
 </svg>
