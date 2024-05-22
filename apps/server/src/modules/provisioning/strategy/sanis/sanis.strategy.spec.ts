@@ -183,12 +183,9 @@ describe(SanisProvisioningStrategy.name, () => {
 				const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] =
 					schulconnexLizenzInfoResponseFactory.build();
 				const schulconnexLizenzInfoResponse = schulconnexLizenzInfoResponses[0];
-				const licenses: ExternalLicenseDto[] = [
-					new ExternalLicenseDto({
-						mediumId: schulconnexLizenzInfoResponse.target.uid,
-						mediaSourceId: schulconnexLizenzInfoResponse.target.partOf,
-					}),
-				];
+				const licenses: ExternalLicenseDto[] = SanisResponseMapper.mapToExternalLicenses([
+					schulconnexLizenzInfoResponse,
+				]);
 
 				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
 				mapper.mapToExternalUserDto.mockReturnValue(user);
