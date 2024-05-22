@@ -12,7 +12,6 @@ import {
 	isMediaExternalToolElement,
 	MediaBoard,
 	MediaExternalToolElement,
-	MediaLine,
 } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 
@@ -23,32 +22,12 @@ export class MediaBoardService {
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	// TODO do we need this?
-	async findById(boardId: EntityId): Promise<MediaBoard> {
-		const boardNode = await this.boardNodeRepo.findById(boardId);
-		if (!isMediaBoard(boardNode)) {
-			throw new NotFoundException(`There is no '${MediaBoard.name}' with this id`);
-		}
-
-		return boardNode;
-	}
-
 	async findByExternalReference(reference: BoardExternalReference): Promise<MediaBoard[]> {
 		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference);
 
 		const boards = boardNodes.filter((bn) => isMediaBoard(bn));
 
 		return boards as MediaBoard[];
-	}
-
-	async addToBoard(parent: MediaBoard, child: MediaLine, position = 0): Promise<void> {
-		parent.addChild(child, position);
-		await this.boardNodeRepo.save(parent);
-	}
-
-	async addToMediaLine(parent: MediaLine, child: MediaExternalToolElement, position = 0): Promise<void> {
-		parent.addChild(child, position);
-		await this.boardNodeRepo.save(parent);
 	}
 
 	public async createContextExternalToolForMediaBoard(
