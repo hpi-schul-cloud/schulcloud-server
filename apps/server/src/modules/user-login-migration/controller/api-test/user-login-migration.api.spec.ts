@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { SanisResponse, SanisRole } from '@infra/schulconnex-client';
+import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
@@ -439,7 +439,7 @@ describe('UserLoginMigrationController (API)', () => {
 					access_token: 'accessToken',
 				})
 				.onGet(targetSystem.provisioningUrl)
-				.replyOnce<SanisResponse>(200, {
+				.replyOnce<SchulconnexResponse>(200, {
 					pid: targetUserId,
 					person: {
 						name: {
@@ -450,7 +450,7 @@ describe('UserLoginMigrationController (API)', () => {
 					personenkontexte: [
 						{
 							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
-							rolle: SanisRole.LEHR,
+							rolle: SchulconnexRole.LEHR,
 							organisation: {
 								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,

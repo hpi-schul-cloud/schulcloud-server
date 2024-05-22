@@ -1,12 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisPersonenkontextResponse,
-	SanisResponse,
-	SanisSonstigeGruppenzugehoerigeResponse,
+	SchulconnexGroupRole,
+	SchulconnexGroupType,
+	SchulconnexGruppenResponse,
+	SchulconnexPersonenkontextResponse,
+	SchulconnexResponse,
 	schulconnexResponseFactory,
+	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,18 +14,18 @@ import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { SanisResponseMapper } from './sanis-response.mapper';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper.service';
 
-describe('SanisResponseMapper', () => {
+describe(SchulconnexResponseMapper.name, () => {
 	let module: TestingModule;
-	let mapper: SanisResponseMapper;
+	let mapper: SchulconnexResponseMapper;
 
 	let provisioningFeatures: IProvisioningFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SanisResponseMapper,
+				SchulconnexResponseMapper,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -37,7 +37,7 @@ describe('SanisResponseMapper', () => {
 			],
 		}).compile();
 
-		mapper = module.get(SanisResponseMapper);
+		mapper = module.get(SchulconnexResponseMapper);
 		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
@@ -45,7 +45,7 @@ describe('SanisResponseMapper', () => {
 		const externalUserId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
 
-		const sanisResponse: SanisResponse = schulconnexResponseFactory.build();
+		const sanisResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 
 		return {
 			externalUserId,
@@ -117,9 +117,9 @@ describe('SanisResponseMapper', () => {
 				});
 
 				const { sanisResponse } = setupSanisResponse();
-				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
-				const group: SanisGruppenResponse = personenkontext.gruppen![0];
-				const otherParticipant: SanisSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
+				const personenkontext: SchulconnexPersonenkontextResponse = sanisResponse.personenkontexte[0];
+				const group: SchulconnexGruppenResponse = personenkontext.gruppen![0];
+				const otherParticipant: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
 
 				return {
 					sanisResponse,
@@ -155,7 +155,7 @@ describe('SanisResponseMapper', () => {
 		describe('when group type other is provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.OTHER;
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.OTHER;
 
 				return {
 					sanisResponse,
@@ -178,7 +178,7 @@ describe('SanisResponseMapper', () => {
 		describe('when group type course is provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.COURSE;
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.COURSE;
 
 				return {
 					sanisResponse,
@@ -201,7 +201,9 @@ describe('SanisResponseMapper', () => {
 		describe('when the group role mapping for the user is missing', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [SanisGroupRole.SCHOOL_SUPPORT];
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [
+					SchulconnexGroupRole.SCHOOL_SUPPORT,
+				];
 
 				return {
 					sanisResponse,
@@ -287,7 +289,7 @@ describe('SanisResponseMapper', () => {
 				sanisResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
 					{
 						ktid: 'ktid',
-						rollen: [SanisGroupRole.SCHOOL_SUPPORT],
+						rollen: [SchulconnexGroupRole.SCHOOL_SUPPORT],
 					},
 				];
 
