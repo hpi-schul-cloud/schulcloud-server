@@ -41,25 +41,25 @@ describe(SchulconnexResponseMapper.name, () => {
 		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
-	const setupSanisResponse = () => {
+	const setupSchulconnexResponse = () => {
 		const externalUserId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
 
-		const sanisResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+		const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 
 		return {
 			externalUserId,
 			externalSchoolId,
-			sanisResponse,
+			schulconnexResponse,
 		};
 	};
 
 	describe('mapToExternalSchoolDto', () => {
-		describe('when a sanis response is provided', () => {
+		describe('when a schulconnex response is provided', () => {
 			it('should map the response to an ExternalSchoolDto', () => {
-				const { sanisResponse, externalSchoolId } = setupSanisResponse();
+				const { schulconnexResponse, externalSchoolId } = setupSchulconnexResponse();
 
-				const result: ExternalSchoolDto = mapper.mapToExternalSchoolDto(sanisResponse);
+				const result: ExternalSchoolDto = mapper.mapToExternalSchoolDto(schulconnexResponse);
 
 				expect(result).toEqual<ExternalSchoolDto>({
 					externalId: externalSchoolId,
@@ -72,11 +72,11 @@ describe(SchulconnexResponseMapper.name, () => {
 	});
 
 	describe('mapToExternalUserDto', () => {
-		describe('when a sanis response is provided', () => {
+		describe('when a schulconnex response is provided', () => {
 			it('should map the response to an ExternalUserDto', () => {
-				const { sanisResponse, externalUserId } = setupSanisResponse();
+				const { schulconnexResponse, externalUserId } = setupSchulconnexResponse();
 
-				const result: ExternalUserDto = mapper.mapToExternalUserDto(sanisResponse);
+				const result: ExternalUserDto = mapper.mapToExternalUserDto(schulconnexResponse);
 
 				expect(result).toEqual<ExternalUserDto>({
 					externalId: externalUserId,
@@ -93,11 +93,11 @@ describe(SchulconnexResponseMapper.name, () => {
 	describe('mapToExternalGroupDtos', () => {
 		describe('when no group is given', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen = undefined;
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen = undefined;
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -112,13 +112,13 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when unknown group type is given', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
+				const { schulconnexResponse } = setupSchulconnexResponse();
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				sanisResponse.personenkontexte[0].gruppen?.[0].gruppe.typ = 'unknown';
+				schulconnexResponse.personenkontexte[0].gruppen?.[0].gruppe.typ = 'unknown';
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -137,20 +137,20 @@ describe(SchulconnexResponseMapper.name, () => {
 					schulconnexOtherGroupusersEnabled: true,
 				});
 
-				const { sanisResponse } = setupSanisResponse();
-				const personenkontext: SchulconnexPersonenkontextResponse = sanisResponse.personenkontexte[0];
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				const personenkontext: SchulconnexPersonenkontextResponse = schulconnexResponse.personenkontexte[0];
 				const group: SchulconnexGruppenResponse = personenkontext.gruppen![0];
 				const otherParticipant: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 					group,
 					personenkontext,
 					otherParticipant,
 				};
 			};
 
-			it('should map the sanis response to external group dtos', () => {
+			it('should map the schulconnex response to external group dtos', () => {
 				const { sanisResponse, group, personenkontext, otherParticipant } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
@@ -175,11 +175,11 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type other is provided', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.OTHER;
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.OTHER;
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -198,11 +198,11 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type course is provided', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.COURSE;
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.COURSE;
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -221,13 +221,13 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when the group role mapping for the user is missing', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [
 					SchulconnexGroupRole.SCHOOL_SUPPORT,
 				];
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -242,11 +242,11 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when the user has no role in the group', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -264,11 +264,11 @@ describe(SchulconnexResponseMapper.name, () => {
 				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
 					schulconnexOtherGroupusersEnabled: false,
 				});
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -287,11 +287,11 @@ describe(SchulconnexResponseMapper.name, () => {
 					schulconnexOtherGroupusersEnabled: true,
 				});
 
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
@@ -306,8 +306,8 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when other participants have unknown roles', () => {
 			const setup = () => {
-				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
+				const { schulconnexResponse } = setupSchulconnexResponse();
+				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
 					{
 						ktid: 'ktid',
 						rollen: [SchulconnexGroupRole.SCHOOL_SUPPORT],
@@ -315,7 +315,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				];
 
 				return {
-					sanisResponse,
+					sanisResponse: schulconnexResponse,
 				};
 			};
 
