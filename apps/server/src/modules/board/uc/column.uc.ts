@@ -56,12 +56,12 @@ export class ColumnUc {
 	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
 		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
-		const card = await this.boardNodeService.findByClassAndId(Card, cardId, 0);
-		const targetColumn = await this.boardNodeService.findByClassAndId(Column, targetColumnId, 0);
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const targetColumn = await this.boardNodeService.findByClassAndId(Column, targetColumnId);
 
 		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 		await this.boardNodePermissionService.checkPermission(userId, targetColumn, Action.write);
 
-		await this.boardNodeService.move(cardId, targetColumnId, targetPosition);
+		await this.boardNodeService.move(card, targetColumn, targetPosition);
 	}
 }

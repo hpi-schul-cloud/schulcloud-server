@@ -104,13 +104,13 @@ export class BoardUc {
 	): Promise<void> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 
-		const column = await this.boardNodeService.findByClassAndId(Column, columnId, 0);
-		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId, 0);
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
 
 		await this.boardPermissionService.checkPermission(userId, column, Action.write);
 		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
 
-		await this.boardNodeService.move(columnId, targetBoardId, targetPosition);
+		await this.boardNodeService.move(column, targetBoard, targetPosition);
 	}
 
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {

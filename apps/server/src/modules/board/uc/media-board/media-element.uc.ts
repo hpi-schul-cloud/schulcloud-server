@@ -5,7 +5,6 @@ import { SchoolExternalToolWithId } from '@modules/tool/school-external-tool/dom
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { User as UserEntity } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
@@ -32,11 +31,12 @@ export class MediaElementUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const targetLine: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, targetLineId);
+		const element = await this.boardNodeService.findByClassAndId(MediaExternalToolElement, elementId);
+		const targetLine = await this.boardNodeService.findByClassAndId(MediaLine, targetLineId);
 
 		await this.boardNodePermissionService.checkPermission(userId, targetLine, Action.write);
 
-		await this.boardNodeService.move(elementId, targetLineId, targetPosition);
+		await this.boardNodeService.move(element, targetLine, targetPosition);
 	}
 
 	public async createElement(
@@ -47,13 +47,13 @@ export class MediaElementUc {
 	): Promise<MediaExternalToolElement> {
 		this.checkFeatureEnabled();
 
-		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		const user: UserEntity = await this.authorizationService.getUserWithPermissions(userId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-		const mediaBoard: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, line.rootId);
+		const mediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, line.rootId);
 
 		const schoolExternalTool: SchoolExternalToolWithId = await this.schoolExternalToolService.findById(
 			schoolExternalToolId
@@ -71,7 +71,7 @@ export class MediaElementUc {
 		const createdElement: MediaExternalToolElement = this.mediaBoardNodeFactory.buildExternalToolElement({
 			contextExternalToolId: createdContexExternalTool.id,
 		});
-		await this.mediaBoardService.addToMediaLine(line, createdElement, position);
+		await this.boardNodeService.addToParent(line, createdElement, position);
 
 		return createdElement;
 	}

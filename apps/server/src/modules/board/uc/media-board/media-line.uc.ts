@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
-import type { MediaBoardConfig } from '../../media-board.config';
 import { MediaBoard, MediaLine } from '../../domain';
+import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService } from '../../service';
 
 @Injectable()
@@ -23,17 +23,18 @@ export class MediaLineUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const targetBoard: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, targetBoardId);
+		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+		const targetBoard = await this.boardNodeService.findByClassAndId(MediaBoard, targetBoardId);
 
 		await this.boardNodePermissionService.checkPermission(userId, targetBoard, Action.write);
 
-		await this.boardNodeService.move(lineId, targetBoardId, targetPosition);
+		await this.boardNodeService.move(line, targetBoard, targetPosition);
 	}
 
 	public async updateLineTitle(userId: EntityId, lineId: EntityId, title: string): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
@@ -43,7 +44,7 @@ export class MediaLineUc {
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 

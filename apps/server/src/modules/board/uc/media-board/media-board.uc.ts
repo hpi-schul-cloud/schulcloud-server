@@ -57,7 +57,7 @@ export class MediaBoardUc {
 		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
 		const line = this.mediaBoardNodeFactory.buildMediaLine({ title: '' });
-		await this.mediaBoardService.addToBoard(board, line);
+		await this.boardNodeService.addToParent(board, line);
 
 		return line;
 	}

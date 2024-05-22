@@ -101,12 +101,12 @@ export class CardUc {
 	): Promise<void> {
 		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
 
-		const element = await this.boardNodeService.findContentElementById(elementId, 0);
-		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId, 0);
+		const element = await this.boardNodeService.findContentElementById(elementId);
+		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId);
 
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 		await this.boardPermissionService.checkPermission(userId, targetCard, Action.write);
 
-		await this.boardNodeService.move(elementId, targetCardId, targetPosition);
+		await this.boardNodeService.move(element, targetCard, targetPosition);
 	}
 }
