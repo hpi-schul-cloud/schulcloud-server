@@ -295,7 +295,6 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('create-element-success', responsePayload);
 			client.emit('create-element-success', responsePayload);
 		} catch (err) {
-			console.log('create-element-request', err);
 			client.emit('create-element-failure', new Error('Failed to create element'));
 		}
 	}
@@ -311,7 +310,6 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-element-success', data);
 			client.emit('update-element-success', data);
 		} catch (err) {
-			console.log('update-element-request', err);
 			client.emit('update-element-failure', new Error('Failed to update element'));
 		}
 	}
