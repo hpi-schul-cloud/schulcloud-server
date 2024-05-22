@@ -16,17 +16,17 @@ import {
 	BoardCommonToolService,
 	BoardContextService,
 	BoardNodeAuthorizableService,
+	BoardNodeCopyService,
+	BoardNodeDeleteHooksService,
 	BoardNodeService,
 	ColumnBoardCopyService,
 	ColumnBoardLinkService,
 	ColumnBoardService,
-	ContentElementUpdateService,
+	ColumnBoardTitleService,
 	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
-import { BoardNodeCopyService } from './service/board-node-copy.service';
-import { BoardNodeDeleteHooksService } from './service/board-node-delete-hooks.service';
-import { ColumnBoardTitleService } from './service/column-board-title.service';
+import { ContentElementUpdateService } from './service/internal';
 
 @Module({
 	imports: [

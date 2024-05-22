@@ -26,7 +26,6 @@ export {
 	ColumnBoardService,
 	ColumnBoardCopyService,
 	ColumnBoardLinkService,
-	ContentElementUpdateService,
 	MediaAvailableLineService,
 	MediaBoardService,
 } from './service';

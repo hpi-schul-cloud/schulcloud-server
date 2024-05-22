@@ -4,7 +4,7 @@ import { AnyElementContentBody } from '../controller/dto';
 import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement, MediaBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
-import { ContentElementUpdateService } from './internal/content-element-update.service';
+import { ContentElementUpdateService } from './internal';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
