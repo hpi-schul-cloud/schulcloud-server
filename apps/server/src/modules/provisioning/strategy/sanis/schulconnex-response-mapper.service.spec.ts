@@ -110,6 +110,27 @@ describe(SchulconnexResponseMapper.name, () => {
 			});
 		});
 
+		describe('when unknown group type is given', () => {
+			const setup = () => {
+				const { sanisResponse } = setupSanisResponse();
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				sanisResponse.personenkontexte[0].gruppen?.[0].gruppe.typ = 'unknown';
+
+				return {
+					sanisResponse,
+				};
+			};
+
+			it('should not map the group', () => {
+				const { sanisResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+
 		describe('when group type class is given', () => {
 			const setup = () => {
 				Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {

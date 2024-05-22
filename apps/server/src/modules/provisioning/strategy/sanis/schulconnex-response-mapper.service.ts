@@ -52,7 +52,7 @@ export class SchulconnexResponseMapper {
 		private readonly logger: Logger
 	) {}
 
-	mapToExternalSchoolDto(source: SchulconnexResponse): ExternalSchoolDto {
+	public mapToExternalSchoolDto(source: SchulconnexResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string = source.personenkontexte[0].organisation.kennung.replace(
 			this.SCHOOLNUMBER_PREFIX_REGEX,
 			''
@@ -68,7 +68,7 @@ export class SchulconnexResponseMapper {
 		return mapped;
 	}
 
-	mapToExternalUserDto(source: SchulconnexResponse): ExternalUserDto {
+	public mapToExternalUserDto(source: SchulconnexResponse): ExternalUserDto {
 		let email: string | undefined;
 		if (source.personenkontexte[0].erreichbarkeiten?.length) {
 			const emailContact: SchulconnexErreichbarkeitenResponse | undefined =
