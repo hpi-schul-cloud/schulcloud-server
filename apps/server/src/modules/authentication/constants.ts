@@ -1,4 +1,4 @@
-// TODO: move that into nest
+// TODO: move that into nest EW-891
 import externalAuthConfig = require('../../../../../src/services/authentication/configuration');
 
 const { authConfig } = externalAuthConfig;
@@ -14,7 +14,7 @@ const { authConfig } = externalAuthConfig;
 	aud: this.aud,
 	iss: 'feathers',
 	sub: accountId,
-	jti: `support_${ObjectId()}`,
+	jti: `support_${ObjectId()}`, EW-892
 */
 export interface JwtConstants {
 	secret: string;

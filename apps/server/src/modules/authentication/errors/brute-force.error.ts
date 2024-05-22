@@ -6,13 +6,8 @@ export class BruteForceError extends BusinessError {
 
 	constructor(timeToWait: number, message: string) {
 		super(
-			// TODO: why is this ENTITY_NOT_FOUND?
-			/* TODO: should be checked in general, also in regards to requirements.
-			- How does this affect logins with external systems?
-			- Can we do it in a less costly manner?
-			- How can this be communicated in the API?
-			- Can this be moved into the infrastructure?
-			*/
+			// TODO: why is this ENTITY_NOT_FOUND? // done
+
 			{ type: 'ENTITY_NOT_FOUND', title: 'Entity Not Found', defaultMessage: message },
 			HttpStatus.TOO_MANY_REQUESTS,
 			{

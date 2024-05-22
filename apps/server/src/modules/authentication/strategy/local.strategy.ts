@@ -4,7 +4,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { UserRepo } from '@shared/repo';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
-// TODO: check imports
 import { GuardAgainst } from '@shared/common/utils/guard-against';
 import { IdentityManagementOauthService, IIdentityManagementConfig } from '@shared/infra/identity-management';
 import { AccountDto } from '@src/modules/account/services/dto';

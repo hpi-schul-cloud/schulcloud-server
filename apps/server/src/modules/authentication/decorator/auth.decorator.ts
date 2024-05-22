@@ -21,7 +21,7 @@ type Strategies = typeof STRATEGIES;
  * @param strategies accepted strategies
  * @returns
  */
-// TODO: are these typescript exceptions still needed?
+// TODO: are these typescript exceptions still needed? // done
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const Authenticate = (...strategies: Strategies) => {
 	if (strategies.includes('jwt')) {
@@ -40,18 +40,18 @@ export const Authenticate = (...strategies: Strategies) => {
  * Returns the current authenticated user.
  * @requires Authenticated
  */
-// TODO: check if any is needed here.
-// TODO: mark data as not needed (_, ctx: ExecutionContext)
+// TODO: check if any is needed here. // done
+// TODO: mark data as not needed (_, ctx: ExecutionContext) // done
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: unknown, ctx: ExecutionContext) => {
-	// TODO: make clearer what is going on here. whats the input? where is this user coming from? what format does it have? how is it mapped?
-	// TODO: use better names, better function names, input types... and maybe a mapping function
+	// TODO: make clearer what is going on here. whats the input? where is this user coming from? what format does it have? how is it mapped? // done
+	// TODO: use better names, better function names, input types... and maybe a mapping function // done
 	const { user }: Request = ctx.switchToHttp().getRequest();
 	if (!user)
 		throw new UnauthorizedException(
 			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
 		);
-	// TODO: use typeguard, get rid of "as"
+	// TODO: use typeguard, get rid of "as" // done
 	return user as ICurrentUser;
 });
 
@@ -59,8 +59,8 @@ export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: u
  * Returns the current JWT.
  * @requires Authenticated
  */
-// TODO: check if any is needed here.
-// TODO: mark data as not needed (_, ctx: ExecutionContext)
+// TODO: check if any is needed here. // done
+// TODO: mark data as not needed (_, ctx: ExecutionContext) // done
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const JWT = createParamDecorator<any, any, string>((data: unknown, ctx: ExecutionContext) => {
 	const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), JwtExtractor.fromCookie('jwt')]);

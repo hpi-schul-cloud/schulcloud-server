@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-// TODO: check imports
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
@@ -30,13 +29,13 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		);
 
 		if (!user || !user.id) {
-			// TODO: check this (can be passed to capcakes)
+			// TODO: check this (can be passed to capcakes) // done by capcakes
 			throw new SchoolInMigrationError();
 		}
 
 		const account: AccountDto | null = await this.accountService.findByUserId(user.id);
 		if (!account) {
-			// TODO: should this information be exposed to the user? (should be in logs, but not in response -> LoggableError)
+			// TODO: should this information be exposed to the user? (should be in logs, but not in response -> LoggableError) // EW-650
 			throw new UnauthorizedException('no account found');
 		}
 

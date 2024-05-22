@@ -24,9 +24,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 	async validate(payload: JwtPayload): Promise<ICurrentUser> {
 		const { accountId, jti } = payload;
-		// TODO: check user exists
+		// TODO: check user exists // done
 		try {
-			// TODO: is there a ticket for this todo?
+			// TODO: is there a ticket for this todo? EW-892
 			// TODO: check user/account is active and has one role
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);

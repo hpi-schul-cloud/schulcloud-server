@@ -6,7 +6,6 @@ import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
-// TODO: check imports
 import { OauthModule } from '@src/modules/oauth/oauth.module';
 import { RoleModule } from '@src/modules/role';
 import { SystemModule } from '@src/modules/system';
@@ -21,6 +20,8 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
 // TODO: move into a different file (authentication.config.ts)
+// ---: is not possible to move this to a separate file because it blocks sonar
+
 // values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
 const algorithms = [
 	'HS256',

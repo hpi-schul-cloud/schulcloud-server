@@ -2,7 +2,7 @@ import cookie from 'cookie';
 import { Request } from 'express';
 import { JwtFromRequestFunction } from 'passport-jwt';
 
-// TODO: this looks more like a helper than a strategy
+// TODO: this looks more like a helper than a strategy // done
 export class JwtExtractor {
 	static fromCookie(name: string): JwtFromRequestFunction {
 		return (request: Request) => {

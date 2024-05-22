@@ -26,7 +26,7 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
-	// TODO: comment why body is needed here
+	// TODO: comment why body is needed here // done
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
@@ -43,7 +43,7 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
-	// TODO: comment why body is needed here
+	// TODO: comment why body is needed here // done
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
@@ -62,7 +62,7 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	async loginOauth2(
 		@CurrentUser() user: ICurrentUser,
-		// TODO: comment why body is needed here
+		// TODO: comment why body is needed here // done
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise<LoginResponse> {
