@@ -505,7 +505,7 @@ describe('ToolLaunchUc', () => {
 				const setup = () => {
 					const user: User = userFactory.build();
 					const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
-					const externalTool: ExternalTool = externalToolFactory.withMedium().build({
+					const externalTool: ExternalTool = externalToolFactory.build({
 						medium: { mediumId: mediaUserLicense.mediumId, mediaSourceId: mediaUserLicense.mediaSourceId },
 					});
 					const schoolExternalToolId = new ObjectId().toHexString();
