@@ -3,21 +3,20 @@ import { UserAuthenticatedLoggable } from './user-authenticated.loggable';
 describe(UserAuthenticatedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new UserAuthenticatedLoggable();
+			const loggable = new UserAuthenticatedLoggable();
 
 			return {
-				exception,
+				loggable,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { exception } = setup();
+			const { loggable } = setup();
 
-			const message = exception.getLogMessage();
+			const message = loggable.getLogMessage();
 
 			expect(message).toEqual({
-				type: 'SUCCESSFULLY_AUTHENTICATED',
-				stack: expect.any(String),
+				message: 'SUCCESSFULLY_AUTHENTICATED',
 				data: {},
 			});
 		});

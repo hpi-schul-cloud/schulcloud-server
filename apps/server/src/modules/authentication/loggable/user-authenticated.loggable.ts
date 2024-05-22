@@ -1,24 +1,10 @@
-import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
 import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { LogMessage } from '@src/core/logger/types';
 
-export class UserAuthenticatedLoggable extends BusinessError implements Loggable {
-	constructor() {
-		super(
-			{
-				type: 'SUCCESSFULLY_AUTHENTICATED',
-				title: 'User authenticated successfully',
-				defaultMessage: 'LdapService connection bind successfully',
-			},
-			HttpStatus.UNAUTHORIZED
-		);
-	}
-
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
-			type: this.type,
-			stack: this.stack,
+export class UserAuthenticatedLoggable implements Loggable {
+	getLogMessage(): LogMessage {
+		const message: LogMessage = {
+			message: 'SUCCESSFULLY_AUTHENTICATED',
 			data: {},
 		};
 

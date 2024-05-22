@@ -8,8 +8,8 @@ export class AccountNotFoundLoggableException extends BusinessError implements L
 		super(
 			{
 				type: 'UNAUTHORIZED_EXCEPTION',
-				title: 'Login failed because account not found',
-				defaultMessage: 'Login failed because account not found',
+				title: 'Login has failed because account not found',
+				defaultMessage: 'Login has failed because account not found',
 			},
 			HttpStatus.UNAUTHORIZED
 		);

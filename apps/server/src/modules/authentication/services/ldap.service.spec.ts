@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity } from '@shared/domain/entity';
 import { systemEntityFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { UserCouldNotAuthenticateLoggableException } from '../loggable';
+import { LdapUserCouldNotBeAuthenticatedLoggableException } from '../loggable';
 import { LdapService } from './ldap.service';
 
 const mockClient = {
@@ -79,7 +79,7 @@ describe('LdapService', () => {
 			it('should throw UserCouldNotAuthenticateLoggableException', async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					new UserCouldNotAuthenticateLoggableException()
+					LdapUserCouldNotBeAuthenticatedLoggableException
 				);
 			});
 		});

@@ -3,7 +3,7 @@ import { SystemEntity } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
 import { Client, createClient } from 'ldapjs';
 import { LdapConnectionError } from '../errors/ldap-connection.error';
-import { UserAuthenticatedLoggable, UserCouldNotAuthenticateLoggableException } from '../loggable';
+import { UserAuthenticatedLoggable, LdapUserCouldNotBeAuthenticatedLoggableException } from '../loggable';
 
 @Injectable()
 export class LdapService {
@@ -37,7 +37,7 @@ export class LdapService {
 			client.on('connect', () => {
 				client.bind(username, password, (err) => {
 					if (err) {
-						throw new UserCouldNotAuthenticateLoggableException();
+						reject(new LdapUserCouldNotBeAuthenticatedLoggableException(err));
 					} else {
 						this.logger.info(new UserAuthenticatedLoggable());
 						resolve(client);

@@ -3,13 +3,13 @@ import { BusinessError } from '@shared/common';
 import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 
-export class UserCouldNotAuthenticateLoggableException extends BusinessError implements Loggable {
-	constructor() {
+export class LdapUserCouldNotBeAuthenticatedLoggableException extends BusinessError implements Loggable {
+	constructor(private readonly error: Error) {
 		super(
 			{
 				type: 'UNAUTHORIZED_EXCEPTION',
-				title: 'User could not authenticate',
-				defaultMessage: 'LdapService connection failed because User could not authenticate',
+				title: 'User could not be authenticated',
+				defaultMessage: 'LdapService connection failed because User could not be authenticated',
 			},
 			HttpStatus.UNAUTHORIZED
 		);
@@ -19,7 +19,9 @@ export class UserCouldNotAuthenticateLoggableException extends BusinessError imp
 		const message: ErrorLogMessage = {
 			type: this.type,
 			stack: this.stack,
-			data: {},
+			data: {
+				error: JSON.stringify(this.error),
+			},
 		};
 
 		return message;
