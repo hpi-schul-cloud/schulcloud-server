@@ -521,22 +521,24 @@ describe(BoardCollaborationGateway.name, () => {
 	describe('delete element', () => {
 		describe('when element exists', () => {
 			it('should answer with success', async () => {
-				const { elementNodes } = await setup();
+				const { cardNodes, elementNodes } = await setup();
+				const cardId = cardNodes[0].id;
 				const elementId = elementNodes[0].id;
 
-				ioClient.emit('delete-element-request', { elementId });
+				ioClient.emit('delete-element-request', { cardId, elementId });
 				const success = await waitForEvent(ioClient, 'delete-element-success');
 
-				expect(success).toEqual({ elementId });
+				expect(success).toEqual({ cardId, elementId });
 			});
 		});
 
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
-				await setup();
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
 				const elementId = new ObjectId().toHexString();
 
-				ioClient.emit('delete-element-request', { elementId });
+				ioClient.emit('delete-element-request', { cardId, elementId });
 				const failure = await waitForEvent(ioClient, 'delete-element-failure');
 
 				expect(failure).toBeDefined();
