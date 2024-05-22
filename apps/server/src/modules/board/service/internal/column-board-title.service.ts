@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CopyHelperService } from '@modules/copy-helper';
-import { BoardExternalReference } from '../domain';
-import { ColumnBoardService } from './column-board.service';
+import { BoardExternalReference } from '../../domain';
+import { ColumnBoardReferenceService } from './column-board-reference.service';
 
 @Injectable()
 export class ColumnBoardTitleService {
 	constructor(
-		private readonly columnBoardService: ColumnBoardService,
+		private readonly columnBoardReferenceService: ColumnBoardReferenceService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
@@ -14,7 +14,10 @@ export class ColumnBoardTitleService {
 		originalTitle: string,
 		destinationExternalReference: BoardExternalReference
 	): Promise<string> {
-		const existingBoards = await this.columnBoardService.findByExternalReference(destinationExternalReference, 0);
+		const existingBoards = await this.columnBoardReferenceService.findByExternalReference(
+			destinationExternalReference,
+			0
+		);
 		const existingTitles = existingBoards.map((board) => board.title);
 		const copyName = this.copyHelperService.deriveCopyName(originalTitle, Object.values(existingTitles));
 

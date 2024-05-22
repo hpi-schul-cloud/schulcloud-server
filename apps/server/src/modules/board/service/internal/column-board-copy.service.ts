@@ -4,10 +4,10 @@ import { Injectable, InternalServerErrorException, NotImplementedException } fro
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../../domain';
 import { BoardNodeCopyContext } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { BoardNodeService } from './board-node.service';
+import { BoardNodeService } from '../board-node.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 
 @Injectable()

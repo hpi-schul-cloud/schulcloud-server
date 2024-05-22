@@ -1,13 +1,13 @@
 import { Action, AuthorizationService } from '@modules/authorization';
+import { CopyStatus } from '@modules/copy-helper';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { CopyStatus } from '@modules/copy-helper';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { BoardExternalReference, BoardNodeFactory, Column, ColumnBoard } from '../domain';
-import { BoardNodePermissionService, BoardNodeService, ColumnBoardCopyService } from '../service';
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 
 @Injectable()
 export class BoardUc {
@@ -16,7 +16,7 @@ export class BoardUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo,
 		private readonly boardNodeFactory: BoardNodeFactory
@@ -128,7 +128,7 @@ export class BoardUc {
 			requiredPermissions: [], // TODO - what permissions are required? COURSE_EDIT?
 		});
 
-		const copyStatus = await this.columnBoardCopyService.copyColumnBoard({
+		const copyStatus = await this.columnBoardService.copyColumnBoard({
 			userId,
 			originalColumnBoardId: boardId,
 			destinationExternalReference: board.context,

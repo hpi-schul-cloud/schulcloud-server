@@ -9,7 +9,7 @@ import { courseFactory } from '@shared/testing/factory';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
-import { BoardNodePermissionService, BoardNodeService, ColumnBoardCopyService } from '../service';
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
 
@@ -19,7 +19,7 @@ describe(BoardUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardPernmissionService: DeepMocked<BoardNodePermissionService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
-	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
 
@@ -40,8 +40,8 @@ describe(BoardUc.name, () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: ColumnBoardCopyService,
-					useValue: createMock<ColumnBoardCopyService>(),
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
 				},
 				{
 					provide: CourseRepo,
@@ -62,7 +62,7 @@ describe(BoardUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		boardPernmissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
-		columnBoardCopyService = module.get(ColumnBoardCopyService);
+		columnBoardService = module.get(ColumnBoardService);
 		courseRepo = module.get(CourseRepo);
 		boardNodeFactory = module.get(BoardNodeFactory);
 		await setupEntities();
@@ -358,7 +358,7 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id, 0);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id);
 			});
 
 			it('should call the service to find the target board', async () => {
@@ -366,7 +366,7 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id, 0);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
 			});
 
 			it('should call the service to check the permissions for column', async () => {
@@ -448,7 +448,7 @@ describe(BoardUc.name, () => {
 
 			await uc.copyBoard(user.id, boardId);
 
-			expect(columnBoardCopyService.copyColumnBoard).toHaveBeenCalledWith(
+			expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(
 				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId })
 			);
 		});
@@ -460,7 +460,7 @@ describe(BoardUc.name, () => {
 				type: CopyElementType.BOARD,
 				status: CopyStatusEnum.SUCCESS,
 			};
-			columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
+			columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
 
 			const result = await uc.copyBoard(user.id, boardId);
 

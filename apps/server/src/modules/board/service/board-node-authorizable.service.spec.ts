@@ -4,7 +4,7 @@ import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { BoardContextService } from './board-context.service';
+import { BoardContextService } from './internal/board-context.service';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
 

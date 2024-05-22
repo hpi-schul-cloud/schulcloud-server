@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
 import { AnyBoardNode, AnyContentElement, ColumnBoard, isContentElement, MediaBoard } from '../domain';
-import { BoardNodeRepo } from '../repo';
-import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
-import { ContentElementUpdateService } from './internal';
+import { BoardNodeRepo } from '../repo/board-node.repo';
+import { BoardNodeDeleteHooksService } from './internal/board-node-delete-hooks.service';
+import { ContentElementUpdateService } from './internal/content-element-update.service';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;

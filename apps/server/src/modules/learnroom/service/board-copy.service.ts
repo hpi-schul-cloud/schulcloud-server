@@ -1,4 +1,4 @@
-import { BoardExternalReferenceType, ColumnBoard, ColumnBoardCopyService } from '@modules/board';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
@@ -21,7 +21,6 @@ import {
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardLinkService } from '@src/modules/board/service';
 import { sortBy } from 'lodash';
 import { ColumnBoardNodeRepo } from '../repo';
 
@@ -38,8 +37,7 @@ export class BoardCopyService {
 		private readonly boardRepo: LegacyBoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
-		private readonly columnBoardLinkService: ColumnBoardLinkService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly copyHelperService: CopyHelperService,
 		// TODO comment this, legacy!
 		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
@@ -131,7 +129,7 @@ export class BoardCopyService {
 	}
 
 	private async copyColumnBoard(columnBoard: ColumnBoard, user: User, destinationCourse: Course): Promise<CopyStatus> {
-		return this.columnBoardCopyService.copyColumnBoard({
+		return this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: columnBoard.id,
 			userId: user.id,
 			destinationExternalReference: {
@@ -192,7 +190,7 @@ export class BoardCopyService {
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-					el.copyEntity = await this.columnBoardLinkService.swapLinkedIds(el.copyEntity?.id, map);
+					el.copyEntity = await this.columnBoardService.swapLinkedIds(el.copyEntity?.id, map);
 				}
 				return el;
 			})

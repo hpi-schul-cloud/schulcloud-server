@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizableReferenceType, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { BoardExternalReferenceType, ColumnBoardCopyService } from '@modules/board';
+import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService } from '@modules/lesson';
@@ -31,7 +31,7 @@ export class ShareTokenUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly courseService: CourseService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
@@ -200,7 +200,7 @@ export class ShareTokenUC {
 			courseId,
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
-		const copyStatus = this.columnBoardCopyService.copyColumnBoard({
+		const copyStatus = this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId,
 			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
 			userId,

@@ -25,7 +25,7 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '../domain';
+} from '../../domain';
 
 export interface CopyContext {
 	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]>;

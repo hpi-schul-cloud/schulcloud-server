@@ -14,19 +14,22 @@ import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 import {
 	BoardCommonToolService,
-	BoardContextService,
 	BoardNodeAuthorizableService,
-	BoardNodeCopyService,
-	BoardNodeDeleteHooksService,
 	BoardNodeService,
-	ColumnBoardCopyService,
-	ColumnBoardLinkService,
 	ColumnBoardService,
-	ColumnBoardTitleService,
 	MediaBoardService,
 	UserDeletedEventHandlerService,
 } from './service';
-import { ContentElementUpdateService } from './service/internal';
+import {
+	BoardNodeCopyService,
+	ColumnBoardCopyService,
+	ColumnBoardLinkService,
+	ColumnBoardReferenceService,
+	ColumnBoardTitleService,
+	ContentElementUpdateService,
+	BoardNodeDeleteHooksService,
+	BoardContextService,
+} from './service/internal';
 
 @Module({
 	imports: [
@@ -56,6 +59,7 @@ import { ContentElementUpdateService } from './service/internal';
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 		ColumnBoardCopyService,
 		ColumnBoardLinkService,
+		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
 		UserDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
@@ -63,12 +67,10 @@ import { ContentElementUpdateService } from './service/internal';
 	],
 	exports: [
 		BoardNodeAuthorizableService,
-		BoardNodeService,
 		BoardNodeFactory,
+		BoardNodeService,
 		BoardCommonToolService,
 		ColumnBoardService,
-		ColumnBoardCopyService,
-		ColumnBoardLinkService,
 	],
 })
 export class BoardModule {}

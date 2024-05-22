@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { CopyStatus } from '@src/modules/copy-helper';
 import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
+import { ColumnBoardCopyService } from './internal/column-board-copy.service';
+import { ColumnBoardLinkService } from './internal/column-board-link.service';
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(private readonly boardNodeRepo: BoardNodeRepo, private readonly boardNodeService: BoardNodeService) {}
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly clumnBoardLinkService: ColumnBoardLinkService
+	) {}
 
 	async findById(id: EntityId, depth?: number): Promise<ColumnBoard> {
 		const columnBoard = this.boardNodeService.findByClassAndId(ColumnBoard, id, depth);
@@ -35,5 +43,22 @@ export class ColumnBoardService {
 		});
 
 		await this.boardNodeRepo.delete(boardNodes);
+	}
+
+	async copyColumnBoard(props: {
+		originalColumnBoardId: EntityId;
+		destinationExternalReference: BoardExternalReference;
+		userId: EntityId;
+		copyTitle?: string;
+	}): Promise<CopyStatus> {
+		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(props);
+
+		return copyStatus;
+	}
+
+	async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
+		const board = await this.clumnBoardLinkService.swapLinkedIds(boardId, idMap);
+
+		return board;
 	}
 }

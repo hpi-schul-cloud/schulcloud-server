@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, ColumnBoard, isLinkElement } from '../domain';
-import { BoardNodeRepo } from '../repo';
-import { BoardNodeService } from './board-node.service';
+import { AnyBoardNode, ColumnBoard, isLinkElement } from '../../domain';
+import { BoardNodeRepo } from '../../repo/board-node.repo';
+import { BoardNodeService } from '../board-node.service';
 
 @Injectable()
 export class ColumnBoardLinkService {

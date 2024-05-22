@@ -3,7 +3,7 @@ import { type EntityId } from '@shared/domain/types';
 import { type AuthorizationLoaderService } from '@src/modules/authorization';
 import { AnyBoardNode, BoardNodeAuthorizable } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { BoardContextService } from './board-context.service';
+import { BoardContextService } from './internal/board-context.service';
 import { BoardNodeService } from './board-node.service';
 
 @Injectable()

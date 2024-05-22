@@ -24,8 +24,6 @@ export {
 	BoardNodeService,
 	BoardCommonToolService,
 	ColumnBoardService,
-	ColumnBoardCopyService,
-	ColumnBoardLinkService,
 	MediaAvailableLineService,
 	MediaBoardService,
 } from './service';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../domain';
+import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 
 @Injectable()
 export class BoardContextService {
