@@ -1,9 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
+import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
@@ -44,6 +46,7 @@ describe('UserLoginMigrationController (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
+	let configService: ConfigService;
 
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
@@ -57,6 +60,7 @@ describe('UserLoginMigrationController (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, '/user-login-migrations');
+		configService = app.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -424,11 +428,10 @@ describe('UserLoginMigrationController (API)', () => {
 	});
 
 	describe('[GET] /user-login-migrations/migrate-to-oauth2', () => {
-		const mockPostOauthTokenEndpoint = (
+		const mockAxiosRequests = (
 			idToken: string,
 			targetSystem: SystemEntity,
 			targetUserId: string,
-			schoolExternalId: string,
 			officialSchoolNumber: string
 		) => {
 			axiosMock
@@ -458,7 +461,9 @@ describe('UserLoginMigrationController (API)', () => {
 							},
 						},
 					],
-				});
+				})
+				.onGet(configService.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL'))
+				.replyOnce<SchulconnexLizenzInfoResponse[]>(200, []);
 		};
 
 		describe('when providing a code and being eligible to migrate', () => {
@@ -506,7 +511,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, officialSchoolNumber);
+				mockAxiosRequests(idToken, targetSystem, adminUser.id, officialSchoolNumber);
 
 				return {
 					query,
@@ -573,7 +578,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, 'kennung');
+				mockAxiosRequests(idToken, targetSystem, adminUser.id, 'kennung');
 
 				return {
 					query,
