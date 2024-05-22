@@ -36,7 +36,7 @@ import {
 	SchulconnexUserProvisioningService,
 } from '../oidc/service';
 import { SanisProvisioningStrategy } from './sanis.strategy';
-import { SchulconnexResponseMapper } from './schulconnex-response-mapper.service';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import ArgsType = jest.ArgsType;
 import SpyInstance = jest.SpyInstance;
 
@@ -169,12 +169,9 @@ describe(SanisProvisioningStrategy.name, () => {
 				const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] =
 					schulconnexLizenzInfoResponseFactory.build();
 				const schulconnexLizenzInfoResponse = schulconnexLizenzInfoResponses[0];
-				const licenses: ExternalLicenseDto[] = [
-					new ExternalLicenseDto({
-						mediumId: schulconnexLizenzInfoResponse.target.uid,
-						mediaSourceId: schulconnexLizenzInfoResponse.target.partOf,
-					}),
-				];
+				const licenses: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses([
+					schulconnexLizenzInfoResponse,
+				]);
 
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				mapper.mapToExternalUserDto.mockReturnValue(user);

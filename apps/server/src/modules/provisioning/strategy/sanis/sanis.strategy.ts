@@ -30,7 +30,7 @@ import {
 	SchulconnexSchoolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from '../oidc/service';
-import { SchulconnexResponseMapper } from './schulconnex-response-mapper.service';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 @Injectable()
 export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
@@ -73,23 +73,23 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			overrideUrl: input.system.provisioningUrl,
 		});
 
-		const sanisResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, sanisAxiosResponse);
+		const schulconnexResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, sanisAxiosResponse);
 
-		await this.checkResponseValidation(sanisResponse, [
+		await this.checkResponseValidation(schulconnexResponse, [
 			SchulconnexResponseValidationGroups.USER,
 			SchulconnexResponseValidationGroups.SCHOOL,
 		]);
 
-		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(sanisResponse);
+		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(schulconnexResponse);
 		this.addTeacherRoleIfAdmin(externalUser);
 
-		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(sanisResponse);
+		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
 		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
-			await this.checkResponseValidation(sanisResponse, [SchulconnexResponseValidationGroups.GROUPS]);
+			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
-			externalGroups = this.responseMapper.mapToExternalGroupDtos(sanisResponse);
+			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);
 		}
 
 		let externalLicenses: ExternalLicenseDto[] | undefined;

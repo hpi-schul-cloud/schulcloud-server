@@ -8,13 +8,15 @@ import {
 	schulconnexResponseFactory,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
+import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
+import { schulconnexLizenzInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
-import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { SchulconnexResponseMapper } from './schulconnex-response-mapper.service';
+import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 describe(SchulconnexResponseMapper.name, () => {
 	let module: TestingModule;
@@ -46,11 +48,13 @@ describe(SchulconnexResponseMapper.name, () => {
 		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
 
 		const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+		const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.build();
 
 		return {
 			externalUserId,
 			externalSchoolId,
 			schulconnexResponse,
+			licenseResponse,
 		};
 	};
 
@@ -97,14 +101,14 @@ describe(SchulconnexResponseMapper.name, () => {
 				schulconnexResponse.personenkontexte[0].gruppen = undefined;
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 				};
 			};
 
 			it('should return undefined', () => {
-				const { sanisResponse } = setup();
+				const { schulconnexResponse } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result).toBeUndefined();
 			});
@@ -118,14 +122,14 @@ describe(SchulconnexResponseMapper.name, () => {
 				schulconnexResponse.personenkontexte[0].gruppen?.[0].gruppe.typ = 'unknown';
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 				};
 			};
 
 			it('should not map the group', () => {
-				const { sanisResponse } = setup();
+				const { schulconnexResponse } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result).toHaveLength(0);
 			});
@@ -143,7 +147,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				const otherParticipant: SchulconnexSonstigeGruppenzugehoerigeResponse = group.sonstige_gruppenzugehoerige![0];
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 					group,
 					personenkontext,
 					otherParticipant,
@@ -151,9 +155,9 @@ describe(SchulconnexResponseMapper.name, () => {
 			};
 
 			it('should map the schulconnex response to external group dtos', () => {
-				const { sanisResponse, group, personenkontext, otherParticipant } = setup();
+				const { schulconnexResponse, group, personenkontext, otherParticipant } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result?.[0]).toEqual<ExternalGroupDto>({
 					name: group.gruppe.bezeichnung,
@@ -179,14 +183,14 @@ describe(SchulconnexResponseMapper.name, () => {
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.OTHER;
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 				};
 			};
 
 			it('should map the group', () => {
-				const { sanisResponse } = setup();
+				const { schulconnexResponse } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result).toEqual([
 					expect.objectContaining<Partial<ExternalGroupDto>>({
@@ -202,14 +206,14 @@ describe(SchulconnexResponseMapper.name, () => {
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.COURSE;
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 				};
 			};
 
 			it('should map the group', () => {
-				const { sanisResponse } = setup();
+				const { schulconnexResponse } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result).toEqual([
 					expect.objectContaining<Partial<ExternalGroupDto>>({
@@ -227,14 +231,14 @@ describe(SchulconnexResponseMapper.name, () => {
 				];
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 				};
 			};
 
 			it('should not map the group', () => {
-				const { sanisResponse } = setup();
+				const { schulconnexResponse } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result).toHaveLength(0);
 			});
@@ -246,14 +250,14 @@ describe(SchulconnexResponseMapper.name, () => {
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
 
 				return {
-					sanisResponse: schulconnexResponse,
+					schulconnexResponse,
 				};
 			};
 
 			it('should not map the group', () => {
-				const { sanisResponse } = setup();
+				const { schulconnexResponse } = setup();
 
-				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result).toHaveLength(0);
 			});
@@ -325,6 +329,23 @@ describe(SchulconnexResponseMapper.name, () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(schulconnexResponse);
 
 				expect(result?.[0].otherUsers).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('mapToExternalLicenses', () => {
+		describe('when a sanis response with license is provided', () => {
+			it('should map the response to an ExternalLicenseDto', () => {
+				const { licenseResponse } = setupSchulconnexResponse();
+
+				const result: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([
+					{
+						mediumId: 'bildungscloud',
+						mediaSourceId: undefined,
+					},
+				]);
 			});
 		});
 	});

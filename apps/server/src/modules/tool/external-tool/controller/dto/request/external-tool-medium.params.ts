@@ -12,4 +12,10 @@ export class ExternalToolMediumParams {
 	@IsNotEmpty()
 	@ApiPropertyOptional({ type: String, description: 'Publisher of the medium' })
 	publisher?: string;
+
+	@IsString()
+	@IsOptional()
+	@IsNotEmpty()
+	@ApiPropertyOptional({ type: String, description: 'The id of the media source' })
+	mediaSourceId?: string;
 }
