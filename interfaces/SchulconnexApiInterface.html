@@ -304,7 +304,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SanisResponse.html" target="_self" >Promise&lt;SanisResponse[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/SchulconnexResponse.html" target="_self" >Promise&lt;SchulconnexResponse[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -383,7 +383,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SanisResponse.html" target="_self" >Promise&lt;SanisResponse&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/SchulconnexResponse.html" target="_self" >Promise&lt;SchulconnexResponse&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -400,12 +400,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulconnexPersonenInfoParams } from &#x27;./request&#x27;;
-import { SanisResponse, SchulconnexLizenzInfoResponse } from &#x27;./response&#x27;;
+import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from &#x27;./response&#x27;;
 
 export interface SchulconnexApiInterface {
-	getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise&lt;SanisResponse&gt;;
+	getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise&lt;SchulconnexResponse&gt;;
 
-	getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise&lt;SanisResponse[]&gt;;
+	getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise&lt;SchulconnexResponse[]&gt;;
 
 	getLizenzInfo(accessToken: string, options?: { overrideUrl: string }): Promise&lt;SchulconnexLizenzInfoResponse[]&gt;;
 }

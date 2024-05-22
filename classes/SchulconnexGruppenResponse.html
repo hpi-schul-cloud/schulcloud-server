@@ -93,7 +93,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SanisNameResponse</li>
+  <li class="breadcrumb-item" >SchulconnexGruppenResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -117,7 +117,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/infra/schulconnex-client/response/sanis-name-response.ts</code>
+            <code>apps/server/src/infra/schulconnex-client/response/schulconnex-gruppen-response.ts</code>
         </p>
 
 
@@ -139,11 +139,23 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#familienname" >familienname</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#gruppe" >gruppe</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#vorname" >vorname</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#gruppenzugehoerigkeit" >gruppenzugehoerigkeit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#sonstige_gruppenzugehoerige" >sonstige_gruppenzugehoerige</a>
                             </li>
                         </ul>
                     </td>
@@ -168,17 +180,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="familienname"></a>
+                    <a name="gruppe"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>familienname</b></span>
-                        <a href="#familienname"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>gruppe</b></span>
+                        <a href="#gruppe"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>        <code><a href="../classes/SchulconnexGruppeResponse.html" target="_self" >SchulconnexGruppeResponse</a></code>
 
                     </td>
                 </tr>
@@ -187,13 +201,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />
+                            @IsObject()<br />@ValidateNested()<br />@Type(undefined)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/infra/schulconnex-client/response/sanis-name-response.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/infra/schulconnex-client/response/schulconnex-gruppen-response.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -204,17 +218,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="vorname"></a>
+                    <a name="gruppenzugehoerigkeit"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>vorname</b></span>
-                        <a href="#vorname"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>gruppenzugehoerigkeit</b></span>
+                        <a href="#gruppenzugehoerigkeit"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>        <code><a href="../classes/SchulconnexGruppenzugehoerigkeitResponse.html" target="_self" >SchulconnexGruppenzugehoerigkeitResponse</a></code>
 
                     </td>
                 </tr>
@@ -223,13 +239,53 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />
+                            @IsObject()<br />@ValidateNested()<br />@Type(undefined)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/infra/schulconnex-client/response/sanis-name-response.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/infra/schulconnex-client/response/schulconnex-gruppen-response.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sonstige_gruppenzugehoerige"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>sonstige_gruppenzugehoerige</b></span>
+                        <a href="#sonstige_gruppenzugehoerige"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/SchulconnexSonstigeGruppenzugehoerigeResponse.html" target="_self" >SchulconnexSonstigeGruppenzugehoerigeResponse[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsOptional()<br />@IsArray()<br />@ValidateNested({each: true})<br />@Type(undefined)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/infra/schulconnex-client/response/schulconnex-gruppen-response.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -248,14 +304,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsString } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Type } from &#x27;class-transformer&#x27;;
+import { IsArray, IsObject, IsOptional, ValidateNested } from &#x27;class-validator&#x27;;
+import { SchulconnexGruppeResponse } from &#x27;./schulconnex-gruppe-response&#x27;;
+import { SchulconnexGruppenzugehoerigkeitResponse } from &#x27;./schulconnex-gruppenzugehoerigkeit-response&#x27;;
+import { SchulconnexSonstigeGruppenzugehoerigeResponse } from &#x27;./schulconnex-sonstige-gruppenzugehoerige-response&#x27;;
 
-export class SanisNameResponse {
-	@IsString()
-	familienname!: string;
+export class SchulconnexGruppenResponse {
+	@IsObject()
+	@ValidateNested()
+	@Type(() &#x3D;&gt; SchulconnexGruppeResponse)
+	gruppe!: SchulconnexGruppeResponse;
 
-	@IsString()
-	vorname!: string;
+	@IsObject()
+	@ValidateNested()
+	@Type(() &#x3D;&gt; SchulconnexGruppenzugehoerigkeitResponse)
+	gruppenzugehoerigkeit!: SchulconnexGruppenzugehoerigkeitResponse;
+
+	@IsOptional()
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() &#x3D;&gt; SchulconnexSonstigeGruppenzugehoerigeResponse)
+	sonstige_gruppenzugehoerige?: SchulconnexSonstigeGruppenzugehoerigeResponse[];
 }
 </code></pre>
     </div>
@@ -295,7 +365,7 @@ export class SanisNameResponse {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SanisNameResponse.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchulconnexGruppenResponse.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

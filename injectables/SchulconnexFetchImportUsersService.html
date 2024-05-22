@@ -391,7 +391,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SanisResponse, SchulconnexRestClient } from &#x27;@infra/schulconnex-client&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulconnexResponse, SchulconnexRestClient } from &#x27;@infra/schulconnex-client&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -413,7 +413,7 @@ export class SchulconnexFetchImportUsersService {
 			throw new UserImportSchoolExternalIdMissingLoggableException(school.id);
 		}
 
-		const response: SanisResponse[] &#x3D; await this.schulconnexRestClient.getPersonenInfo({
+		const response: SchulconnexResponse[] &#x3D; await this.schulconnexRestClient.getPersonenInfo({
 			vollstaendig: [&#x27;personen&#x27;, &#x27;personenkontexte&#x27;, &#x27;organisationen&#x27;, &#x27;gruppen&#x27;],
 			&#x27;organisation.id&#x27;: externalSchoolId,
 		});

@@ -2416,13 +2416,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ProvisioningModule.html" data-type="entity-link" >ProvisioningModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ProvisioningModule-6a04ed3dfbf5a148d2c0bfe7fb904554e317193b60954fd0720639c46d954de6879ecd3135523f1af219605ab57a90ae966d76af0f203460b7930601aa038dde"' : 'data-bs-target="#xs-injectables-links-module-ProvisioningModule-6a04ed3dfbf5a148d2c0bfe7fb904554e317193b60954fd0720639c46d954de6879ecd3135523f1af219605ab57a90ae966d76af0f203460b7930601aa038dde"' }>
+                                        'data-bs-target="#injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' : 'data-bs-target="#xs-injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ProvisioningModule-6a04ed3dfbf5a148d2c0bfe7fb904554e317193b60954fd0720639c46d954de6879ecd3135523f1af219605ab57a90ae966d76af0f203460b7930601aa038dde"' :
-                                        'id="xs-injectables-links-module-ProvisioningModule-6a04ed3dfbf5a148d2c0bfe7fb904554e317193b60954fd0720639c46d954de6879ecd3135523f1af219605ab57a90ae966d76af0f203460b7930601aa038dde"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' :
+                                        'id="xs-injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' }>
                                         <li class="link">
                                             <a href="injectables/IservProvisioningStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >IservProvisioningStrategy</a>
                                         </li>
@@ -2436,9 +2436,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/SanisProvisioningStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SanisProvisioningStrategy</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/SanisResponseMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SanisResponseMapper</a>
-                                        </li>
-                                        <li class="link">
                                             <a href="injectables/SchulconnexCourseSyncService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexCourseSyncService</a>
                                         </li>
                                         <li class="link">
@@ -2446,6 +2443,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchulconnexLicenseProvisioningService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexLicenseProvisioningService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/SchulconnexResponseMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexResponseMapper</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchulconnexSchoolProvisioningService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexSchoolProvisioningService</a>
@@ -6182,42 +6182,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RpcMessageProducer.html" data-type="entity-link" >RpcMessageProducer</a>
                             </li>
                             <li class="link">
-                                <a href="classes/SanisAnschriftResponse.html" data-type="entity-link" >SanisAnschriftResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisErreichbarkeitenResponse.html" data-type="entity-link" >SanisErreichbarkeitenResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisGeburtResponse.html" data-type="entity-link" >SanisGeburtResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisGruppenResponse.html" data-type="entity-link" >SanisGruppenResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisGruppenzugehoerigkeitResponse.html" data-type="entity-link" >SanisGruppenzugehoerigkeitResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisGruppeResponse.html" data-type="entity-link" >SanisGruppeResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisNameResponse.html" data-type="entity-link" >SanisNameResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisOrganisationResponse.html" data-type="entity-link" >SanisOrganisationResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisPersonenkontextResponse.html" data-type="entity-link" >SanisPersonenkontextResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisPersonResponse.html" data-type="entity-link" >SanisPersonResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisResponse.html" data-type="entity-link" >SanisResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisSonstigeGruppenzugehoerigeResponse.html" data-type="entity-link" >SanisSonstigeGruppenzugehoerigeResponse</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/SavedAccountLoggable.html" data-type="entity-link" >SavedAccountLoggable</a>
                             </li>
                             <li class="link">
@@ -6443,7 +6407,25 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolYearResponseMapper.html" data-type="entity-link" >SchoolYearResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchulconnexAnschriftResponse.html" data-type="entity-link" >SchulconnexAnschriftResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchulconnexConfigurationMissingLoggable.html" data-type="entity-link" >SchulconnexConfigurationMissingLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexErreichbarkeitenResponse.html" data-type="entity-link" >SchulconnexErreichbarkeitenResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexGeburtResponse.html" data-type="entity-link" >SchulconnexGeburtResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexGruppenResponse.html" data-type="entity-link" >SchulconnexGruppenResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexGruppenzugehoerigkeitResponse.html" data-type="entity-link" >SchulconnexGruppenzugehoerigkeitResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexGruppeResponse.html" data-type="entity-link" >SchulconnexGruppeResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchulconnexImportUserMapper.html" data-type="entity-link" >SchulconnexImportUserMapper</a>
@@ -6458,6 +6440,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchulconnexLizenzInfoTargetResponse.html" data-type="entity-link" >SchulconnexLizenzInfoTargetResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchulconnexNameResponse.html" data-type="entity-link" >SchulconnexNameResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexOrganisationResponse.html" data-type="entity-link" >SchulconnexOrganisationResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexPersonenkontextResponse.html" data-type="entity-link" >SchulconnexPersonenkontextResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexPersonResponse.html" data-type="entity-link" >SchulconnexPersonResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchulConneXProvisioningOptions.html" data-type="entity-link" >SchulConneXProvisioningOptions</a>
                             </li>
                             <li class="link">
@@ -6467,7 +6461,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchulConneXProvisioningOptionsResponse.html" data-type="entity-link" >SchulConneXProvisioningOptionsResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchulconnexResponse.html" data-type="entity-link" >SchulconnexResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchulconnexRestClient.html" data-type="entity-link" >SchulconnexRestClient</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchulconnexSonstigeGruppenzugehoerigeResponse.html" data-type="entity-link" >SchulconnexSonstigeGruppenzugehoerigeResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Scope.html" data-type="entity-link" >Scope</a>
@@ -7821,9 +7821,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/SanisProvisioningStrategy.html" data-type="entity-link" >SanisProvisioningStrategy</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/SanisResponseMapper.html" data-type="entity-link" >SanisResponseMapper</a>
-                                </li>
-                                <li class="link">
                                     <a href="injectables/SchoolExternalToolRepo.html" data-type="entity-link" >SchoolExternalToolRepo</a>
                                 </li>
                                 <li class="link">
@@ -7906,6 +7903,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchulconnexProvisioningStrategy.html" data-type="entity-link" >SchulconnexProvisioningStrategy</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/SchulconnexResponseMapper.html" data-type="entity-link" >SchulconnexResponseMapper</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchulconnexSchoolProvisioningService.html" data-type="entity-link" >SchulconnexSchoolProvisioningService</a>

@@ -348,8 +348,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -388,8 +388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -470,8 +470,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -507,7 +507,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SanisResponse.html" target="_self" >Promise&lt;SanisResponse[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/SchulconnexResponse.html" target="_self" >Promise&lt;SchulconnexResponse[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -540,8 +540,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -589,7 +589,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SanisResponse.html" target="_self" >Promise&lt;SanisResponse&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/SchulconnexResponse.html" target="_self" >Promise&lt;SchulconnexResponse&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -622,8 +622,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -724,8 +724,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -761,7 +761,7 @@ import QueryString from &#x27;qs&#x27;;
 import { lastValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { SchulconnexConfigurationMissingLoggable } from &#x27;./loggable&#x27;;
 import { SchulconnexPersonenInfoParams } from &#x27;./request&#x27;;
-import { SanisResponse, SchulconnexLizenzInfoResponse } from &#x27;./response&#x27;;
+import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from &#x27;./response&#x27;;
 import { SchulconnexApiInterface } from &#x27;./schulconnex-api.interface&#x27;;
 import { SchulconnexRestClientOptions } from &#x27;./schulconnex-rest-client-options&#x27;;
 
@@ -778,22 +778,21 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		this.SCHULCONNEX_API_BASE_URL &#x3D; options.apiUrl || &#x27;&#x27;;
 	}
 
-	// TODO: N21-1678 use this in provisioning module
-	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise&lt;SanisResponse&gt; {
+	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise&lt;SchulconnexResponse&gt; {
 		const url: URL &#x3D; new URL(options?.overrideUrl ?? &#x60;${this.SCHULCONNEX_API_BASE_URL}/person-info&#x60;);
 
-		const response: Promise&lt;SanisResponse&gt; &#x3D; this.getRequest&lt;SanisResponse&gt;(url, accessToken);
+		const response: Promise&lt;SchulconnexResponse&gt; &#x3D; this.getRequest&lt;SchulconnexResponse&gt;(url, accessToken);
 
 		return response;
 	}
 
-	public async getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise&lt;SanisResponse[]&gt; {
+	public async getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise&lt;SchulconnexResponse[]&gt; {
 		const token: OAuthTokenDto &#x3D; await this.requestClientCredentialToken();
 
 		const url: URL &#x3D; new URL(&#x60;${this.SCHULCONNEX_API_BASE_URL}/personen-info&#x60;);
 		url.search &#x3D; QueryString.stringify(params, { arrayFormat: &#x27;comma&#x27; });
 
-		const response: Promise&lt;SanisResponse[]&gt; &#x3D; this.getRequest&lt;SanisResponse[]&gt;(
+		const response: Promise&lt;SchulconnexResponse[]&gt; &#x3D; this.getRequest&lt;SchulconnexResponse[]&gt;(
 			url,
 			token.accessToken,
 			this.options.personenInfoTimeoutInMs

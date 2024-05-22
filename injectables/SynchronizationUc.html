@@ -683,20 +683,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserService } from &#x27;@modules/user&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
-import { SanisResponse, SchulconnexRestClient } from &#x27;@infra/schulconnex-client&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulconnexResponse, SchulconnexRestClient } from &#x27;@infra/schulconnex-client&#x27;;
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from &#x27;@modules/synchronization&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
+import { SynchronizationConfig } from &#x27;../interface&#x27;;
 import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from &#x27;./loggable&#x27;;
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
 } from &#x27;./loggable-exception&#x27;;
-import { SynchronizationConfig } from &#x27;../interface&#x27;;
 
 @Injectable()
 export class SynchronizationUc {
@@ -743,7 +743,7 @@ export class SynchronizationUc {
 
 	public async findUsersToSynchronize(systemId: string): Promise&lt;string[]&gt; {
 		let usersToCheck: string[] &#x3D; [];
-		const usersDownloaded: SanisResponse[] &#x3D; await this.schulconnexRestClient.getPersonenInfo({});
+		const usersDownloaded: SchulconnexResponse[] &#x3D; await this.schulconnexRestClient.getPersonenInfo({});
 
 		if (usersDownloaded.length &#x3D;&#x3D;&#x3D; 0) {
 			throw new NoUsersToSynchronizationLoggableException(systemId);
