@@ -9,7 +9,7 @@ import {
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
-} from '../controller/dto';
+} from '../../controller/dto';
 import {
 	AnyContentElement,
 	DrawingElement,
@@ -24,8 +24,8 @@ import {
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
-} from '../domain';
-import { BoardNodeRepo } from '../repo';
+} from '../../domain';
+import { BoardNodeRepo } from '../../repo';
 
 @Injectable()
 export class ContentElementUpdateService {

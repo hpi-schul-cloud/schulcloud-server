@@ -1,5 +1,5 @@
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '@modules/board/domain';
-import { BoardNodeService, ContentElementUpdateService } from '@modules/board/service';
+import { BoardNodeService } from '@modules/board/service';
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import {
@@ -16,7 +16,6 @@ export class CommonCartridgeImportService {
 		private readonly courseService: CourseService,
 		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly contentElementUpdateService: ContentElementUpdateService,
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
@@ -88,7 +87,7 @@ export class CommonCartridgeImportService {
 			const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
 			await this.boardNodeService.addToParent(card, contentElement);
 			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
-			await this.contentElementUpdateService.updateContent(contentElement, contentElementBody);
+			await this.boardNodeService.updateContent(contentElement, contentElementBody);
 		}
 	}
 }

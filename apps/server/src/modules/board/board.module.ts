@@ -69,7 +69,6 @@ import { ColumnBoardTitleService } from './service/column-board-title.service';
 		ColumnBoardService,
 		ColumnBoardCopyService,
 		ColumnBoardLinkService,
-		ContentElementUpdateService,
 	],
 })
 export class BoardModule {}

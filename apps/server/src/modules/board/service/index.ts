@@ -6,6 +6,5 @@ export * from './board-node.service';
 export * from './column-board.service';
 export * from './column-board-copy.service';
 export * from './column-board-link.service';
-export * from './content-element-update.service';
 export * from './media-board';
 export * from './event';

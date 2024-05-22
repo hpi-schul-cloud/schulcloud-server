@@ -10,12 +10,7 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '../domain';
-import {
-	BoardNodeAuthorizableService,
-	BoardNodePermissionService,
-	BoardNodeService,
-	ContentElementUpdateService,
-} from '../service';
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 
 @Injectable()
 export class ElementUc {
@@ -24,7 +19,6 @@ export class ElementUc {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly contentElementUpdateService: ContentElementUpdateService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ElementUc.name);
@@ -38,7 +32,7 @@ export class ElementUc {
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		await this.boardPermissionService.checkPermission(userId, element, Action.write);
 
-		await this.contentElementUpdateService.updateContent(element, content);
+		await this.boardNodeService.updateContent(element, content);
 
 		return element;
 	}
