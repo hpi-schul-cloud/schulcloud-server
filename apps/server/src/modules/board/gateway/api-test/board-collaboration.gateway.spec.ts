@@ -134,6 +134,8 @@ describe(BoardCollaborationGateway.name, () => {
 					oldIndex: 0,
 					newIndex: 0,
 					fromColumnId: columnNode.id,
+					fromColumnIndex: 0,
+					toColumnIndex: 1,
 					toColumnId: columnNode2.id,
 				};
 
@@ -150,7 +152,11 @@ describe(BoardCollaborationGateway.name, () => {
 
 				const moveCardProps = {
 					cardId: cardNodes[0].id,
+					oldIndex: 0,
 					newIndex: 1,
+					fromColumnId: columnNode.id,
+					fromColumnIndex: 0,
+					toColumnIndex: 0,
 					toColumnId: columnNode.id,
 				};
 
@@ -170,7 +176,9 @@ describe(BoardCollaborationGateway.name, () => {
 					oldIndex: 0,
 					newIndex: 1,
 					fromColumnId: columnNode.id,
+					fromColumnIndex: 0,
 					toColumnId: columnNode.id,
+					toColumnIndex: 0,
 				};
 
 				ioClient.emit('move-card-request', moveCardProps);
@@ -341,9 +349,7 @@ describe(BoardCollaborationGateway.name, () => {
 				const { columnBoardNode, columnNode } = await setup();
 
 				const moveColumnProps = {
-					columnId: columnNode.id,
 					targetBoardId: columnBoardNode.id,
-					newIndex: 1,
 					columnMove: {
 						addedIndex: 1,
 						removedIndex: 0,
@@ -504,7 +510,7 @@ describe(BoardCollaborationGateway.name, () => {
 				await setup();
 				const cardId = new ObjectId().toHexString();
 
-				ioClient.emit('create-element-request', { cardId });
+				ioClient.emit('create-element-request', { cardId, type: ContentElementType.RICH_TEXT });
 				const failure = await waitForEvent(ioClient, 'create-element-failure');
 
 				expect(failure).toBeDefined();
