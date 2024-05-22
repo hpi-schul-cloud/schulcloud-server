@@ -139,6 +139,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#mediaSourceId" >mediaSourceId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#mediumId" >mediumId</a>
                             </li>
                             <li>
@@ -170,7 +175,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/external-tool/entity/external-tool-medium.entity.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/external-tool/entity/external-tool-medium.entity.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -213,6 +218,43 @@
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaSourceId"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>mediaSourceId</b></span>
+                        <a href="#mediaSourceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property({nullable: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/external-tool/entity/external-tool-medium.entity.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -308,9 +350,13 @@ export class ExternalToolMediumEntity {
 	@Property({ nullable: true })
 	publisher?: string;
 
+	@Property({ nullable: true })
+	mediaSourceId?: string;
+
 	constructor(props: ExternalToolMediumEntity) {
 		this.mediumId &#x3D; props.mediumId;
 		this.publisher &#x3D; props.publisher;
+		this.mediaSourceId &#x3D; props.mediaSourceId;
 	}
 }
 </code></pre>

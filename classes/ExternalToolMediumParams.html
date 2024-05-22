@@ -141,6 +141,14 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#mediaSourceId" >mediaSourceId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#mediumId" >mediumId</a>
                             </li>
                             <li>
@@ -170,6 +178,46 @@
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaSourceId"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>mediaSourceId</b></span>
+                        <a href="#mediaSourceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsString()<br />@IsOptional()<br />@IsNotEmpty()<br />@ApiPropertyOptional({type: String, description: &#x27;The id of the media source&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-medium.params.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -274,6 +322,12 @@ export class ExternalToolMediumParams {
 	@IsNotEmpty()
 	@ApiPropertyOptional({ type: String, description: &#x27;Publisher of the medium&#x27; })
 	publisher?: string;
+
+	@IsString()
+	@IsOptional()
+	@IsNotEmpty()
+	@ApiPropertyOptional({ type: String, description: &#x27;The id of the media source&#x27; })
+	mediaSourceId?: string;
 }
 </code></pre>
     </div>

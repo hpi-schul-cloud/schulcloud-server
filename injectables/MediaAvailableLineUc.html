@@ -794,9 +794,9 @@ export class MediaAvailableLineUc {
 		const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.userLicenseService.getMediaUserLicensesForUser(userId);
 
 		matchedTools &#x3D; matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean &#x3D;&gt; {
-			const externalToolMediumId &#x3D; tool[0]?.medium?.mediumId;
-			if (externalToolMediumId) {
-				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMediumId, mediaUserLicenses);
+			const externalToolMedium &#x3D; tool[0]?.medium;
+			if (externalToolMedium) {
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
 			}
 			return true;
 		});

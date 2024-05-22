@@ -1026,13 +1026,18 @@ export class SanisResponseMapper {
 	}
 
 	public static mapToExternalLicenses(licenseInfos: SchulconnexLizenzInfoResponse[]): ExternalLicenseDto[] {
-		const externalLicenseDtos: ExternalLicenseDto[] &#x3D; licenseInfos.map(
-			(license: SchulconnexLizenzInfoResponse) &#x3D;&gt;
-				new ExternalLicenseDto({
-					mediumId: license.target.uid,
-					mediaSourceId: license.target.partOf,
-				})
-		);
+		const externalLicenseDtos: ExternalLicenseDto[] &#x3D; licenseInfos.map((license: SchulconnexLizenzInfoResponse) &#x3D;&gt; {
+			if (license.target.partOf &#x3D;&#x3D;&#x3D; &#x27;&#x27;) {
+				license.target.partOf &#x3D; undefined;
+			}
+
+			const externalLicenseDto: ExternalLicenseDto &#x3D; new ExternalLicenseDto({
+				mediumId: license.target.uid,
+				mediaSourceId: license.target.partOf,
+			});
+
+			return externalLicenseDto;
+		});
 
 		return externalLicenseDtos;
 	}
