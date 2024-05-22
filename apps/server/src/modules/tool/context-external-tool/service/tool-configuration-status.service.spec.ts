@@ -1,7 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { MediaUserLicenseService } from '@modules/user-license/service';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import {
@@ -23,6 +25,7 @@ describe(ToolConfigurationStatusService.name, () => {
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 	let userLicenseService: DeepMocked<UserLicenseService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
+	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -40,6 +43,10 @@ describe(ToolConfigurationStatusService.name, () => {
 					provide: MediaUserLicenseService,
 					useValue: createMock<MediaUserLicenseService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -47,6 +54,7 @@ describe(ToolConfigurationStatusService.name, () => {
 		commonToolValidationService = module.get(CommonToolValidationService);
 		userLicenseService = module.get(UserLicenseService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
+		configService = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -97,14 +105,6 @@ describe(ToolConfigurationStatusService.name, () => {
 					isDeactivated: false,
 					isNotLicensed: false,
 				});
-			});
-
-			it('should get the mediaUserLicenses for user', async () => {
-				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
-
-				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
-
-				expect(userLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
 			});
 
 			it('should validate the school external tool', async () => {
@@ -532,8 +532,10 @@ describe(ToolConfigurationStatusService.name, () => {
 		});
 	});
 
-	describe('when user has no license for externalTool', () => {
+	describe('when license feature is enabled and user has no license for externalTool', () => {
 		const setup = () => {
+			configService.get.mockReturnValueOnce(true);
+
 			const userId: string = new ObjectId().toHexString();
 			const externalTool = externalToolFactory.withMedium().buildWithId();
 			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -557,7 +559,15 @@ describe(ToolConfigurationStatusService.name, () => {
 			};
 		};
 
-		it('should if user has license for external tool', async () => {
+		it('should get the mediaUserLicenses for user', async () => {
+			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+
+			await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
+
+			expect(userLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
+		});
+
+		it('should check if user has license for external tool', async () => {
 			const { externalTool, schoolExternalTool, contextExternalTool, userId, mediaUserLicense } = setup();
 
 			await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
