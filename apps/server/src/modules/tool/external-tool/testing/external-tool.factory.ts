@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameter } from '@modules/tool/common/domain';
 import {
 	CustomParameterLocation,
@@ -16,8 +17,8 @@ import {
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '@modules/tool/external-tool/domain';
+import { DoBaseFactory } from '@shared/testing/factory/domainobject/do-base.factory';
 import { DeepPartial } from 'fishery';
-import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
 	return {
@@ -128,6 +129,7 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 
 export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ sequence }) => {
 	return {
+		id: new ObjectId().toHexString(),
 		name: `external-tool-${sequence}`,
 		description: 'description',
 		url: 'https://url.com/',
@@ -136,7 +138,6 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		isHidden: false,
 		isDeactivated: false,
 		openNewTab: false,
-		version: 1,
 		createdAt: new Date(2020, 1, 1),
 	};
 });

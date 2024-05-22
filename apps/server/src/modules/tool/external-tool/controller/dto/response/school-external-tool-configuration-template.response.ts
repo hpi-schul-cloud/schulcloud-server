@@ -15,14 +15,10 @@ export class SchoolExternalToolConfigurationTemplateResponse {
 	@ApiProperty({ type: [CustomParameterResponse] })
 	parameters: CustomParameterResponse[];
 
-	@ApiProperty()
-	version: number;
-
 	constructor(configuration: SchoolExternalToolConfigurationTemplateResponse) {
 		this.externalToolId = configuration.externalToolId;
 		this.name = configuration.name;
 		this.logoUrl = configuration.logoUrl;
 		this.parameters = configuration.parameters;
-		this.version = configuration.version;
 	}
 }

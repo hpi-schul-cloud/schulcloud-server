@@ -1,6 +1,6 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
-import { contextExternalToolFactory } from '@shared/testing';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 
 describe(MissingMediaLicenseLoggableException.name, () => {
 	describe('getLogMessage', () => {

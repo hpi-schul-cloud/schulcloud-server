@@ -3,21 +3,21 @@ import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { UserDO } from '@shared/domain/domainobject';
-import {
-	customParameterFactory,
-	externalToolDatasheetTemplateDataFactory,
-	externalToolFactory,
-	externalToolParameterDatasheetTemplateDataFactory,
-	schoolExternalToolFactory,
-	userDoFactory,
-} from '@shared/testing';
+import { userDoFactory } from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
 } from '../domain';
+import {
+	customParameterFactory,
+	externalToolDatasheetTemplateDataFactory,
+	externalToolFactory,
+	externalToolParameterDatasheetTemplateDataFactory,
+} from '../testing';
 import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
 
 describe(ExternalToolDatasheetMapper.name, () => {

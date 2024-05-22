@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { TypeGuard } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import {
@@ -9,7 +10,6 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
-	InlineResponse2006Data,
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import {
@@ -20,6 +20,7 @@ import {
 	EtherpadResponseCode,
 	GroupId,
 	PadId,
+	Session,
 	SessionId,
 } from './interface';
 import { EtherpadResponseMapper } from './mappers';
@@ -33,7 +34,7 @@ export class EtherpadClientAdapter {
 		private readonly padApi: PadApi
 	) {}
 
-	public async getOrCreateAuthorId(userId: EntityId, username: string): Promise<AuthorId> {
+	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise<AuthorId> {
 		const response = await this.tryCreateAuthor(userId, username);
 		const user = this.handleEtherpadResponse<InlineResponse2003>(response, { userId });
 
@@ -42,7 +43,7 @@ export class EtherpadClientAdapter {
 		return authorId;
 	}
 
-	private async tryCreateAuthor(userId: string, username: string): Promise<AxiosResponse<InlineResponse2003>> {
+	private async tryCreateAuthor(userId: string, username?: string): Promise<AxiosResponse<InlineResponse2003>> {
 		try {
 			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
 
@@ -56,7 +57,7 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetPadsOfAuthor(authorId);
 		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { authorId });
 
-		if (!this.isObject(pads)) {
+		if (!TypeGuard.isObject(pads)) {
 			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
 		}
 
@@ -79,21 +80,29 @@ export class EtherpadClientAdapter {
 		groupId: GroupId,
 		authorId: AuthorId,
 		parentId: EntityId,
-		sessionCookieExpire: Date
+		sessionCookieExpire: Date,
+		durationThreshold: number
 	): Promise<SessionId> {
-		let sessionId: SessionId | undefined;
-		sessionId = await this.getSessionIdByGroupAndAuthor(groupId, authorId);
+		const session = await this.getSessionByGroupAndAuthor(groupId, authorId);
 
-		if (sessionId) {
-			return sessionId;
+		if (session && this.isSessionDurationSufficient(session, durationThreshold)) {
+			return session.id;
 		}
 
 		const response = await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
-		const session = this.handleEtherpadResponse<InlineResponse2004>(response, { parentId });
+		const newSession = this.handleEtherpadResponse<InlineResponse2004>(response, { parentId });
 
-		sessionId = EtherpadResponseMapper.mapToSessionResponse(session);
+		const sessionId = EtherpadResponseMapper.mapToSessionResponse(newSession);
 
 		return sessionId;
+	}
+
+	private isSessionDurationSufficient(session: Session, durationThreshold: number): boolean {
+		const nowUnixTimestampInSeconds = Math.floor(new Date(Date.now()).getTime() / 1000);
+		const timeDiff = session.validUntil - nowUnixTimestampInSeconds;
+		const isDurationSufficient = timeDiff > durationThreshold;
+
+		return isDurationSufficient;
 	}
 
 	private async tryCreateSession(
@@ -102,11 +111,8 @@ export class EtherpadClientAdapter {
 		sessionCookieExpire: Date
 	): Promise<AxiosResponse<InlineResponse2004>> {
 		try {
-			const response = await this.sessionApi.createSessionUsingGET(
-				groupId,
-				authorId,
-				sessionCookieExpire.getTime().toString()
-			);
+			const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000);
+			const response = await this.sessionApi.createSessionUsingGET(groupId, authorId, unixTimeInSeconds.toString());
 
 			return response;
 		} catch (error) {
@@ -114,51 +120,37 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	private async getSessionIdByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<SessionId | undefined> {
-		let sessionId: SessionId | undefined;
-
+	private async getSessionByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<Session | undefined> {
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		const sessions = this.handleEtherpadResponse<InlineResponse2006>(response, { groupId, authorId });
+		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
-		if (sessions) {
-			sessionId = this.findSessionId(sessions, groupId, authorId);
-		}
+		const session = this.findSession(sessions, groupId, authorId);
 
-		return sessionId;
+		return session;
 	}
 
-	private findSessionId(sessions: InlineResponse2006Data, groupId: string, authorId: string): string | undefined {
-		const sessionEntries = Object.entries(sessions);
-		const sessionId = sessionEntries.map(([key, value]: [string, { groupID: string; authorID: string }]) => {
-			if (value?.groupID === groupId && value?.authorID === authorId) {
-				return key;
-			}
+	private findSession(sessions: Session[], groupId: string, authorId: string): Session | undefined {
+		const filteredAndSortedSessions = sessions
+			.filter((session) => session.groupId === groupId && session.authorId === authorId)
+			.sort((sessionA, sessionB) => sessionB.validUntil - sessionA.validUntil);
 
-			return undefined;
-		});
+		const newestSessionByGroupAndAuthor = filteredAndSortedSessions[0];
 
-		return sessionId[0];
+		return newestSessionByGroupAndAuthor;
 	}
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		const sessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
-		// InlineResponse2006Data has the wrong type definition. Therefore we savely cast it to an object.
-		if (!this.isObject(sessions)) {
-			throw new InternalServerErrorException('Etherpad session ids response is not an object');
-		}
-
-		const sessionIds = Object.keys(sessions);
+		const sessionIds = sessions.map((session) => session.id);
 
 		return sessionIds;
 	}
 
-	private isObject(value: any): value is object {
-		return typeof value === 'object' && !Array.isArray(value) && value !== null;
-	}
-
-	private async tryListSessionsOfAuthor(authorId: string): Promise<AxiosResponse<InlineResponse2006>> {
+	private async tryListSessionsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2006>> {
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
 
@@ -250,7 +242,7 @@ export class EtherpadClientAdapter {
 		const response = await this.tryGetAuthorsOfPad(padId);
 		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
 
-		if (!this.isObject(authors)) {
+		if (!TypeGuard.isObject(authors)) {
 			throw new InternalServerErrorException('Etherpad listAuthorsOfPad response is not an object');
 		}
 
@@ -269,11 +261,9 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async deleteSession(sessionId: SessionId): Promise<InlineResponse2001 | undefined> {
+	public async deleteSession(sessionId: SessionId): Promise<void> {
 		const response = await this.tryDeleteSession(sessionId);
-		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
-
-		return responseData;
+		this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
 	}
 
 	private async tryDeleteSession(sessionId: SessionId): Promise<AxiosResponse<InlineResponse2001>> {

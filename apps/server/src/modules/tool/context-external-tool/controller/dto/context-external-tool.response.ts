@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 import { ToolContextType } from '../../../common/enum';
+import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 
 export class ContextExternalToolResponse {
 	@ApiProperty()
@@ -21,9 +21,6 @@ export class ContextExternalToolResponse {
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[] = [];
 
-	@ApiProperty()
-	toolVersion: number;
-
 	@ApiPropertyOptional()
 	logoUrl?: string;
 
@@ -34,7 +31,6 @@ export class ContextExternalToolResponse {
 		this.contextType = response.contextType;
 		this.displayName = response.displayName;
 		this.parameters = response.parameters;
-		this.toolVersion = response.toolVersion;
 		this.logoUrl = response.logoUrl;
 	}
 }

@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaBoardColors, MediaBoardLayoutType } from '@modules/board/domain';
 import {
 	AnyMediaBoardDo,
 	BoardExternalReferenceType,
@@ -26,5 +27,8 @@ export const mediaBoardFactory = MediaBoardFactory.define(MediaBoard, () => {
 			type: BoardExternalReferenceType.User,
 			id: new ObjectId().toHexString(),
 		},
+		layout: MediaBoardLayoutType.LIST,
+		mediaAvailableLineCollapsed: false,
+		mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 	};
 });
