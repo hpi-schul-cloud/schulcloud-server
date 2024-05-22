@@ -34,6 +34,6 @@ export class ColumnBoardService {
 			id: courseId,
 		});
 
-		await this.boardNodeRepo.removeAndFlush(boardNodes);
+		await this.boardNodeRepo.delete(boardNodes);
 	}
 }

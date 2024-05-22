@@ -12,7 +12,7 @@ export class ColumnBoardLinkService {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
 		this.updateLinkElements(board, idMap);
-		await this.boardNodeRepo.persistAndFlush(board);
+		await this.boardNodeRepo.save(board);
 
 		return board;
 	}

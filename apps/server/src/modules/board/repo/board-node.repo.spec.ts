@@ -30,7 +30,7 @@ describe('BoardNodeRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('persist (and flush)', () => {
+	describe('save', () => {
 		const setup = () => {
 			const board = columnBoardFactory.build({
 				children: columnFactory.buildList(2, { children: cardFactory.buildList(2) }),
@@ -42,8 +42,7 @@ describe('BoardNodeRepo', () => {
 		it('should be able to persist a tree of nodes', async () => {
 			const { board } = setup();
 
-			repo.persist(board);
-			await repo.flush();
+			await repo.save(board);
 			em.clear();
 
 			const nodeCount = await em.count(BoardNodeEntity);
@@ -54,8 +53,7 @@ describe('BoardNodeRepo', () => {
 			const { board: board1 } = setup();
 			const { board: board2 } = setup();
 
-			repo.persist([board1, board2]);
-			await repo.flush();
+			await repo.save([board1, board2]);
 			em.clear();
 
 			const nodeCount = await em.count(BoardNodeEntity);
@@ -65,7 +63,7 @@ describe('BoardNodeRepo', () => {
 		it('should persist embedded context', async () => {
 			const { board } = setup();
 
-			await repo.persistAndFlush(board);
+			await repo.save(board);
 			em.clear();
 
 			const result = await em.findOneOrFail(BoardNodeEntity, board.id);
@@ -83,7 +81,7 @@ describe('BoardNodeRepo', () => {
 				children: [column],
 			});
 
-			await repo.persistAndFlush(board);
+			await repo.save(board);
 			em.clear();
 
 			return { board, column, card };
@@ -111,7 +109,7 @@ describe('BoardNodeRepo', () => {
 				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
 			});
 
-			await repo.persistAndFlush([board, extraBoard]);
+			await repo.save([board, extraBoard]);
 			em.clear();
 
 			return { board, extraBoard };
@@ -143,59 +141,45 @@ describe('BoardNodeRepo', () => {
 		});
 	});
 
-	describe('findCommonParentOfIds', () => {
-		const setup = async () => {
-			const card = cardFactory.build();
-			const column = columnFactory.build({ children: [card] });
-			const board = columnBoardFactory.build({ children: [column] });
+	// describe('findCommonParentOfIds', () => {
+	// 	const setup = async () => {
+	// 		const card = cardFactory.build();
+	// 		const column = columnFactory.build({ children: [card] });
+	// 		const board = columnBoardFactory.build({ children: [column] });
 
-			await repo.persistAndFlush(board);
-			em.clear();
+	// 		await repo.save(board);
+	// 		em.clear();
 
-			return { board, column, card };
-		};
+	// 		return { board, column, card };
+	// 	};
 
-		it('should find the common parent', async () => {
-			const { board, column, card } = await setup();
+	// 	it('should find the common parent', async () => {
+	// 		const { board, column, card } = await setup();
 
-			const result = await repo.findCommonParentOfIds([column.id, card.id]);
+	// 		const result = await repo.findCommonParentOfIds([column.id, card.id]);
 
-			expect(result.id).toEqual(board.id);
-		});
-	});
+	// 		expect(result.id).toEqual(board.id);
+	// 	});
+	// });
 
-	describe('remove (and flush)', () => {
+	describe('delete', () => {
 		const setup = async () => {
 			const board = columnBoardFactory.build({
 				children: columnFactory.buildList(1, { children: cardFactory.buildList(1) }),
 			});
 
-			await repo.persistAndFlush(board);
+			await repo.save(board);
 
 			return { board };
 		};
 
-		describe('remove + flush', () => {
-			it('should delete all nodes recursivevely', async () => {
-				const { board } = await setup();
-				expect(await em.count(BoardNodeEntity)).toBe(3);
+		it('should delete all nodes recursivevely', async () => {
+			const { board } = await setup();
+			expect(await em.count(BoardNodeEntity)).toBe(3);
 
-				repo.remove(board);
-				await repo.flush();
+			await repo.delete(board);
 
-				expect(await em.count(BoardNodeEntity)).toBe(0);
-			});
-		});
-
-		describe('removeAndFlush', () => {
-			it('should delete all nodes recursivevely', async () => {
-				const { board } = await setup();
-				expect(await em.count(BoardNodeEntity)).toBe(3);
-
-				await repo.removeAndFlush(board);
-
-				expect(await em.count(BoardNodeEntity)).toBe(0);
-			});
+			expect(await em.count(BoardNodeEntity)).toBe(0);
 		});
 	});
 });

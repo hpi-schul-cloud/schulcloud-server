@@ -1,10 +1,9 @@
 import { FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardExternalReference, getBoardNodeType } from '../domain';
-import { pathOfChildren, ROOT_PATH } from '../domain/path-utils';
+import { pathOfChildren } from '../domain/path-utils';
 import { BoardNodeEntity } from './entity/board-node.entity';
 import { TreeBuilder } from './tree-builder';
 
@@ -25,11 +24,12 @@ export class BoardNodeRepo {
 	async findByIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
+		// TODO refactor descendants mapping, more DRY?
 		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
 
 		const boardNodes = entities.map((props) => {
-			const children = descendantsMap[pathOfChildren(props)];
-			const builder = new TreeBuilder(children);
+			const descentants = descendantsMap[pathOfChildren(props)];
+			const builder = new TreeBuilder(descentants);
 			const boardNode = builder.build(props);
 
 			return boardNode;
@@ -46,7 +46,7 @@ export class BoardNodeRepo {
 			} as FilterQuery<BoardExternalReference>,
 		});
 
-		// TODO refactor descendants mapping
+		// TODO refactor descendants mapping, more DRY?
 		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
 
 		const boardNodes = entities.map((props) => {
@@ -65,7 +65,7 @@ export class BoardNodeRepo {
 			contextExternalToolId: { $in: contextExternalToolIds },
 		});
 
-		// TODO refactor descendants mapping
+		// TODO refactor descendants mapping, more DRY?
 		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
 
 		const boardNodes = entities.map((props) => {
@@ -80,66 +80,29 @@ export class BoardNodeRepo {
 	}
 
 	// TODO maybe we don't need that method
-	async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
-		const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
-		const sortedPaths = entities.map((e) => e.path).sort();
-		const commonPath = sortedPaths[0];
-		const dontMatch = sortedPaths.some((p) => !p.startsWith(commonPath));
+	// async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise<AnyBoardNode> {
+	// 	const entities = await this.em.find(BoardNodeEntity, { id: { $in: ids } });
+	// 	const sortedPaths = entities.map((e) => e.path).sort();
+	// 	const commonPath = sortedPaths[0];
+	// 	const dontMatch = sortedPaths.some((p) => !p.startsWith(commonPath));
 
-		if (!commonPath || commonPath === ROOT_PATH || dontMatch) {
-			throw new EntityNotFoundError(`Parent node of [${ids.join(',')}] not found`);
-		}
+	// 	if (!commonPath || commonPath === ROOT_PATH || dontMatch) {
+	// 		throw new EntityNotFoundError(`Parent node of [${ids.join(',')}] not found`);
+	// 	}
 
-		const commonAncestorIds = commonPath.split(',').filter((id) => id !== '');
-		const parentId = commonAncestorIds[commonAncestorIds.length - 1];
-		const parentNode = await this.findById(parentId, depth);
+	// 	const commonAncestorIds = commonPath.split(',').filter((id) => id !== '');
+	// 	const parentId = commonAncestorIds[commonAncestorIds.length - 1];
+	// 	const parentNode = await this.findById(parentId, depth);
 
-		return parentNode;
-	}
+	// 	return parentNode;
+	// }
 
-	persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
-		const boardNodes = Utils.asArray(boardNode);
-
-		boardNodes.forEach((bn) => {
-			bn.children.forEach((child) => this.persist(child));
-
-			const props = this.getProps(bn);
-
-			if (!(props instanceof BoardNodeEntity)) {
-				const entity = this.em.create(BoardNodeEntity, props);
-				entity.type = getBoardNodeType(bn);
-				this.setProps(bn, entity);
-				this.em.persist(entity);
-			} else {
-				// for the unlikely case that the props are not managed yet
-				this.em.persist(props);
-			}
-		});
-
-		return this;
-	}
-
-	async persistAndFlush(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		return this.persist(boardNode).flush();
 	}
 
-	remove(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
-		const boardNodes = Utils.asArray(boardNode);
-
-		boardNodes.forEach((bn) => {
-			this.em.remove(this.getProps(bn));
-			bn.children.forEach((child) => this.remove(child));
-		});
-
-		return this;
-	}
-
-	async removeAndFlush(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		await this.remove(boardNode).flush();
-	}
-
-	async flush(): Promise<void> {
-		return this.em.flush();
 	}
 
 	private async findDescendants(props: BoardNodeEntity, depth?: number): Promise<BoardNodeEntity[]> {
@@ -188,6 +151,43 @@ export class BoardNodeRepo {
 			});
 		}
 		return map;
+	}
+
+	private persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes = Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) => {
+			bn.children.forEach((child) => this.persist(child));
+
+			const props = this.getProps(bn);
+
+			if (!(props instanceof BoardNodeEntity)) {
+				const entity = this.em.create(BoardNodeEntity, props);
+				entity.type = getBoardNodeType(bn);
+				this.setProps(bn, entity);
+				this.em.persist(entity);
+			} else {
+				// for the unlikely case that the props are not managed yet
+				this.em.persist(props);
+			}
+		});
+
+		return this;
+	}
+
+	private remove(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes = Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) => {
+			this.em.remove(this.getProps(bn));
+			bn.children.forEach((child) => this.remove(child));
+		});
+
+		return this;
+	}
+
+	private async flush(): Promise<void> {
+		return this.em.flush();
 	}
 
 	private getProps(boardNode: AnyBoardNode): BoardNodeEntity {

@@ -49,7 +49,7 @@ export class ContentElementUpdateService {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
 
-		await this.boardNodeRepo.persistAndFlush(element);
+		await this.boardNodeRepo.save(element);
 	}
 
 	updateFileElement(element: FileElement, content: FileContentBody): void {

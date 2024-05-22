@@ -17,47 +17,50 @@ export class BoardNodeService {
 	) {}
 
 	async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
-		await this.boardNodeRepo.persistAndFlush(boardNode);
+		await this.boardNodeRepo.save(boardNode);
 	}
 
 	async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position?: number): Promise<void> {
 		parent.addChild(child, position);
-		await this.boardNodeRepo.persistAndFlush(parent);
+		await this.boardNodeRepo.save(parent);
 	}
 
 	async updateTitle<T extends WithTitle<AnyBoardNode>>(node: T, title: T['title']) {
 		node.title = title;
-		await this.boardNodeRepo.persistAndFlush(node);
+		await this.boardNodeRepo.save(node);
 	}
 
 	async updateVisibility<T extends WithVisibility<AnyBoardNode>>(node: T, isVisible: T['isVisible']) {
 		node.isVisible = isVisible;
-		await this.boardNodeRepo.persistAndFlush(node);
+		await this.boardNodeRepo.save(node);
 	}
 
 	async updateHeight<T extends WithHeight<AnyBoardNode>>(node: T, height: T['height']) {
 		node.height = height;
-		await this.boardNodeRepo.persistAndFlush(node);
+		await this.boardNodeRepo.save(node);
 	}
 
 	async updateCompleted<T extends WithCompleted<AnyBoardNode>>(node: T, completed: T['completed']) {
 		node.completed = completed;
-		await this.boardNodeRepo.persistAndFlush(node);
+		await this.boardNodeRepo.save(node);
 	}
 
-	async move(childId: EntityId, targetParentId: EntityId, targetPosition?: number): Promise<void> {
-		const child = await this.findById(childId);
-		const parent = await this.findParent(child);
-		const targetParent = await this.findById(targetParentId);
+	async move(child: AnyBoardNode, targetParent: AnyBoardNode, targetPosition?: number): Promise<void> {
+		const saveList: AnyBoardNode[] = [];
 
-		// TODO should we make sure child and targetParent belonging to the same board?
-
-		if (parent) {
-			parent.removeChild(child);
+		if (targetParent.hasChild(child)) {
+			targetParent.removeChild(child);
+		} else {
+			const sourceParent = await this.findParent(child);
+			if (sourceParent) {
+				sourceParent.removeChild(child);
+				saveList.concat(sourceParent.children);
+			}
 		}
 		targetParent.addChild(child, targetPosition);
+		saveList.concat(targetParent.children);
 
-		await this.boardNodeRepo.flush();
+		await this.boardNodeRepo.save(saveList);
 	}
 
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardNode> {
@@ -117,7 +120,7 @@ export class BoardNodeService {
 	}
 
 	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
-		await this.boardNodeRepo.removeAndFlush(boardNode);
+		await this.boardNodeRepo.delete(boardNode);
 		await this.boardNodeDeleteHooksService.afterDelete(boardNode);
 	}
 }

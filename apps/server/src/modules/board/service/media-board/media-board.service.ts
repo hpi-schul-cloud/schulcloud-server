@@ -43,12 +43,12 @@ export class MediaBoardService {
 
 	async addToBoard(parent: MediaBoard, child: MediaLine, position = 0): Promise<void> {
 		parent.addChild(child, position);
-		await this.boardNodeRepo.persistAndFlush(parent);
+		await this.boardNodeRepo.save(parent);
 	}
 
 	async addToMediaLine(parent: MediaLine, child: MediaExternalToolElement, position = 0): Promise<void> {
 		parent.addChild(child, position);
-		await this.boardNodeRepo.persistAndFlush(parent);
+		await this.boardNodeRepo.save(parent);
 	}
 
 	public async createContextExternalToolForMediaBoard(
