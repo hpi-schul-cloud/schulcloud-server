@@ -8,12 +8,14 @@ import {
 	SanisSonstigeGruppenzugehoerigeResponse,
 	schulconnexResponseFactory,
 } from '@infra/schulconnex-client';
+import { SchulconnexLizenzInfoResponse } from '@infra/schulconnex-client/response';
+import { schulconnexLizenzInfoResponseFactory } from '@infra/schulconnex-client/testing/schulconnex-lizenz-info-response-factory';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
-import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 describe('SanisResponseMapper', () => {
@@ -46,11 +48,13 @@ describe('SanisResponseMapper', () => {
 		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
 
 		const sanisResponse: SanisResponse = schulconnexResponseFactory.build();
+		const licenseResponse: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.build();
 
 		return {
 			externalUserId,
 			externalSchoolId,
 			sanisResponse,
+			licenseResponse,
 		};
 	};
 
@@ -302,6 +306,23 @@ describe('SanisResponseMapper', () => {
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
 				expect(result?.[0].otherUsers).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('mapToExternalLicenses', () => {
+		describe('when a sanis response with license is provided', () => {
+			it('should map the response to an ExternalLicenseDto', () => {
+				const { licenseResponse } = setupSanisResponse();
+
+				const result: ExternalLicenseDto[] = SanisResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([
+					{
+						mediumId: 'bildungscloud',
+						mediaSourceId: undefined,
+					},
+				]);
 			});
 		});
 	});
