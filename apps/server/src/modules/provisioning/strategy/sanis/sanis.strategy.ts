@@ -69,11 +69,14 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			);
 		}
 
-		const sanisAxiosResponse: SchulconnexResponse = await this.schulconnexRestClient.getPersonInfo(input.accessToken, {
-			overrideUrl: input.system.provisioningUrl,
-		});
+		const schulconnexAxiosResponse: SchulconnexResponse = await this.schulconnexRestClient.getPersonInfo(
+			input.accessToken,
+			{
+				overrideUrl: input.system.provisioningUrl,
+			}
+		);
 
-		const schulconnexResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, sanisAxiosResponse);
+		const schulconnexResponse: SchulconnexResponse = plainToClass(SchulconnexResponse, schulconnexAxiosResponse);
 
 		await this.checkResponseValidation(schulconnexResponse, [
 			SchulconnexResponseValidationGroups.USER,

@@ -121,7 +121,7 @@ describe(SanisProvisioningStrategy.name, () => {
 		jest.resetAllMocks();
 	});
 
-	const setupschulconnexResponse = (): SchulconnexResponse => schulconnexResponseFactory.build();
+	const setupSchulconnexResponse = (): SchulconnexResponse => schulconnexResponseFactory.build();
 
 	describe('getType is called', () => {
 		describe('when it is called', () => {
@@ -134,7 +134,7 @@ describe(SanisProvisioningStrategy.name, () => {
 	});
 
 	describe('getData is called', () => {
-		describe('when fetching data from sanis', () => {
+		describe('when fetching data from schulconnex', () => {
 			const setup = () => {
 				const provisioningUrl = 'sanisProvisioningUrl';
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
@@ -146,7 +146,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupschulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
 				const user: ExternalUserDto = new ExternalUserDto({
 					externalId: 'externalUserId',
 				});
@@ -154,11 +154,12 @@ describe(SanisProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0]!;
+				const schulconnexGruppeResponse: SchulconnexGruppenResponse =
+					schulconnexResponse.personenkontexte[0].gruppen![0]!;
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
-						name: sanisGruppeResponse.gruppe.bezeichnung,
-						externalId: sanisGruppeResponse.gruppe.id,
+						name: schulconnexGruppeResponse.gruppe.bezeichnung,
+						externalId: schulconnexGruppeResponse.gruppe.id,
 						type: GroupTypes.CLASS,
 						user: {
 							externalUserId: schulconnexResponse.personenkontexte[0].id,
@@ -195,7 +196,7 @@ describe(SanisProvisioningStrategy.name, () => {
 				};
 			};
 
-			it('should call the rest client of sanis with an access token', async () => {
+			it('should call the rest client of schulconnex with an access token', async () => {
 				const { input, provisioningUrl } = setup();
 
 				await strategy.getData(input);
@@ -267,7 +268,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupschulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
 				const user: ExternalUserDto = new ExternalUserDto({
 					externalId: 'externalUserId',
 				});
@@ -321,7 +322,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupschulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
 				const user: ExternalUserDto = new ExternalUserDto({
 					externalId: 'externalUserId',
 				});
@@ -364,7 +365,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupschulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
 				const user: ExternalUserDto = new ExternalUserDto({
 					externalId: 'externalUserId',
 				});
@@ -404,7 +405,7 @@ describe(SanisProvisioningStrategy.name, () => {
 			});
 		});
 
-		describe('when role from sanis is admin', () => {
+		describe('when role from schulconnex is admin', () => {
 			const setup = () => {
 				const provisioningUrl = 'sanisProvisioningUrl';
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
@@ -416,7 +417,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupschulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
 				const user = new ExternalUserDto({
 					externalId: 'externalSchoolId',
 					roles: [RoleName.ADMINISTRATOR],
@@ -468,10 +469,10 @@ describe(SanisProvisioningStrategy.name, () => {
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
 						provisioningUrl,
 					}),
-					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					idToken: 'schulconnexIdToken',
+					accessToken: 'schulconnexAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupschulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
 				const validationError: classValidator.ValidationError = new classValidator.ValidationError();
 
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
