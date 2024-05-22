@@ -10,4 +10,7 @@ export class SchulConneXProvisioningOptionsParams implements SchulConneXProvisio
 
 	@ApiProperty()
 	groupProvisioningOtherEnabled!: boolean;
+
+	@ApiProperty()
+	ctlToolProvisioningEnabled!: boolean;
 }

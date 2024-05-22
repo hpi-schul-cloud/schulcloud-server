@@ -11,9 +11,13 @@ export class SchulConneXProvisioningOptionsResponse implements SchulConneXProvis
 	@ApiProperty()
 	groupProvisioningOtherEnabled: boolean;
 
+	@ApiProperty()
+	ctlToolProvisioningEnabled: boolean;
+
 	constructor(props: SchulConneXProvisioningOptionsResponse) {
 		this.groupProvisioningClassesEnabled = props.groupProvisioningClassesEnabled;
 		this.groupProvisioningCoursesEnabled = props.groupProvisioningCoursesEnabled;
 		this.groupProvisioningOtherEnabled = props.groupProvisioningOtherEnabled;
+		this.ctlToolProvisioningEnabled = props.ctlToolProvisioningEnabled;
 	}
 }
