@@ -39,7 +39,7 @@ export class LdapService {
 					if (err) {
 						reject(new LdapUserCouldNotBeAuthenticatedLoggableException(err));
 					} else {
-						this.logger.info(new UserAuthenticatedLoggable());
+						this.logger.debug(new UserAuthenticatedLoggable());
 						resolve(client);
 					}
 				});
