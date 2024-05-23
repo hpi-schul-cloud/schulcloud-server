@@ -371,7 +371,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('move-column-request', moveColumnProps);
 				const success = await waitForEvent(ioClient, 'move-column-success');
 
-				expect(success).toEqual(moveColumnProps);
+				expect(success).toEqual(expect.objectContaining(moveColumnProps));
 			});
 		});
 		describe('when column does not exist', () => {
@@ -485,7 +485,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('delete-card-request', { cardId });
 				const success = await waitForEvent(ioClient, 'delete-card-success');
 
-				expect(success).toEqual({ cardId });
+				expect(success).toEqual(expect.objectContaining({ cardId }));
 			});
 		});
 
@@ -539,7 +539,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('delete-element-request', { cardId, elementId });
 				const success = await waitForEvent(ioClient, 'delete-element-success');
 
-				expect(success).toEqual({ cardId, elementId });
+				expect(success).toEqual(expect.objectContaining({ cardId, elementId }));
 			});
 		});
 
@@ -574,7 +574,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('update-element-request', payload);
 				const success = await waitForEvent(ioClient, 'update-element-success');
 
-				expect(success).toEqual(payload);
+				expect(success).toEqual(expect.objectContaining(payload));
 			});
 		});
 
@@ -606,7 +606,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('move-element-request', data);
 				const success = await waitForEvent(ioClient, 'move-element-success');
 
-				expect(success).toEqual(data);
+				expect(success).toEqual(expect.objectContaining(data));
 			});
 		});
 

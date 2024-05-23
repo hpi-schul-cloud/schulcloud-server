@@ -143,8 +143,8 @@ export class BoardCollaborationGateway {
 			};
 
 			const room = await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit('create-card-success', responsePayload);
-			client.emit('create-card-success', responsePayload);
+			client.to(room).emit('create-card-success', { ...responsePayload, isOwnAction: false });
+			client.emit('create-card-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
 			client.emit('create-card-failure', new Error('Failed to create card'));
 		}
