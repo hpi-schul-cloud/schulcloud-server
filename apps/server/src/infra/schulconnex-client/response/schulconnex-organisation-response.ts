@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { SanisAnschriftResponse } from './sanis-anschrift-response';
+import { SchulconnexAnschriftResponse } from './schulconnex-anschrift-response';
 
-export class SanisOrganisationResponse {
+export class SchulconnexOrganisationResponse {
 	@IsString()
 	id!: string;
 
@@ -15,6 +15,6 @@ export class SanisOrganisationResponse {
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
-	@Type(() => SanisAnschriftResponse)
-	anschrift?: SanisAnschriftResponse;
+	@Type(() => SchulconnexAnschriftResponse)
+	anschrift?: SchulconnexAnschriftResponse;
 }

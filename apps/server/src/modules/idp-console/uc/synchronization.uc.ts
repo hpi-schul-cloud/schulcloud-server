@@ -1,17 +1,17 @@
+import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { SanisResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@src/core/logger';
 import { ErrorLogMessage } from '@src/core/logger/types';
-import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
+import { SynchronizationConfig } from '../interface';
 import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
 import {
 	FailedUpdateLastSyncedAtLoggableException,
 	NoUsersToSynchronizationLoggableException,
 	SynchronizationUnknownErrorLoggableException,
 } from './loggable-exception';
-import { SynchronizationConfig } from '../interface';
 
 @Injectable()
 export class SynchronizationUc {
@@ -58,7 +58,7 @@ export class SynchronizationUc {
 
 	public async findUsersToSynchronize(systemId: string): Promise<string[]> {
 		let usersToCheck: string[] = [];
-		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
+		const usersDownloaded: SchulconnexResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
 		if (usersDownloaded.length === 0) {
 			throw new NoUsersToSynchronizationLoggableException(systemId);

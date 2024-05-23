@@ -1,12 +1,12 @@
-import { SanisGroupRole, SanisSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
+import { SchulconnexGroupRole, SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
 import { GroupRoleUnknownLoggable } from './group-role-unknown.loggable';
 
 describe('GroupRoleUnknownLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const sanisSonstigeGruppenzugehoerigeResponse: SanisSonstigeGruppenzugehoerigeResponse = {
+			const sanisSonstigeGruppenzugehoerigeResponse: SchulconnexSonstigeGruppenzugehoerigeResponse = {
 				ktid: 'ktid',
-				rollen: [SanisGroupRole.TEACHER],
+				rollen: [SchulconnexGroupRole.TEACHER],
 			};
 
 			const loggable = new GroupRoleUnknownLoggable(sanisSonstigeGruppenzugehoerigeResponse);

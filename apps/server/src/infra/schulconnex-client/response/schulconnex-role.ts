@@ -1,4 +1,4 @@
-export enum SanisRole {
+export enum SchulconnexRole {
 	LEHR = 'Lehr',
 	LERN = 'Lern',
 	LEIT = 'Leit',

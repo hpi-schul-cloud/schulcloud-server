@@ -1,16 +1,16 @@
 import {
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisSonstigeGruppenzugehoerigeResponse,
+	SchulconnexGruppenResponse,
+	SchulconnexResponse,
+	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import {
-	SanisErreichbarkeitenResponse,
 	SchulconnexCommunicationType,
+	SchulconnexErreichbarkeitenResponse,
 	SchulconnexLizenzInfoResponse,
 } from '@infra/schulconnex-client/response';
-import { SanisGroupRole } from '@infra/schulconnex-client/response/sanis-group-role';
-import { SanisGroupType } from '@infra/schulconnex-client/response/sanis-group-type';
-import { SanisRole } from '@infra/schulconnex-client/response/sanis-role';
+import { SchulconnexGroupRole } from '@infra/schulconnex-client/response/schulconnex-group-role';
+import { SchulconnexGroupType } from '@infra/schulconnex-client/response/schulconnex-group-type';
+import { SchulconnexRole } from '@infra/schulconnex-client/response/schulconnex-role';
 import { GroupTypes } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
@@ -25,26 +25,26 @@ import {
 } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 
-const RoleMapping: Record<SanisRole, RoleName> = {
-	[SanisRole.LEHR]: RoleName.TEACHER,
-	[SanisRole.LERN]: RoleName.STUDENT,
-	[SanisRole.LEIT]: RoleName.ADMINISTRATOR,
-	[SanisRole.ORGADMIN]: RoleName.ADMINISTRATOR,
+const RoleMapping: Record<SchulconnexRole, RoleName> = {
+	[SchulconnexRole.LEHR]: RoleName.TEACHER,
+	[SchulconnexRole.LERN]: RoleName.STUDENT,
+	[SchulconnexRole.LEIT]: RoleName.ADMINISTRATOR,
+	[SchulconnexRole.ORGADMIN]: RoleName.ADMINISTRATOR,
 };
 
-const GroupRoleMapping: Partial<Record<SanisGroupRole, RoleName>> = {
-	[SanisGroupRole.TEACHER]: RoleName.TEACHER,
-	[SanisGroupRole.STUDENT]: RoleName.STUDENT,
+const GroupRoleMapping: Partial<Record<SchulconnexGroupRole, RoleName>> = {
+	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
+	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
 };
 
-const GroupTypeMapping: Partial<Record<SanisGroupType, GroupTypes>> = {
-	[SanisGroupType.CLASS]: GroupTypes.CLASS,
-	[SanisGroupType.COURSE]: GroupTypes.COURSE,
-	[SanisGroupType.OTHER]: GroupTypes.OTHER,
+const GroupTypeMapping: Partial<Record<SchulconnexGroupType, GroupTypes>> = {
+	[SchulconnexGroupType.CLASS]: GroupTypes.CLASS,
+	[SchulconnexGroupType.COURSE]: GroupTypes.COURSE,
+	[SchulconnexGroupType.OTHER]: GroupTypes.OTHER,
 };
 
 @Injectable()
-export class SanisResponseMapper {
+export class SchulconnexResponseMapper {
 	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
 	constructor(
@@ -52,7 +52,7 @@ export class SanisResponseMapper {
 		private readonly logger: Logger
 	) {}
 
-	mapToExternalSchoolDto(source: SanisResponse): ExternalSchoolDto {
+	public mapToExternalSchoolDto(source: SchulconnexResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string = source.personenkontexte[0].organisation.kennung.replace(
 			this.SCHOOLNUMBER_PREFIX_REGEX,
 			''
@@ -68,19 +68,20 @@ export class SanisResponseMapper {
 		return mapped;
 	}
 
-	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
+	public mapToExternalUserDto(source: SchulconnexResponse): ExternalUserDto {
 		let email: string | undefined;
 		if (source.personenkontexte[0].erreichbarkeiten?.length) {
-			const emailContact: SanisErreichbarkeitenResponse | undefined = source.personenkontexte[0].erreichbarkeiten.find(
-				(contact: SanisErreichbarkeitenResponse): boolean => contact.typ === SchulconnexCommunicationType.EMAIL
-			);
+			const emailContact: SchulconnexErreichbarkeitenResponse | undefined =
+				source.personenkontexte[0].erreichbarkeiten.find(
+					(contact: SchulconnexErreichbarkeitenResponse): boolean => contact.typ === SchulconnexCommunicationType.EMAIL
+				);
 			email = emailContact?.kennung;
 		}
 
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			roles: [SanisResponseMapper.mapSanisRoleToRoleName(source)],
+			roles: [SchulconnexResponseMapper.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
 			email,
@@ -89,22 +90,22 @@ export class SanisResponseMapper {
 		return mapped;
 	}
 
-	public static mapSanisRoleToRoleName(source: SanisResponse): RoleName {
+	public static mapSanisRoleToRoleName(source: SchulconnexResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 
-	public static mapToGroupNameList(groups: SanisGruppenResponse[]): string[] {
+	public static mapToGroupNameList(groups: SchulconnexGruppenResponse[]): string[] {
 		const groupNames: string[] = [];
 
-		groups.forEach((group: SanisGruppenResponse) => {
+		groups.forEach((group: SchulconnexGruppenResponse) => {
 			groupNames.push(group.gruppe.bezeichnung);
 		});
 
 		return groupNames;
 	}
 
-	public mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
-		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
+	public mapToExternalGroupDtos(source: SchulconnexResponse): ExternalGroupDto[] | undefined {
+		const groups: SchulconnexGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
 
 		if (!groups) {
 			return undefined;
@@ -117,7 +118,7 @@ export class SanisResponseMapper {
 		return mapped;
 	}
 
-	private mapExternalGroup(source: SanisResponse, group: SanisGruppenResponse): ExternalGroupDto | null {
+	private mapExternalGroup(source: SchulconnexResponse, group: SchulconnexGruppenResponse): ExternalGroupDto | null {
 		const groupType: GroupTypes | undefined = GroupTypeMapping[group.gruppe.typ];
 
 		if (!groupType) {
@@ -151,7 +152,7 @@ export class SanisResponseMapper {
 		});
 	}
 
-	private mapToExternalGroupUser(relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
+	private mapToExternalGroupUser(relation: SchulconnexSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
 		if (!relation.rollen?.length) {
 			return null;
 		}
