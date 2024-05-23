@@ -71,6 +71,17 @@ describe(BoardCollaborationGateway.name, () => {
 		expect(ws).toBeDefined();
 	});
 
+	describe('validation errors', () => {
+		it('should answer with failure', async () => {
+			await setup();
+			ioClient.emit('create-card-request', { columnId: 'invalid' });
+
+			const failure = await waitForEvent(ioClient, 'exception');
+
+			expect(failure).toBeDefined();
+		});
+	});
+
 	describe('create card', () => {
 		describe('when column exists', () => {
 			it('should answer with new card', async () => {
