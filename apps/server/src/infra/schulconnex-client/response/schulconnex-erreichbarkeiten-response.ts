@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class SanisErreichbarkeitenResponse {
+export class SchulconnexErreichbarkeitenResponse {
 	@IsString()
 	typ!: string;
 

@@ -1,8 +1,8 @@
+import { SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { SanisSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
 
 export class GroupRoleUnknownLoggable implements Loggable {
-	constructor(private readonly relation: SanisSonstigeGruppenzugehoerigeResponse) {}
+	constructor(private readonly relation: SchulconnexSonstigeGruppenzugehoerigeResponse) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {

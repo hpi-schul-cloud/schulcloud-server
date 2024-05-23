@@ -1,4 +1,4 @@
-export enum SanisGroupRole {
+export enum SchulconnexGroupRole {
 	TEACHER = 'Lehr',
 	STUDENT = 'Lern',
 	CLASS_LEADER = 'KlLeit',
