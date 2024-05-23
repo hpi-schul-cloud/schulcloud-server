@@ -19,6 +19,7 @@ import {
 	ExternalToolValidationService,
 } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+import { ExternalToolImportResult } from './dto/external-tool-import-result';
 
 @Injectable()
 export class ExternalToolUc {
@@ -36,6 +37,44 @@ export class ExternalToolUc {
 	public async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
+		const tool: ExternalTool = await this.validateAndSaveExternalTool(externalToolCreate);
+
+		return tool;
+	}
+
+	public async importExternalTools(
+		userId: EntityId,
+		externalTools: ExternalToolCreate[]
+	): Promise<ExternalToolImportResult[]> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const results: ExternalToolImportResult[] = [];
+
+		for (const externalTool of externalTools) {
+			const result: ExternalToolImportResult = new ExternalToolImportResult({
+				toolName: externalTool.name,
+				mediumId: externalTool.medium?.mediumId,
+				mediumSourceId: externalTool.medium?.mediaSourceId,
+			});
+
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool);
+
+				result.toolId = savedTool.id;
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					result.error = error.message;
+				}
+			}
+
+			results.push(result);
+		}
+
+		return results;
+	}
+
+	private async validateAndSaveExternalTool(externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		const externalTool: ExternalTool = new ExternalTool({ ...externalToolCreate, id: new ObjectId().toHexString() });
 		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
 

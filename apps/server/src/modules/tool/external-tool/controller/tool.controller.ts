@@ -13,6 +13,7 @@ import {
 	StreamableFile,
 } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -37,7 +38,9 @@ import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
+import { ExternalToolImportResult } from '../uc/dto/external-tool-import-result';
 import {
+	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
 	ExternalToolMetadataResponse,
@@ -47,6 +50,7 @@ import {
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
 } from './dto';
+import { ExternalToolImportResultListResponse } from './dto/response/external-tool-import-result-response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -79,6 +83,28 @@ export class ToolController {
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 
 		return mapped;
+	}
+
+	@Post('/import')
+	@ApiCreatedResponse({ description: 'The Tool has been successfully created.', type: ExternalToolResponse })
+	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates multiple ExternalTools at the same time.' })
+	async importExternalTools(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
+	): Promise<ExternalToolImportResultListResponse> {
+		const externalTools: ExternalToolCreate[] = this.externalToolDOMapper.mapBulkCreateRequest(externalToolBulkParams);
+
+		const results: ExternalToolImportResult[] = await this.externalToolUc.importExternalTools(
+			currentUser.userId,
+			externalTools
+		);
+
+		const response: ExternalToolImportResultListResponse = ExternalToolResponseMapper.mapToImportResponse(results);
+
+		return response;
 	}
 
 	@Get()

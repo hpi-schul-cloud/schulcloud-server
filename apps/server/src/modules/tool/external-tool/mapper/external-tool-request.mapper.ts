@@ -22,6 +22,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
+import { ExternalToolBulkCreateParams } from '../controller/dto/request/external-tool-bulk-create.params';
 import { ExternalTool } from '../domain';
 import {
 	BasicToolConfigDto,
@@ -117,6 +118,14 @@ export class ExternalToolRequestMapper {
 			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
 			description: externalToolCreateParams.description,
 		};
+	}
+
+	public mapBulkCreateRequest(externalToolCreateParams: ExternalToolBulkCreateParams): ExternalToolCreate[] {
+		const toolList: ExternalToolCreate[] = externalToolCreateParams.data.map(
+			(createParams: ExternalToolCreateParams): ExternalToolCreate => this.mapCreateRequest(createParams)
+		);
+
+		return toolList;
 	}
 
 	private mapRequestToExternalToolMedium(
