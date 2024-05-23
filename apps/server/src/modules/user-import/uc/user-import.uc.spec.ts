@@ -27,6 +27,7 @@ import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
+import { UserMigrationCanceledLoggable } from '../loggable/user-migration-canceled.loggable';
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -48,6 +49,7 @@ describe('[ImportUserModule]', () => {
 		let userImportService: DeepMocked<UserImportService>;
 		let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 		let userMigrationService: DeepMocked<UserMigrationService>;
+		let logger: DeepMocked<Logger>;
 
 		let userImportFeatures: IUserImportFeatures;
 
@@ -115,6 +117,7 @@ describe('[ImportUserModule]', () => {
 			userImportFeatures = module.get(UserImportFeatures);
 			userLoginMigrationService = module.get(UserLoginMigrationService);
 			userMigrationService = module.get(UserMigrationService);
+			logger = module.get(Logger);
 		});
 
 		beforeEach(() => {
@@ -127,6 +130,10 @@ describe('[ImportUserModule]', () => {
 
 		afterAll(async () => {
 			await module.close();
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
 		});
 
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
@@ -1077,11 +1084,72 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('cancelMigration', () => {
-			describe('when school is defined', () => {
-				it('should delete imported user', () => {});
-				it('should not be in maintance', () => {});
-				it('should not be in user migration', () => {});
-				it('should log information', () => {});
+			describe('when user is given', () => {
+				const setup = () => {
+					const school = legacySchoolDoFactory.buildWithId({
+						inMaintenanceSince: new Date(2024, 1, 1),
+						inUserMigration: true,
+					});
+					const user = userFactory.buildWithId();
+
+					userRepo.findById.mockResolvedValueOnce(user);
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					userImportFeatures.useWithUserLoginMigration = true;
+
+					return {
+						user,
+						school,
+					};
+				};
+
+				it('should check users permissions', async () => {
+					const { user } = setup();
+
+					await uc.cancelMigration(user.id);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
+						Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+					]);
+				});
+
+				it('should check if feature is enabled', async () => {
+					setup();
+
+					await uc.cancelMigration(new ObjectId().toHexString());
+
+					expect(userImportService.checkFeatureEnabled).toHaveBeenCalled();
+				});
+
+				it('should delete import users for school', async () => {
+					const { user } = setup();
+
+					await uc.cancelMigration(user.id);
+
+					expect(importUserRepo.deleteImportUsersBySchool).toHaveBeenCalledWith(user.school);
+				});
+
+				it('should save school with reset migration flags', async () => {
+					const { user, school } = setup();
+
+					await uc.cancelMigration(user.id);
+
+					expect(schoolService.save).toHaveBeenCalledWith(
+						{
+							...school,
+							inUserMigration: undefined,
+							inMaintenanceSince: undefined,
+						},
+						true
+					);
+				});
+
+				it('should log canceled migration', async () => {
+					const { user } = setup();
+
+					await uc.cancelMigration(user.id);
+
+					expect(logger.notice).toHaveBeenCalledWith(new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo)));
+				});
 			});
 		});
 	});

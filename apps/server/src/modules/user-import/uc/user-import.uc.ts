@@ -9,7 +9,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
@@ -328,14 +328,12 @@ export class UserImportUc {
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		if (school && school.id) {
-			await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
+		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
 
-			school.inUserMigration = undefined;
-			school.inMaintenanceSince = undefined;
+		school.inUserMigration = undefined;
+		school.inMaintenanceSince = undefined;
 
-			await this.schoolService.save(school, true);
-		}
+		await this.schoolService.save(school, true);
 
 		this.logger.notice(new UserMigrationCanceledLoggable(school));
 	}
