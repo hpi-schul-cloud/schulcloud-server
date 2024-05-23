@@ -64,8 +64,8 @@ export class BoardCollaborationGateway {
 			const room = await this.ensureUserInRoom(client, data.boardId);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			client.to(room).emit('delete-board-success', data);
-			client.emit('delete-board-success', data);
+			client.to(room).emit('delete-board-success', { ...data, isOwnAction: false });
+			client.emit('delete-board-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-board-failure', new Error('Failed to delete board'));
 		}
@@ -79,8 +79,8 @@ export class BoardCollaborationGateway {
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('update-board-title-success', data);
-			client.emit('update-board-title-success', data);
+			client.to(room).emit('update-board-title-success', { ...data, isOwnAction: false });
+			client.emit('update-board-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-board-title-failure', new Error('Failed to update board title'));
 		}
@@ -94,8 +94,8 @@ export class BoardCollaborationGateway {
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
 			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('update-card-title-success', data);
-			client.emit('update-card-title-success', data);
+			client.to(room).emit('update-card-title-success', { ...data, isOwnAction: false });
+			client.emit('update-card-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-card-title-failure', new Error('Failed to update card title'));
 		}
@@ -109,8 +109,8 @@ export class BoardCollaborationGateway {
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
 			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('update-card-height-success', data);
-			client.emit('update-card-height-success', data);
+			client.to(room).emit('update-card-height-success', { ...data, isOwnAction: false });
+			client.emit('update-card-height-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-card-height-failure', new Error('Failed to update card height'));
 		}
@@ -124,8 +124,8 @@ export class BoardCollaborationGateway {
 			const room = await this.ensureUserInRoom(client, data.cardId);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			client.to(room).emit('delete-card-success', data);
-			client.emit('delete-card-success', data);
+			client.to(room).emit('delete-card-success', { ...data, isOwnAction: false });
+			client.emit('delete-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-card-failure', new Error('Failed to update card height'));
 		}
@@ -163,8 +163,8 @@ export class BoardCollaborationGateway {
 			};
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('create-column-success', responsePayload);
-			client.emit('create-column-success', responsePayload);
+			client.to(room).emit('create-column-success', { ...responsePayload, isOwnAction: false });
+			client.emit('create-column-success', { ...responsePayload, isOwnAction: true });
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
@@ -198,8 +198,8 @@ export class BoardCollaborationGateway {
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
 			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('move-card-success', data);
-			client.emit('move-card-success', data);
+			client.to(room).emit('move-card-success', { ...data, isOwnAction: false });
+			client.emit('move-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('move-card-failure', new Error('Failed to move card'));
 		}
@@ -213,8 +213,8 @@ export class BoardCollaborationGateway {
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
 			const room = await this.ensureUserInRoom(client, data.targetBoardId);
-			client.to(room).emit('move-column-success', data);
-			client.emit('move-column-success', data);
+			client.to(room).emit('move-column-success', { ...data, isOwnAction: false });
+			client.emit('move-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('move-column-failure', new Error('Failed to move column'));
 		}
@@ -228,8 +228,8 @@ export class BoardCollaborationGateway {
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
 			const room = await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit('update-column-title-success', data);
-			client.emit('update-column-title-success', data);
+			client.to(room).emit('update-column-title-success', { ...data, isOwnAction: false });
+			client.emit('update-column-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-column-title-failure', new Error('Failed to update column title'));
 		}
@@ -243,8 +243,8 @@ export class BoardCollaborationGateway {
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
 			const room = await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit('update-board-visibility-success', data);
-			client.emit('update-board-visibility-success', data);
+			client.to(room).emit('update-board-visibility-success', { ...data, isOwnAction: false });
+			client.emit('update-board-visibility-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-board-visibility-failure', new Error('Failed to update board visibility'));
 		}
@@ -258,8 +258,8 @@ export class BoardCollaborationGateway {
 			const room = await this.ensureUserInRoom(client, data.columnId);
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
-			client.to(room).emit('delete-column-success', data);
-			client.emit('delete-column-success', data);
+			client.to(room).emit('delete-column-success', { ...data, isOwnAction: false });
+			client.emit('delete-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-column-failure', new Error('Failed to delete column'));
 		}
@@ -274,7 +274,7 @@ export class BoardCollaborationGateway {
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
 			await this.ensureUserInRoom(client, data.cardIds[0]);
-			client.emit('fetch-card-success', { cards: cardResponses });
+			client.emit('fetch-card-success', { cards: cardResponses, isOwnAction: true });
 		} catch (err) {
 			client.emit('fetch-card-failure', new Error('Failed to fetch board'));
 		}
@@ -292,8 +292,8 @@ export class BoardCollaborationGateway {
 			};
 
 			const room = await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit('create-element-success', responsePayload);
-			client.emit('create-element-success', responsePayload);
+			client.to(room).emit('create-element-success', { ...responsePayload, isOwnAction: false });
+			client.emit('create-element-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
 			client.emit('create-element-failure', new Error('Failed to create element'));
 		}
@@ -307,8 +307,8 @@ export class BoardCollaborationGateway {
 			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 
 			const room = await this.ensureUserInRoom(client, data.elementId);
-			client.to(room).emit('update-element-success', data);
-			client.emit('update-element-success', data);
+			client.to(room).emit('update-element-success', { ...data, isOwnAction: false });
+			client.emit('update-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-element-failure', new Error('Failed to update element'));
 		}
@@ -322,8 +322,8 @@ export class BoardCollaborationGateway {
 			const room = await this.ensureUserInRoom(client, data.elementId);
 			await this.elementUc.deleteElement(userId, data.elementId);
 
-			client.to(room).emit('delete-element-success', data);
-			client.emit('delete-element-success', data);
+			client.to(room).emit('delete-element-success', { ...data, isOwnAction: false });
+			client.emit('delete-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-element-failure', new Error('Failed to delete element'));
 		}
@@ -337,8 +337,8 @@ export class BoardCollaborationGateway {
 			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
 
 			const room = await this.ensureUserInRoom(client, data.elementId);
-			client.to(room).emit('move-element-success', data);
-			client.emit('move-element-success', data);
+			client.to(room).emit('move-element-success', { ...data, isOwnAction: false });
+			client.emit('move-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('move-element-failure', new Error('Failed to move element'));
 		}
