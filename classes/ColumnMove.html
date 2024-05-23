@@ -290,7 +290,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsMongoId, IsNumber, IsString, Min, ValidateNested } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsMongoId, IsNumber, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 
 export class ColumnMove {
 	@IsNumber()
@@ -305,14 +305,7 @@ export class ColumnMove {
 
 export class MoveColumnMessageParams {
 	@IsMongoId()
-	columnId!: string;
-
-	@IsMongoId()
 	targetBoardId!: string;
-
-	@IsNumber()
-	@Min(0)
-	newIndex!: number;
 
 	@ValidateNested()
 	columnMove!: ColumnMove;

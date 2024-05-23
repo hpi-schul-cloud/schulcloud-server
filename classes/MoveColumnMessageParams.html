@@ -139,16 +139,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#columnId" >columnId</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
                                 <a href="#columnMove" >columnMove</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#newIndex" >newIndex</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -173,42 +164,6 @@
     <h3 id="inputs">
         Properties
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="columnId"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>columnId</b></span>
-                        <a href="#columnId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsMongoId()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/gateway/dto/move-column.message.param.ts:16</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -238,44 +193,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/board/gateway/dto/move-column.message.param.ts:26</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="newIndex"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>newIndex</b></span>
-                        <a href="#newIndex"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @IsNumber()<br />@Min(0)<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/gateway/dto/move-column.message.param.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/gateway/dto/move-column.message.param.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -311,7 +229,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/gateway/dto/move-column.message.param.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/gateway/dto/move-column.message.param.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -330,7 +248,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsMongoId, IsNumber, IsString, Min, ValidateNested } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsMongoId, IsNumber, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 
 export class ColumnMove {
 	@IsNumber()
@@ -345,14 +263,7 @@ export class ColumnMove {
 
 export class MoveColumnMessageParams {
 	@IsMongoId()
-	columnId!: string;
-
-	@IsMongoId()
 	targetBoardId!: string;
-
-	@IsNumber()
-	@Min(0)
-	newIndex!: number;
 
 	@ValidateNested()
 	columnMove!: ColumnMove;

@@ -593,13 +593,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardWsApiModule.html" data-type="entity-link" >BoardWsApiModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' }>
+                                        'data-bs-target="#injectables-links-module-BoardWsApiModule-6e8a5dc862ea0bf014e8b374b664bc312d19a2d76f6cbabfbab8ea5cedb089523b5349634c4fcb2fc427626fda1b265a82de98618785e9bc513e277faecc4cb3"' : 'data-bs-target="#xs-injectables-links-module-BoardWsApiModule-6e8a5dc862ea0bf014e8b374b664bc312d19a2d76f6cbabfbab8ea5cedb089523b5349634c4fcb2fc427626fda1b265a82de98618785e9bc513e277faecc4cb3"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' :
-                                        'id="xs-injectables-links-module-BoardWsApiModule-634ef1c1a74ceb7e55231b1259a9bbd372e7487663b9d6203da0e02d5e109434b14d44d1bf9d34cdbbcf4ce2de201b9445086bbd0ae675e0020886e9ddd2945a"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardWsApiModule-6e8a5dc862ea0bf014e8b374b664bc312d19a2d76f6cbabfbab8ea5cedb089523b5349634c4fcb2fc427626fda1b265a82de98618785e9bc513e277faecc4cb3"' :
+                                        'id="xs-injectables-links-module-BoardWsApiModule-6e8a5dc862ea0bf014e8b374b664bc312d19a2d76f6cbabfbab8ea5cedb089523b5349634c4fcb2fc427626fda1b265a82de98618785e9bc513e277faecc4cb3"' }>
                                         <li class="link">
                                             <a href="injectables/BoardUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardUc</a>
                                         </li>
@@ -611,6 +611,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CourseRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CourseRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/ElementUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ElementUc</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -4679,6 +4682,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CreateContentElementBodyParams.html" data-type="entity-link" >CreateContentElementBodyParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CreateContentElementMessageParams.html" data-type="entity-link" >CreateContentElementMessageParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CreateMediaElementBodyParams.html" data-type="entity-link" >CreateMediaElementBodyParams</a>
                             </li>
                             <li class="link">
@@ -4758,6 +4764,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/DeleteColumnMessageParams.html" data-type="entity-link" >DeleteColumnMessageParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeleteContentElementMessageParams.html" data-type="entity-link" >DeleteContentElementMessageParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/DeletedAccountLoggable.html" data-type="entity-link" >DeletedAccountLoggable</a>
@@ -5775,6 +5784,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/MoveContentElementBody.html" data-type="entity-link" >MoveContentElementBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MoveContentElementMessageParams.html" data-type="entity-link" >MoveContentElementMessageParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MoveElementBodyParams.html" data-type="entity-link" >MoveElementBodyParams</a>
@@ -6908,6 +6920,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UpdateColumnTitleMessageParams.html" data-type="entity-link" >UpdateColumnTitleMessageParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UpdateContentElementMessageParams.html" data-type="entity-link" >UpdateContentElementMessageParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UpdatedAccountPasswordLoggable.html" data-type="entity-link" >UpdatedAccountPasswordLoggable</a>
                             </li>
                             <li class="link">
@@ -7203,6 +7218,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/WsSharedDocErrorLoggable.html" data-type="entity-link" >WsSharedDocErrorLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/WsValidationPipe.html" data-type="entity-link" >WsValidationPipe</a>
                             </li>
                             <li class="link">
                                 <a href="classes/YearsResponse.html" data-type="entity-link" >YearsResponse</a>

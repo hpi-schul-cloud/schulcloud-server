@@ -158,6 +158,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#createElement" >createElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#deleteBoard" >deleteBoard</a>
                             </li>
                             <li>
@@ -171,6 +177,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteColumn" >deleteColumn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteElement" >deleteElement</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -214,6 +226,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#moveElement" >moveElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateBoardTitle" >updateBoardTitle</a>
                             </li>
                             <li>
@@ -240,6 +258,12 @@
                                     <span class="modifier">Async</span>
                                 <a href="#updateColumnTitle" >updateColumnTitle</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateElement" >updateElement</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -258,12 +282,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, authorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, authorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:37</a></div>
                             </td>
                         </tr>
 
@@ -341,6 +365,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>elementUc</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ElementUc.html" target="_self" >ElementUc</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>authorizableService</td>
                                                   
                                                         <td>
@@ -389,8 +425,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -437,8 +473,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -527,8 +563,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="155"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:155</a></div>
                         </td>
                     </tr>
 
@@ -590,6 +626,96 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateContentElementMessageParams.html" target="_self">CreateContentElementMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;create-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="285"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:285</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateContentElementMessageParams.html" target="_self" >CreateContentElementMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteBoard"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -617,8 +743,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -707,8 +833,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:121</a></div>
                         </td>
                     </tr>
 
@@ -797,8 +923,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="248"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:248</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:255</a></div>
                         </td>
                     </tr>
 
@@ -860,6 +986,96 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteElement</b></span>
+                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteContentElementMessageParams.html" target="_self">DeleteContentElementMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="319"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:319</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteContentElementMessageParams.html" target="_self" >DeleteContentElementMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="ensureUserInRoom"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -879,8 +1095,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="276"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:276</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="347"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:347</a></div>
                         </td>
                     </tr>
 
@@ -969,8 +1185,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="173"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:173</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:180</a></div>
                         </td>
                     </tr>
 
@@ -1059,8 +1275,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="263"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:263</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="270"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:270</a></div>
                         </td>
                     </tr>
 
@@ -1140,8 +1356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -1210,8 +1426,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="287"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:287</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:358</a></div>
                         </td>
                     </tr>
 
@@ -1288,8 +1504,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="195"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:195</a></div>
                         </td>
                     </tr>
 
@@ -1378,8 +1594,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:210</a></div>
                         </td>
                     </tr>
 
@@ -1441,6 +1657,96 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="moveElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>moveElement</b></span>
+                        <a href="#moveElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveContentElementMessageParams.html" target="_self">MoveContentElementMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;move-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="334"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:334</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/MoveContentElementMessageParams.html" target="_self" >MoveContentElementMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateBoardTitle"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -1468,8 +1774,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -1558,8 +1864,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="233"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:233</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:240</a></div>
                         </td>
                     </tr>
 
@@ -1648,8 +1954,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -1738,8 +2044,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -1828,8 +2134,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="218"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:218</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -1887,6 +2193,96 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateElement</b></span>
+                        <a href="#updateElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateContentElementMessageParams.html" target="_self">UpdateContentElementMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;update-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="304"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:304</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateContentElementMessageParams.html" target="_self" >UpdateContentElementMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -1898,13 +2294,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
-import { UseGuards } from &#x27;@nestjs/common&#x27;;
+import { UseGuards, UsePipes } from &#x27;@nestjs/common&#x27;;
 import { SubscribeMessage, WebSocketGateway, WsException } from &#x27;@nestjs/websockets&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { WsJwtAuthGuard } from &#x27;@src/modules/authentication/guard/ws-jwt-auth.guard&#x27;;
-import { BoardResponseMapper, CardResponseMapper } from &#x27;../controller/mapper&#x27;;
+import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from &#x27;../controller/mapper&#x27;;
+import { ColumnResponseMapper } from &#x27;../controller/mapper/column-response.mapper&#x27;;
 import { BoardDoAuthorizableService } from &#x27;../service&#x27;;
-import { BoardUc, CardUc, ColumnUc } from &#x27;../uc&#x27;;
+import { BoardUc, CardUc, ColumnUc, ElementUc } from &#x27;../uc&#x27;;
 import {
 	CreateCardMessageParams,
 	DeleteColumnMessageParams,
@@ -1912,19 +2309,24 @@ import {
 	UpdateColumnTitleMessageParams,
 } from &#x27;./dto&#x27;;
 import BoardCollaborationConfiguration from &#x27;./dto/board-collaboration-config&#x27;;
-import { ColumnResponseMapper } from &#x27;../controller/mapper/column-response.mapper&#x27;;
 import { CreateColumnMessageParams } from &#x27;./dto/create-column.message.param&#x27;;
+import { CreateContentElementMessageParams } from &#x27;./dto/create-content-element.message.param&#x27;;
 import { DeleteBoardMessageParams } from &#x27;./dto/delete-board.message.param&#x27;;
 import { DeleteCardMessageParams } from &#x27;./dto/delete-card.message.param&#x27;;
+import { DeleteContentElementMessageParams } from &#x27;./dto/delete-content-element.message.param&#x27;;
 import { FetchBoardMessageParams } from &#x27;./dto/fetch-board.message.param&#x27;;
 import { FetchCardsMessageParams } from &#x27;./dto/fetch-cards.message.param&#x27;;
 import { MoveColumnMessageParams } from &#x27;./dto/move-column.message.param&#x27;;
+import { MoveContentElementMessageParams } from &#x27;./dto/move-content-element.message.param&#x27;;
 import { UpdateBoardTitleMessageParams } from &#x27;./dto/update-board-title.message.param&#x27;;
 import { UpdateBoardVisibilityMessageParams } from &#x27;./dto/update-board-visibility.message.param&#x27;;
 import { UpdateCardHeightMessageParams } from &#x27;./dto/update-card-height.message.param&#x27;;
 import { UpdateCardTitleMessageParams } from &#x27;./dto/update-card-title.message.param&#x27;;
+import { UpdateContentElementMessageParams } from &#x27;./dto/update-content-element.message.param&#x27;;
 import { Socket } from &#x27;./types&#x27;;
+import { WsValidationPipe } from &#x27;./ws-validation.pipe&#x27;;
 
+@UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway {
@@ -1935,6 +2337,7 @@ export class BoardCollaborationGateway {
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
+		private readonly elementUc: ElementUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -1956,8 +2359,8 @@ export class BoardCollaborationGateway {
 			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			client.to(room).emit(&#x27;delete-board-success&#x27;, data);
-			client.emit(&#x27;delete-board-success&#x27;, data);
+			client.to(room).emit(&#x27;delete-board-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;delete-board-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;delete-board-failure&#x27;, new Error(&#x27;Failed to delete board&#x27;));
 		}
@@ -1971,8 +2374,8 @@ export class BoardCollaborationGateway {
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit(&#x27;update-board-title-success&#x27;, data);
-			client.emit(&#x27;update-board-title-success&#x27;, data);
+			client.to(room).emit(&#x27;update-board-title-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;update-board-title-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;update-board-title-failure&#x27;, new Error(&#x27;Failed to update board title&#x27;));
 		}
@@ -1986,8 +2389,8 @@ export class BoardCollaborationGateway {
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;update-card-title-success&#x27;, data);
-			client.emit(&#x27;update-card-title-success&#x27;, data);
+			client.to(room).emit(&#x27;update-card-title-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;update-card-title-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;update-card-title-failure&#x27;, new Error(&#x27;Failed to update card title&#x27;));
 		}
@@ -2001,8 +2404,8 @@ export class BoardCollaborationGateway {
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;update-card-height-success&#x27;, data);
-			client.emit(&#x27;update-card-height-success&#x27;, data);
+			client.to(room).emit(&#x27;update-card-height-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;update-card-height-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;update-card-height-failure&#x27;, new Error(&#x27;Failed to update card height&#x27;));
 		}
@@ -2016,8 +2419,8 @@ export class BoardCollaborationGateway {
 			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			client.to(room).emit(&#x27;delete-card-success&#x27;, data);
-			client.emit(&#x27;delete-card-success&#x27;, data);
+			client.to(room).emit(&#x27;delete-card-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;delete-card-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;delete-card-failure&#x27;, new Error(&#x27;Failed to update card height&#x27;));
 		}
@@ -2035,8 +2438,8 @@ export class BoardCollaborationGateway {
 			};
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit(&#x27;create-card-success&#x27;, responsePayload);
-			client.emit(&#x27;create-card-success&#x27;, responsePayload);
+			client.to(room).emit(&#x27;create-card-success&#x27;, { ...responsePayload, isOwnAction: false });
+			client.emit(&#x27;create-card-success&#x27;, { ...responsePayload, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;create-card-failure&#x27;, new Error(&#x27;Failed to create card&#x27;));
 		}
@@ -2055,8 +2458,8 @@ export class BoardCollaborationGateway {
 			};
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit(&#x27;create-column-success&#x27;, responsePayload);
-			client.emit(&#x27;create-column-success&#x27;, responsePayload);
+			client.to(room).emit(&#x27;create-column-success&#x27;, { ...responsePayload, isOwnAction: false });
+			client.emit(&#x27;create-column-success&#x27;, { ...responsePayload, isOwnAction: true });
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
@@ -2090,8 +2493,8 @@ export class BoardCollaborationGateway {
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;move-card-success&#x27;, data);
-			client.emit(&#x27;move-card-success&#x27;, data);
+			client.to(room).emit(&#x27;move-card-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;move-card-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;move-card-failure&#x27;, new Error(&#x27;Failed to move card&#x27;));
 		}
@@ -2105,8 +2508,8 @@ export class BoardCollaborationGateway {
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.targetBoardId);
-			client.to(room).emit(&#x27;move-column-success&#x27;, data);
-			client.emit(&#x27;move-column-success&#x27;, data);
+			client.to(room).emit(&#x27;move-column-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;move-column-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;move-column-failure&#x27;, new Error(&#x27;Failed to move column&#x27;));
 		}
@@ -2120,8 +2523,8 @@ export class BoardCollaborationGateway {
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit(&#x27;update-column-title-success&#x27;, data);
-			client.emit(&#x27;update-column-title-success&#x27;, data);
+			client.to(room).emit(&#x27;update-column-title-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;update-column-title-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;update-column-title-failure&#x27;, new Error(&#x27;Failed to update column title&#x27;));
 		}
@@ -2135,8 +2538,8 @@ export class BoardCollaborationGateway {
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
 			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit(&#x27;update-board-visibility-success&#x27;, data);
-			client.emit(&#x27;update-board-visibility-success&#x27;, data);
+			client.to(room).emit(&#x27;update-board-visibility-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;update-board-visibility-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;update-board-visibility-failure&#x27;, new Error(&#x27;Failed to update board visibility&#x27;));
 		}
@@ -2150,8 +2553,8 @@ export class BoardCollaborationGateway {
 			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
-			client.to(room).emit(&#x27;delete-column-success&#x27;, data);
-			client.emit(&#x27;delete-column-success&#x27;, data);
+			client.to(room).emit(&#x27;delete-column-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;delete-column-success&#x27;, { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;delete-column-failure&#x27;, new Error(&#x27;Failed to delete column&#x27;));
 		}
@@ -2166,9 +2569,73 @@ export class BoardCollaborationGateway {
 			const cardResponses &#x3D; cards.map((card) &#x3D;&gt; CardResponseMapper.mapToResponse(card));
 
 			await this.ensureUserInRoom(client, data.cardIds[0]);
-			client.emit(&#x27;fetch-card-success&#x27;, { cards: cardResponses });
+			client.emit(&#x27;fetch-card-success&#x27;, { cards: cardResponses, isOwnAction: true });
 		} catch (err) {
 			client.emit(&#x27;fetch-card-failure&#x27;, new Error(&#x27;Failed to fetch board&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;create-element-request&#x27;)
+	@UseRequestContext()
+	async createElement(client: Socket, data: CreateContentElementMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const element &#x3D; await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
+			const responsePayload &#x3D; {
+				...data,
+				newElement: ContentElementResponseFactory.mapToResponse(element),
+			};
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
+			client.to(room).emit(&#x27;create-element-success&#x27;, { ...responsePayload, isOwnAction: false });
+			client.emit(&#x27;create-element-success&#x27;, { ...responsePayload, isOwnAction: true });
+		} catch (err) {
+			client.emit(&#x27;create-element-failure&#x27;, new Error(&#x27;Failed to create element&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;update-element-request&#x27;)
+	@UseRequestContext()
+	async updateElement(client: Socket, data: UpdateContentElementMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.elementId);
+			client.to(room).emit(&#x27;update-element-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;update-element-success&#x27;, { ...data, isOwnAction: true });
+		} catch (err) {
+			client.emit(&#x27;update-element-failure&#x27;, new Error(&#x27;Failed to update element&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;delete-element-request&#x27;)
+	@UseRequestContext()
+	async deleteElement(client: Socket, data: DeleteContentElementMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			const room &#x3D; await this.ensureUserInRoom(client, data.elementId);
+			await this.elementUc.deleteElement(userId, data.elementId);
+
+			client.to(room).emit(&#x27;delete-element-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;delete-element-success&#x27;, { ...data, isOwnAction: true });
+		} catch (err) {
+			client.emit(&#x27;delete-element-failure&#x27;, new Error(&#x27;Failed to delete element&#x27;));
+		}
+	}
+
+	@SubscribeMessage(&#x27;move-element-request&#x27;)
+	@UseRequestContext()
+	async moveElement(client: Socket, data: MoveContentElementMessageParams) {
+		try {
+			const { userId } &#x3D; this.getCurrentUser(client);
+			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
+
+			const room &#x3D; await this.ensureUserInRoom(client, data.elementId);
+			client.to(room).emit(&#x27;move-element-success&#x27;, { ...data, isOwnAction: false });
+			client.emit(&#x27;move-element-success&#x27;, { ...data, isOwnAction: true });
+		} catch (err) {
+			client.emit(&#x27;move-element-failure&#x27;, new Error(&#x27;Failed to move element&#x27;));
 		}
 	}
 
