@@ -1075,5 +1075,14 @@ describe('[ImportUserModule]', () => {
 				});
 			});
 		});
+
+		describe('cancelMigration', () => {
+			describe('when school is defined', () => {
+				it('should delete imported user', () => {});
+				it('should not be in maintance', () => {});
+				it('should not be in user migration', () => {});
+				it('should log information', () => {});
+			});
+		});
 	});
 });

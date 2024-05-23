@@ -9,7 +9,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
@@ -21,6 +21,7 @@ import {
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
 } from '../loggable';
+import { UserMigrationCanceledLoggable } from '../loggable/user-migration-canceled.loggable';
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -232,7 +233,7 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
+	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
@@ -298,7 +299,7 @@ export class UserImportUc {
 		}
 	}
 
-	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
+	public async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
@@ -319,6 +320,24 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 
 		this.logger.notice(new SchoolInUserMigrationEndLoggable(school.name));
+	}
+
+	public async cancelMigration(currentUserId: EntityId): Promise<void> {
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+
+		this.userImportService.checkFeatureEnabled(school);
+
+		if (school && school.id) {
+			await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
+
+			school.inUserMigration = undefined;
+			school.inMaintenanceSince = undefined;
+
+			await this.schoolService.save(school, true);
+		}
+
+		this.logger.notice(new UserMigrationCanceledLoggable(school));
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {

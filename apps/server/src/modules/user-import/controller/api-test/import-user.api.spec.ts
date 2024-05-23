@@ -1118,4 +1118,70 @@ describe('ImportUser Controller (API)', () => {
 			});
 		});
 	});
+
+	describe('[POST] /user/import/cancel', () => {
+		describe('when user is unauthorized', () => {
+			const setup = async () => {
+				const { system } = await authenticatedUser();
+				setConfig(system._id.toString());
+
+				return {
+					loggedInClient: testApiClient,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.post('cancel').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has no permission', () => {
+			const setup = async () => {
+				const { school, system } = await authenticatedUser();
+				setConfig(system._id.toString());
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
+				await em.persistAndFlush([adminUser, adminAccount]);
+
+				await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient: testApiClient,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.post('cancel').expect(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when import was canceled', () => {
+			const setup = async () => {
+				const { school, system } = await authenticatedUser();
+				setConfig(system._id.toString());
+
+				const importusers = importUserFactory.buildList(10, { school });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+				]);
+				await em.persistAndFlush([...importusers, adminUser, adminAccount]);
+
+				await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient: testApiClient,
+				};
+			};
+
+			it('should return no content', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.post('cancel').expect(HttpStatus.NO_CONTENT);
+			});
+		});
+	});
 });
