@@ -31,6 +31,20 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 import { Socket } from './types';
 import { WsValidationPipe } from './ws-validation.pipe';
 
+enum ErrorTypes {
+	NOT_CREATED = 'notCreated',
+	NOT_LOADED = 'notLoaded',
+	NOT_UPDATED = 'notUpdated',
+	NOT_DELETED = 'notDeleted',
+}
+
+enum BoardObjectTypes {
+	BOARD = 'board',
+	BOARD_COLUMN = 'boardColumn',
+	BOARD_CARD = 'boardCard',
+	BOARD_ELEMENT = 'boardElement',
+}
+
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
@@ -67,7 +81,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('delete-board-success', { ...data, isOwnAction: false });
 			client.emit('delete-board-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('delete-board-failure', new Error('Failed to delete board'));
+			client.emit('delete-board-failure', {
+				boardObjectType: BoardObjectTypes.BOARD,
+				errorType: ErrorTypes.NOT_DELETED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -82,7 +100,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-board-title-success', { ...data, isOwnAction: false });
 			client.emit('update-board-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('update-board-title-failure', new Error('Failed to update board title'));
+			client.emit('update-board-title-failure', {
+				boardObjectType: BoardObjectTypes.BOARD,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -97,7 +119,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-card-title-success', { ...data, isOwnAction: false });
 			client.emit('update-card-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('update-card-title-failure', new Error('Failed to update card title'));
+			client.emit('update-card-title-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_CARD,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -112,7 +138,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-card-height-success', { ...data, isOwnAction: false });
 			client.emit('update-card-height-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('update-card-height-failure', new Error('Failed to update card height'));
+			client.emit('update-card-height-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_CARD,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -127,7 +157,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('delete-card-success', { ...data, isOwnAction: false });
 			client.emit('delete-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('delete-card-failure', new Error('Failed to update card height'));
+			client.emit('delete-card-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_CARD,
+				errorType: ErrorTypes.NOT_DELETED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -146,7 +180,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('create-card-success', { ...responsePayload, isOwnAction: false });
 			client.emit('create-card-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
-			client.emit('create-card-failure', new Error('Failed to create card'));
+			client.emit('create-card-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_CARD,
+				errorType: ErrorTypes.NOT_CREATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -170,7 +208,11 @@ export class BoardCollaborationGateway {
 			// of createColumn and move the card into that column
 			return responsePayload;
 		} catch (err) {
-			client.emit('create-column-failure', new Error('Failed to create column'));
+			client.emit('create-column-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
+				errorType: ErrorTypes.NOT_CREATED,
+				originalAction: data,
+			});
 			return {};
 		}
 	}
@@ -186,7 +228,11 @@ export class BoardCollaborationGateway {
 
 			client.emit('fetch-board-success', responsePayload);
 		} catch (err) {
-			client.emit('fetch-board-failure', new Error('Failed to fetch board'));
+			client.emit('fetch-board-failure', {
+				boardObjectType: BoardObjectTypes.BOARD,
+				errorType: ErrorTypes.NOT_LOADED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -201,7 +247,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('move-card-success', { ...data, isOwnAction: false });
 			client.emit('move-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('move-card-failure', new Error('Failed to move card'));
+			client.emit('move-card-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_CARD,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -216,7 +266,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('move-column-success', { ...data, isOwnAction: false });
 			client.emit('move-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('move-column-failure', new Error('Failed to move column'));
+			client.emit('move-column-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -231,7 +285,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-column-title-success', { ...data, isOwnAction: false });
 			client.emit('update-column-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('update-column-title-failure', new Error('Failed to update column title'));
+			client.emit('update-column-title-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -246,7 +304,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-board-visibility-success', { ...data, isOwnAction: false });
 			client.emit('update-board-visibility-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('update-board-visibility-failure', new Error('Failed to update board visibility'));
+			client.emit('update-board-visibility-failure', {
+				boardObjectType: BoardObjectTypes.BOARD,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -261,7 +323,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('delete-column-success', { ...data, isOwnAction: false });
 			client.emit('delete-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('delete-column-failure', new Error('Failed to delete column'));
+			client.emit('delete-column-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
+				errorType: ErrorTypes.NOT_DELETED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -276,7 +342,11 @@ export class BoardCollaborationGateway {
 			await this.ensureUserInRoom(client, data.cardIds[0]);
 			client.emit('fetch-card-success', { cards: cardResponses, isOwnAction: true });
 		} catch (err) {
-			client.emit('fetch-card-failure', new Error('Failed to fetch board'));
+			client.emit('fetch-card-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_CARD,
+				errorType: ErrorTypes.NOT_LOADED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -295,7 +365,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('create-element-success', { ...responsePayload, isOwnAction: false });
 			client.emit('create-element-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
-			client.emit('create-element-failure', new Error('Failed to create element'));
+			client.emit('create-element-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
+				errorType: ErrorTypes.NOT_CREATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -310,7 +384,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('update-element-success', { ...data, isOwnAction: false });
 			client.emit('update-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('update-element-failure', new Error('Failed to update element'));
+			client.emit('update-element-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -325,7 +403,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('delete-element-success', { ...data, isOwnAction: false });
 			client.emit('delete-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('delete-element-failure', new Error('Failed to delete element'));
+			client.emit('delete-element-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
+				errorType: ErrorTypes.NOT_DELETED,
+				originalAction: data,
+			});
 		}
 	}
 
@@ -340,7 +422,11 @@ export class BoardCollaborationGateway {
 			client.to(room).emit('move-element-success', { ...data, isOwnAction: false });
 			client.emit('move-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
-			client.emit('move-element-failure', new Error('Failed to move element'));
+			client.emit('move-element-failure', {
+				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
+				errorType: ErrorTypes.NOT_UPDATED,
+				originalAction: data,
+			});
 		}
 	}
 
