@@ -298,13 +298,13 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService, Account } from &#x27;@modules/account&#x27;;
 import { OAuthService, OAuthTokenDto } from &#x27;@modules/oauth&#x27;;
-import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { Strategy } from &#x27;passport-custom&#x27;;
 import { Oauth2AuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
 import { ICurrentUser, OauthCurrentUser } from &#x27;../interface&#x27;;
-import { SchoolInMigrationLoggableException } from &#x27;../loggable&#x27;;
+import { AccountNotFoundLoggableException, SchoolInMigrationLoggableException } from &#x27;../loggable&#x27;;
 import { CurrentUserMapper } from &#x27;../mapper&#x27;;
 import { UserAccountDeactivatedLoggableException } from &#x27;../loggable/user-account-deactivated-exception&#x27;;
 
@@ -327,7 +327,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, &#x27;oauth2&#x27
 
 		const account: Account | null &#x3D; await this.accountService.findByUserId(user.id);
 		if (!account) {
-			throw new UnauthorizedException(&#x27;no account found&#x27;);
+			throw new AccountNotFoundLoggableException();
 		}
 
 		if (account.deactivatedAt !&#x3D;&#x3D; undefined &amp;&amp; account.deactivatedAt.getTime() &lt;&#x3D; Date.now()) {

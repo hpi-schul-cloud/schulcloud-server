@@ -4022,6 +4022,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AccountIdmToDoMapperIdm.html" data-type="entity-link" >AccountIdmToDoMapperIdm</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AccountNotFoundLoggableException.html" data-type="entity-link" >AccountNotFoundLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AccountResponse.html" data-type="entity-link" >AccountResponse</a>
                             </li>
                             <li class="link">
@@ -5451,6 +5454,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/LdapConnectionError.html" data-type="entity-link" >LdapConnectionError</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LdapUserCouldNotBeAuthenticatedLoggableException.html" data-type="entity-link" >LdapUserCouldNotBeAuthenticatedLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/LdapUserMigrationException.html" data-type="entity-link" >LdapUserMigrationException</a>
@@ -6951,6 +6957,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserAndAccountTestFactory.html" data-type="entity-link" >UserAndAccountTestFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserAuthenticatedLoggable.html" data-type="entity-link" >UserAuthenticatedLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserByIdParams.html" data-type="entity-link" >UserByIdParams</a>

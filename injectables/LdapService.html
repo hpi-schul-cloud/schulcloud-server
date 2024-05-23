@@ -159,7 +159,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -185,7 +185,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -401,14 +401,14 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { SystemEntity } from &#x27;@shared/domain/entity&#x27;;
-import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import { Client, createClient } from &#x27;ldapjs&#x27;;
 import { LdapConnectionError } from &#x27;../errors/ldap-connection.error&#x27;;
+import { UserAuthenticatedLoggable, LdapUserCouldNotBeAuthenticatedLoggableException } from &#x27;../loggable&#x27;;
 
 @Injectable()
 export class LdapService {
-	constructor(private readonly logger: LegacyLogger) {
+	constructor(private readonly logger: Logger) {
 		this.logger.setContext(LdapService.name);
 	}
 
@@ -438,15 +438,9 @@ export class LdapService {
 			client.on(&#x27;connect&#x27;, () &#x3D;&gt; {
 				client.bind(username, password, (err) &#x3D;&gt; {
 					if (err) {
-						this.logger.debug(err);
-						reject(
-							new UnauthorizedException(
-								&#x27;User could not authenticate&#x27;,
-								ErrorUtils.createHttpExceptionOptions(err, &#x27;LdapService:connect&#x27;)
-							)
-						);
+						reject(new LdapUserCouldNotBeAuthenticatedLoggableException(err));
 					} else {
-						this.logger.debug(&#x27;[LDAP] Bind successful&#x27;);
+						this.logger.debug(new UserAuthenticatedLoggable());
 						resolve(client);
 					}
 				});
