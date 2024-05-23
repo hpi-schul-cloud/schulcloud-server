@@ -104,6 +104,7 @@ export class ImportUserController {
 		return response as unknown as UserMatchListResponse;
 	}
 
+	@RequestTimeout('IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS')
 	@Post('migrate')
 	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
