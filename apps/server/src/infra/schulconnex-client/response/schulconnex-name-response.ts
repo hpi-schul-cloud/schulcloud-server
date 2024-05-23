@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class SanisNameResponse {
+export class SchulconnexNameResponse {
 	@IsString()
 	familienname!: string;
 

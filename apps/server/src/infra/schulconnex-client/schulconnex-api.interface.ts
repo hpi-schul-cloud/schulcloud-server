@@ -1,10 +1,10 @@
 import { SchulconnexPersonenInfoParams } from './request';
-import { SanisResponse, SchulconnexLizenzInfoResponse } from './response';
+import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from './response';
 
 export interface SchulconnexApiInterface {
-	getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SanisResponse>;
+	getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse>;
 
-	getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SanisResponse[]>;
+	getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SchulconnexResponse[]>;
 
 	getLizenzInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexLizenzInfoResponse[]>;
 }

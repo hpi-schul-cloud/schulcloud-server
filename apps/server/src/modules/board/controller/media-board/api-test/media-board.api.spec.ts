@@ -499,7 +499,7 @@ describe('Media Board (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				const externalTool = externalToolEntityFactory.build();
-				const licensedUnusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'mediumId' } });
+				const licensedUnusedExternalTool = externalToolEntityFactory.withMedium().build();
 				const unusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'notLicensedByUser' } });
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					tool: externalTool,
@@ -532,6 +532,7 @@ describe('Media Board (API)', () => {
 				const userLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({
 					user: studentUser,
 					mediumId: 'mediumId',
+					mediaSourceId: 'mediaSourceId',
 				});
 
 				await em.persistAndFlush([
