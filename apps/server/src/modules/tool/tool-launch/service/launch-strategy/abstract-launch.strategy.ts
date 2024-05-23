@@ -40,7 +40,16 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		]);
 	}
 
-	public async createLaunchData(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchData> {
+	public abstract buildToolLaunchDataFromConcreteConfig(
+		userId: EntityId,
+		config: ToolLaunchParams
+	): Promise<PropertyData[]>;
+
+	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null;
+
+	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
+
+	public async createLaunchRequest(userId: EntityId, data: ToolLaunchParams): Promise<ToolLaunchRequest> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
 		const launchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromTools(data);
@@ -52,28 +61,15 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 		launchData.properties.push(...launchDataProperties);
 		launchData.properties.push(...additionalLaunchDataProperties);
 
-		return launchData;
-	}
-
-	public abstract buildToolLaunchDataFromConcreteConfig(
-		userId: EntityId,
-		config: ToolLaunchParams
-	): Promise<PropertyData[]>;
-
-	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null;
-
-	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
-
-	public createLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
-		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(toolLaunchData.properties);
-		const url: string = this.buildUrl(toolLaunchData);
-		const payload: string | null = this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
+		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(launchData.properties);
+		const url: string = this.buildUrl(launchData);
+		const payload: string | null = this.buildToolLaunchRequestPayload(url, launchData.properties);
 
 		const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
 			method: requestMethod,
 			url,
 			payload: payload ?? undefined,
-			openNewTab: toolLaunchData.openNewTab,
+			openNewTab: launchData.openNewTab,
 		});
 
 		return toolLaunchRequest;

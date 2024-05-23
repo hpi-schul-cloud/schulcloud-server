@@ -2,10 +2,12 @@ import { EntityName, Primary, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum/tool-context-type.enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { LtiDeepLink } from '@modules/tool/context-external-tool/domain/lti-deep-link';
 import {
 	ContextExternalToolEntity,
 	ContextExternalToolEntityProps,
 	ContextExternalToolType,
+	LtiDeepLinkEmbeddable,
 } from '@modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
@@ -140,22 +142,55 @@ export class ContextExternalToolRepo {
 			type: this.mapContextTypeToDomainObjectType(entity.contextType),
 		});
 
+		const ltiDeepLinkEntity: LtiDeepLinkEmbeddable | undefined = entity.ltiDeepLink;
+		const ltiDeepLink: LtiDeepLink | undefined = ltiDeepLinkEntity
+			? new LtiDeepLink({
+					mediaType: ltiDeepLinkEntity.mediaType,
+					url: ltiDeepLinkEntity.url,
+					title: ltiDeepLinkEntity.title,
+					text: ltiDeepLinkEntity.text,
+					parameters: ltiDeepLinkEntity.parameters,
+					availableFrom: ltiDeepLinkEntity.availableFrom,
+					availableUntil: ltiDeepLinkEntity.availableUntil,
+					submissionFrom: ltiDeepLinkEntity.submissionFrom,
+					submissionUntil: ltiDeepLinkEntity.submissionUntil,
+			  })
+			: undefined;
+
 		return new ContextExternalTool({
 			id: entity.id,
 			schoolToolRef,
 			contextRef,
 			displayName: entity.displayName,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
+			ltiDeepLink,
 		});
 	}
 
 	private mapDomainObjectToEntityProps(entityDO: ContextExternalTool): ContextExternalToolEntityProps {
+		const { ltiDeepLink } = entityDO;
+
+		const ltiDeepLinkEntity: LtiDeepLinkEmbeddable | undefined = ltiDeepLink
+			? new LtiDeepLinkEmbeddable({
+					mediaType: ltiDeepLink.mediaType,
+					url: ltiDeepLink.url,
+					title: ltiDeepLink.title,
+					text: ltiDeepLink.text,
+					parameters: ltiDeepLink.parameters,
+					availableFrom: ltiDeepLink.availableFrom,
+					availableUntil: ltiDeepLink.availableUntil,
+					submissionFrom: ltiDeepLink.submissionFrom,
+					submissionUntil: ltiDeepLink.submissionUntil,
+			  })
+			: undefined;
+
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			displayName: entityDO.displayName,
 			schoolTool: this.em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			ltiDeepLink: ltiDeepLinkEntity,
 		};
 	}
 

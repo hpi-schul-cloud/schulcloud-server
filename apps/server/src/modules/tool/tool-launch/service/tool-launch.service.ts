@@ -9,8 +9,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
-import { ToolLaunchMapper } from '../mapper';
-import { ToolLaunchData, ToolLaunchRequest } from '../types';
+import { ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
@@ -36,20 +35,10 @@ export class ToolLaunchService {
 		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
-	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
-		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
-		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
-
-		if (!strategy) {
-			throw new InternalServerErrorException('Unknown tool launch data type');
-		}
-
-		const launchRequest: ToolLaunchRequest = strategy.createLaunchRequest(toolLaunchData);
-
-		return launchRequest;
-	}
-
-	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalToolLaunchable): Promise<ToolLaunchData> {
+	async generateLaunchRequest(
+		userId: EntityId,
+		contextExternalTool: ContextExternalToolLaunchable
+	): Promise<ToolLaunchRequest> {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
@@ -62,13 +51,13 @@ export class ToolLaunchService {
 			throw new InternalServerErrorException('Unknown tool config type');
 		}
 
-		const launchData: ToolLaunchData = await strategy.createLaunchData(userId, {
+		const launchRequest: ToolLaunchRequest = await strategy.createLaunchRequest(userId, {
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool,
 		});
 
-		return launchData;
+		return launchRequest;
 	}
 
 	public async loadToolHierarchy(

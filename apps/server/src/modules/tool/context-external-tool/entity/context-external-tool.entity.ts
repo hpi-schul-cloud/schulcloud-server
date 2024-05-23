@@ -4,6 +4,7 @@ import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntryEntity } from '../../common/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
+import { LtiDeepLinkEmbeddable } from './lti-deep-link.embeddable';
 
 export interface ContextExternalToolEntityProps {
 	id?: EntityId;
@@ -17,6 +18,8 @@ export interface ContextExternalToolEntityProps {
 	displayName?: string;
 
 	parameters?: CustomParameterEntryEntity[];
+
+	ltiDeepLink?: LtiDeepLinkEmbeddable;
 }
 
 @Entity({ tableName: 'context-external-tools' })
@@ -36,6 +39,9 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CustomParameterEntryEntity, { array: true })
 	parameters: CustomParameterEntryEntity[];
 
+	@Embedded(() => LtiDeepLinkEmbeddable, { nullable: true })
+	ltiDeepLink?: LtiDeepLinkEmbeddable;
+
 	constructor(props: ContextExternalToolEntityProps) {
 		super();
 		if (props.id) {
@@ -46,5 +52,6 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 		this.contextType = props.contextType;
 		this.displayName = props.displayName;
 		this.parameters = props.parameters ?? [];
+		this.ltiDeepLink = props.ltiDeepLink;
 	}
 }
