@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory, externalToolFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of, throwError } from 'rxjs';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
@@ -15,6 +15,7 @@ import {
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 } from '../loggable';
+import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
 
@@ -91,7 +92,7 @@ describe('ExternalToolLogoService', () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
 
 				const baseUrl = toolFeatures.backEndUrl;
-				const id = externalTool.id as string;
+				const { id } = externalTool;
 				const expected = `${baseUrl}/v3/tools/external-tools/${id}/logo`;
 
 				return {
@@ -328,7 +329,7 @@ describe('ExternalToolLogoService', () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 					base64logo: externalTool.logo as string,
 				};
 			};
@@ -354,7 +355,7 @@ describe('ExternalToolLogoService', () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 				};
 			};
 
@@ -374,7 +375,7 @@ describe('ExternalToolLogoService', () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id as string,
+					externalToolId: externalTool.id,
 				};
 			};
 

@@ -18,15 +18,11 @@ export class ContextExternalToolConfigurationTemplateResponse {
 	@ApiProperty({ type: [CustomParameterResponse] })
 	parameters: CustomParameterResponse[];
 
-	@ApiProperty()
-	version: number;
-
 	constructor(configuration: ContextExternalToolConfigurationTemplateResponse) {
 		this.externalToolId = configuration.externalToolId;
 		this.schoolExternalToolId = configuration.schoolExternalToolId;
 		this.name = configuration.name;
 		this.logoUrl = configuration.logoUrl;
 		this.parameters = configuration.parameters;
-		this.version = configuration.version;
 	}
 }

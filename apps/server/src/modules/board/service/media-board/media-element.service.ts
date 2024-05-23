@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { ContextExternalTool, ContextExternalToolWithId, ContextRef } from '@modules/tool/context-external-tool/domain';
-import { SchoolExternalToolRefDO, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -35,10 +35,7 @@ export class MediaElementService {
 		return element;
 	}
 
-	public async checkElementExists(
-		mediaBoard: MediaBoard,
-		schoolExternalTool: SchoolExternalToolWithId
-	): Promise<boolean> {
+	public async checkElementExists(mediaBoard: MediaBoard, schoolExternalTool: SchoolExternalTool): Promise<boolean> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
@@ -52,18 +49,17 @@ export class MediaElementService {
 
 	public async createContextExternalToolForMediaBoard(
 		user: User,
-		schoolExternalTool: SchoolExternalToolWithId,
+		schoolExternalTool: SchoolExternalTool,
 		mediaBoard: MediaBoard
-	): Promise<ContextExternalToolWithId> {
-		const contextExternalTool: ContextExternalToolWithId =
-			await this.contextExternalToolService.saveContextExternalTool(
-				new ContextExternalTool({
-					schoolToolRef: new SchoolExternalToolRefDO({ schoolId: user.school.id, schoolToolId: schoolExternalTool.id }),
-					contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
-					toolVersion: 0,
-					parameters: [],
-				})
-			);
+	): Promise<ContextExternalTool> {
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
+			new ContextExternalTool({
+				id: new ObjectId().toHexString(),
+				schoolToolRef: new SchoolExternalToolRef({ schoolId: user.school.id, schoolToolId: schoolExternalTool.id }),
+				contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
+				parameters: [],
+			})
+		);
 
 		return contextExternalTool;
 	}
@@ -71,7 +67,7 @@ export class MediaElementService {
 	public async createExternalToolElement(
 		parent: MediaLine,
 		position: number,
-		contextExternalTool: ContextExternalToolWithId
+		contextExternalTool: ContextExternalTool
 	): Promise<MediaExternalToolElement> {
 		const element: MediaExternalToolElement = new MediaExternalToolElement({
 			id: new ObjectId().toHexString(),

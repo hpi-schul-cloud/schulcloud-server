@@ -1,8 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class ToolStatusNotLaunchableLoggableException extends BadRequestException implements Loggable {
+export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
 		private readonly toolId: EntityId,

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { BoardDoAuthorizableService, ContentElementService } from '@src/modules/board';
 import { CollaborativeTextEditor } from '../domain/do/collaborative-text-editor';
@@ -34,6 +35,12 @@ export class CollaborativeTextEditorUc {
 		);
 
 		return textEditor;
+	}
+
+	async deleteSessionsByUser(userId: EntityId): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		await this.collaborativeTextEditorService.deleteSessionsByUser(user.id);
 	}
 
 	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User) {

@@ -4,19 +4,13 @@ import { ProviderLoginResponse, ProviderRedirectResponse } from '@infra/oauth-pr
 import { AuthorizationService } from '@modules/authorization';
 import { PseudonymService } from '@modules/pseudonym';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import {
-	externalToolFactory,
-	ltiToolDOFactory,
-	pseudonymFactory,
-	setupEntities,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
+import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';

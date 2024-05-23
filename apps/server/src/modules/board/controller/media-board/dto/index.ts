@@ -10,3 +10,6 @@ export { MoveElementBodyParams } from './move-element.body.params';
 export { MediaAvailableLineResponse } from './media-available-line.response';
 export { MediaAvailableLineElementResponse } from './media-available-line-element.response';
 export { CreateMediaElementBodyParams } from './create-media-element.body.params';
+export { ColorBodyParams } from './color.body.params';
+export { CollapsableBodyParams } from './collapsable.body.params';
+export { LayoutBodyParams } from './layout.body.params';

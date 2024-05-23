@@ -153,6 +153,14 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"common-cartridge": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/common-cartridge.app",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"board-collaboration": {
 			"type": "application",
 			"root": "apps/server",

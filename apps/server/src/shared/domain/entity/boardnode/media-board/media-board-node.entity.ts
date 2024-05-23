@@ -1,13 +1,13 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaBoardColors, MediaBoardLayoutType } from '@modules/board/domain';
 import {
 	type AnyBoardDo,
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	type MediaBoard,
 } from '../../../domainobject';
-import { BoardNode } from '../boardnode.entity';
-import { type RootBoardNodeProps } from '../root-board-node.entity';
+import { BoardNode, BoardNodeProps } from '../boardnode.entity';
 import { type BoardDoBuilder, BoardNodeType } from '../types';
 
 // TODO Use an abstract base class for root nodes that have a contextId and a contextType. Multiple STI abstract base classes are blocked by MikroORM 6.1.2 (issue #3745)
@@ -15,12 +15,15 @@ import { type BoardDoBuilder, BoardNodeType } from '../types';
 @Index({ properties: ['_contextId'] })
 @Index({ properties: ['_contextType'] })
 export class MediaBoardNode extends BoardNode {
-	constructor(props: RootBoardNodeProps) {
+	constructor(props: MediaBoardNodeProps) {
 		super(props);
 		this.type = BoardNodeType.MEDIA_BOARD;
 
 		this._contextType = props.context.type;
 		this._contextId = new ObjectId(props.context.id);
+		this.layout = props.layout;
+		this.mediaAvailableLineCollapsed = props.mediaAvailableLineCollapsed;
+		this.mediaAvailableLineBackgroundColor = props.mediaAvailableLineBackgroundColor;
 	}
 
 	@Property({ fieldName: 'contextType' })
@@ -28,6 +31,15 @@ export class MediaBoardNode extends BoardNode {
 
 	@Property({ fieldName: 'context' })
 	_contextId: ObjectId;
+
+	@Enum(() => MediaBoardLayoutType)
+	layout: MediaBoardLayoutType;
+
+	@Enum(() => MediaBoardColors)
+	mediaAvailableLineBackgroundColor: MediaBoardColors;
+
+	@Property()
+	mediaAvailableLineCollapsed: boolean;
 
 	get context(): BoardExternalReference {
 		return {
@@ -41,4 +53,11 @@ export class MediaBoardNode extends BoardNode {
 
 		return domainObject;
 	}
+}
+
+export interface MediaBoardNodeProps extends BoardNodeProps {
+	context: BoardExternalReference;
+	layout: MediaBoardLayoutType;
+	mediaAvailableLineBackgroundColor: MediaBoardColors;
+	mediaAvailableLineCollapsed: boolean;
 }

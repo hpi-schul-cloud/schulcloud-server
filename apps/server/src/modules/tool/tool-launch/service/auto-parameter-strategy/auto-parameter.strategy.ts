@@ -1,9 +1,9 @@
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 
 export interface AutoParameterStrategy {
 	getValue(
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): string | Promise<string | undefined> | undefined;
 }

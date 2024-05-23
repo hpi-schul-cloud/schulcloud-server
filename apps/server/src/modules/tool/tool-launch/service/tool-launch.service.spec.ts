@@ -1,19 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	basicToolConfigFactory,
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
-	toolConfigurationStatusFactory,
-} from '@shared/testing';
 import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
+import { ToolConfigurationStatusService } from '../../context-external-tool/service';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolService } from '../../external-tool';
-import { SchoolExternalToolWithId } from '../../school-external-tool/domain';
+import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
+import {
+	basicToolConfigFactory,
+	externalToolFactory,
+	toolConfigurationStatusFactory,
+} from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
+import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
@@ -23,7 +23,6 @@ import {
 	ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
-import { ToolConfigurationStatusService } from '../../context-external-tool/service';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -83,7 +82,7 @@ describe('ToolLaunchService', () => {
 	describe('getLaunchData', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
@@ -165,7 +164,7 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
@@ -204,7 +203,7 @@ describe('ToolLaunchService', () => {
 
 		describe('when tool configuration status is not launchable', () => {
 			const setup = () => {
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId() as SchoolExternalToolWithId;
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id)
 					.build();
@@ -244,7 +243,7 @@ describe('ToolLaunchService', () => {
 				return {
 					launchParams,
 					userId,
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 				};
 			};
 
