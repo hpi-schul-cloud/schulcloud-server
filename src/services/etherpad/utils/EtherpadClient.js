@@ -19,8 +19,8 @@ class EtherpadClient {
 			this.uri = null;
 			logger.info('Etherpad uri is not defined');
 		}
-		if (Configuration.has('ETHERPAD_COOKIE__EXPIRES_SECONDS')) {
-			this.cookieExpiresSeconds = Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS');
+		if (Configuration.has('ETHERPAD_COOKIE_EXPIRES_SECONDS')) {
+			this.cookieExpiresSeconds = Configuration.get('ETHERPAD_COOKIE_EXPIRES_SECONDS');
 		} else {
 			this.cookieExpiresSeconds = 28800;
 		}

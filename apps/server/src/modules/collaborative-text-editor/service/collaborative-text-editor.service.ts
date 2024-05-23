@@ -63,7 +63,7 @@ export class CollaborativeTextEditorService {
 	}
 
 	private buildSessionExpiryDate(): Date {
-		const cookieExpiresMilliseconds = Number(this.configService.get('ETHERPAD_COOKIE__EXPIRES_SECONDS')) * 1000;
+		const cookieExpiresMilliseconds = Number(this.configService.get('ETHERPAD_COOKIE_EXPIRES_SECONDS')) * 1000;
 		console.log('cookieExpiresMilliseconds', cookieExpiresMilliseconds);
 		const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds);
 		console.log('sessionCookieExpiryDate', sessionCookieExpiryDate);
