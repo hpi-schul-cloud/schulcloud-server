@@ -1,3 +1,4 @@
+import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaUserLicense, mediaUserLicenseFactory } from '@modules/user-license';
 import { MediaUserLicenseService } from '@modules/user-license/service/media-user-license.service';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -25,20 +26,54 @@ describe(MediaUserLicenseService.name, () => {
 	describe('hasLicenseForExternalTool', () => {
 		describe('when user has license', () => {
 			const setup = () => {
-				const mediumId = 'mediumId';
-				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
-				mediaUserLicenses[0].mediumId = 'mediumId';
+				const toolMedium: ExternalToolMedium = {
+					mediumId: 'mediumId',
+					mediaSourceId: 'mediaSourceId',
+				};
+				const medium = mediaUserLicenseFactory.build({
+					mediumId: toolMedium.mediumId,
+					mediaSourceId: toolMedium.mediaSourceId,
+				});
+				const unusedMedium = mediaUserLicenseFactory.build();
+				const mediaUserLicenses: MediaUserLicense[] = [medium, unusedMedium];
 
 				return {
-					mediumId,
+					toolMedium,
 					mediaUserLicenses,
 				};
 			};
 
 			it('should return true', () => {
-				const { mediumId, mediaUserLicenses } = setup();
+				const { toolMedium, mediaUserLicenses } = setup();
 
-				const result = service.hasLicenseForExternalTool(mediumId, mediaUserLicenses);
+				const result = service.hasLicenseForExternalTool(toolMedium, mediaUserLicenses);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when user has license without sourceId', () => {
+			const setup = () => {
+				const toolMedium: ExternalToolMedium = {
+					mediumId: 'mediumId',
+				};
+				const medium = mediaUserLicenseFactory.build({
+					mediumId: toolMedium.mediumId,
+					mediaSourceId: undefined,
+				});
+				const unusedMedium = mediaUserLicenseFactory.build();
+				const mediaUserLicenses: MediaUserLicense[] = [medium, unusedMedium];
+
+				return {
+					toolMedium,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return true', () => {
+				const { toolMedium, mediaUserLicenses } = setup();
+
+				const result = service.hasLicenseForExternalTool(toolMedium, mediaUserLicenses);
 
 				expect(result).toEqual(true);
 			});
@@ -46,19 +81,19 @@ describe(MediaUserLicenseService.name, () => {
 
 		describe('when user has not the correct license', () => {
 			const setup = () => {
-				const mediumId = 'mediumId';
+				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(2);
 
 				return {
-					mediumId,
+					medium,
 					mediaUserLicenses,
 				};
 			};
 
 			it('should return false', () => {
-				const { mediumId, mediaUserLicenses } = setup();
+				const { medium, mediaUserLicenses } = setup();
 
-				const result = service.hasLicenseForExternalTool(mediumId, mediaUserLicenses);
+				const result = service.hasLicenseForExternalTool(medium, mediaUserLicenses);
 
 				expect(result).toEqual(false);
 			});
@@ -66,19 +101,19 @@ describe(MediaUserLicenseService.name, () => {
 
 		describe('when user has no licenses', () => {
 			const setup = () => {
-				const mediumId = 'mediumId';
+				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaUserLicense[] = [];
 
 				return {
-					mediumId,
+					medium,
 					mediaUserLicenses,
 				};
 			};
 
 			it('should return false', () => {
-				const { mediumId, mediaUserLicenses } = setup();
+				const { medium, mediaUserLicenses } = setup();
 
-				const result = service.hasLicenseForExternalTool(mediumId, mediaUserLicenses);
+				const result = service.hasLicenseForExternalTool(medium, mediaUserLicenses);
 
 				expect(result).toEqual(false);
 			});
