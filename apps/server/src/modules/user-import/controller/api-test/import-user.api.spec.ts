@@ -23,13 +23,13 @@ import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@sha
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
@@ -46,11 +46,12 @@ describe('ImportUser Controller (API)', () => {
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
 		features: SchoolFeature[] = [],
-		schoolHasExternalId = true
+		schoolHasExternalId = true,
+		officialSchoolNumber = 'foo'
 	) => {
 		const system = systemEntityFactory.buildWithId();
 		const school = schoolEntityFactory.build({
-			officialSchoolNumber: 'foo',
+			officialSchoolNumber,
 			features,
 			systems: [system],
 			externalId: schoolHasExternalId ? system.id : undefined,
@@ -1121,12 +1122,27 @@ describe('ImportUser Controller (API)', () => {
 
 	describe('[POST] /user/import/cancel', () => {
 		describe('when user is unauthorized', () => {
+			const setup = () => {
+				return {
+					notLoggedInClient: new TestApiClient(app, 'user/import'),
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { notLoggedInClient } = setup();
+
+				await notLoggedInClient.post('cancel').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has no permission', () => {
 			const setup = async () => {
-				const { system } = await authenticatedUser();
+				const { account, system } = await authenticatedUser([]);
 				setConfig(system._id.toString());
+				const loggedInClient = await testApiClient.login(account);
 
 				return {
-					loggedInClient: testApiClient,
+					loggedInClient,
 				};
 			};
 
@@ -1137,43 +1153,23 @@ describe('ImportUser Controller (API)', () => {
 			});
 		});
 
-		describe('when user has no permission', () => {
+		describe('when import was successfully canceled', () => {
 			const setup = async () => {
-				const { school, system } = await authenticatedUser();
-				setConfig(system._id.toString());
-
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
-				await em.persistAndFlush([adminUser, adminAccount]);
-
-				await testApiClient.login(adminAccount);
-
-				return {
-					loggedInClient: testApiClient,
-				};
-			};
-
-			it('should return forbidden', async () => {
-				const { loggedInClient } = await setup();
-
-				await loggedInClient.post('cancel').expect(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when import was canceled', () => {
-			const setup = async () => {
-				const { school, system } = await authenticatedUser();
+				const { school, system, account } = await authenticatedUser(
+					[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
+					[],
+					true,
+					'00100'
+				);
 				setConfig(system._id.toString());
 
 				const importusers = importUserFactory.buildList(10, { school });
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.SCHOOL_IMPORT_USERS_MIGRATE,
-				]);
-				await em.persistAndFlush([...importusers, adminUser, adminAccount]);
+				await em.persistAndFlush(importusers);
 
-				await testApiClient.login(adminAccount);
+				const loggedInClient = await testApiClient.login(account);
 
 				return {
-					loggedInClient: testApiClient,
+					loggedInClient,
 				};
 			};
 
