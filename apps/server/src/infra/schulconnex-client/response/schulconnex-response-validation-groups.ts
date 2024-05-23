@@ -1,4 +1,4 @@
-export enum SanisResponseValidationGroups {
+export enum SchulconnexResponseValidationGroups {
 	USER = 'user',
 	SCHOOL = 'school',
 	GROUPS = 'groups',

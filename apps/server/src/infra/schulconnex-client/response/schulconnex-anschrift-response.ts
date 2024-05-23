@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class SanisAnschriftResponse {
+export class SchulconnexAnschriftResponse {
 	@IsString()
 	@IsOptional()
 	ort?: string;
