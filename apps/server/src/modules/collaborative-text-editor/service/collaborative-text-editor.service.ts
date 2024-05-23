@@ -23,7 +23,6 @@ export class CollaborativeTextEditorService {
 	): Promise<CollaborativeTextEditor> {
 		const sessionExpiryDate = this.buildSessionExpiryDate();
 		const durationThreshold = Number(this.configService.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD'));
-		console.log('durationThreshold', durationThreshold);
 		const { parentId } = params;
 
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
@@ -64,9 +63,7 @@ export class CollaborativeTextEditorService {
 
 	private buildSessionExpiryDate(): Date {
 		const cookieExpiresMilliseconds = Number(this.configService.get('ETHERPAD_COOKIE_EXPIRES_SECONDS')) * 1000;
-		console.log('cookieExpiresMilliseconds', cookieExpiresMilliseconds);
 		const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds);
-		console.log('sessionCookieExpiryDate', sessionCookieExpiryDate);
 
 		return sessionCookieExpiryDate;
 	}
