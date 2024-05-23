@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class SanisGeburtResponse {
+export class SchulconnexGeburtResponse {
 	@IsOptional()
 	@IsString()
 	datum?: string;

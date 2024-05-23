@@ -119,6 +119,7 @@ class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps>
 			medium: {
 				mediumId: 'mediumId',
 				publisher: 'publisher',
+				mediaSourceId: 'mediaSourceId',
 				...externalToolMedium,
 			},
 		};
