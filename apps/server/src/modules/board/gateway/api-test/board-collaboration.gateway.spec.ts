@@ -345,7 +345,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
 				const success = await waitForEvent(ioClient, 'update-board-visibility-success');
 
-				expect(success).toBeDefined();
+				expect(success).toEqual(expect.objectContaining({ boardId, isVisible: false }));
 			});
 		});
 
