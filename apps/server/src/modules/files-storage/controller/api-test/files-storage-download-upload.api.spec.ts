@@ -380,7 +380,7 @@ describe('files-storage controller (API)', () => {
 			describe('when mimetype is not application/pdf', () => {
 				const setup = async () => {
 					const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'image/webp' });
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
