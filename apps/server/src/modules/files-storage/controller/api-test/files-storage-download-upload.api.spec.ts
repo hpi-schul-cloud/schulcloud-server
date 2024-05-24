@@ -418,7 +418,7 @@ describe('files-storage controller (API)', () => {
 				});
 			});
 
-			describe('when mimetype is not application/pdf', () => {
+			describe('when mimetype is application/pdf', () => {
 				const setup = async () => {
 					const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'application/pdf' });
