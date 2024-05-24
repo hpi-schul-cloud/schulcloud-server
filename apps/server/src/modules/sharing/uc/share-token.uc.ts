@@ -1,16 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { AuthorizableReferenceType, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { BoardDoAuthorizableService, ColumnBoardCopyService, ColumnBoardService } from '@modules/board';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
-import { LessonCopyService } from '@modules/lesson';
-import { TaskCopyService } from '@modules/task';
+import { LessonCopyService, LessonService } from '@modules/lesson';
+import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@modules/board';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { SchoolService } from '@src/modules/school';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -18,7 +19,6 @@ import {
 	ShareTokenParentType,
 	ShareTokenPayload,
 } from '../domainobject/share-token.do';
-import { ShareTokenContextTypeMapper, ShareTokenParentTypeMapper } from '../mapper';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
 
@@ -27,12 +27,16 @@ export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly courseService: CourseService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly courseService: CourseService,
+		private readonly lessonService: LessonService,
+		private readonly taskService: TaskService,
+		private readonly columnBoardService: ColumnBoardService,
+		private readonly schoolService: SchoolService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
@@ -47,16 +51,16 @@ export class ShareTokenUC {
 
 		this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
-		await this.checkCreatePermission(userId, payload);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		await this.checkTokenCreatePermission(user, payload);
 
 		const serviceOptions: { context?: ShareTokenContext; expiresAt?: Date } = {};
 		if (options?.schoolExclusive) {
-			const user = await this.authorizationService.getUserWithPermissions(userId);
 			serviceOptions.context = {
 				contextType: ShareTokenContextType.School,
 				contextId: user.school.id,
 			};
-			await this.checkContextReadPermission(userId, serviceOptions.context);
 		}
 		if (options?.expiresInDays) {
 			serviceOptions.expiresAt = this.nowPlusDays(options.expiresInDays);
@@ -104,41 +108,44 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
 		let result: CopyStatus;
 		// eslint-disable-next-line default-case
 		switch (shareToken.payload.parentType) {
 			case ShareTokenParentType.Course:
-				result = await this.copyCourse(userId, shareToken.payload.parentId, newName);
+				result = await this.copyCourse(user, shareToken.payload.parentId, newName);
 				break;
 			case ShareTokenParentType.Lesson:
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy lesson');
 				}
-				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyLesson(user, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
 			case ShareTokenParentType.Task:
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy task');
 				}
-				result = await this.copyTask(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyTask(user, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
 			case ShareTokenParentType.ColumnBoard:
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy task');
 				}
-				result = await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyColumnBoard(user, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
 		}
 
 		return result;
 	}
 
-	private async copyCourse(userId: EntityId, courseId: string, newName: string): Promise<CopyStatus> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
+	private async copyCourse(user: User, courseId: string, newName: string): Promise<CopyStatus> {
 		const requiredPermissions = [Permission.COURSE_CREATE];
+
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
+
 		const copyStatus = await this.courseCopyService.copyCourse({
-			userId,
+			userId: user.id,
 			courseId,
 			newName,
 		});
@@ -146,43 +153,26 @@ export class ShareTokenUC {
 		return copyStatus;
 	}
 
-	private async copyLesson(userId: string, lessonId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.Course,
-			courseId,
-			AuthorizationContextBuilder.write([Permission.TOPIC_CREATE])
-		);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const destinationCourse = await this.courseService.findById(courseId);
+	private async copyLesson(user: User, lessonId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
+		const { course } = await this.checkCourseWritePermission(user, courseId, Permission.TOPIC_CREATE);
+
 		const copyStatus = await this.lessonCopyService.copyLesson({
 			user,
 			originalLessonId: lessonId,
-			destinationCourse,
+			destinationCourse: course,
 			copyName,
 		});
 
 		return copyStatus;
 	}
 
-	private async copyTask(
-		userId: string,
-		originalTaskId: string,
-		courseId: string,
-		copyName?: string
-	): Promise<CopyStatus> {
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.Course,
-			courseId,
-			AuthorizationContextBuilder.write([Permission.HOMEWORK_CREATE])
-		);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const destinationCourse = await this.courseService.findById(courseId);
+	private async copyTask(user: User, originalTaskId: string, courseId: string, copyName?: string): Promise<CopyStatus> {
+		const { course } = await this.checkCourseWritePermission(user, courseId, Permission.HOMEWORK_CREATE);
+
 		const copyStatus = await this.taskCopyService.copyTask({
 			user,
 			originalTaskId,
-			destinationCourse,
+			destinationCourse: course,
 			copyName,
 		});
 
@@ -190,66 +180,90 @@ export class ShareTokenUC {
 	}
 
 	private async copyColumnBoard(
-		userId: string,
+		user: User,
 		originalColumnBoardId: string,
 		courseId: string,
 		copyTitle?: string
 	): Promise<CopyStatus> {
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.Course,
-			courseId,
-			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
-		);
+		await this.checkCourseWritePermission(user, courseId, Permission.COURSE_EDIT);
+
 		const copyStatus = this.columnBoardCopyService.copyColumnBoard({
 			originalColumnBoardId,
 			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
-			userId,
+			userId: user.id,
 			copyTitle,
 		});
 		return copyStatus;
 	}
 
-	private async checkCreatePermission(userId: EntityId, payload: ShareTokenPayload) {
-		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
-
-		let requiredPermissions: Permission[] = [];
-		// eslint-disable-next-line default-case
+	private async checkTokenCreatePermission(user: User, payload: ShareTokenPayload) {
 		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
-				requiredPermissions = [Permission.COURSE_CREATE];
+				await this.checkCourseWritePermission(user, payload.parentId, Permission.COURSE_CREATE);
 				break;
 			case ShareTokenParentType.Lesson:
-				requiredPermissions = [Permission.TOPIC_CREATE];
+				await this.checkLessonWritePermission(user, payload.parentId, Permission.TOPIC_CREATE);
 				break;
 			case ShareTokenParentType.Task:
-				requiredPermissions = [Permission.HOMEWORK_CREATE];
+				await this.checkTaskWritePermission(user, payload.parentId, Permission.HOMEWORK_CREATE);
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				requiredPermissions = [Permission.COURSE_EDIT];
+				await this.checkColumnBoardWritePermission(user, payload.parentId, Permission.COURSE_EDIT);
 				break;
+			default:
+				throw new NotImplementedException();
 		}
+	}
 
-		const authorizationContext = AuthorizationContextBuilder.write(requiredPermissions);
+	private async checkCourseWritePermission(
+		user: User,
+		courseId: EntityId,
+		permission: Permission
+	): Promise<{ course: Course }> {
+		const course = await this.courseService.findById(courseId);
+		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([permission]));
 
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			allowedParentType,
-			payload.parentId,
-			authorizationContext
+		return {
+			course,
+		};
+	}
+
+	private async checkLessonWritePermission(user: User, lessonId: EntityId, permission: Permission) {
+		const lesson = await this.lessonService.findById(lessonId);
+		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([permission]));
+	}
+
+	private async checkTaskWritePermission(user: User, taskId: EntityId, permission: Permission) {
+		const task = await this.taskService.findById(taskId);
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([permission]));
+	}
+
+	private async checkColumnBoardWritePermission(user: User, boardNodeId: EntityId, permission: Permission) {
+		const columBoard = await this.columnBoardService.findById(boardNodeId);
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(columBoard);
+
+		this.authorizationService.checkPermission(
+			user,
+			boardDoAuthorizable,
+			AuthorizationContextBuilder.write([permission])
 		);
 	}
 
-	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
-		const allowedContextType = ShareTokenContextTypeMapper.mapToAllowedAuthorizationEntityType(context.contextType);
+	private async checkSchoolReadPermission(user: User, schoolId: EntityId) {
+		const school = await this.schoolService.getSchoolById(schoolId);
 		const authorizationContext = AuthorizationContextBuilder.read([]);
 
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			allowedContextType,
-			context.contextId,
-			authorizationContext
-		);
+		this.authorizationService.checkPermission(user, school, authorizationContext);
+	}
+
+	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		if (context.contextType === ShareTokenContextType.School) {
+			await this.checkSchoolReadPermission(user, context.contextId);
+		} else {
+			throw new NotImplementedException();
+		}
 	}
 
 	private async checkLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {

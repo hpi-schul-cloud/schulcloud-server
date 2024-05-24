@@ -6,6 +6,7 @@ import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { SchoolModule } from '../school';
 import { ShareTokenController } from './controller/share-token.controller';
 import { ShareTokenRepo } from './repo/share-token.repo';
 import { ShareTokenService, TokenGenerator } from './service';
@@ -37,6 +38,7 @@ export class SharingModule {}
 		TaskModule,
 		LoggerModule,
 		BoardModule,
+		SchoolModule,
 	],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC],
