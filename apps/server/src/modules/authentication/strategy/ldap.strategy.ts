@@ -30,7 +30,6 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
 		const system: SystemEntity = await this.systemRepo.findById(systemId);
-
 		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
@@ -38,13 +37,11 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		}
 
 		const account: Account = await this.loadAccount(username, system.id, school);
-
 		const userId: string = this.checkValue(account.userId);
 
 		this.authenticationService.checkBrutForce(account);
 
 		const user: User = await this.userRepo.findById(userId);
-
 		const ldapDn: string = this.checkValue(user.ldapDn);
 
 		await this.checkCredentials(account, system, ldapDn, password);
