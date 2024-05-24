@@ -46,7 +46,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'boolean', nullable: true })
 	isVisible: boolean | undefined;
 
-	@Property({ type: 'boolean', nullable: true })
+	@Enum({ type: 'BoardLayout', nullable: true })
 	layout: BoardLayout | undefined;
 
 	// Card
