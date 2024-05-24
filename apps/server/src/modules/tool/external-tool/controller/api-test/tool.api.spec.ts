@@ -29,11 +29,16 @@ import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
+	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 } from '../dto';
+import {
+	ExternalToolImportResultListResponse,
+	ExternalToolImportResultResponse,
+} from '../dto/response/external-tool-import-result-response';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -215,6 +220,108 @@ describe('ToolController (API)', () => {
 				const { loggedInClient, params } = await setup();
 
 				const response: Response = await loggedInClient.post(undefined, params);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('[POST] tools/external-tools', () => {
+		const logoUrl = 'https://link.to-my-logo.com';
+		const postParams: ExternalToolCreateParams = {
+			name: 'Tool 1',
+			parameters: [
+				{
+					name: 'key',
+					description: 'This is a parameter.',
+					displayName: 'User Friendly Name',
+					defaultValue: 'abc',
+					isOptional: false,
+					isProtected: false,
+					type: CustomParameterTypeParams.STRING,
+					regex: 'abc',
+					regexComment: 'Regex accepts "abc" as value.',
+					location: CustomParameterLocationParams.PATH,
+					scope: CustomParameterScopeTypeParams.GLOBAL,
+				},
+			],
+			config: {
+				type: ToolConfigType.BASIC,
+				baseUrl: 'https://link.to-my-tool.com/:key',
+			},
+			isHidden: false,
+			isDeactivated: false,
+			logoUrl,
+			url: 'https://link.to-my-tool.com',
+			openNewTab: true,
+			medium: {
+				mediumId: 'medium:1',
+				mediaSourceId: 'source:1',
+			},
+		};
+
+		describe('when valid data is given', () => {
+			const setup = async () => {
+				const params: ExternalToolBulkCreateParams = { data: [{ ...postParams }] };
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
+				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
+				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer);
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					params,
+				};
+			};
+
+			it('should create a tool', async () => {
+				const { loggedInClient, params } = await setup();
+
+				const response: Response = await loggedInClient.post('/import', params);
+				const body: ExternalToolImportResultListResponse = response.body as ExternalToolImportResultListResponse;
+
+				expect(body.results[0]?.toolId).toBeDefined();
+				const loaded: Loaded<ExternalToolEntity> = await em.findOneOrFail(ExternalToolEntity, {
+					id: body.results[0].toolId,
+				});
+				expect(loaded).toBeDefined();
+			});
+
+			it('should return the created tool', async () => {
+				const { loggedInClient, params } = await setup();
+
+				const response: Response = await loggedInClient.post('/import', params);
+				const body: ExternalToolImportResultListResponse = response.body as ExternalToolImportResultListResponse;
+
+				expect(response.statusCode).toEqual(HttpStatus.CREATED);
+				expect(body.results[0]).toBeDefined();
+				expect(body.results[0]).toEqual<ExternalToolImportResultResponse>({
+					toolId: expect.any(String),
+					mediumId: postParams.medium?.mediumId,
+					mediumSourceId: postParams.medium?.mediaSourceId,
+					toolName: postParams.name,
+					error: undefined,
+				});
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const params: ExternalToolBulkCreateParams = { data: [{ ...postParams }] };
+
+				return { params };
+			};
+
+			it('should return unauthorized', async () => {
+				const { params } = setup();
+
+				const response: Response = await testApiClient.post('/import', params);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
