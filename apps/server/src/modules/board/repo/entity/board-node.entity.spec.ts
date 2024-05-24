@@ -2,6 +2,7 @@ import { MikroORM, ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { BoardExternalReferenceType, BoardNodeType } from '../../domain';
 import { BoardNodeEntity } from './board-node.entity';
+import { Context } from './embeddables';
 
 describe('entity', () => {
 	let orm: MikroORM;
@@ -25,25 +26,34 @@ describe('entity', () => {
 		await orm.close(true);
 	});
 
-	it('persists', async () => {
-		const entity = new BoardNodeEntity();
-		entity.type = BoardNodeType.COLUMN_BOARD;
-		entity.title = 'board #1';
-		entity.context = {
-			type: BoardExternalReferenceType.Course,
-			id: new ObjectId().toHexString(),
-		};
-		entity.isVisible = true;
+	describe('context', () => {
+		it('should persist the property', async () => {
+			const entity = new BoardNodeEntity();
+			entity.type = BoardNodeType.COLUMN_BOARD;
+			entity.context = new Context({
+				type: BoardExternalReferenceType.Course,
+				id: new ObjectId().toHexString(),
+			});
 
-		await orm.em.persistAndFlush(entity);
-		orm.em.clear();
+			await orm.em.persistAndFlush(entity);
+			orm.em.clear();
 
-		expect(entity.id).toBeDefined();
+			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			expect(result.context).toEqual(entity.context);
+		});
+	});
 
-		const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+	describe('contextExternalToolId', () => {
+		it('should persist the property', async () => {
+			const entity = new BoardNodeEntity();
+			entity.type = BoardNodeType.EXTERNAL_TOOL;
+			entity.contextExternalToolId = new ObjectId().toHexString();
 
-		expect(result).toBeDefined();
-		expect(result.id).toEqual(entity.id);
-		expect(result.context).toEqual(entity.context);
+			await orm.em.persistAndFlush(entity);
+			orm.em.clear();
+
+			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			expect(result.contextExternalToolId).toBe(entity.contextExternalToolId);
+		});
 	});
 });

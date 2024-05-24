@@ -1,9 +1,10 @@
 import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { InputFormat } from '@shared/domain/types';
+import { EntityId, InputFormat } from '@shared/domain/types';
 import { AnyBoardNode, BoardLayout, BoardNodeType, ROOT_PATH } from '../../domain';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
+import { ObjectIdType } from './object-id-type';
 
 @Entity({ tableName: 'boardnodes' })
 export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNodeEntityProps {
@@ -92,8 +93,6 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 
 	// ExternalToolElement, MediaExternalToolElement
 	// --------------------------------------------------------------------------
-	// TODO ManyToOne to ContextExternalToolEntity
-	// TODO use regular context -> external toolfv  v
-	@Property({ type: 'string', nullable: true })
-	contextExternalToolId: string | undefined;
+	@Property({ type: ObjectIdType, fieldName: 'contextExternalTool', nullable: true })
+	contextExternalToolId: EntityId | undefined;
 }
