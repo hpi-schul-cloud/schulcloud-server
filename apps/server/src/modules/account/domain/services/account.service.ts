@@ -122,6 +122,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 				await this.save(updateProps);
 			} catch (err) {
+				if (err instanceof ValidationError) {
+					throw err;
+				}
 				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
@@ -256,18 +259,25 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 	async save(accountSave: AccountSave): Promise<Account> {
 		const ret = await this.accountDb.save(accountSave);
-		const newAccount: AccountSave = {
+		const newAccount = new AccountSave({
 			...accountSave,
 			id: accountSave.id,
 			idmReferenceId: ret.id,
 			password: accountSave.password,
-		};
+		});
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new SavingAccountLoggable(ret.id));
 			const account = await this.accountIdm.save(newAccount);
 			this.logger.debug(new SavedAccountLoggable(ret.id));
 			return account;
 		});
+
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			if (idmAccount === null || idmAccount?.username !== accountSave.username) {
+				throw new ValidationError('Account could not be updated');
+			}
+		}
+
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
