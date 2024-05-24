@@ -8,14 +8,14 @@ import { AuthorizationBodyParams, AuthorizationUrlParams, AuthorizedReponse } fr
 @Authenticate('jwt')
 @ApiTags('Authorization')
 @Controller('authorization')
-export class AuthorizationController {
+export class AuthorizationReferenceController {
 	constructor(private readonly authorizationReferenceUc: AuthorizationReferenceUc) {}
 
 	@ApiResponse({ status: 200, type: AuthorizedReponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Post('authorize/referenceType/:referenceType/referenceId/:referenceId')
+	@Post('authorize-by-reference/referenceType/:referenceType/referenceId/:referenceId')
 	public async authorizeByReference(
 		@Param() urlParams: AuthorizationUrlParams,
 		@Body() body: AuthorizationBodyParams,

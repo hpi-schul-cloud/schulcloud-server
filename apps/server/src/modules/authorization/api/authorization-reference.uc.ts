@@ -1,8 +1,10 @@
 import { EntityId } from '@shared/domain/types';
+import { Injectable } from '@nestjs/common';
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationReferenceService } from '../domain';
 import { AuthorizedReponse } from './dto';
 import { AuthorizationReponseMapper } from './mapper';
 
+@Injectable()
 export class AuthorizationReferenceUc {
 	constructor(private readonly authorizationReferenceService: AuthorizationReferenceService) {}
 
