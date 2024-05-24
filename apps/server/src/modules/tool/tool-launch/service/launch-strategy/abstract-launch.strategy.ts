@@ -70,6 +70,7 @@ export abstract class AbstractLaunchStrategy implements ToolLaunchStrategy {
 			url,
 			payload: payload ?? undefined,
 			openNewTab: launchData.openNewTab,
+			isDeepLink: false,
 		});
 
 		return toolLaunchRequest;

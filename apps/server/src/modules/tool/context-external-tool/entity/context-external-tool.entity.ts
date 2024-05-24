@@ -39,7 +39,7 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CustomParameterEntryEntity, { array: true })
 	parameters: CustomParameterEntryEntity[];
 
-	@Embedded(() => LtiDeepLinkEmbeddable, { nullable: true })
+	@Embedded(() => LtiDeepLinkEmbeddable, { nullable: true, object: true })
 	ltiDeepLink?: LtiDeepLinkEmbeddable;
 
 	constructor(props: ContextExternalToolEntityProps) {

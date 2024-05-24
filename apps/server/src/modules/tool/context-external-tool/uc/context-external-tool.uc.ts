@@ -156,7 +156,9 @@ export class ContextExternalToolUc {
 	): Promise<void> {
 		// TODO validate oauth1
 
-		const userId: string | undefined = await this.cacheManager.get<string>(body.data);
+		const state: string = body.data;
+		const userId: string | undefined = await this.cacheManager.get<string>(state);
+		await this.cacheManager.del(state);
 
 		if (!userId) {
 			throw new Error('unknown user');

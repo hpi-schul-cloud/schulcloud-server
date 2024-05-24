@@ -273,7 +273,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			if (parameter.value) {
 				deepLinkProperties.push(
 					new PropertyData({
-						name: parameter.name,
+						name: `custom_${parameter.name}`,
 						value: parameter.value,
 						location: PropertyLocation.BODY,
 					})
@@ -339,6 +339,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			!data.contextExternalTool.ltiDeepLink
 		) {
 			request.openNewTab = true;
+			request.isDeepLink = true;
 		}
 
 		if (data.contextExternalTool.ltiDeepLink?.url) {
