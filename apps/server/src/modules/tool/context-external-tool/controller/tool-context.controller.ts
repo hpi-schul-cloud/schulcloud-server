@@ -13,9 +13,7 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { LegacyLogger } from '@src/core/logger';
-import { CustomParameterEntry } from '../../common/domain';
 import { ContextExternalTool } from '../domain';
-import { LtiDeepLink } from '../domain/lti-deep-link';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
@@ -25,9 +23,7 @@ import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
-	Lti11DeepLinkParams,
 } from './dto';
-import { Lti11DeepLinkContentItemParams } from './dto/lti11-deep-link/lti11-deep-link-content-item.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -166,43 +162,5 @@ export class ToolContextController {
 			ContextExternalToolResponseMapper.mapContextExternalToolResponse(updatedTool);
 
 		return response;
-	}
-
-	@Post(':contextExternalToolId/lti11-deep-link-callback')
-	async lti11(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolIdParams,
-		@Body() body: Lti11DeepLinkParams
-	): Promise<void> {
-		const deepLink: LtiDeepLink | undefined = ToolContextController.mapToDeepLink(body);
-
-		await this.contextExternalToolUc.updateLtiDeepLink(currentUser.userId, params.contextExternalToolId, deepLink);
-	}
-
-	private static mapToDeepLink(body: Lti11DeepLinkParams): LtiDeepLink | undefined {
-		const contentItem: Lti11DeepLinkContentItemParams | undefined = body.content_items?.['@graph'][0];
-
-		let parameters: CustomParameterEntry[] = [];
-		if (contentItem?.custom) {
-			parameters = Object.keys(contentItem.custom).map(
-				(key: string) => new CustomParameterEntry({ name: key, value: contentItem.custom?.[key] })
-			);
-		}
-
-		const deepLink: LtiDeepLink | undefined = contentItem
-			? new LtiDeepLink({
-					mediaType: contentItem.mediaType,
-					url: contentItem.url,
-					title: contentItem.title,
-					text: contentItem.text,
-					parameters,
-					availableFrom: contentItem.available?.startDatetime,
-					availableUntil: contentItem.available?.endDatetime,
-					submissionFrom: contentItem.submission?.startDatetime,
-					submissionUntil: contentItem.submission?.endDatetime,
-			  })
-			: undefined;
-
-		return deepLink;
 	}
 }

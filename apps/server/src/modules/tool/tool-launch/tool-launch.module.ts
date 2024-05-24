@@ -1,3 +1,4 @@
+import { CacheWrapperModule } from '@infra/cache';
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -29,6 +30,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		forwardRef(() => PseudonymModule), // i do not like this solution, the root problem is on other place but not detectable for me
 		LearnroomModule,
 		BoardModule,
+		CacheWrapperModule,
 	],
 	providers: [
 		ToolLaunchService,

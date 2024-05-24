@@ -1,3 +1,4 @@
+import { CacheWrapperModule } from '@infra/cache';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -11,6 +12,7 @@ import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
 import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
 import { ToolContextController } from './context-external-tool/controller';
+import { ToolDeepLinkController } from './context-external-tool/controller/tool-deep-link.controller';
 import { ToolReferenceController } from './context-external-tool/controller/tool-reference.controller';
 import { ContextExternalToolUc, ToolReferenceUc } from './context-external-tool/uc';
 import { ToolConfigurationController, ToolController } from './external-tool/controller';
@@ -38,6 +40,7 @@ import { ToolModule } from './tool.module';
 		BoardModule,
 		SchoolModule,
 		UserLicenseModule,
+		CacheWrapperModule,
 	],
 	controllers: [
 		ToolLaunchController,
@@ -45,6 +48,7 @@ import { ToolModule } from './tool.module';
 		ToolSchoolController,
 		ToolContextController,
 		ToolReferenceController,
+		ToolDeepLinkController,
 		ToolController,
 	],
 	providers: [

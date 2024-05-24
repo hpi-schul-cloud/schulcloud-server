@@ -1,10 +1,14 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UUID } from 'bson';
+import { Cache } from 'cache-manager';
 import { Authorization } from 'oauth-1.0a';
 import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
@@ -35,6 +39,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
+		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
 		autoSchoolIdStrategy: AutoSchoolIdStrategy,
 		autoSchoolNumberStrategy: AutoSchoolNumberStrategy,
 		autoContextIdStrategy: AutoContextIdStrategy,
@@ -103,9 +108,11 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		);
 
-		// const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
-		// const callbackUrl = `${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`;
-		const callbackUrl = `http://localhost:4000/external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`;
+		const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const callbackUrl = `${publicBackendUrl}/v3/tools/context-external-tools/${data.contextExternalTool.id}/lti11-deep-link-callback`;
+
+		const state = new UUID().toString();
+		await this.cacheManager.set(state, userId, 600000);
 
 		additionalProperties.push(
 			new PropertyData({
@@ -141,6 +148,11 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			new PropertyData({
 				name: 'auto_create',
 				value: 'true',
+				location: PropertyLocation.BODY,
+			}),
+			new PropertyData({
+				name: 'data',
+				value: state,
 				location: PropertyLocation.BODY,
 			})
 		);
