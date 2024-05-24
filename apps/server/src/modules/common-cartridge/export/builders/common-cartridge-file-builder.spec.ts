@@ -18,6 +18,14 @@ describe('CommonCartridgeFileBuilder', () => {
 		identifier: faker.string.uuid(),
 	};
 
+	const setupProps = () => {
+		const metadataProps = createCommonCartridgeMetadataElementProps();
+		const organizationProps = createCommonCartridgeOrganizationProps();
+		const resourceProps = createCommonCartridgeWebLinkResourceProps();
+
+		return { metadataProps, organizationProps, resourceProps };
+	};
+
 	beforeEach(() => {
 		sut = new CommonCartridgeFileBuilder(builderProps);
 		jest.clearAllMocks();
@@ -44,14 +52,14 @@ describe('CommonCartridgeFileBuilder', () => {
 
 	describe('createOrganization', () => {
 		describe('when an organization is created in the CommonCartridgeFileBuilder', () => {
-			const setup = () => {
+			/* 			const setup = () => {
 				const organizationProps = createCommonCartridgeOrganizationProps();
 
 				return { organizationProps };
-			};
+			}; */
 
 			it('should create and return an organization node', () => {
-				const { organizationProps } = setup();
+				const { organizationProps } = setupProps();
 
 				const organizationNode = sut.createOrganization(organizationProps);
 
@@ -70,16 +78,16 @@ describe('CommonCartridgeFileBuilder', () => {
 		});
 
 		describe('when metadata has been provided', () => {
-			const setup = () => {
+			/* const setup = () => {
 				const metadataProps = createCommonCartridgeMetadataElementProps();
 				const organizationProps = createCommonCartridgeOrganizationProps();
 				const resourceProps = createCommonCartridgeWebLinkResourceProps();
 
 				return { metadataProps, organizationProps, resourceProps };
 			};
-
+ */
 			it('should build the common cartridge file', () => {
-				const { metadataProps, organizationProps, resourceProps } = setup();
+				const { metadataProps, organizationProps, resourceProps } = setupProps();
 
 				sut.addMetadata(metadataProps);
 
