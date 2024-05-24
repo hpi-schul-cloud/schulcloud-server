@@ -224,8 +224,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -319,8 +319,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -414,8 +414,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -506,6 +506,7 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27; })
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
+	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise&lt;LoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
@@ -522,6 +523,7 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27; })
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
+	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise&lt;LoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
@@ -540,6 +542,7 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
 	async loginOauth2(
 		@CurrentUser() user: OauthCurrentUser,
+		// Body is not used, but validated and used in the strategy implementation
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise&lt;OauthLoginResponse&gt; {

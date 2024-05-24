@@ -585,7 +585,7 @@ export class BruteForceError extends BusinessError {
 
 	constructor(timeToWait: number, message: string) {
 		super(
-			{ type: &#x27;ENTITY_NOT_FOUND&#x27;, title: &#x27;Entity Not Found&#x27;, defaultMessage: message },
+			{ type: &#x27;TOO_MANY_REQUESTS&#x27;, title: &#x27;Too many requests&#x27;, defaultMessage: message },
 			HttpStatus.TOO_MANY_REQUESTS,
 			{
 				timeToWait,

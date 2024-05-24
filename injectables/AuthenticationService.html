@@ -141,6 +141,10 @@
                                 <a href="#generateJwt" >generateJwt</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isValidJwt" >isValidJwt</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#loadAccount" >loadAccount</a>
                             </li>
@@ -280,8 +284,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -400,6 +404,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isValidJwt"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isValidJwt</b></span>
+                        <a href="#isValidJwt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isValidJwt(decodedJwt: <a href="../interfaces/JwtPayload.html" target="_self">JwtPayload | null</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>decodedJwt</td>
+                                            <td>
+                                                            <code><a href="../interfaces/JwtPayload.html" target="_self" >JwtPayload | null</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>literal type</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="loadAccount"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -497,8 +570,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -564,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -702,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -765,7 +838,7 @@ import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { BruteForceError, UnauthorizedLoggableException } from &#x27;../errors&#x27;;
 import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
-import { JwtValidationAdapter } from &#x27;../strategy/jwt-validation.adapter&#x27;;
+import { JwtValidationAdapter } from &#x27;../helper/jwt-validation.adapter&#x27;;
 import { LoginDto } from &#x27;../uc/dto&#x27;;
 import { UserAccountDeactivatedLoggableException } from &#x27;../loggable/user-account-deactivated-exception&#x27;;
 
@@ -816,9 +889,13 @@ export class AuthenticationService {
 	async removeJwtFromWhitelist(jwtToken: string): Promise&lt;void&gt; {
 		const decodedJwt: JwtPayload | null &#x3D; jwt.decode(jwtToken, { json: true });
 
-		if (decodedJwt &amp;&amp; decodedJwt.jti &amp;&amp; decodedJwt.accountId &amp;&amp; typeof decodedJwt.accountId &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+		if (this.isValidJwt(decodedJwt)) {
 			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
+	}
+
+	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
+		return typeof decodedJwt?.jti &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp; typeof decodedJwt?.accountId &#x3D;&#x3D;&#x3D; &#x27;string&#x27;;
 	}
 
 	checkBrutForce(account: Account): void {

@@ -113,7 +113,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authentication/strategy/jwt-validation.adapter.ts</code>
+            <code>apps/server/src/modules/authentication/helper/jwt-validation.adapter.ts</code>
         </p>
 
 
@@ -168,7 +168,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt-validation.adapter.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/authentication/helper/jwt-validation.adapter.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -245,8 +245,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt-validation.adapter.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/authentication/helper/jwt-validation.adapter.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +327,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt-validation.adapter.ts:25</a></div>
+                                    class="link-to-prism">apps/server/src/modules/authentication/helper/jwt-validation.adapter.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -419,8 +419,8 @@ When the jwt is validated, the expiration time will be extended with this call.<
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt-validation.adapter.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/authentication/helper/jwt-validation.adapter.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -509,7 +509,6 @@ export class JwtValidationAdapter {
 	 * @param jti jwt id (here required to make jwt identifiers identical in redis)
 	 */
 	async isWhitelisted(accountId: string, jti: string): Promise&lt;void&gt; {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice: false });
 	}
 

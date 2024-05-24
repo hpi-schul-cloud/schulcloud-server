@@ -502,6 +502,16 @@ export interface ICurrentUser {
 	/** True if the user is an external user e.g. an oauth user or ldap user */
 	isExternalUser: boolean;
 }
+
+export function isICurrentUser(user: any): user is ICurrentUser {
+	return (
+		typeof user?.userId &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp;
+		Array.isArray(user?.roles) &amp;&amp;
+		(user?.roles as any[]).every((id: any) &#x3D;&gt; typeof id &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) &amp;&amp;
+		typeof user?.schoolId &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp;
+		typeof user?.accountId &#x3D;&#x3D;&#x3D; &#x27;string&#x27;
+	);
+}
 </code></pre>
     </div>
 </div>

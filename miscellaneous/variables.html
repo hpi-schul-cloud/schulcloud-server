@@ -2666,13 +2666,17 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>createParamDecorator&lt;any, any, ICurrentUser&gt;((data: unknown, ctx: ExecutionContext) &#x3D;&gt; {
-	const { user }: Request &#x3D; ctx.switchToHttp().getRequest();
-	if (!user)
+                        <i>Default value : </i><code>createParamDecorator&lt;never, never, ICurrentUser&gt;((_, ctx: ExecutionContext) &#x3D;&gt; {
+	const expressRequest &#x3D; ctx.switchToHttp().getRequest&lt;Request&gt;();
+	const requestUser &#x3D; expressRequest.user;
+
+	if (!requestUser || !isICurrentUser(requestUser)) {
 		throw new UnauthorizedException(
 			&#x27;CurrentUser missing in request context. This route requires jwt authentication guard enabled.&#x27;
 		);
-	return user as ICurrentUser;
+	}
+
+	return requestUser;
 })</code>
                     </td>
                 </tr>
@@ -2699,7 +2703,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>createParamDecorator&lt;any, any, string&gt;((data: unknown, ctx: ExecutionContext) &#x3D;&gt; {
+                        <i>Default value : </i><code>createParamDecorator&lt;never, never, string&gt;((_, ctx: ExecutionContext) &#x3D;&gt; {
 	const getJWT &#x3D; ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), JwtExtractor.fromCookie(&#x27;jwt&#x27;)]);
 	const req: Request &#x3D; ctx.switchToHttp().getRequest();
 	const jwt &#x3D; getJWT(req) || req.headers.authorization;

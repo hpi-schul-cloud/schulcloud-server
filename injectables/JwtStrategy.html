@@ -291,8 +291,8 @@ import { jwtConstants } from &#x27;../constants&#x27;;
 import { ICurrentUser } from &#x27;../interface&#x27;;
 import { JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 import { CurrentUserMapper } from &#x27;../mapper&#x27;;
-import { JwtExtractor } from &#x27;./jwt-extractor&#x27;;
-import { JwtValidationAdapter } from &#x27;./jwt-validation.adapter&#x27;;
+import { JwtExtractor } from &#x27;../helper/jwt-extractor&#x27;;
+import { JwtValidationAdapter } from &#x27;../helper/jwt-validation.adapter&#x27;;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

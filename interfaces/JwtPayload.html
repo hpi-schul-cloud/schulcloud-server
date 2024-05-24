@@ -263,7 +263,7 @@
 
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-description"><p>expiration in // TODO</p>
+                                    <div class="io-description"><p>expiration in</p>
 </div>
                                 </td>
                             </tr>
@@ -407,7 +407,7 @@
 
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-description"><p>// TODO</p>
+                                    <div class="io-description"><p>subject</p>
 </div>
                                 </td>
                             </tr>
@@ -432,8 +432,8 @@
 export interface JwtPayload extends CreateJwtPayload {
 	/** audience */
 	aud: string;
-	/** expiration in // TODO
-	 *
+	/**
+	 * expiration in
 	 */
 	exp: number;
 	iat: number;
@@ -441,8 +441,8 @@ export interface JwtPayload extends CreateJwtPayload {
 	iss: string;
 	jti: string;
 
-	/** // TODO
-	 *
+	/**
+	 * subject
 	 */
 	sub: string;
 }

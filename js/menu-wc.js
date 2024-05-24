@@ -281,13 +281,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/AuthenticationModule.html" data-type="entity-link" >AuthenticationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-AuthenticationModule-d18fdedf09623c50f1a590b03b18469768af188359028221ffc732c718a2750767c8746ed282cbb73bb0ac26c1fa18e6b023a206bc3fa10c5ec68df1ed164f52"' : 'data-bs-target="#xs-injectables-links-module-AuthenticationModule-d18fdedf09623c50f1a590b03b18469768af188359028221ffc732c718a2750767c8746ed282cbb73bb0ac26c1fa18e6b023a206bc3fa10c5ec68df1ed164f52"' }>
+                                        'data-bs-target="#injectables-links-module-AuthenticationModule-b76359b1e5950dd939a72d27a5c5ff4036295439e6a955300404cf182e4be522502fb08aaef64f449d082c8e6d88a74b3459b9b947c0c691f7739a0cc353e5ed"' : 'data-bs-target="#xs-injectables-links-module-AuthenticationModule-b76359b1e5950dd939a72d27a5c5ff4036295439e6a955300404cf182e4be522502fb08aaef64f449d082c8e6d88a74b3459b9b947c0c691f7739a0cc353e5ed"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-AuthenticationModule-d18fdedf09623c50f1a590b03b18469768af188359028221ffc732c718a2750767c8746ed282cbb73bb0ac26c1fa18e6b023a206bc3fa10c5ec68df1ed164f52"' :
-                                        'id="xs-injectables-links-module-AuthenticationModule-d18fdedf09623c50f1a590b03b18469768af188359028221ffc732c718a2750767c8746ed282cbb73bb0ac26c1fa18e6b023a206bc3fa10c5ec68df1ed164f52"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-AuthenticationModule-b76359b1e5950dd939a72d27a5c5ff4036295439e6a955300404cf182e4be522502fb08aaef64f449d082c8e6d88a74b3459b9b947c0c691f7739a0cc353e5ed"' :
+                                        'id="xs-injectables-links-module-AuthenticationModule-b76359b1e5950dd939a72d27a5c5ff4036295439e6a955300404cf182e4be522502fb08aaef64f449d082c8e6d88a74b3459b9b947c0c691f7739a0cc353e5ed"' }>
                                         <li class="link">
                                             <a href="injectables/AuthenticationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AuthenticationService</a>
                                         </li>
