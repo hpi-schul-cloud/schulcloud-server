@@ -202,7 +202,7 @@ describe(BoardUc.name, () => {
 
 		it('should call Board Permission Service to check permission', async () => {
 			const { user, board } = globalSetup();
-			// boardPermissionService.findById.mockResolvedValueOnce(board);
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			await uc.findBoard(user.id, board.id);
 
@@ -230,6 +230,7 @@ describe(BoardUc.name, () => {
 
 		it('should call Board Permission Service to check permission', async () => {
 			const { user, board } = globalSetup();
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			await uc.findBoardContext(user.id, board.id);
 
@@ -238,7 +239,6 @@ describe(BoardUc.name, () => {
 
 		it('should return the context object', async () => {
 			const { user, board } = globalSetup();
-
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await uc.findBoardContext(user.id, board.id);
@@ -259,6 +259,7 @@ describe(BoardUc.name, () => {
 
 			it('should call Board Permission Service to check permission', async () => {
 				const { user, board } = globalSetup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -267,6 +268,7 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to delete the board', async () => {
 				const { user, board } = globalSetup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -287,6 +289,7 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to check the permissions', async () => {
 				const { user, board } = globalSetup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				await uc.updateBoardTitle(user.id, board.id, 'new title');
 
@@ -296,6 +299,7 @@ describe(BoardUc.name, () => {
 			it('should call the service to update the board title', async () => {
 				const { user, board } = globalSetup();
 				const newTitle = 'new title';
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				await uc.updateBoardTitle(user.id, board.id, newTitle);
 
@@ -316,6 +320,7 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to check the permissions', async () => {
 				const { user, board } = globalSetup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				await uc.createColumn(user.id, board.id);
 
@@ -332,7 +337,7 @@ describe(BoardUc.name, () => {
 
 			it('should call the board node service to add the column to board', async () => {
 				const { user, board, column } = globalSetup();
-
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 				boardNodeFactory.buildColumn.mockReturnValueOnce(column);
 
 				await uc.createColumn(user.id, board.id);
@@ -371,6 +376,7 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to check the permissions for column', async () => {
 				const { user, board, column } = globalSetup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board).mockResolvedValueOnce(column);
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
@@ -379,6 +385,7 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to check the permissions for target board', async () => {
 				const { user, board, column } = globalSetup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board).mockResolvedValueOnce(column);
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
@@ -387,10 +394,15 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to move the column', async () => {
 				const { user, board, column } = globalSetup();
+				// TODO think about using jest-when + @types/jest-when
+				// https://github.com/timkindberg/jest-when
+				// https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/jest-when
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
-				expect(boardNodeService.move).toHaveBeenCalledWith(column.id, board.id, 7);
+				expect(boardNodeService.move).toHaveBeenCalledWith(column, board, 7);
 			});
 		});
 	});
@@ -422,6 +434,7 @@ describe(BoardUc.name, () => {
 
 		it('should call Board Permission Service to check permission', async () => {
 			const { user, board } = globalSetup();
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			await uc.copyBoard(user.id, board.id);
 
@@ -486,6 +499,7 @@ describe(BoardUc.name, () => {
 
 		it('should call the service to check the permissions', async () => {
 			const { user, board } = setup();
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			await uc.updateVisibility(user.id, board.id, true);
 

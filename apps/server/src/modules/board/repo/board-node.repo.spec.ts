@@ -141,6 +141,14 @@ describe('BoardNodeRepo', () => {
 		});
 	});
 
+	describe('findByContextExternalToolIds', () => {
+		it.todo('should be able to find nodes by their external tool ids');
+		it.todo('should populate the node tree');
+		describe('when depth is specified', () => {
+			it.todo('should limit the tree to depth');
+		});
+	});
+
 	// describe('findCommonParentOfIds', () => {
 	// 	const setup = async () => {
 	// 		const card = cardFactory.build();

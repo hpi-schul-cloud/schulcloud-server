@@ -12,7 +12,7 @@ export class CardUc {
 		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
-		private readonly boardPermissionService: BoardNodePermissionService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly logger: LegacyLogger
@@ -31,16 +31,16 @@ export class CardUc {
 		const context: AuthorizationContext = { action: Action.read, requiredPermissions: [] };
 		const promises = cards.map((card) =>
 			this.boardNodeAuthorizableService.getBoardAuthorizable(card).then((boardNodeAuthorizable) => {
-				return { boardNodeAuthorizable, boardDo: card };
+				return { boardNodeAuthorizable, boardNode: card };
 			})
 		);
 		const result = await Promise.all(promises);
 
-		const allowedCards = result.reduce((allowedDos: Card[], { boardNodeAuthorizable, boardDo }) => {
+		const allowedCards = result.reduce((allowedNodes: Card[], { boardNodeAuthorizable, boardNode }) => {
 			if (this.authorizationService.hasPermission(user, boardNodeAuthorizable, context)) {
-				allowedDos.push(boardDo);
+				allowedNodes.push(boardNode);
 			}
-			return allowedDos;
+			return allowedNodes;
 		}, []);
 
 		return allowedCards;
@@ -50,7 +50,7 @@ export class CardUc {
 		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardPermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.updateHeight(card, height);
 	}
@@ -59,7 +59,7 @@ export class CardUc {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardPermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.updateTitle(card, title);
 	}
@@ -68,7 +68,7 @@ export class CardUc {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardPermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		await this.boardNodeService.delete(card);
 	}
@@ -84,7 +84,7 @@ export class CardUc {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		await this.boardPermissionService.checkPermission(userId, card, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, card, Action.write);
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 
@@ -104,8 +104,8 @@ export class CardUc {
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		const targetCard = await this.boardNodeService.findByClassAndId(Card, targetCardId);
 
-		await this.boardPermissionService.checkPermission(userId, element, Action.write);
-		await this.boardPermissionService.checkPermission(userId, targetCard, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, element, Action.write);
+		await this.boardNodePermissionService.checkPermission(userId, targetCard, Action.write);
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
 	}
