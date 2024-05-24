@@ -71,6 +71,6 @@ export const systemEntityFactory = SystemEntityFactory.define(SystemEntity, ({ s
 		alias: `system #${sequence}`,
 		displayName: `system #${sequence}DisplayName`,
 		provisioningStrategy: SystemProvisioningStrategy.OIDC,
-		provisioningUrl: 'https://provisioningurl.de',
+		provisioningUrl: 'https://provisioningurl.de/',
 	};
 });

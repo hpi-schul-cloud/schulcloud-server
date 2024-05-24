@@ -102,8 +102,8 @@ export class ToolLaunchUc {
 		const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
 
 		if (
-			externalTool.medium?.mediumId &&
-			!this.mediaUserLicenseService.hasLicenseForExternalTool(externalTool.medium.mediumId, mediaUserLicenses)
+			externalTool.medium &&
+			!this.mediaUserLicenseService.hasLicenseForExternalTool(externalTool.medium, mediaUserLicenses)
 		) {
 			throw new MissingMediaLicenseLoggableException(externalTool.medium, userId, contextExternalTool);
 		}
