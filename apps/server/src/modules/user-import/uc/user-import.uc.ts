@@ -6,12 +6,13 @@ import { UserLoginMigrationService, UserMigrationService } from '@modules/user-l
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { UserService } from '../../user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
@@ -21,6 +22,7 @@ import {
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
 } from '../loggable';
+import { UserAlreadyExistLoggable } from '../loggable/user-migration-already-exist.loggable';
 import { UserMigrationCanceledLoggable } from '../loggable/user-migration-canceled.loggable';
 import { UserImportService } from '../service';
 import {
@@ -43,6 +45,7 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
@@ -380,7 +383,13 @@ export class UserImportUc {
 			return;
 		}
 
-		await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		const user: UserDO | null = await this.userService.findByExternalId(importUser.externalId, importUser.system.id);
+
+		if (!user) {
+			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		} else {
+			this.logger.notice(new UserAlreadyExistLoggable(importUser.user));
+		}
 	}
 
 	private async getAccount(user: User): Promise<Account> {

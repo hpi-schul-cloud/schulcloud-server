@@ -20,13 +20,16 @@ import {
 	legacySchoolDoFactory,
 	schoolEntityFactory,
 	setupEntities,
+	userDoFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
+import { UserService } from '../../user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
+import { UserAlreadyExistLoggable } from '../loggable/user-migration-already-exist.loggable';
 import { UserMigrationCanceledLoggable } from '../loggable/user-migration-canceled.loggable';
 import { UserImportService } from '../service';
 import {
@@ -45,6 +48,7 @@ describe('[ImportUserModule]', () => {
 		let schoolService: DeepMocked<LegacySchoolService>;
 		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
+		let userService: DeepMocked<UserService>;
 		let authorizationService: DeepMocked<AuthorizationService>;
 		let userImportService: DeepMocked<UserImportService>;
 		let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
@@ -80,6 +84,10 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<UserRepo>(),
 					},
 					{
+						provide: UserService,
+						useValue: createMock<UserService>(),
+					},
+					{
 						provide: AuthorizationService,
 						useValue: createMock<AuthorizationService>(),
 					},
@@ -112,6 +120,7 @@ describe('[ImportUserModule]', () => {
 			schoolService = module.get(LegacySchoolService);
 			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
+			userService = module.get(UserService);
 			authorizationService = module.get(AuthorizationService);
 			userImportService = module.get(UserImportService);
 			userImportFeatures = module.get(UserImportFeatures);
@@ -637,6 +646,7 @@ describe('[ImportUserModule]', () => {
 							}),
 							matchedBy: MatchCreator.AUTO,
 							system,
+							externalId: 'externalId',
 						});
 						const importUserWithoutUser = importUserFactory.buildWithId({
 							school: schoolEntity,
@@ -644,6 +654,7 @@ describe('[ImportUserModule]', () => {
 						});
 
 						userRepo.findById.mockResolvedValueOnce(user);
+						userService.findByExternalId.mockResolvedValueOnce(null);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
 						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
 						userImportFeatures.useWithUserLoginMigration = true;
@@ -677,6 +688,69 @@ describe('[ImportUserModule]', () => {
 							importUserWithoutUser.externalId,
 							importUserWithoutUser.system.id
 						);
+					});
+				});
+				describe('when user is already migrated', () => {
+					const setup = () => {
+						const system = systemEntityFactory.buildWithId();
+						const schoolEntity = schoolEntityFactory.buildWithId();
+						const user = userFactory.buildWithId({
+							school: schoolEntity,
+							externalId: 'externalId',
+						});
+						const school = legacySchoolDoFactory.build({
+							id: schoolEntity.id,
+							externalId: 'externalId',
+							officialSchoolNumber: 'officialSchoolNumber',
+							inUserMigration: true,
+							inMaintenanceSince: new Date(),
+							systems: [system.id],
+						});
+						const importUser = importUserFactory.buildWithId({
+							school: schoolEntity,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+							matchedBy: MatchCreator.AUTO,
+							system,
+						});
+						const importUserWithoutUser = importUserFactory.buildWithId({
+							school: schoolEntity,
+							system,
+						});
+
+						userRepo.findById.mockResolvedValueOnce(user);
+						schoolService.getSchoolById.mockResolvedValueOnce(school);
+						userService.findByExternalId.mockResolvedValueOnce(
+							userDoFactory.buildWithId({ id: user.id, externalId: user.externalId })
+						);
+						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
+						userImportFeatures.useWithUserLoginMigration = true;
+
+						return {
+							user,
+							importUser,
+							importUserWithoutUser,
+						};
+					};
+
+					it('should skip import users with externalId', async () => {
+						const { user, importUser } = setup();
+
+						await uc.saveAllUsersMatches(user.id);
+
+						expect(userMigrationService.migrateUser).not.toHaveBeenCalledWith(
+							importUser.user?.id,
+							importUser.user?.externalId,
+							importUser.system.id
+						);
+					});
+					it('should log information for skipped user ', async () => {
+						const { user, importUser } = setup();
+
+						await uc.saveAllUsersMatches(user.id);
+
+						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyExistLoggable(importUser.user!));
 					});
 				});
 			});
