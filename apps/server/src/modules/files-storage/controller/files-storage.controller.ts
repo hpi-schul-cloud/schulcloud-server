@@ -27,7 +27,7 @@ import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../interface';
-import { FilesStorageMapper, FileRecordMapper } from '../mapper';
+import { FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
@@ -112,7 +112,15 @@ export class FilesStorageController {
 
 		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
+		this.setAttachmentDispositionHeaderForNonPDF(fileResponse, response);
+
 		return streamableFile;
+	}
+
+	private setAttachmentDispositionHeaderForNonPDF(fileResponse: GetFileResponse, response: Response): void {
+		if (fileResponse.contentType !== 'application/pdf') {
+			response.header('Content-Disposition', 'attachment;');
+		}
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a preview file.' })
