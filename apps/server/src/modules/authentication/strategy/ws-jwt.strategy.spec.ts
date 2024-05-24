@@ -7,7 +7,7 @@ import { WsException } from '@nestjs/websockets';
 import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
-import { JwtValidationAdapter } from './jwt-validation.adapter';
+import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
 
 describe('jwt strategy', () => {

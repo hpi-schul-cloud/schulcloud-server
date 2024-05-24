@@ -5,7 +5,6 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system/system.module';
 import { UserModule } from '@modules/user';
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { SchulconnexClientModule } from '@src/infra/schulconnex-client';
@@ -16,7 +15,7 @@ import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	SanisProvisioningStrategy,
-	SanisResponseMapper,
+	SchulconnexResponseMapper,
 } from './strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -34,7 +33,6 @@ import {
 		UserModule,
 		RoleModule,
 		SystemModule,
-		HttpModule,
 		LoggerModule,
 		GroupModule,
 		LearnroomModule,
@@ -43,7 +41,7 @@ import {
 	],
 	providers: [
 		ProvisioningService,
-		SanisResponseMapper,
+		SchulconnexResponseMapper,
 		SchulconnexSchoolProvisioningService,
 		SchulconnexUserProvisioningService,
 		SchulconnexGroupProvisioningService,

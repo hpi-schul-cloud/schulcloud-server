@@ -5,7 +5,7 @@ import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
-import { SanisResponse, SchulconnexLizenzInfoResponse } from './response';
+import { SchulconnexLizenzInfoResponse, SchulconnexResponse } from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 import { schulconnexResponseFactory } from './testing';
@@ -75,7 +75,7 @@ describe(SchulconnexRestClient.name, () => {
 		describe('when requesting person-info', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const response: SanisResponse = schulconnexResponseFactory.build();
+				const response: SchulconnexResponse = schulconnexResponseFactory.build();
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -101,7 +101,7 @@ describe(SchulconnexRestClient.name, () => {
 			it('should return the response', async () => {
 				const { accessToken, response } = setup();
 
-				const result: SanisResponse = await client.getPersonInfo(accessToken);
+				const result: SchulconnexResponse = await client.getPersonInfo(accessToken);
 
 				expect(result).toEqual(response);
 			});
@@ -111,7 +111,7 @@ describe(SchulconnexRestClient.name, () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
 				const customUrl = 'https://override.url/person-info';
-				const response: SanisResponse = schulconnexResponseFactory.build();
+				const response: SchulconnexResponse = schulconnexResponseFactory.build();
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -139,7 +139,7 @@ describe(SchulconnexRestClient.name, () => {
 					accessToken: 'access_token',
 					refreshToken: 'refresh_token',
 				});
-				const response: SanisResponse[] = schulconnexResponseFactory.buildList(2);
+				const response: SchulconnexResponse[] = schulconnexResponseFactory.buildList(2);
 
 				const optionsWithTimeout: SchulconnexRestClientOptions = {
 					...options,
@@ -189,7 +189,7 @@ describe(SchulconnexRestClient.name, () => {
 			it('should return the response', async () => {
 				const { response } = setup();
 
-				const result: SanisResponse[] = await client.getPersonenInfo({ 'organisation.id': '1234' });
+				const result: SchulconnexResponse[] = await client.getPersonenInfo({ 'organisation.id': '1234' });
 
 				expect(result).toEqual(response);
 			});
