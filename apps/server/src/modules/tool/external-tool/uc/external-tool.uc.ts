@@ -18,8 +18,7 @@ import {
 	ExternalToolService,
 	ExternalToolValidationService,
 } from '../service';
-import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolImportResult } from './dto/external-tool-import-result';
+import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate } from './dto';
 
 @Injectable()
 export class ExternalToolUc {

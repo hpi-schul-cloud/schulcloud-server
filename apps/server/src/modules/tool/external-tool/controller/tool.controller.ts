@@ -37,12 +37,12 @@ import { ExternalToolLogo } from '../domain/external-tool-logo';
 
 import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
-import { ExternalToolImportResult } from '../uc/dto/external-tool-import-result';
+import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
 	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
+	ExternalToolImportResultListResponse,
 	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
@@ -50,7 +50,6 @@ import {
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
 } from './dto';
-import { ExternalToolImportResultListResponse } from './dto/response/external-tool-import-result-response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

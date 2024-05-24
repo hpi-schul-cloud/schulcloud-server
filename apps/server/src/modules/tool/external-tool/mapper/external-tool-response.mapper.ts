@@ -11,17 +11,15 @@ import {
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolImportResultListResponse,
+	ExternalToolImportResultResponse,
 	ExternalToolMediumResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
-import {
-	ExternalToolImportResultListResponse,
-	ExternalToolImportResultResponse,
-} from '../controller/dto/response/external-tool-import-result-response';
 import { BasicToolConfig, ExternalTool, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
-import { ExternalToolImportResult } from '../uc/dto/external-tool-import-result';
+import { ExternalToolImportResult } from '../uc';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,

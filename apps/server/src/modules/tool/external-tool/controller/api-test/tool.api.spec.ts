@@ -31,14 +31,12 @@ import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
 	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
+	ExternalToolImportResultListResponse,
+	ExternalToolImportResultResponse,
 	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 } from '../dto';
-import {
-	ExternalToolImportResultListResponse,
-	ExternalToolImportResultResponse,
-} from '../dto/response/external-tool-import-result-response';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
