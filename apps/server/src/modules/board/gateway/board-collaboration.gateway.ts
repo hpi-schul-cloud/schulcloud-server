@@ -28,7 +28,7 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import { Socket, ErrorTypes, BoardObjectTypes } from './types';
+import { BoardObjectTypes, ErrorTypes, Socket } from './types';
 import { WsValidationPipe } from './ws-validation.pipe';
 
 @UsePipes(new WsValidationPipe())
