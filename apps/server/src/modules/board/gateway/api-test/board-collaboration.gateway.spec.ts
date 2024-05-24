@@ -17,7 +17,7 @@ import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-ap
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
-import { BoardObjectTypes, ErrorTypes } from '../types';
+import { BoardObjectType, ErrorType } from '../types';
 
 describe(BoardCollaborationGateway.name, () => {
 	let ws: BoardCollaborationGateway;
@@ -109,8 +109,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'create-card-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_CARD,
-					errorType: ErrorTypes.NOT_CREATED,
+					boardObjectType: BoardObjectType.BOARD_CARD,
+					errorType: ErrorType.NOT_CREATED,
 					requestPayload: { columnId },
 				});
 			});
@@ -139,8 +139,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'fetch-board-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD,
-					errorType: ErrorTypes.NOT_LOADED,
+					boardObjectType: BoardObjectType.BOARD,
+					errorType: ErrorType.NOT_LOADED,
 					requestPayload: { boardId },
 				});
 			});
@@ -208,8 +208,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'move-card-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_CARD,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_CARD,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: moveCardProps,
 				});
 			});
@@ -237,8 +237,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'update-column-title-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_COLUMN,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: updateColumnProps,
 				});
 			});
@@ -267,8 +267,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'delete-board-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD,
-					errorType: ErrorTypes.NOT_DELETED,
+					boardObjectType: BoardObjectType.BOARD,
+					errorType: ErrorType.NOT_DELETED,
 					requestPayload: { boardId },
 				});
 			});
@@ -298,8 +298,8 @@ describe(BoardCollaborationGateway.name, () => {
 
 				expect(failure).toBeDefined();
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: updateTitleProps,
 				});
 			});
@@ -328,8 +328,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'create-column-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-					errorType: ErrorTypes.NOT_CREATED,
+					boardObjectType: BoardObjectType.BOARD_COLUMN,
+					errorType: ErrorType.NOT_CREATED,
 					requestPayload: { boardId },
 				});
 			});
@@ -358,8 +358,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'update-board-visibility-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: { boardId, isVisible: false },
 				});
 			});
@@ -388,8 +388,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'delete-column-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-					errorType: ErrorTypes.NOT_DELETED,
+					boardObjectType: BoardObjectType.BOARD_COLUMN,
+					errorType: ErrorType.NOT_DELETED,
 					requestPayload: { columnId },
 				});
 			});
@@ -434,8 +434,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'move-column-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_COLUMN,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: moveColumnProps,
 				});
 			});
@@ -464,8 +464,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'update-card-title-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_CARD,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_CARD,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: updateCardTitleProps,
 				});
 			});
@@ -495,8 +495,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'update-card-height-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_CARD,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_CARD,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: updateCardHeightProps,
 				});
 			});
@@ -525,8 +525,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_CARD,
-					errorType: ErrorTypes.NOT_LOADED,
+					boardObjectType: BoardObjectType.BOARD_CARD,
+					errorType: ErrorType.NOT_LOADED,
 					requestPayload: { cardIds: [cardId] },
 				});
 			});
@@ -555,8 +555,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'delete-card-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_CARD,
-					errorType: ErrorTypes.NOT_DELETED,
+					boardObjectType: BoardObjectType.BOARD_CARD,
+					errorType: ErrorType.NOT_DELETED,
 					requestPayload: { cardId },
 				});
 			});
@@ -586,8 +586,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'create-element-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-					errorType: ErrorTypes.NOT_CREATED,
+					boardObjectType: BoardObjectType.BOARD_ELEMENT,
+					errorType: ErrorType.NOT_CREATED,
 					requestPayload: { cardId, type: ContentElementType.RICH_TEXT },
 				});
 			});
@@ -617,8 +617,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'delete-element-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-					errorType: ErrorTypes.NOT_DELETED,
+					boardObjectType: BoardObjectType.BOARD_ELEMENT,
+					errorType: ErrorType.NOT_DELETED,
 					requestPayload: deleteElementProps,
 				});
 			});
@@ -661,8 +661,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'update-element-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_ELEMENT,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: updateElementProps,
 				});
 			});
@@ -691,8 +691,8 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(ioClient, 'move-element-failure');
 
 				expect(failure).toEqual({
-					boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-					errorType: ErrorTypes.NOT_UPDATED,
+					boardObjectType: BoardObjectType.BOARD_ELEMENT,
+					errorType: ErrorType.NOT_UPDATED,
 					requestPayload: data,
 				});
 			});

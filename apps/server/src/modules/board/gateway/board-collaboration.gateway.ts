@@ -28,7 +28,7 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import { BoardObjectTypes, ErrorTypes, Socket } from './types';
+import { BoardObjectType, ErrorType, Socket } from './types';
 import { WsValidationPipe } from './ws-validation.pipe';
 
 @UsePipes(new WsValidationPipe())
@@ -68,8 +68,8 @@ export class BoardCollaborationGateway {
 			client.emit('delete-board-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-board-failure', {
-				boardObjectType: BoardObjectTypes.BOARD,
-				errorType: ErrorTypes.NOT_DELETED,
+				boardObjectType: BoardObjectType.BOARD,
+				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
 			});
 		}
@@ -87,8 +87,8 @@ export class BoardCollaborationGateway {
 			client.emit('update-board-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-board-title-failure', {
-				boardObjectType: BoardObjectTypes.BOARD,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -106,8 +106,8 @@ export class BoardCollaborationGateway {
 			client.emit('update-card-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-card-title-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_CARD,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_CARD,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -125,8 +125,8 @@ export class BoardCollaborationGateway {
 			client.emit('update-card-height-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-card-height-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_CARD,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_CARD,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -144,8 +144,8 @@ export class BoardCollaborationGateway {
 			client.emit('delete-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-card-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_CARD,
-				errorType: ErrorTypes.NOT_DELETED,
+				boardObjectType: BoardObjectType.BOARD_CARD,
+				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
 			});
 		}
@@ -167,8 +167,8 @@ export class BoardCollaborationGateway {
 			client.emit('create-card-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
 			client.emit('create-card-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_CARD,
-				errorType: ErrorTypes.NOT_CREATED,
+				boardObjectType: BoardObjectType.BOARD_CARD,
+				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
 			});
 		}
@@ -195,8 +195,8 @@ export class BoardCollaborationGateway {
 			return responsePayload;
 		} catch (err) {
 			client.emit('create-column-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-				errorType: ErrorTypes.NOT_CREATED,
+				boardObjectType: BoardObjectType.BOARD_COLUMN,
+				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
 			});
 			return {};
@@ -215,8 +215,8 @@ export class BoardCollaborationGateway {
 			client.emit('fetch-board-success', responsePayload);
 		} catch (err) {
 			client.emit('fetch-board-failure', {
-				boardObjectType: BoardObjectTypes.BOARD,
-				errorType: ErrorTypes.NOT_LOADED,
+				boardObjectType: BoardObjectType.BOARD,
+				errorType: ErrorType.NOT_LOADED,
 				requestPayload: data,
 			});
 		}
@@ -234,8 +234,8 @@ export class BoardCollaborationGateway {
 			client.emit('move-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('move-card-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_CARD,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_CARD,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -253,8 +253,8 @@ export class BoardCollaborationGateway {
 			client.emit('move-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('move-column-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_COLUMN,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -272,8 +272,8 @@ export class BoardCollaborationGateway {
 			client.emit('update-column-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-column-title-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_COLUMN,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -291,8 +291,8 @@ export class BoardCollaborationGateway {
 			client.emit('update-board-visibility-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-board-visibility-failure', {
-				boardObjectType: BoardObjectTypes.BOARD,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -310,8 +310,8 @@ export class BoardCollaborationGateway {
 			client.emit('delete-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-column-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_COLUMN,
-				errorType: ErrorTypes.NOT_DELETED,
+				boardObjectType: BoardObjectType.BOARD_COLUMN,
+				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
 			});
 		}
@@ -329,8 +329,8 @@ export class BoardCollaborationGateway {
 			client.emit('fetch-card-success', { cards: cardResponses, isOwnAction: true });
 		} catch (err) {
 			client.emit('fetch-card-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_CARD,
-				errorType: ErrorTypes.NOT_LOADED,
+				boardObjectType: BoardObjectType.BOARD_CARD,
+				errorType: ErrorType.NOT_LOADED,
 				requestPayload: data,
 			});
 		}
@@ -352,8 +352,8 @@ export class BoardCollaborationGateway {
 			client.emit('create-element-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
 			client.emit('create-element-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-				errorType: ErrorTypes.NOT_CREATED,
+				boardObjectType: BoardObjectType.BOARD_ELEMENT,
+				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
 			});
 		}
@@ -371,8 +371,8 @@ export class BoardCollaborationGateway {
 			client.emit('update-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('update-element-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_ELEMENT,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
@@ -390,8 +390,8 @@ export class BoardCollaborationGateway {
 			client.emit('delete-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('delete-element-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-				errorType: ErrorTypes.NOT_DELETED,
+				boardObjectType: BoardObjectType.BOARD_ELEMENT,
+				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
 			});
 		}
@@ -409,8 +409,8 @@ export class BoardCollaborationGateway {
 			client.emit('move-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
 			client.emit('move-element-failure', {
-				boardObjectType: BoardObjectTypes.BOARD_ELEMENT,
-				errorType: ErrorTypes.NOT_UPDATED,
+				boardObjectType: BoardObjectType.BOARD_ELEMENT,
+				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
 			});
 		}
