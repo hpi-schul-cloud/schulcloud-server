@@ -5,6 +5,7 @@ export const schulconnexLizenzInfoResponseFactory = Factory.define<SchulconnexLi
 	{
 		target: {
 			uid: 'bildungscloud',
+			partOf: '',
 		},
 		permission: [
 			{
