@@ -98,6 +98,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_MEDIA_SHELF_ENABLED',
 				'FEATURE_NEW_LAYOUT_ENABLED',
 				'BOARD_COLLABORATION_URI',
+				'EDU_SHARING__API_URL',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

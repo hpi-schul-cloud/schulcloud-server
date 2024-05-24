@@ -212,6 +212,9 @@ export class ConfigResponse {
 	@ApiProperty()
 	FEATURE_NEW_LAYOUT_ENABLED: boolean;
 
+	@ApiProperty()
+	EDU_SHARING__API_URL: string;
+
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
@@ -281,5 +284,6 @@ export class ConfigResponse {
 		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
 		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
 		this.FEATURE_NEW_LAYOUT_ENABLED = config.FEATURE_NEW_LAYOUT_ENABLED;
+		this.EDU_SHARING__API_URL = config.EDU_SHARING__API_URL;
 	}
 }
