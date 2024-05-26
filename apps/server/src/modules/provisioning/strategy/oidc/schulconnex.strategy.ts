@@ -7,7 +7,7 @@ import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
 import {
-	SchulconnexCourseSyncService,
+	SchulconnexCourseSyncService, SchulconnexCtlToolProvisioningService,
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
@@ -23,6 +23,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
+		protected readonly schulconnexCtlToolProvisioningService: SchulconnexCtlToolProvisioningService,
 		protected readonly groupService: GroupService,
 		protected readonly configService: ConfigService<ProvisioningConfig, true>
 	) {
@@ -50,6 +51,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
 			await this.schulconnexLicenseProvisioningService.provisionExternalLicenses(user.id, data.externalLicenses);
+			await this.schulconnexCtlToolProvisioningService.provisionCtlTools(user.id, user.schoolId);
 		}
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
