@@ -25,6 +25,7 @@ import { ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexProvisioningStrategy } from '../oidc';
 import {
 	SchulconnexCourseSyncService,
+	SchulconnexCtlToolProvisioningService,
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
@@ -42,6 +43,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		protected readonly groupService: GroupService,
 		protected readonly schulconnexLicenseProvisioningService: SchulconnexLicenseProvisioningService,
+		protected readonly schulconnexCtlToolProvisioningService: SchulconnexCtlToolProvisioningService,
 		private readonly responseMapper: SchulconnexResponseMapper,
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		protected readonly configService: ConfigService<ProvisioningConfig, true>
@@ -53,6 +55,7 @@ export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 			schulconnexGroupProvisioningService,
 			schulconnexCourseSyncService,
 			schulconnexLicenseProvisioningService,
+			schulconnexCtlToolProvisioningService,
 			groupService,
 			configService
 		);

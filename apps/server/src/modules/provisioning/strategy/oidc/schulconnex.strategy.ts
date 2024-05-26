@@ -52,7 +52,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
 			await this.schulconnexLicenseProvisioningService.provisionExternalLicenses(user.id, data.externalLicenses);
-			await this.schulconnexCtlToolProvisioningService.provisionCtlTools(user.id, user.schoolId);
+			await this.schulconnexCtlToolProvisioningService.provisionCtlTools(user.id, user.schoolId, data.system.systemId);
 		}
 
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
