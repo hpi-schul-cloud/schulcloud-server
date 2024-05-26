@@ -7,7 +7,8 @@ import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
 import {
-	SchulconnexCourseSyncService, SchulconnexCtlToolProvisioningService,
+	SchulconnexCourseSyncService,
+	SchulconnexCtlToolProvisioningService,
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
