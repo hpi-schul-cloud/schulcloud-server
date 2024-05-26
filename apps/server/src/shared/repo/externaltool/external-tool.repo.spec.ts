@@ -327,6 +327,54 @@ describe(ExternalToolRepo.name, () => {
 		});
 	});
 
+	describe('findByMediumId', () => {
+		describe('when external tool is found', () => {
+			const setup2 = async () => {
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+					},
+				});
+
+				await em.persistAndFlush(externalToolEntity);
+				em.clear();
+
+				return {
+					externalToolEntity,
+				};
+			};
+
+			it('should find an external tool with given mediumId', async () => {
+				const { externalToolEntity } = await setup2();
+
+				const result: ExternalTool | null = await repo.findByMediumId('mediumId');
+
+				expect(result?.name).toEqual(externalToolEntity.name);
+			});
+		});
+
+		describe('when external tool is not found', () => {
+			const setup2 = async () => {
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+					},
+				});
+
+				await em.persistAndFlush(externalToolEntity);
+				em.clear();
+			};
+
+			it('should return null when no external tool with the given mediumId was found', async () => {
+				await setup2();
+
+				const result: ExternalTool | null = await repo.findByMediumId('notExisting');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('deleteById', () => {
 		const setup2 = async () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();

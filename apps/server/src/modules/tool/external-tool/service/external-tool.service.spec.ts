@@ -11,9 +11,15 @@ import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
-import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '../testing';
+import {
+	externalToolEntityFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory
+} from '../testing';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolService } from './external-tool.service';
+import {ExternalToolEntity} from "@modules/tool/external-tool/entity";
 
 describe(ExternalToolService.name, () => {
 	let module: TestingModule;
@@ -484,6 +490,51 @@ describe(ExternalToolService.name, () => {
 				setup();
 
 				const result: ExternalTool | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findExternalToolByMediumId', () => {
+		describe('when mediumId is set', () => {
+			it('should call the externalToolRepo', async () => {
+				const mediumId = 'mediumId';
+
+				await service.findExternalToolByMediumId(mediumId);
+
+				expect(externalToolRepo.findByMediumId).toHaveBeenCalledWith(mediumId);
+			});
+		});
+
+		describe('when tool was found', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({
+					medium: {
+						mediumId: 'mediumId',
+					},
+				});
+				externalToolRepo.findByMediumId.mockResolvedValue(externalTool);
+			};
+
+			it('should return externalTool', async () => {
+				setup();
+
+				const result: ExternalTool | null = await service.findExternalToolByMediumId('mediumId');
+
+				expect(result).toBeInstanceOf(ExternalTool);
+			});
+		});
+
+		describe('when tool was not found', () => {
+			const setup = () => {
+				externalToolRepo.findByMediumId.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result: ExternalTool | null = await service.findExternalToolByMediumId('mediumId');
 
 				expect(result).toBeNull();
 			});

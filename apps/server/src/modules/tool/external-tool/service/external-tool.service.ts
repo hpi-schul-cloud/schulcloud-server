@@ -101,6 +101,11 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findExternalToolByMediumId(mediumId: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByMediumId(mediumId);
+		return externalTool;
+	}
+
 	public async deleteExternalTool(toolId: EntityId): Promise<void> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
