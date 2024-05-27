@@ -27,7 +27,7 @@ import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../interface';
-import { FilesStorageMapper, FileRecordMapper } from '../mapper';
+import { FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
