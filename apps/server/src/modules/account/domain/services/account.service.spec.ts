@@ -318,6 +318,26 @@ describe('AccountService', () => {
 				await expect(service.save(account)).rejects.toThrow(ValidationError);
 			});
 		});
+
+		describe(`when identity management is primary and can't update username`, () => {
+			const setup = () => {
+				configService.get.mockReturnValue(true);
+
+				const account = accountDoFactory.build();
+
+				accountServiceDb.save.mockResolvedValueOnce(account);
+				accountServiceIdm.save.mockImplementation(() =>
+					Promise.resolve(new Account({ username: 'otherUsername', id: '' }))
+				);
+
+				return { service: newAccountService(), account };
+			};
+
+			it('should throw ValidationError', async () => {
+				const { service, account } = setup();
+				await expect(service.save(account)).rejects.toThrow(ValidationError);
+			});
+		});
 	});
 
 	describe('saveWithValidation', () => {
