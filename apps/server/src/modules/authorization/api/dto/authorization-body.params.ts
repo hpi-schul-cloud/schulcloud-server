@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsMongoId, ValidateNested } from 'class-validator';
 import { Action, AuthorizableReferenceType, AuthorizationContext } from '../../domain';
 
-class AuthorizationContextParms implements AuthorizationContext {
+class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Action)
 	@ApiProperty({
 		description: 'Define for which action the operation should be performend.',
@@ -26,9 +26,9 @@ class AuthorizationContextParms implements AuthorizationContext {
 export class AuthorizationBodyParams {
 	@ValidateNested({ each: true })
 	@ApiProperty({
-		type: AuthorizationContextParms,
+		type: AuthorizationContextParams,
 	})
-	context!: AuthorizationContextParms;
+	context!: AuthorizationContextParams;
 
 	@IsEnum(AuthorizableReferenceType)
 	@ApiProperty({
