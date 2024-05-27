@@ -14,20 +14,15 @@ export class AuthorizationReferenceUc {
 		authorizableReferenceId: EntityId,
 		context: AuthorizationContext
 	): Promise<AuthorizedReponse> {
-		await this.authorizationReferenceService.checkPermissionByReferences(
+		const hasPermission = await this.authorizationReferenceService.hasPermissionByReferences(
 			userId,
 			authorizableReferenceType,
 			authorizableReferenceId,
 			context
 		);
 
-		const successAuthorizationReponse = AuthorizationReponseMapper.mapToSuccessResponse(
-			userId,
-			authorizableReferenceType,
-			authorizableReferenceId,
-			context
-		);
+		const authorizationReponse = AuthorizationReponseMapper.mapToResponse(userId, hasPermission);
 
-		return successAuthorizationReponse;
+		return authorizationReponse;
 	}
 }

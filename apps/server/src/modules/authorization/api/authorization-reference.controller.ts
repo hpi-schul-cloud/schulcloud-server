@@ -1,9 +1,10 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, InternalServerErrorException, Param, Post, UnauthorizedException } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { AuthorizationReferenceUc } from './authorization-reference.uc';
-import { AuthorizationBodyParams, AuthorizationUrlParams, AuthorizedReponse } from './dto';
+import { AuthorizationBodyParams, AuthorizedReponse } from './dto';
+import { AuthorizationContext } from '../domain';
 
 @Authenticate('jwt')
 @ApiTags('Authorization')
@@ -11,23 +12,28 @@ import { AuthorizationBodyParams, AuthorizationUrlParams, AuthorizedReponse } fr
 export class AuthorizationReferenceController {
 	constructor(private readonly authorizationReferenceUc: AuthorizationReferenceUc) {}
 
+	@ApiOperation({ summary: 'Checks if user is authorized to perform the given operation.' })
 	@ApiResponse({ status: 200, type: AuthorizedReponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Post('authorize-by-reference/referenceType/:referenceType/referenceId/:referenceId')
+	@Post('by-reference')
 	public async authorizeByReference(
-		@Param() urlParams: AuthorizationUrlParams,
 		@Body() body: AuthorizationBodyParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<AuthorizedReponse> {
-		const successAuthorizationReponse = await this.authorizationReferenceUc.authorizeByReference(
+		const context: AuthorizationContext = {
+			action: body.action,
+			requiredPermissions: body.requiredPermissions,
+		};
+
+		const authorizationReponse = await this.authorizationReferenceUc.authorizeByReference(
 			user.userId,
-			urlParams.referenceType,
-			urlParams.referenceId,
-			body
+			body.referenceType,
+			body.referenceId,
+			context
 		);
 
-		return successAuthorizationReponse;
+		return authorizationReponse;
 	}
 }
