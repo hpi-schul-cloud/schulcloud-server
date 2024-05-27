@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AccountService, Account } from '@modules/account';
+import { Account, AccountService } from '@modules/account';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
-import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
@@ -12,8 +11,9 @@ import { ICurrentUser, OauthCurrentUser } from '../interface';
 
 import { SchoolInMigrationLoggableException } from '../loggable';
 
-import { Oauth2Strategy } from './oauth2.strategy';
+import { AccountNotFoundLoggableException } from '../loggable/account-not-found.loggable-exception';
 import { UserAccountDeactivatedLoggableException } from '../loggable/user-account-deactivated-exception';
+import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {
 	let module: TestingModule;
@@ -133,7 +133,7 @@ describe('Oauth2Strategy', () => {
 				accountService.findByUserId.mockResolvedValue(null);
 			};
 
-			it('should throw an UnauthorizedException', async () => {
+			it('should throw an AccountNotFoundLoggableException', async () => {
 				setup();
 
 				const func = async () =>
@@ -141,7 +141,8 @@ describe('Oauth2Strategy', () => {
 						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
 					});
 
-				await expect(func).rejects.toThrow(new UnauthorizedException('no account found'));
+				const loggableException = new AccountNotFoundLoggableException();
+				await expect(func).rejects.toThrow(loggableException);
 			});
 		});
 

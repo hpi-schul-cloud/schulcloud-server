@@ -1,4 +1,4 @@
-import { IsMongoId, IsNumber, IsString, Min, ValidateNested } from 'class-validator';
+import { IsMongoId, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 export class ColumnMove {
 	@IsNumber()
@@ -13,14 +13,7 @@ export class ColumnMove {
 
 export class MoveColumnMessageParams {
 	@IsMongoId()
-	columnId!: string;
-
-	@IsMongoId()
 	targetBoardId!: string;
-
-	@IsNumber()
-	@Min(0)
-	newIndex!: number;
 
 	@ValidateNested()
 	columnMove!: ColumnMove;
