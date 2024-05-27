@@ -6,6 +6,10 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
+import { SchoolExternalToolConfigurationStatus } from '@modules/tool/school-external-tool/controller/dto';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class SchulconnexCtlToolProvisioningService {
@@ -13,7 +17,8 @@ export class SchulconnexCtlToolProvisioningService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly userLicenseService: UserLicenseService,
-		private readonly schoolSystemOptionsService: SchoolSystemOptionsService
+		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
+		private readonly logger: Logger
 	) {}
 
 	async provisionCtlTools(userId: EntityId, schoolId: EntityId, systemId: string): Promise<void> {
@@ -44,7 +49,7 @@ export class SchulconnexCtlToolProvisioningService {
 				});
 
 				if (schoolExternalTools.length === 0) {
-					// 	create SchoolExternalTool
+					await this.createSchoolExternalTool(externalTool, schoolId);
 				}
 			})
 		);
@@ -67,5 +72,40 @@ export class SchulconnexCtlToolProvisioningService {
 		}
 
 		return provisioningOptions;
+	}
+
+	private async createSchoolExternalTool(externalTool: ExternalTool, schoolId: EntityId) {
+		const schoolExternalTool: SchoolExternalTool = this.mapSchoolExternalTool(externalTool, schoolId);
+
+		const createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
+			schoolExternalTool
+		);
+
+		// 	add loggable?
+		// this.logger.info(new NewSchoolExternalToolLoggable(createdSchoolExternalTool));
+	}
+
+	mapSchoolExternalTool(externalTool: ExternalTool, schoolId: EntityId): SchoolExternalTool {
+		const schoolExternalTool = new SchoolExternalTool({
+			id: new ObjectId().toHexString(),
+			toolId: externalTool.id,
+			schoolId,
+			parameters: this.mapToCustomParameter(externalTool.parameters ?? []),
+			status: new SchoolExternalToolConfigurationStatus({
+				isOutdatedOnScopeSchool: false,
+				isDeactivated: externalTool.isDeactivated,
+			}),
+		});
+
+		return schoolExternalTool;
+	}
+
+	private mapToCustomParameter(customParameters: CustomParameter[]): CustomParameterEntry[] {
+		return customParameters.map((customParameter: CustomParameter) => {
+			return {
+				name: customParameter.displayName ?? customParameter.name,
+				value: customParameter.default || undefined,
+			};
+		});
 	}
 }
