@@ -2,14 +2,14 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { ICurrentUser } from '@modules/authentication';
-import { Action, AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@modules/authorization/domain';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common';
 import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { Course, TeamEntity, TeamUserEntity } from '@shared/domain/entity';
+import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
@@ -27,7 +27,7 @@ import {
 	GuestPolicy,
 } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
@@ -49,7 +49,7 @@ export class VideoConferenceDeprecatedUc {
 
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly authorizationReferenceService: AuthorizationReferenceService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly courseService: CourseService,
@@ -372,12 +372,12 @@ export class VideoConferenceDeprecatedUc {
 		conferenceScope: VideoConferenceScope,
 		entityId: EntityId
 	): Promise<BBBRole> {
-		const permissionMap: Map<Permission, Promise<boolean>> = this.hasPermissions(
-			userId,
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const permissionMap: Map<Permission, Promise<boolean>> = this.hasReadPermissions(
+			user,
 			PermissionScopeMapping[conferenceScope],
 			entityId,
-			[Permission.START_MEETING, Permission.JOIN_MEETING],
-			Action.read
+			[Permission.START_MEETING, Permission.JOIN_MEETING]
 		);
 
 		if (await permissionMap.get(Permission.START_MEETING)) {
@@ -389,21 +389,58 @@ export class VideoConferenceDeprecatedUc {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	private hasPermissions(
-		userId: EntityId,
+	private hasReadPermissions(
+		user: User,
 		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
-		permissions: Permission[],
-		action: Action
+		permissions: Permission[]
 	): Map<Permission, Promise<boolean>> {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
-		permissions.forEach((perm) => {
-			const context =
-				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
-			const ret = this.authorizationReferenceService.hasPermissionByReferences(userId, entityName, entityId, context);
-			returnMap.set(perm, ret);
+		permissions.forEach((permission) => {
+			const context = AuthorizationContextBuilder.read([permission]);
+			const permissionPromise = this.hasCourseOrTeamReadPermission(user, entityName, entityId, context);
+
+			returnMap.set(permission, permissionPromise);
 		});
+
 		return returnMap;
+	}
+
+	private hasCourseOrTeamReadPermission(
+		user: User,
+		entityName: AuthorizableReferenceType,
+		entityId: EntityId,
+		context: AuthorizationContext
+	): Promise<boolean> {
+		let hasPermission: Promise<boolean>;
+
+		if (entityName === AuthorizableReferenceType.Course) {
+			hasPermission = this.hasCourseReadPermission(user, entityId, context);
+		} else if (entityName === AuthorizableReferenceType.Team) {
+			hasPermission = this.hasTeamReadPermission(user, entityId, context);
+		} else {
+			throw new NotImplementedException('Unknown video conference scope');
+		}
+
+		return hasPermission;
+	}
+
+	private async hasCourseReadPermission(
+		user: User,
+		courseId: EntityId,
+		context: AuthorizationContext
+	): Promise<boolean> {
+		const course = await this.courseService.findById(courseId);
+		const hasPermission = this.authorizationService.hasPermission(user, course, context);
+
+		return hasPermission;
+	}
+
+	private async hasTeamReadPermission(user: User, teamId: EntityId, context: AuthorizationContext): Promise<boolean> {
+		const team = await this.teamsRepo.findById(teamId);
+		const hasPermission = this.authorizationService.hasPermission(user, team, context);
+
+		return hasPermission;
 	}
 
 	/**
