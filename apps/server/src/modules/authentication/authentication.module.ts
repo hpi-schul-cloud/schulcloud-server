@@ -13,7 +13,7 @@ import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { jwtConstants } from './constants';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
-import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
+import { JwtValidationAdapter } from './helper/jwt-validation.adapter';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';

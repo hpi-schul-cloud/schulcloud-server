@@ -23,7 +23,6 @@ export class JwtValidationAdapter {
 	 * @param jti jwt id (here required to make jwt identifiers identical in redis)
 	 */
 	async isWhitelisted(accountId: string, jti: string): Promise<void> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice: false });
 	}
 
