@@ -45,7 +45,7 @@ export class SchulconnexCtlToolProvisioningService {
 
 				if (schoolExternalTools.length === 0) {
 					// 	create SchoolExternalTool
-				};
+				}
 			})
 		);
 	}
