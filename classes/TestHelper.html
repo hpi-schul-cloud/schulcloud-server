@@ -233,15 +233,15 @@ import { Readable } from &#x27;stream&#x27;;
 import { GetFileResponse } from &#x27;../interface&#x27;;
 
 export class TestHelper {
-	public static createFile &#x3D; (contentRange?: string): GetFile &#x3D;&gt; {
+	public static createFile &#x3D; (props?: { contentRange?: string; mimeType?: string }): GetFile &#x3D;&gt; {
 		const text &#x3D; &#x27;testText&#x27;;
 		const readable &#x3D; Readable.from(text);
 
 		const fileResponse &#x3D; {
 			data: readable,
-			contentType: &#x27;image/webp&#x27;,
+			contentType: props?.mimeType ?? &#x27;image/webp&#x27;,
 			contentLength: text.length,
-			contentRange,
+			contentRange: props?.contentRange,
 			etag: &#x27;testTag&#x27;,
 		};
 
@@ -250,7 +250,7 @@ export class TestHelper {
 
 	public static createFileResponse &#x3D; (contentRange?: string): GetFileResponse &#x3D;&gt; {
 		const name &#x3D; &#x27;testName&#x27;;
-		const file &#x3D; this.createFile(contentRange);
+		const file &#x3D; this.createFile({ contentRange });
 		const fileResponse &#x3D; { ...file, name };
 
 		return fileResponse;

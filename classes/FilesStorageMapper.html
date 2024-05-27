@@ -641,8 +641,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException, StreamableFile } from &#x27;@nestjs/common&#x27;;
-import { AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
+import { NotImplementedException, StreamableFile } from &#x27;@nestjs/common&#x27;;
 import { plainToClass } from &#x27;class-transformer&#x27;;
 import {
 	DownloadFileParams,
@@ -707,9 +707,17 @@ export class FilesStorageMapper {
 	}
 
 	static mapToStreamableFile(fileResponse: GetFileResponse): StreamableFile {
+		let disposition: string;
+
+		if (fileResponse.contentType &#x3D;&#x3D;&#x3D; &#x27;application/pdf&#x27;) {
+			disposition &#x3D; &#x60;inline;&#x60;;
+		} else {
+			disposition &#x3D; &#x60;attachment;&#x60;;
+		}
+
 		const streamableFile &#x3D; new StreamableFile(fileResponse.data, {
 			type: fileResponse.contentType,
-			disposition: &#x60;inline; filename&#x3D;&quot;${encodeURI(fileResponse.name)}&quot;&#x60;,
+			disposition: &#x60;${disposition} filename&#x3D;&quot;${encodeURI(fileResponse.name)}&quot;&#x60;,
 			length: fileResponse.contentLength,
 		});
 
