@@ -37,8 +37,7 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
-import { ExternalToolUpdate } from './dto';
-import { ExternalToolImportResult } from './dto/external-tool-import-result';
+import { ExternalToolImportResult, ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
 describe(ExternalToolUc.name, () => {
@@ -410,7 +409,7 @@ describe(ExternalToolUc.name, () => {
 				};
 			};
 
-			it('should check the users permission', async () => {
+			it('should return an error in the result report', async () => {
 				const { user, externalTool1, externalTool2, error } = setup();
 
 				const results = await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);

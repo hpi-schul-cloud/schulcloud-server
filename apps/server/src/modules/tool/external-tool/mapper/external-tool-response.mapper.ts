@@ -114,7 +114,7 @@ export class ExternalToolResponseMapper {
 		});
 	}
 
-	static mapToImportResponse(results: ExternalToolImportResult[]): ExternalToolImportResultListResponse {
+	public static mapToImportResponse(results: ExternalToolImportResult[]): ExternalToolImportResultListResponse {
 		const response: ExternalToolImportResultListResponse = new ExternalToolImportResultListResponse({
 			results: results.map(
 				(result: ExternalToolImportResult): ExternalToolImportResultResponse =>

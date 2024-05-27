@@ -12,6 +12,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
+	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolMediumParams,
 	ExternalToolSearchParams,
@@ -22,7 +23,6 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { ExternalToolBulkCreateParams } from '../controller/dto/request/external-tool-bulk-create.params';
 import { ExternalTool } from '../domain';
 import {
 	BasicToolConfigDto,
