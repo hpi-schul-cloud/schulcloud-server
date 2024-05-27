@@ -4,7 +4,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { AuthorizationReferenceUc } from './authorization-reference.uc';
 import { AuthorizationBodyParams, AuthorizedReponse } from './dto';
-import { AuthorizationContext } from '../domain';
 
 @Authenticate('jwt')
 @ApiTags('Authorization')
@@ -22,16 +21,11 @@ export class AuthorizationReferenceController {
 		@Body() body: AuthorizationBodyParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise<AuthorizedReponse> {
-		const context: AuthorizationContext = {
-			action: body.action,
-			requiredPermissions: body.requiredPermissions,
-		};
-
 		const authorizationReponse = await this.authorizationReferenceUc.authorizeByReference(
 			user.userId,
 			body.referenceType,
 			body.referenceId,
-			context
+			body.context
 		);
 
 		return authorizationReponse;
