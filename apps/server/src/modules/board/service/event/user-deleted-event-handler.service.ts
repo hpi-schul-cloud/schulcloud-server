@@ -26,7 +26,9 @@ export class UserDeletedEventHandlerService implements DeletionService, IEventHa
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus
-	) {}
+	) {
+		this.logger.setContext(UserDeletedEventHandlerService.name);
+	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted: DomainDeletionReport = await this.deleteUserData(targetRefId);
@@ -48,7 +50,7 @@ export class UserDeletedEventHandlerService implements DeletionService, IEventHa
 		const numberOfDeletedBoards = mediaBoards.length;
 		const boardIds = mediaBoards.map((mb) => mb.id);
 
-		const result: DomainDeletionReport = DomainDeletionReportBuilder.build(DomainName.CLASS, [
+		const result: DomainDeletionReport = DomainDeletionReportBuilder.build(DomainName.BOARD, [
 			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedBoards, boardIds),
 		]);
 

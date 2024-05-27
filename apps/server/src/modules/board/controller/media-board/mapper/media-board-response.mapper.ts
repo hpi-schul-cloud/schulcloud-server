@@ -16,6 +16,7 @@ export class MediaBoardResponseMapper {
 				lastUpdatedAt: board.updatedAt,
 				createdAt: board.createdAt,
 			}),
+			layout: board.layout,
 		});
 
 		return boardResponse;

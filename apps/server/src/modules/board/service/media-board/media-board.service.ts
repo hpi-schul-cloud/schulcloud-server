@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -78,4 +78,23 @@ export class MediaBoardService {
 
 		return elements;
 	}
+
+    // TODO
+    public async updateAvailableLineColor(mediaBoard: MediaBoard, color: MediaBoardColors): Promise<void> {
+        mediaBoard.mediaAvailableLineBackgroundColor = color;
+
+        await this.boardDoRepo.save(mediaBoard);
+    }
+
+    public async collapseAvailableLine(mediaBoard: MediaBoard, mediaAvailableLineCollapsed: boolean): Promise<void> {
+        mediaBoard.mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
+
+        await this.boardDoRepo.save(mediaBoard);
+    }
+
+    public async setLayout(mediaBoard: MediaBoard, layout: MediaBoardLayoutType): Promise<void> {
+        mediaBoard.layout = layout;
+
+        await this.boardDoRepo.save(mediaBoard);
+    }
 }

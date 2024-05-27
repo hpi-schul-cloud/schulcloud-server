@@ -45,16 +45,18 @@ const getSessionInformation = async (context) => {
 	try {
 		const response = await sessionListPromise;
 		// Return existing session from hooks
-		if (typeof response.data !== 'undefined' && response.data !== null) {
+		if (response && typeof response.data !== 'undefined' && response.data !== null) {
 			const responseData = response.data;
 			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000, 10);
-			const foundSessionID = Object.keys(responseData).find((sessionID) => {
-				const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
-				return (
-					responseData[sessionID].groupID === context.data.groupID &&
-					diffSeconds >= EtherpadClient.cookieReleaseThreshold
-				);
-			});
+			const foundSessionID = Object.keys(responseData)
+				.filter((sessionID) => responseData[sessionID] !== null && typeof responseData[sessionID] !== 'undefined')
+				.find((sessionID) => {
+					const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
+					return (
+						responseData[sessionID].groupID === context.data.groupID &&
+						diffSeconds >= EtherpadClient.cookieReleaseThreshold
+					);
+				});
 			let validUntil;
 			if (typeof foundSessionID !== 'undefined' && foundSessionID !== null) {
 				const respData = responseData[foundSessionID];

@@ -8,7 +8,7 @@ import {
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool } from '../domain';
+import { ContextExternalToolLaunchable } from '../domain';
 
 @Injectable()
 export class ToolConfigurationStatusService {
@@ -17,7 +17,7 @@ export class ToolConfigurationStatusService {
 	public determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalToolLaunchable
 	): ContextExternalToolConfigurationStatus {
 		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: false,

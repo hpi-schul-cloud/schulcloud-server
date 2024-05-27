@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
-import { MediaBoard, MediaLine } from '../../domain';
+import { MediaBoard, MediaBoardColors, MediaLine } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService } from '../../service';
 
@@ -34,11 +34,31 @@ export class MediaLineUc {
 	public async updateLineTitle(userId: EntityId, lineId: EntityId, title: string): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
 		await this.boardNodeService.updateTitle(line, title);
+	}
+
+	public async updateLineColor(userId: EntityId, lineId: EntityId, color: MediaBoardColors): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
+
+        await this.mediaLineService.updateColor(line, color);
+	}
+
+	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
+
+		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
+
+		await this.mediaLineService.collapse(line, collapsed);
 	}
 
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {

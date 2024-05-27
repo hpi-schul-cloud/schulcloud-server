@@ -22,9 +22,7 @@ export class CommonToolMetadataService {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolToolRepo.findByExternalToolId(toolId);
 
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string =>
-				// We can be sure that the repo returns the id
-				schoolExternalTool.id as string
+			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
 		);
 
 		const externalToolMetadata: ExternalToolMetadata = await this.getMetadata(schoolExternalToolIds);

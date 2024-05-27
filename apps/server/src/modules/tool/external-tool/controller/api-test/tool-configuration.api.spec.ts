@@ -1,21 +1,20 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, LegacyBoard, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	accountFactory,
-	boardFactory,
-	courseFactory,
-	customParameterFactory,
-	schoolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
+	boardFactory,
+	courseFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { accountFactory } from '@src/modules/account/testing';
 import { Response } from 'supertest';
 import {
 	CustomParameterLocationParams,
@@ -28,7 +27,7 @@ import { contextExternalToolEntityFactory } from '../../../context-external-tool
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolEntity } from '../../entity';
-import { externalToolEntityFactory } from '../../testing';
+import { customParameterFactory, externalToolEntityFactory } from '../../testing';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
@@ -214,14 +213,12 @@ describe('ToolConfigurationController (API)', () => {
 									location: CustomParameterLocationParams.BODY,
 								},
 							],
-							version: externalTool.version,
 						},
 						{
 							externalToolId: externalToolWithoutContextRestriction.id,
 							name: externalToolWithoutContextRestriction.name,
 							parameters: [],
 							schoolExternalToolId: schoolExternalTool2.id,
-							version: externalToolWithoutContextRestriction.version,
 						},
 					],
 				});
@@ -239,7 +236,6 @@ describe('ToolConfigurationController (API)', () => {
 							name: externalToolWithoutContextRestriction.name,
 							parameters: [],
 							schoolExternalToolId: schoolExternalTool2.id,
-							version: externalToolWithoutContextRestriction.version,
 						},
 					],
 				});
@@ -373,7 +369,6 @@ describe('ToolConfigurationController (API)', () => {
 									location: CustomParameterLocationParams.BODY,
 								},
 							],
-							version: externalTool.version,
 						},
 					],
 				});
@@ -486,7 +481,6 @@ describe('ToolConfigurationController (API)', () => {
 					externalToolId: externalTool.id,
 					name: externalTool.name,
 					logoUrl: externalTool.logoUrl,
-					version: externalTool.version,
 					parameters: [
 						{
 							name: schoolParameter.name,
@@ -642,7 +636,6 @@ describe('ToolConfigurationController (API)', () => {
 					schoolExternalToolId: schoolExternalTool.id,
 					name: externalTool.name,
 					logoUrl: externalTool.logoUrl,
-					version: externalTool.version,
 					parameters: [
 						{
 							name: contextParameter.name,

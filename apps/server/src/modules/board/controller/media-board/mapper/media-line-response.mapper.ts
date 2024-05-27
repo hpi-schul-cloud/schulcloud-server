@@ -17,6 +17,8 @@ export class MediaLineResponseMapper {
 				lastUpdatedAt: line.updatedAt,
 				createdAt: line.createdAt,
 			}),
+			backgroundColor: line.backgroundColor,
+			collapsed: line.collapsed,
 		});
 
 		return lineResponse;

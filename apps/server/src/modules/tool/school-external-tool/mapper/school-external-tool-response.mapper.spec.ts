@@ -1,11 +1,10 @@
-import {
-	schoolExternalToolFactory,
-	schoolToolConfigurationStatusFactory,
-	schoolToolConfigurationStatusResponseFactory,
-} from '@shared/testing/factory';
-
 import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
+import {
+	schoolExternalToolConfigurationStatusFactory,
+	schoolExternalToolConfigurationStatusResponseFactory,
+	schoolExternalToolFactory,
+} from '../testing';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
 
 describe('SchoolExternalToolResponseMapper', () => {
@@ -45,35 +44,33 @@ describe('SchoolExternalToolResponseMapper', () => {
 				expect(response.data).toEqual(
 					expect.objectContaining<SchoolExternalToolResponse[]>([
 						{
-							id: do1.id as string,
+							id: do1.id,
 							name: do1.name as string,
 							schoolId: do1.schoolId,
 							toolId: do1.toolId,
-							toolVersion: do1.toolVersion,
 							parameters: [
 								{
 									name: do1.parameters[0].name,
 									value: do1.parameters[0].value,
 								},
 							],
-							status: schoolToolConfigurationStatusResponseFactory.build({
+							status: schoolExternalToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isDeactivated: false,
 							}),
 						},
 						{
-							id: do2.id as string,
+							id: do2.id,
 							name: do2.name as string,
 							schoolId: do2.schoolId,
 							toolId: do2.toolId,
-							toolVersion: do2.toolVersion,
 							parameters: [
 								{
 									name: do2.parameters[0].name,
 									value: do2.parameters[0].value,
 								},
 							],
-							status: schoolToolConfigurationStatusFactory.build({
+							status: schoolExternalToolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: false,
 								isDeactivated: false,
 							}),
@@ -85,8 +82,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 
 		describe('when optional parameter are missing', () => {
 			const setup = () => {
-				const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				do1.id = undefined;
+				const do1: SchoolExternalTool = schoolExternalToolFactory.build({ id: undefined });
 				do1.name = undefined;
 				do1.status = undefined;
 
@@ -108,7 +104,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 					expect.objectContaining({
 						id: '',
 						name: '',
-						status: schoolToolConfigurationStatusResponseFactory.build({
+						status: schoolExternalToolConfigurationStatusResponseFactory.build({
 							isOutdatedOnScopeSchool: false,
 							isDeactivated: false,
 						}),

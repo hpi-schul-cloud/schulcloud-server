@@ -1,5 +1,6 @@
 export interface CollaborativeTextEditor {
 	url: string;
-	sessions: string[];
+	path: string;
+	sessionId: string;
 	sessionExpiryDate: Date;
 }

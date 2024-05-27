@@ -12,7 +12,6 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 
 @Injectable()
 export class ExternalToolService {
@@ -23,8 +22,7 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		private readonly legacyLogger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionIncrementService
+		private readonly legacyLogger: LegacyLogger
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -40,12 +38,12 @@ export class ExternalToolService {
 		}
 
 		const created: ExternalTool = await this.externalToolRepo.save(externalTool);
+
 		return created;
 	}
 
-	public async updateExternalTool(toUpdate: ExternalTool, loadedTool: ExternalTool): Promise<ExternalTool> {
+	public async updateExternalTool(toUpdate: ExternalTool): Promise<ExternalTool> {
 		await this.updateOauth2ToolConfig(toUpdate);
-		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
 
 		return externalTool;
@@ -106,9 +104,7 @@ export class ExternalToolService {
 	public async deleteExternalTool(toolId: EntityId): Promise<void> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string =>
-				// We can be sure that the repo returns the id
-				schoolExternalTool.id as string
+			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
 		);
 
 		await Promise.all([

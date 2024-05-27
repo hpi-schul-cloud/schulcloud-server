@@ -21,4 +21,10 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 
 		return this;
 	}
+
+	byStatusPending(): this {
+		this.addQuery({ status: [StatusModel.PENDING] });
+
+		return this;
+	}
 }

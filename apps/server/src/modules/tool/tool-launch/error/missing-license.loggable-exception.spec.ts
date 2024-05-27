@@ -1,17 +1,18 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
+import { contextExternalToolFactory } from '../../context-external-tool/testing';
 
-describe('MissingMediaLicenseLoggableException', () => {
+describe(MissingMediaLicenseLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const contextExternalToolId = 'contextExternalTooId';
+			const contextExternalTool = contextExternalToolFactory.buildWithId();
 			const medium: ExternalToolMedium = new ExternalToolMedium({ mediumId: 'mediumId', publisher: 'publisher' });
 			const userId = 'userId';
 
-			const exception = new MissingMediaLicenseLoggableException(medium, userId, contextExternalToolId);
+			const exception = new MissingMediaLicenseLoggableException(medium, userId, contextExternalTool);
 
 			return {
-				contextExternalToolId,
+				contextExternalTool,
 				medium,
 				userId,
 				exception,
@@ -19,7 +20,7 @@ describe('MissingMediaLicenseLoggableException', () => {
 		};
 
 		it('should log the correct message', () => {
-			const { contextExternalToolId, medium, userId, exception } = setup();
+			const { contextExternalTool, medium, userId, exception } = setup();
 
 			const result = exception.getLogMessage();
 
@@ -30,7 +31,10 @@ describe('MissingMediaLicenseLoggableException', () => {
 				data: {
 					medium,
 					userId,
-					contextExternalToolId,
+					contextExternalToolId: contextExternalTool.id,
+					schoolExternalToolId: contextExternalTool.schoolToolRef.schoolToolId,
+					contextType: contextExternalTool.contextRef.type,
+					contextId: contextExternalTool.contextRef.id,
 				},
 			});
 		});

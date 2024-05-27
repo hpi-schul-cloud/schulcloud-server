@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
+import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
 import type { MediaBoardConfig } from '@modules/board/media-board.config';
@@ -15,16 +16,15 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
+import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
 import { LanguageType } from '@shared/domain/interface';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { AlertConfig } from '@modules/alert';
-import { SchulcloudTheme } from '@shared/domain/types';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -112,6 +112,10 @@ export interface ServerConfig
 	I18N__DEFAULT_TIMEZONE: Timezone;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_NEW_LAYOUT_ENABLED: boolean;
+	SCHULCONNEX_CLIENT__API_URL: string | undefined;
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: string | undefined;
+	SCHULCONNEX_CLIENT__CLIENT_ID: string | undefined;
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: string | undefined;
 }
 
 const config: ServerConfig = {
@@ -186,6 +190,10 @@ const config: ServerConfig = {
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	// parse [<description>:]<token>,[<description>:]<token>... and  discard description
 	ADMIN_API__MODIFICATION_THRESHOLD_MS: Configuration.get('ADMIN_API__MODIFICATION_THRESHOLD_MS') as number,
+	ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS: Configuration.get(
+		'ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS'
+	) as number,
+	ADMIN_API__DELETION_DELAY_MILLISECONDS: Configuration.get('ADMIN_API__DELETION_DELAY_MILLISECONDS') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((part) => (part.split(':').pop() ?? '').trim()),
@@ -219,10 +227,23 @@ const config: ServerConfig = {
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
 	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
 	ETHERPAD_COOKIE__EXPIRES_SECONDS: Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS') as number,
+	ETHERPAD_COOKIE_RELEASE_THRESHOLD: Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD') as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
+	SCHULCONNEX_CLIENT__API_URL: Configuration.has('SCHULCONNEX_CLIENT__API_URL')
+		? (Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__TOKEN_ENDPOINT: Configuration.has('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT')
+		? (Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_ID')
+		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT__CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT__CLIENT_SECRET')
+		? (Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string)
+		: undefined,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,

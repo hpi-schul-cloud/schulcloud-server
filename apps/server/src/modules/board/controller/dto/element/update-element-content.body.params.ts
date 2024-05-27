@@ -150,7 +150,6 @@ export class UpdateElementContentBodyParams {
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
-				{ value: ExternalToolElementContentBody, name: ContentElementType.DRAWING },
 				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 			],
 		},

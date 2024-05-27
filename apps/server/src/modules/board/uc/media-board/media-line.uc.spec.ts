@@ -174,7 +174,7 @@ describe(MediaLineUc.name, () => {
 		});
 	});
 
-	describe('updateLineTitle', () => {
+	describe('deleteLine', () => {
 		describe('when the user deletes a media line', () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
@@ -220,6 +220,130 @@ describe(MediaLineUc.name, () => {
 				const { user, mediaLine } = setup();
 
 				await expect(uc.deleteLine(user.id, mediaLine.id)).rejects.toThrow(FeatureDisabledLoggableException);
+			});
+		});
+	});
+
+	describe('updateLineColor', () => {
+		describe('when the user changes background color of media line', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaLine = mediaLineFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+
+				return {
+					user,
+					mediaLine,
+					boardDoAuthorizable,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaLine, boardDoAuthorizable } = setup();
+
+				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					boardDoAuthorizable,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should set background color', async () => {
+				const { user, mediaLine } = setup();
+
+				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
+
+				expect(mediaLineService.updateColor).toHaveBeenCalledWith(mediaLine, 'blue');
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaLine = mediaLineFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaLine,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaLine } = setup();
+
+				await expect(uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE)).rejects.toThrow(
+					FeatureDisabledLoggableException
+				);
+			});
+		});
+	});
+
+	describe('collapseLine', () => {
+		describe('when the user collapse a media line', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaLine = mediaLineFactory.build();
+				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+
+				configService.get.mockReturnValueOnce(true);
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+
+				return {
+					user,
+					mediaLine,
+					boardDoAuthorizable,
+				};
+			};
+
+			it('should check the authorization', async () => {
+				const { user, mediaLine, boardDoAuthorizable } = setup();
+
+				await uc.collapseLine(user.id, mediaLine.id, true);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					boardDoAuthorizable,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should collapse the line', async () => {
+				const { user, mediaLine } = setup();
+
+				await uc.collapseLine(user.id, mediaLine.id, true);
+
+				expect(mediaLineService.collapse).toHaveBeenCalledWith(mediaLine, true);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const user = userEntityFactory.build();
+				const mediaLine = mediaLineFactory.build();
+
+				configService.get.mockReturnValueOnce(false);
+
+				return {
+					user,
+					mediaLine,
+				};
+			};
+
+			it('should throw an exception', async () => {
+				const { user, mediaLine } = setup();
+
+				await expect(uc.collapseLine(user.id, mediaLine.id, true)).rejects.toThrow(FeatureDisabledLoggableException);
 			});
 		});
 	});

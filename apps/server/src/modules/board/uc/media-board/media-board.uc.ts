@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
+import { MediaBoardLayoutType } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import {
 	BoardExternalReference,
@@ -62,7 +63,19 @@ export class MediaBoardUc {
 		return line;
 	}
 
-	private checkFeatureEnabled() {
+	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType): Promise<void> {
+		this.checkFeatureEnabled();
+
+		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+
+		await this.mediaBoardService.setLayout(board, layout);
+	}
+
+	private checkFeatureEnabled(): void {
 		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}

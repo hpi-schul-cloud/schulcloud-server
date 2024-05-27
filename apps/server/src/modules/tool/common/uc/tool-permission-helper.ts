@@ -4,22 +4,32 @@ import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService }
 import { CourseService } from '@modules/learnroom';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
 
 @Injectable()
 export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
-		// invalid dependency on this place it is in UC layer in a other module
-		// loading of ressources should be part of service layer
-		// if it must resolve different loadings based on the request it can be added in own service and use in UC
 		private readonly courseService: CourseService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardService: BoardNodeAuthorizableService
 	) {}
 
-	// TODO build interface to get contextDO by contextType
+	public async ensureContextPermissionsForSchool(
+		user: User,
+		schoolExternalTool: SchoolExternalTool,
+		contextId: EntityId,
+		contextType: ToolContextType,
+		context: AuthorizationContext
+	): Promise<void> {
+		this.authorizationService.checkPermission(user, schoolExternalTool, context);
+
+		await this.checkPermissionsByContextRef(user, contextId, contextType, context);
+	}
+
 	public async ensureContextPermissions(
 		user: User,
 		contextExternalTool: ContextExternalTool,
@@ -27,20 +37,35 @@ export class ToolPermissionHelper {
 	): Promise<void> {
 		this.authorizationService.checkPermission(user, contextExternalTool, context);
 
-		switch (contextExternalTool.contextRef.type) {
+		await this.checkPermissionsByContextRef(
+			user,
+			contextExternalTool.contextRef.id,
+			contextExternalTool.contextRef.type,
+			context
+		);
+	}
+
+	private async checkPermissionsByContextRef(
+		user: User,
+		contextId: EntityId,
+		contextType: ToolContextType,
+		context: AuthorizationContext
+	): Promise<void> {
+		switch (contextType) {
 			case ToolContextType.COURSE: {
-				const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
+				const course: Course = await this.courseService.findById(contextId);
+
 				this.authorizationService.checkPermission(user, course, context);
 				break;
 			}
 			case ToolContextType.BOARD_ELEMENT: {
-				const boardElement = await this.boardNodeService.findContentElementById(contextExternalTool.contextRef.id);
+				const boardElement = await this.boardNodeService.findContentElementById(contextId);
 				const board: BoardNodeAuthorizable = await this.boardService.getBoardAuthorizable(boardElement);
 				this.authorizationService.checkPermission(user, board, context);
 				break;
 			}
 			case ToolContextType.MEDIA_BOARD: {
-				const board: BoardNodeAuthorizable = await this.boardService.findById(contextExternalTool.contextRef.id);
+				const board: BoardNodeAuthorizable = await this.boardService.findById(contextId);
 				this.authorizationService.checkPermission(user, board, context);
 				break;
 			}

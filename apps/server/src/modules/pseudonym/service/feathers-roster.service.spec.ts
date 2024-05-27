@@ -1,14 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 import { CourseService } from '@modules/learnroom/service/course.service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { SchoolExternalTool, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -16,18 +20,14 @@ import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import {
-	contextExternalToolFactory,
 	courseFactory,
-	externalToolFactory,
 	legacySchoolDoFactory,
 	pseudonymFactory,
 	schoolEntityFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';
 
@@ -205,17 +205,17 @@ describe('FeathersRosterService', () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 				const clientId = 'testClientId';
 				const externalTool: ExternalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
-				const externalToolId: string = externalTool.id as string;
+				const externalToolId: string = externalTool.id;
 
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
-				}) as SchoolExternalToolWithId;
+				});
 				const otherSchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: otherExternalTool.id,
 					schoolId: school.id,
-				}) as SchoolExternalToolWithId;
+				});
 				const pseudonym: Pseudonym = pseudonymFactory.build();
 				const user: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
@@ -365,7 +365,7 @@ describe('FeathersRosterService', () => {
 				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const externalToolId: string = externalTool.id as string;
+				const externalToolId: string = externalTool.id;
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
@@ -376,7 +376,7 @@ describe('FeathersRosterService', () => {
 					schoolId: school.id,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
 							id: courseA.id,
@@ -385,7 +385,7 @@ describe('FeathersRosterService', () => {
 					});
 
 				const otherContextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(otherSchoolExternalTool.id as string, otherSchoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(otherSchoolExternalTool.id, otherSchoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
 							id: courseA.id,
@@ -590,7 +590,7 @@ describe('FeathersRosterService', () => {
 		describe('when no school external tool was found which belongs to the external tool', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const externalToolId: string = externalTool.id as string;
+				const externalToolId: string = externalTool.id;
 				const course: Course = courseFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);

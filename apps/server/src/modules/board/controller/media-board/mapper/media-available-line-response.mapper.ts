@@ -5,6 +5,8 @@ export class MediaAvailableLineResponseMapper {
 	static mapToResponse(mediaAvailableLine: MediaAvailableLine): MediaAvailableLineResponse {
 		const result = new MediaAvailableLineResponse({
 			elements: this.mapMediaAvailableLineElementToResponse(mediaAvailableLine.elements),
+			backgroundColor: mediaAvailableLine.backgroundColor,
+			collapsed: mediaAvailableLine.collapsed,
 		});
 
 		return result;

@@ -116,13 +116,20 @@ export class MediaAvailableLineService {
 		return matchedTuples;
 	}
 
-	public createMediaAvailableLine(availableExternalTools: [ExternalTool, SchoolExternalTool][]): MediaAvailableLine {
+	public createMediaAvailableLine(
+		mediaBoard: MediaBoard,
+		availableExternalTools: [ExternalTool, SchoolExternalTool][]
+	): MediaAvailableLine {
 		const lineElements: MediaAvailableLineElement[] = availableExternalTools.map(
 			([externalTool, schoolExternalTool]: [ExternalTool, SchoolExternalTool]) =>
 				this.createMediaAvailableLineElement(externalTool, schoolExternalTool)
 		);
 
-		const line: MediaAvailableLine = new MediaAvailableLine({ elements: lineElements });
+		const line: MediaAvailableLine = new MediaAvailableLine({
+			elements: lineElements,
+			backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
+			collapsed: mediaBoard.mediaAvailableLineCollapsed,
+		});
 
 		return line;
 	}
