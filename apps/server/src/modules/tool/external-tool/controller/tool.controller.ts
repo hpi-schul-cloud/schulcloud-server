@@ -13,6 +13,7 @@ import {
 	StreamableFile,
 } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -36,10 +37,12 @@ import { ExternalToolLogo } from '../domain/external-tool-logo';
 
 import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
+import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
+	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
+	ExternalToolImportResultListResponse,
 	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
@@ -79,6 +82,28 @@ export class ToolController {
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 
 		return mapped;
+	}
+
+	@Post('/import')
+	@ApiCreatedResponse({ description: 'The Tool has been successfully created.', type: ExternalToolResponse })
+	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates multiple ExternalTools at the same time.' })
+	async importExternalTools(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
+	): Promise<ExternalToolImportResultListResponse> {
+		const externalTools: ExternalToolCreate[] = this.externalToolDOMapper.mapBulkCreateRequest(externalToolBulkParams);
+
+		const results: ExternalToolImportResult[] = await this.externalToolUc.importExternalTools(
+			currentUser.userId,
+			externalTools
+		);
+
+		const response: ExternalToolImportResultListResponse = ExternalToolResponseMapper.mapToImportResponse(results);
+
+		return response;
 	}
 
 	@Get()
