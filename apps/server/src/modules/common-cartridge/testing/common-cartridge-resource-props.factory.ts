@@ -93,3 +93,13 @@ export function createCommonCartridgeWebLinkResourceProps(): CommonCartridgeReso
 		url: faker.internet.url(),
 	};
 }
+
+export function createCommonCartridgeWebContentResourceProps(): CommonCartridgeResourceProps {
+	return {
+		type: CommonCartridgeResourceType.WEB_CONTENT,
+		title: faker.lorem.words(),
+		identifier: faker.string.uuid(),
+		html: faker.lorem.paragraph(),
+		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+	};
+}

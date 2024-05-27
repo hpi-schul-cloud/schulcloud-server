@@ -1,15 +1,8 @@
-import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
-import {
-	CommonCartridgeElementType,
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../common-cartridge.enums';
-import {
-	CommonCartridgeOrganizationNode,
-	CommonCartridgeOrganizationNodeProps,
-} from './common-cartridge-organization-node';
+import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-node-props.factory';
+import { createCommonCartridgeWebContentResourceProps } from '../../testing/common-cartridge-resource-props.factory';
+import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 import { CommonCartridgeResourceNode, CommonCartridgeResourceNodeProps } from './common-cartridge-resource-node';
 
@@ -18,19 +11,10 @@ describe('CommonCartridgeResourceCollectionBuilder', () => {
 
 	const setupResourceNode = () => {
 		const resourceNodeProps: CommonCartridgeResourceNodeProps = {
-			type: CommonCartridgeResourceType.WEB_CONTENT,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			html: faker.lorem.paragraph(),
-			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+			...createCommonCartridgeWebContentResourceProps(),
 			version: CommonCartridgeVersion.V_1_1_0,
 		};
-		const organizationNodeProps: CommonCartridgeOrganizationNodeProps = {
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			version: CommonCartridgeVersion.V_1_1_0,
-			type: CommonCartridgeElementType.ORGANIZATION,
-		};
+		const organizationNodeProps = createCommonCartridgeOrganizationNodeProps();
 		const organizationNode = new CommonCartridgeOrganizationNode(organizationNodeProps, sut, null);
 		const resourceNode = new CommonCartridgeResourceNode(resourceNodeProps, organizationNode);
 

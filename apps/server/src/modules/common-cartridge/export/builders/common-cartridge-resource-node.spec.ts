@@ -1,11 +1,8 @@
-import { faker } from '@faker-js/faker';
+import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-node-props.factory';
 import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces';
-import {
-	CommonCartridgeOrganizationNode,
-	CommonCartridgeOrganizationNodeProps,
-} from './common-cartridge-organization-node';
+import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 import { CommonCartridgeResourceNode, CommonCartridgeResourceNodeProps } from './common-cartridge-resource-node';
 
@@ -20,12 +17,7 @@ describe('CommonCartridgeResourceNode', () => {
 					version: CommonCartridgeVersion.V_1_1_0,
 				};
 
-				const organizationNodeProps: CommonCartridgeOrganizationNodeProps = {
-					identifier: faker.string.uuid(),
-					title: faker.lorem.words(),
-					version: CommonCartridgeVersion.V_1_1_0,
-					type: CommonCartridgeElementType.ORGANIZATION,
-				};
+				const organizationNodeProps = createCommonCartridgeOrganizationNodeProps();
 
 				const resourceCollectionBuilder: CommonCartridgeResourceCollectionBuilder =
 					new CommonCartridgeResourceCollectionBuilder();

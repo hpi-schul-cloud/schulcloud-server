@@ -1,22 +1,13 @@
-import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
+import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-node-props.factory';
 import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElement } from '../interfaces';
-import {
-	CommonCartridgeOrganizationNode,
-	CommonCartridgeOrganizationNodeProps,
-} from './common-cartridge-organization-node';
+import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
 describe('CommonCartridgeOrganizationNode', () => {
 	const setupOrganizationNodeProps = () => {
-		const props: CommonCartridgeOrganizationNodeProps = {
-			type: CommonCartridgeElementType.ORGANIZATION,
-			version: CommonCartridgeVersion.V_1_1_0,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-		};
+		const props = createCommonCartridgeOrganizationNodeProps();
 
 		return props;
 	};
