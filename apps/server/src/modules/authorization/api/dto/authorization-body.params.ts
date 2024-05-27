@@ -17,7 +17,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@ApiProperty({
 		enum: Permission,
 		isArray: true,
-		description: 'Needed user permissions based on user role, that are needed to execute the operation.',
+		description: 'User permissions that are needed to execute the operation.',
 		example: Permission.USER_UPDATE,
 	})
 	requiredPermissions!: Permission[];
@@ -33,7 +33,7 @@ export class AuthorizationBodyParams {
 	@IsEnum(AuthorizableReferenceType)
 	@ApiProperty({
 		enum: AuthorizableReferenceType,
-		description: 'Define for which known entity, or domain object the operation should be peformend.',
+		description: 'The entity or domain object the operation should be performed on.',
 		example: AuthorizableReferenceType.User,
 	})
 	referenceType!: AuthorizableReferenceType;
