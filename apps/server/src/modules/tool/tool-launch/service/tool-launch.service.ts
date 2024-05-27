@@ -105,7 +105,6 @@ export class ToolLaunchService {
 			status.isOutdatedOnScopeSchool ||
 			status.isOutdatedOnScopeContext ||
 			status.isDeactivated ||
-			status.isNotLicensed ||
 			status.isIncompleteOnScopeContext
 		) {
 			throw new ToolStatusNotLaunchableLoggableException(

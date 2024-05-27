@@ -36,7 +36,7 @@ export class ToolConfigurationStatusService {
 			isIncompleteOperationalOnScopeContext: false,
 			isOutdatedOnScopeSchool: false,
 			isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
-			isNotLicensed: await this.isToolNotLicensed(externalTool, userId),
+			isNotLicensed: !(await this.isToolLicensed(externalTool, userId)),
 		});
 
 		const schoolParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
@@ -77,16 +77,16 @@ export class ToolConfigurationStatusService {
 		return !!(externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated));
 	}
 
-	private async isToolNotLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
+	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
 			const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium) {
-				return !this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
 			}
 		}
-		return false;
+		return true;
 	}
 
 	private isIncompleteOperational(errors: ValidationError[]): boolean {

@@ -300,300 +300,300 @@ describe(ToolConfigurationStatusService.name, () => {
 				expect(commonToolValidationService.validateParameters).toHaveBeenCalledWith(externalTool, contextExternalTool);
 			});
 		});
-	});
 
-	describe('when validation of ContextExternalTool throws at least 1 missing value on mandatory parameter errors', () => {
-		const setup = () => {
-			const userId: string = new ObjectId().toHexString();
-			const customParameter = customParameterFactory.build();
-			const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
-			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-				toolId: externalTool.id,
-			});
-			const contextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(schoolExternalTool.id)
-				.buildWithId();
+		describe('when validation of ContextExternalTool throws at least 1 missing value on mandatory parameter errors', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const customParameter = customParameterFactory.build();
+				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.buildWithId();
 
-			commonToolValidationService.validateParameters.mockReturnValueOnce([]);
-			commonToolValidationService.validateParameters.mockReturnValueOnce([
-				new ToolParameterMandatoryValueMissingLoggableException(undefined, customParameter),
-				new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
-				new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
-			]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([
+					new ToolParameterMandatoryValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+				]);
 
-			return {
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId,
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId,
+				};
 			};
-		};
 
-		it('should return incomplete as tool status', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should return incomplete as tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId
-			);
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId
+				);
 
-			expect(status).toEqual<ContextExternalToolConfigurationStatus>({
-				isOutdatedOnScopeSchool: false,
-				isOutdatedOnScopeContext: true,
-				isIncompleteOnScopeContext: true,
-				isIncompleteOperationalOnScopeContext: false,
-				isDeactivated: false,
-				isNotLicensed: false,
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: true,
+					isIncompleteOperationalOnScopeContext: false,
+					isDeactivated: false,
+					isNotLicensed: false,
+				});
 			});
 		});
-	});
 
-	describe('when validation of ContextExternalTool throws at least 1 missing value on optional parameter errors', () => {
-		const setup = () => {
-			const userId: string = new ObjectId().toHexString();
-			const customParameter = customParameterFactory.build();
-			const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
-			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-				toolId: externalTool.id,
-			});
-			const contextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(schoolExternalTool.id)
-				.buildWithId();
+		describe('when validation of ContextExternalTool throws at least 1 missing value on optional parameter errors', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const customParameter = customParameterFactory.build();
+				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.buildWithId();
 
-			commonToolValidationService.validateParameters.mockReturnValueOnce([]);
-			commonToolValidationService.validateParameters.mockReturnValueOnce([
-				new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
-				new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
-			]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterDuplicateLoggableException(undefined, customParameter.name),
+				]);
 
-			return {
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId,
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId,
+				};
 			};
-		};
 
-		it('should return incomplete operational as tool status', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should return incomplete operational as tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId
-			);
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId
+				);
 
-			expect(status).toEqual<ContextExternalToolConfigurationStatus>({
-				isOutdatedOnScopeSchool: false,
-				isOutdatedOnScopeContext: true,
-				isIncompleteOnScopeContext: false,
-				isIncompleteOperationalOnScopeContext: true,
-				isDeactivated: false,
-				isNotLicensed: false,
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: true,
+					isDeactivated: false,
+					isNotLicensed: false,
+				});
 			});
 		});
-	});
 
-	describe('when validation of ContextExternalTool throws only missing value on optional parameter errors', () => {
-		const setup = () => {
-			const userId: string = new ObjectId().toHexString();
-			const customParameter = customParameterFactory.build();
-			const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
-			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-				toolId: externalTool.id,
-			});
-			const contextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(schoolExternalTool.id)
-				.buildWithId();
+		describe('when validation of ContextExternalTool throws only missing value on optional parameter errors', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const customParameter = customParameterFactory.build();
+				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.buildWithId();
 
-			commonToolValidationService.validateParameters.mockReturnValueOnce([]);
-			commonToolValidationService.validateParameters.mockReturnValueOnce([
-				new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
-				new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
-				new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
-			]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+					new ToolParameterOptionalValueMissingLoggableException(undefined, customParameter),
+				]);
 
-			return {
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId,
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId,
+				};
 			};
-		};
 
-		it('should return incomplete operational as tool status', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should return incomplete operational as tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId
-			);
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId
+				);
 
-			expect(status).toEqual<ContextExternalToolConfigurationStatus>({
-				isOutdatedOnScopeSchool: false,
-				isOutdatedOnScopeContext: false,
-				isIncompleteOnScopeContext: false,
-				isIncompleteOperationalOnScopeContext: true,
-				isDeactivated: false,
-				isNotLicensed: false,
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: false,
+					isOutdatedOnScopeContext: false,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: true,
+					isDeactivated: false,
+					isNotLicensed: false,
+				});
 			});
 		});
-	});
 
-	describe('when SchoolExternalTool is deactivated', () => {
-		const setup = () => {
-			const userId: string = new ObjectId().toHexString();
-			const externalTool = externalToolFactory.buildWithId();
-			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-				toolId: externalTool.id,
-				status: { isDeactivated: true },
-			});
-			const contextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(schoolExternalTool.id)
-				.buildWithId();
+		describe('when SchoolExternalTool is deactivated', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+					status: { isDeactivated: true },
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.buildWithId();
 
-			commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-			commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 
-			return {
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId,
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId,
+				};
 			};
-		};
 
-		it('should return status is deactivated', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should return status is deactivated', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId
-			);
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId
+				);
 
-			expect(status).toEqual<ContextExternalToolConfigurationStatus>({
-				isOutdatedOnScopeSchool: true,
-				isOutdatedOnScopeContext: true,
-				isIncompleteOnScopeContext: false,
-				isIncompleteOperationalOnScopeContext: false,
-				isDeactivated: true,
-				isNotLicensed: false,
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: true,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isDeactivated: true,
+					isNotLicensed: false,
+				});
 			});
 		});
-	});
 
-	describe('when externalTool is deactivated', () => {
-		const setup = () => {
-			const userId: string = new ObjectId().toHexString();
-			const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
-			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-				toolId: externalTool.id,
-			});
-			const contextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(schoolExternalTool.id)
-				.buildWithId();
+		describe('when externalTool is deactivated', () => {
+			const setup = () => {
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.buildWithId();
 
-			commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-			commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 
-			return {
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId,
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId,
+				};
 			};
-		};
 
-		it('should return deactivated tool status', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should return deactivated tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId
-			);
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId
+				);
 
-			expect(status).toEqual<ContextExternalToolConfigurationStatus>({
-				isOutdatedOnScopeSchool: true,
-				isOutdatedOnScopeContext: true,
-				isIncompleteOnScopeContext: false,
-				isIncompleteOperationalOnScopeContext: false,
-				isDeactivated: true,
-				isNotLicensed: false,
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: true,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isDeactivated: true,
+					isNotLicensed: false,
+				});
 			});
 		});
-	});
 
-	describe('when license feature is enabled and user has no license for externalTool', () => {
-		const setup = () => {
-			configService.get.mockReturnValueOnce(true);
+		describe('when license feature is enabled and user has no license for externalTool', () => {
+			const setup = () => {
+				configService.get.mockReturnValueOnce(true);
 
-			const userId: string = new ObjectId().toHexString();
-			const externalTool = externalToolFactory.withMedium().buildWithId();
-			const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-				toolId: externalTool.id,
-			});
-			const contextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(schoolExternalTool.id)
-				.buildWithId();
-			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+				const userId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withMedium().buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id)
+					.buildWithId();
+				const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-			commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
-			userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
 
-			return {
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId,
-				mediaUserLicense,
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId,
+					mediaUserLicense,
+				};
 			};
-		};
 
-		it('should get the mediaUserLicenses for user', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should get the mediaUserLicenses for user', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
 
-			expect(userLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
-		});
+				expect(userLicenseService.getMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
+			});
 
-		it('should check if user has license for external tool', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId, mediaUserLicense } = setup();
+			it('should check if user has license for external tool', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId, mediaUserLicense } = setup();
 
-			await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
+				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool, userId);
 
-			expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalledWith(externalTool.medium, [
-				mediaUserLicense,
-			]);
-		});
+				expect(mediaUserLicenseService.hasLicenseForExternalTool).toHaveBeenCalledWith(externalTool.medium, [
+					mediaUserLicense,
+				]);
+			});
 
-		it('should return not licensed tool status', async () => {
-			const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
+			it('should return not licensed tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-			const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
-				externalTool,
-				schoolExternalTool,
-				contextExternalTool,
-				userId
-			);
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					userId
+				);
 
-			expect(status).toEqual<ContextExternalToolConfigurationStatus>({
-				isOutdatedOnScopeSchool: true,
-				isOutdatedOnScopeContext: true,
-				isIncompleteOnScopeContext: false,
-				isIncompleteOperationalOnScopeContext: false,
-				isDeactivated: false,
-				isNotLicensed: true,
+				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
+					isOutdatedOnScopeSchool: true,
+					isOutdatedOnScopeContext: true,
+					isIncompleteOnScopeContext: false,
+					isIncompleteOperationalOnScopeContext: false,
+					isDeactivated: false,
+					isNotLicensed: true,
+				});
 			});
 		});
 	});
