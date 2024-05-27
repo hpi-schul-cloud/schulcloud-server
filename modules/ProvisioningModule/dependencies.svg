@@ -24,6 +24,10 @@
 <title>cluster_ProvisioningModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 4447,-268 4447,-70 8,-70"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_ProvisioningModule_exports</title>
+<polygon fill="none" stroke="black" points="2917,-208 2917,-260 3067,-260 3067,-208 2917,-208"/>
+</g>
 <g id="clust3" class="cluster">
 <title>cluster_ProvisioningModule_imports</title>
 <polygon fill="none" stroke="black" points="2941,-78 2941,-130 4439,-130 4439,-78 2941,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust6" class="cluster">
 <title>cluster_ProvisioningModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 2933,-130 2933,-78 16,-78"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_ProvisioningModule_exports</title>
-<polygon fill="none" stroke="black" points="2917,-208 2917,-260 3067,-260 3067,-208 2917,-208"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">

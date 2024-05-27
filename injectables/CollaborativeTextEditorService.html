@@ -652,7 +652,7 @@ export class CollaborativeTextEditorService {
 	}
 
 	private buildSessionExpiryDate(): Date {
-		const cookieExpiresMilliseconds &#x3D; Number(this.configService.get(&#x27;ETHERPAD_COOKIE__EXPIRES_SECONDS&#x27;)) * 1000;
+		const cookieExpiresMilliseconds &#x3D; Number(this.configService.get(&#x27;ETHERPAD_COOKIE_EXPIRES_SECONDS&#x27;)) * 1000;
 		const sessionCookieExpiryDate &#x3D; new Date(Date.now() + cookieExpiresMilliseconds);
 
 		return sessionCookieExpiryDate;
