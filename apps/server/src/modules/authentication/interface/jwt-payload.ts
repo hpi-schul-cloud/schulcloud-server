@@ -12,8 +12,8 @@ export interface CreateJwtPayload {
 export interface JwtPayload extends CreateJwtPayload {
 	/** audience */
 	aud: string;
-	/** expiration in // TODO
-	 *
+	/**
+	 * expiration in
 	 */
 	exp: number;
 	iat: number;
@@ -21,8 +21,8 @@ export interface JwtPayload extends CreateJwtPayload {
 	iss: string;
 	jti: string;
 
-	/** // TODO
-	 *
+	/**
+	 * subject
 	 */
 	sub: string;
 }

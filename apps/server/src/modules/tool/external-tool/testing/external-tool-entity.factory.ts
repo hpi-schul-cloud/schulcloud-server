@@ -79,6 +79,7 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, E
 				...medium,
 				mediumId: 'mediumId',
 				publisher: 'publisher',
+				mediaSourceId: 'mediaSourceId',
 			}),
 		};
 
