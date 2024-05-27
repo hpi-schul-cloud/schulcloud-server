@@ -37,7 +37,7 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
-import { ExternalToolUpdate } from './dto';
+import { ExternalToolImportResult, ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
 describe(ExternalToolUc.name, () => {
@@ -269,6 +269,159 @@ describe(ExternalToolUc.name, () => {
 				expect(logoService.fetchLogo).toHaveBeenCalledWith(
 					expect.objectContaining<ExternalToolProps>({ ...externalTool.getProps(), id: expect.any(String) })
 				);
+			});
+		});
+	});
+
+	describe('importExternalTools', () => {
+		describe('when importing multiple external tools', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const externalTool1 = externalToolFactory.build({
+					name: 'tool1',
+					medium: {
+						mediumId: 'medium1',
+						mediaSourceId: 'mediumSource1',
+					},
+				});
+				const externalTool2 = externalToolFactory.build({
+					name: 'tool2',
+					medium: {
+						mediumId: 'medium2',
+						mediaSourceId: 'mediumSource2',
+					},
+				});
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				logoService.fetchLogo.mockResolvedValueOnce(undefined);
+				externalToolService.createExternalTool.mockResolvedValueOnce(externalTool1);
+				externalToolService.createExternalTool.mockResolvedValueOnce(externalTool2);
+
+				return {
+					user,
+					externalTool1,
+					externalTool2,
+				};
+			};
+
+			it('should check the users permission', async () => {
+				const { user, externalTool1, externalTool2 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+
+			it('should validate each tool', async () => {
+				const { user, externalTool1, externalTool2 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
+
+				expect(toolValidationService.validateCreate).toHaveBeenNthCalledWith(
+					1,
+					new ExternalTool({
+						...externalTool1.getProps(),
+						id: expect.any(String),
+					})
+				);
+				expect(toolValidationService.validateCreate).toHaveBeenNthCalledWith(
+					2,
+					new ExternalTool({
+						...externalTool2.getProps(),
+						id: expect.any(String),
+					})
+				);
+			});
+
+			it('should save each tool', async () => {
+				const { user, externalTool1, externalTool2 } = setup();
+
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
+
+				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
+					1,
+					new ExternalTool({
+						...externalTool1.getProps(),
+						id: expect.any(String),
+					})
+				);
+				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
+					2,
+					new ExternalTool({
+						...externalTool2.getProps(),
+						id: expect.any(String),
+					})
+				);
+			});
+
+			it('should return a result report', async () => {
+				const { user, externalTool1, externalTool2 } = setup();
+
+				const result = await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
+
+				expect(result).toEqual<ExternalToolImportResult[]>([
+					{
+						toolName: externalTool1.name,
+						mediumId: externalTool1.medium?.mediumId,
+						mediumSourceId: externalTool1.medium?.mediaSourceId,
+						toolId: externalTool1.id,
+					},
+					{
+						toolName: externalTool2.name,
+						mediumId: externalTool2.medium?.mediumId,
+						mediumSourceId: externalTool2.medium?.mediaSourceId,
+						toolId: externalTool2.id,
+					},
+				]);
+			});
+		});
+
+		describe('when an external tools fails the validation', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const externalTool1 = externalToolFactory.build({
+					name: 'tool1',
+					medium: {
+						mediumId: 'medium1',
+						mediaSourceId: 'mediumSource1',
+					},
+				});
+				const externalTool2 = externalToolFactory.build({
+					name: 'tool1',
+					medium: {
+						mediumId: 'medium2',
+						mediaSourceId: 'mediumSource2',
+					},
+				});
+				const error = new Error('same tool name');
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				logoService.fetchLogo.mockResolvedValueOnce(undefined);
+				toolValidationService.validateCreate.mockResolvedValueOnce();
+				externalToolService.createExternalTool.mockResolvedValueOnce(externalTool1);
+				toolValidationService.validateCreate.mockRejectedValueOnce(error);
+
+				return {
+					user,
+					externalTool1,
+					externalTool2,
+					error,
+				};
+			};
+
+			it('should return an error in the result report', async () => {
+				const { user, externalTool1, externalTool2, error } = setup();
+
+				const results = await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
+
+				expect(results).toHaveLength(2);
+				expect(results[1]).toEqual<ExternalToolImportResult>({
+					toolName: externalTool2.name,
+					mediumId: externalTool2.medium?.mediumId,
+					mediumSourceId: externalTool2.medium?.mediaSourceId,
+					toolId: undefined,
+					error: error.message,
+				});
 			});
 		});
 	});
