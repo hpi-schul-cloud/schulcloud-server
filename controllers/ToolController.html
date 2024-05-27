@@ -205,6 +205,16 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#importExternalTools" >importExternalTools</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateExternalTool" >updateExternalTool</a>
                             </li>
                         </ul>
@@ -260,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -353,8 +363,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="158"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:158</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -446,8 +456,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="211"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:211</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="236"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:236</a></div>
                         </td>
                     </tr>
 
@@ -664,8 +674,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:142</a></div>
                         </td>
                     </tr>
 
@@ -756,8 +766,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="176"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:176</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="201"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:201</a></div>
                         </td>
                     </tr>
 
@@ -848,8 +858,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -911,6 +921,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="importExternalTools"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>importExternalTools</b></span>
+                        <a href="#importExternalTools"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>importExternalTools(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolBulkParams: <a href="../classes/ExternalToolBulkCreateParams.html" target="_self">ExternalToolBulkCreateParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;/import&#x27;)<br />@ApiCreatedResponse({description: &#x27;The Tool has been successfully created.&#x27;, type: ExternalToolResponse})<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br />@ApiBadRequestResponse({description: &#x27;Request data has invalid format.&#x27;})<br />@ApiOperation({summary: &#x27;Creates multiple ExternalTools at the same time.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalToolBulkParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalToolBulkCreateParams.html" target="_self" >ExternalToolBulkCreateParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ExternalToolImportResultListResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateExternalTool"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -942,8 +1046,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="136"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:136</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:161</a></div>
                         </td>
                     </tr>
 
@@ -1032,6 +1136,7 @@ import {
 	StreamableFile,
 } from &#x27;@nestjs/common&#x27;;
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -1055,10 +1160,12 @@ import { ExternalToolLogo } from &#x27;../domain/external-tool-logo&#x27;;
 
 import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
 import { ExternalToolLogoService } from &#x27;../service&#x27;;
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from &#x27;../uc&#x27;;
+import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUc, ExternalToolUpdate } from &#x27;../uc&#x27;;
 import {
+	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
+	ExternalToolImportResultListResponse,
 	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
@@ -1098,6 +1205,28 @@ export class ToolController {
 		this.logger.debug(&#x60;ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}&#x60;);
 
 		return mapped;
+	}
+
+	@Post(&#x27;/import&#x27;)
+	@ApiCreatedResponse({ description: &#x27;The Tool has been successfully created.&#x27;, type: ExternalToolResponse })
+	@ApiForbiddenResponse({ description: &#x27;User is not allowed to access this resource.&#x27; })
+	@ApiUnauthorizedResponse({ description: &#x27;User is not logged in.&#x27; })
+	@ApiBadRequestResponse({ description: &#x27;Request data has invalid format.&#x27; })
+	@ApiOperation({ summary: &#x27;Creates multiple ExternalTools at the same time.&#x27; })
+	async importExternalTools(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
+	): Promise&lt;ExternalToolImportResultListResponse&gt; {
+		const externalTools: ExternalToolCreate[] &#x3D; this.externalToolDOMapper.mapBulkCreateRequest(externalToolBulkParams);
+
+		const results: ExternalToolImportResult[] &#x3D; await this.externalToolUc.importExternalTools(
+			currentUser.userId,
+			externalTools
+		);
+
+		const response: ExternalToolImportResultListResponse &#x3D; ExternalToolResponseMapper.mapToImportResponse(results);
+
+		return response;
 	}
 
 	@Get()

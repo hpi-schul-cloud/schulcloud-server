@@ -4958,6 +4958,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalTool.html" data-type="entity-link" >ExternalTool</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ExternalToolBulkCreateParams.html" data-type="entity-link" >ExternalToolBulkCreateParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ExternalToolConfig.html" data-type="entity-link" >ExternalToolConfig</a>
                             </li>
                             <li class="link">
@@ -5007,6 +5010,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolIdParams.html" data-type="entity-link" >ExternalToolIdParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolImportResult.html" data-type="entity-link" >ExternalToolImportResult</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolImportResultListResponse.html" data-type="entity-link" >ExternalToolImportResultListResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolImportResultResponse.html" data-type="entity-link" >ExternalToolImportResultResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolLogo.html" data-type="entity-link" >ExternalToolLogo</a>
