@@ -1,4 +1,4 @@
-import { MediaBoardColors } from '@modules/board/domain';
+import { MediaBoardColors } from './types';
 import { MediaAvailableLineElement } from './media-available-line-element.do';
 // TODO
 export class MediaAvailableLine {

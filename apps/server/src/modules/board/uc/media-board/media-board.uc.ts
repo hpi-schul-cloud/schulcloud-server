@@ -5,15 +5,16 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import {
-	MediaBoardLayoutType,
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	MediaBoard,
 	MediaBoardNodeFactory,
 	MediaLine,
+	BoardLayout,
 } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
+import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaBoardUc {
@@ -41,7 +42,12 @@ export class MediaBoardUc {
 
 		let board: MediaBoard;
 		if (!existingBoards.length) {
-			board = this.mediaBoardNodeFactory.buildMediaBoard({ context });
+			board = this.mediaBoardNodeFactory.buildMediaBoard({
+				context,
+				layout: BoardLayout.LIST,
+				backgroundColor: MediaBoardColors.TRANSPARENT,
+				collapsed: false,
+			});
 			await this.boardNodeService.addRoot(board);
 		} else {
 			board = existingBoards[0];
@@ -57,22 +63,24 @@ export class MediaBoardUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		const line = this.mediaBoardNodeFactory.buildMediaLine({ title: '' });
+		const line = this.mediaBoardNodeFactory.buildMediaLine({
+			title: '',
+			backgroundColor: MediaBoardColors.TRANSPARENT,
+			collapsed: false,
+		});
 		await this.boardNodeService.addToParent(board, line);
 
 		return line;
 	}
 
-	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType): Promise<void> {
+	public async setLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		await this.mediaBoardService.setLayout(board, layout);
+		await this.mediaBoardService.updateLayout(board, layout);
 	}
 
 	private checkFeatureEnabled(): void {

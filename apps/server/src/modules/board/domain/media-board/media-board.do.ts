@@ -1,11 +1,36 @@
-import type { BoardExternalReference, MediaBoardProps } from '../types';
+import { BoardExternalReference, BoardLayout, MediaBoardProps } from '../types';
 import type { AnyMediaBoardNode } from './types/any-media-board-node';
 import { MediaLine } from './media-line.do';
 import { BoardNode } from '../board-node.do';
+import { MediaBoardColors } from './types';
 
 export class MediaBoard extends BoardNode<MediaBoardProps> {
 	get context(): BoardExternalReference {
 		return this.props.context;
+	}
+
+	set layout(layout: BoardLayout) {
+		this.props.layout = layout;
+	}
+
+	get layout(): BoardLayout {
+		return this.props.layout;
+	}
+
+	get backgroundColor(): MediaBoardColors {
+		return this.props.backgroundColor;
+	}
+
+	set backgroundColor(backgroundColor: MediaBoardColors) {
+		this.props.backgroundColor = backgroundColor;
+	}
+
+	get collapsed(): boolean {
+		return this.props.collapsed;
+	}
+
+	set collapsed(collapsed: boolean) {
+		this.props.collapsed = collapsed;
 	}
 
 	canHaveChild(childNode: AnyMediaBoardNode): boolean {

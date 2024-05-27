@@ -2,6 +2,7 @@ import type { EntityId, InputFormat } from '@shared/domain/types';
 import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
 import { BoardLayout } from './board-layout.enum';
+import { MediaBoardColors } from '../media-board/types';
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -66,6 +67,9 @@ export interface SubmissionItemProps extends BoardNodeProps {
 
 export interface MediaBoardProps extends BoardNodeProps {
 	context: BoardExternalReference;
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
+	layout: BoardLayout;
 }
 
 // TODO use only one interface for media-external-tool and external-tool
@@ -74,6 +78,8 @@ export interface MediaExternalToolElementProps extends BoardNodeProps {
 }
 
 export interface MediaLineProps extends BoardNodeProps {
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
 	title: string;
 }
 

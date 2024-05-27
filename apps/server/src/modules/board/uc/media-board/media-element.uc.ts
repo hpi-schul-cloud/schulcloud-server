@@ -66,7 +66,7 @@ export class MediaElementUc {
 				mediaBoard
 			);
 
-		const createdElement: MediaExternalToolElement = await this.mediaBoardNodeFactory.buildExternalToolElemen({
+		const createdElement: MediaExternalToolElement = this.mediaBoardNodeFactory.buildExternalToolElement({
 			contextExternalToolId: createdContextExternalTool.id,
 		});
 		await this.boardNodeService.addToParent(line, createdElement, position);

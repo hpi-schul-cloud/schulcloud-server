@@ -127,8 +127,8 @@ export class MediaAvailableLineService {
 
 		const line: MediaAvailableLine = new MediaAvailableLine({
 			elements: lineElements,
-			backgroundColor: mediaBoard.mediaAvailableLineBackgroundColor,
-			collapsed: mediaBoard.mediaAvailableLineCollapsed,
+			backgroundColor: mediaBoard.backgroundColor,
+			collapsed: mediaBoard.collapsed,
 		});
 
 		return line;

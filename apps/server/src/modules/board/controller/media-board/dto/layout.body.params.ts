@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { MediaBoardLayoutType } from '../../../domain';
+import { BoardLayout } from '../../../domain/types';
 
 export class LayoutBodyParams {
-	@IsEnum(MediaBoardLayoutType)
-	@ApiProperty({ enum: MediaBoardLayoutType, enumName: 'MediaBoardLayoutType' })
-	layout!: MediaBoardLayoutType;
+	@IsEnum(BoardLayout)
+	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
+	layout!: BoardLayout;
 }

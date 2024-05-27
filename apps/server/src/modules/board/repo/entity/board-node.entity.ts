@@ -2,6 +2,7 @@ import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import { AnyBoardNode, BoardLayout, BoardNodeType, ROOT_PATH } from '../../domain';
+import { MediaBoardColors } from '../../domain/media-board/types';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
 import { ObjectIdType } from './object-id-type';
@@ -41,13 +42,13 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Embedded(() => Context, { prefix: false, nullable: true })
 	context: BoardNodeEntityProps['context'] | undefined;
 
+	@Enum({ type: 'BoardLayout', nullable: true })
+	layout: BoardLayout | undefined;
+
 	// ColumnBoard
 	// --------------------------------------------------------------------------
 	@Property({ type: 'boolean', nullable: true })
 	isVisible: boolean | undefined;
-
-	@Enum({ type: 'BoardLayout', nullable: true })
-	layout: BoardLayout | undefined;
 
 	// Card
 	// --------------------------------------------------------------------------
@@ -95,4 +96,12 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	// --------------------------------------------------------------------------
 	@Property({ type: ObjectIdType, fieldName: 'contextExternalTool', nullable: true })
 	contextExternalToolId: EntityId | undefined;
+
+	// MediaLine, MediaBoard
+	// --------------------------------------------------------------------------
+	@Property({ type: 'boolean', nullable: true })
+	collapsed: boolean | undefined;
+
+	@Property({ type: 'MediaBoardColors', nullable: true })
+	backgroundColor: MediaBoardColors | undefined;
 }

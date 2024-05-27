@@ -3,8 +3,9 @@ import { EntityId } from '@shared/domain/types';
 
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { ContextExternalTool, ContextExternalToolWithId, ContextRef } from '@modules/tool/context-external-tool/domain';
-import { SchoolExternalToolRefDO, SchoolExternalToolWithId } from '@modules/tool/school-external-tool/domain';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	AnyMediaBoardNode,
 	BoardExternalReference,
@@ -14,6 +15,10 @@ import {
 	MediaExternalToolElement,
 } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
+
+type WithLayout<T> = Extract<T, { layout: unknown }>;
+type WithCollapsed<T> = Extract<T, { collapsed: unknown }>;
+type WithBackgroundColor<T> = Extract<T, { backgroundColor: unknown }>;
 
 @Injectable()
 export class MediaBoardService {
@@ -32,26 +37,22 @@ export class MediaBoardService {
 
 	public async createContextExternalToolForMediaBoard(
 		schoolId: EntityId,
-		schoolExternalTool: SchoolExternalToolWithId,
+		schoolExternalTool: SchoolExternalTool,
 		mediaBoard: MediaBoard
-	): Promise<ContextExternalToolWithId> {
-		const contextExternalTool: ContextExternalToolWithId =
-			await this.contextExternalToolService.saveContextExternalTool(
-				new ContextExternalTool({
-					schoolToolRef: new SchoolExternalToolRefDO({ schoolId, schoolToolId: schoolExternalTool.id }),
-					contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
-					toolVersion: 0,
-					parameters: [],
-				})
-			);
+	): Promise<ContextExternalTool> {
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
+			new ContextExternalTool({
+				id: new ObjectId().toHexString(),
+				schoolToolRef: new SchoolExternalToolRef({ schoolId, schoolToolId: schoolExternalTool.id }),
+				contextRef: new ContextRef({ id: mediaBoard.id, type: ToolContextType.MEDIA_BOARD }),
+				parameters: [],
+			})
+		);
 
 		return contextExternalTool;
 	}
 
-	public async checkElementExists(
-		mediaBoard: MediaBoard,
-		schoolExternalTool: SchoolExternalToolWithId
-	): Promise<boolean> {
+	public async checkElementExists(mediaBoard: MediaBoard, schoolExternalTool: SchoolExternalTool): Promise<boolean> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: { schoolToolId: schoolExternalTool.id },
 		});
@@ -79,22 +80,24 @@ export class MediaBoardService {
 		return elements;
 	}
 
-	// TODO
-	public async updateAvailableLineColor(mediaBoard: MediaBoard, color: MediaBoardColors): Promise<void> {
-		mediaBoard.mediaAvailableLineBackgroundColor = color;
+	public async updateBackgroundColor<T extends WithBackgroundColor<AnyMediaBoardNode>>(
+		node: T,
+		backgroundColor: T['backgroundColor']
+	) {
+		node.backgroundColor = backgroundColor;
 
-		await this.boardDoRepo.save(mediaBoard);
+		await this.boardNodeRepo.save(node);
 	}
 
-	public async collapseAvailableLine(mediaBoard: MediaBoard, mediaAvailableLineCollapsed: boolean): Promise<void> {
-		mediaBoard.mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
+	public async updateCollapsed<T extends WithCollapsed<AnyMediaBoardNode>>(node: T, collapsed: T['collapsed']) {
+		node.collapsed = collapsed;
 
-		await this.boardDoRepo.save(mediaBoard);
+		await this.boardNodeRepo.save(node);
 	}
 
-	public async setLayout(mediaBoard: MediaBoard, layout: MediaBoardLayoutType): Promise<void> {
-		mediaBoard.layout = layout;
+	public async updateLayout<T extends WithLayout<AnyMediaBoardNode>>(node: T, layout: T['layout']) {
+		node.layout = layout;
 
-		await this.boardDoRepo.save(mediaBoard);
+		await this.boardNodeRepo.save(node);
 	}
 }

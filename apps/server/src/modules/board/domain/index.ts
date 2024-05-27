@@ -16,5 +16,3 @@ export * from './submission-item.do';
 export * from './path-utils';
 export * from './types';
 export * from './type-mapping';
-// TODO check this after merge
-export { MediaBoardColors, MediaBoardLayoutType } from './interface';

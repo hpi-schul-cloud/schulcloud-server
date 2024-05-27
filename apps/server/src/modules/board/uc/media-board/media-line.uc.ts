@@ -3,16 +3,19 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import type { EntityId } from '@shared/domain/types';
-import { MediaBoard, MediaBoardColors, MediaLine } from '../../domain';
+import { MediaBoard, MediaLine } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService } from '../../service';
+import { MediaBoardService } from '../../service/media-board';
+import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaLineUc {
 	constructor(
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>
+		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		private readonly mediaBoardService: MediaBoardService
 	) {}
 
 	public async moveLine(
@@ -48,7 +51,7 @@ export class MediaLineUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-		await this.mediaLineService.updateColor(line, color);
+		await this.mediaBoardService.updateBackgroundColor(line, color);
 	}
 
 	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean): Promise<void> {
@@ -58,7 +61,7 @@ export class MediaLineUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-		await this.mediaLineService.collapse(line, collapsed);
+		await this.mediaBoardService.updateCollapsed(line, collapsed);
 	}
 
 	public async deleteLine(userId: EntityId, lineId: EntityId): Promise<void> {
