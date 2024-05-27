@@ -4,15 +4,15 @@ import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
-import { MediaBoardLayoutType } from '../../domain';
-import type { MediaBoardConfig } from '../../media-board.config';
 import {
+	MediaBoardLayoutType,
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	MediaBoard,
 	MediaBoardNodeFactory,
 	MediaLine,
 } from '../../domain';
+import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()

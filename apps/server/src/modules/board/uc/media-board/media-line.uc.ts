@@ -48,7 +48,7 @@ export class MediaLineUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
-        await this.mediaLineService.updateColor(line, color);
+		await this.mediaLineService.updateColor(line, color);
 	}
 
 	public async collapseLine(userId: EntityId, lineId: EntityId, collapsed: boolean): Promise<void> {

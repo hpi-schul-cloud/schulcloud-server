@@ -79,22 +79,22 @@ export class MediaBoardService {
 		return elements;
 	}
 
-    // TODO
-    public async updateAvailableLineColor(mediaBoard: MediaBoard, color: MediaBoardColors): Promise<void> {
-        mediaBoard.mediaAvailableLineBackgroundColor = color;
+	// TODO
+	public async updateAvailableLineColor(mediaBoard: MediaBoard, color: MediaBoardColors): Promise<void> {
+		mediaBoard.mediaAvailableLineBackgroundColor = color;
 
-        await this.boardDoRepo.save(mediaBoard);
-    }
+		await this.boardDoRepo.save(mediaBoard);
+	}
 
-    public async collapseAvailableLine(mediaBoard: MediaBoard, mediaAvailableLineCollapsed: boolean): Promise<void> {
-        mediaBoard.mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
+	public async collapseAvailableLine(mediaBoard: MediaBoard, mediaAvailableLineCollapsed: boolean): Promise<void> {
+		mediaBoard.mediaAvailableLineCollapsed = mediaAvailableLineCollapsed;
 
-        await this.boardDoRepo.save(mediaBoard);
-    }
+		await this.boardDoRepo.save(mediaBoard);
+	}
 
-    public async setLayout(mediaBoard: MediaBoard, layout: MediaBoardLayoutType): Promise<void> {
-        mediaBoard.layout = layout;
+	public async setLayout(mediaBoard: MediaBoard, layout: MediaBoardLayoutType): Promise<void> {
+		mediaBoard.layout = layout;
 
-        await this.boardDoRepo.save(mediaBoard);
-    }
+		await this.boardDoRepo.save(mediaBoard);
+	}
 }

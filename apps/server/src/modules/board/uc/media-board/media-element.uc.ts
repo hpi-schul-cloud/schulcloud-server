@@ -60,7 +60,11 @@ export class MediaElementUc {
 		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
 
 		const createdContextExternalTool: ContextExternalTool =
-			await this.mediaBoardService.createContextExternalToolForMediaBoard(user.school.id, schoolExternalTool, mediaBoard);
+			await this.mediaBoardService.createContextExternalToolForMediaBoard(
+				user.school.id,
+				schoolExternalTool,
+				mediaBoard
+			);
 
 		const createdElement: MediaExternalToolElement = await this.mediaBoardNodeFactory.buildExternalToolElemen({
 			contextExternalToolId: createdContextExternalTool.id,

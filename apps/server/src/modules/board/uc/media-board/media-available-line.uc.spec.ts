@@ -21,8 +21,13 @@ import {
 	userFactory as userEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
-import { MediaBoardColors } from '../../domain';
+import {
+	MediaAvailableLine,
+	MediaAvailableLineElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaBoardColors,
+} from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, MediaAvailableLineService, MediaBoardService } from '../../service';
 import { MediaAvailableLineUc } from './media-available-line.uc';
