@@ -112,15 +112,7 @@ export class FilesStorageController {
 
 		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
-		this.setAttachmentDispositionHeaderForNonPDF(fileResponse, response);
-
 		return streamableFile;
-	}
-
-	private setAttachmentDispositionHeaderForNonPDF(fileResponse: GetFileResponse, response: Response): void {
-		if (fileResponse.contentType !== 'application/pdf') {
-			response.header('Content-Disposition', 'attachment;');
-		}
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a preview file.' })

@@ -1,5 +1,5 @@
-import { NotImplementedException, StreamableFile } from '@nestjs/common';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
+import { NotImplementedException, StreamableFile } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import {
 	DownloadFileParams,
@@ -64,9 +64,17 @@ export class FilesStorageMapper {
 	}
 
 	static mapToStreamableFile(fileResponse: GetFileResponse): StreamableFile {
+		let disposition: string;
+
+		if (fileResponse.contentType === 'application/pdf') {
+			disposition = `inline;`;
+		} else {
+			disposition = `attachment;`;
+		}
+
 		const streamableFile = new StreamableFile(fileResponse.data, {
 			type: fileResponse.contentType,
-			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,
+			disposition: `${disposition} filename="${encodeURI(fileResponse.name)}"`,
 			length: fileResponse.contentLength,
 		});
 
