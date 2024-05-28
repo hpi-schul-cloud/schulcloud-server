@@ -31,7 +31,7 @@ describe('ToolLaunchService', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
-	let toolVersionService: DeepMocked<ToolConfigurationStatusService>;
+	let toolConfigurationStatusService: DeepMocked<ToolConfigurationStatusService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -68,7 +68,7 @@ describe('ToolLaunchService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
-		toolVersionService = module.get(ToolConfigurationStatusService);
+		toolConfigurationStatusService = module.get(ToolConfigurationStatusService);
 	});
 
 	afterAll(async () => {
@@ -107,7 +107,7 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
@@ -153,12 +153,12 @@ describe('ToolLaunchService', () => {
 				expect(externalToolService.findById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
 			});
 
-			it('should call toolVersionService', async () => {
+			it('should call toolConfigurationStatusService', async () => {
 				const { launchParams } = setup();
 
 				await service.getLaunchData('userId', launchParams.contextExternalTool);
 
-				expect(toolVersionService.determineToolConfigurationStatus).toHaveBeenCalled();
+				expect(toolConfigurationStatusService.determineToolConfigurationStatus).toHaveBeenCalled();
 			});
 		});
 
@@ -179,7 +179,7 @@ describe('ToolLaunchService', () => {
 
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
@@ -230,13 +230,14 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
+				toolConfigurationStatusService.determineToolConfigurationStatus.mockResolvedValueOnce(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
 						isIncompleteOnScopeContext: false,
 						isIncompleteOperationalOnScopeContext: false,
 						isDeactivated: true,
+						isNotLicensed: true,
 					})
 				);
 
@@ -253,7 +254,16 @@ describe('ToolLaunchService', () => {
 				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
 
 				await expect(func).rejects.toThrow(
-					new ToolStatusNotLaunchableLoggableException(userId, contextExternalToolId, true, true, false, false, true)
+					new ToolStatusNotLaunchableLoggableException(
+						userId,
+						contextExternalToolId,
+						true,
+						true,
+						false,
+						false,
+						true,
+						true
+					)
 				);
 			});
 		});

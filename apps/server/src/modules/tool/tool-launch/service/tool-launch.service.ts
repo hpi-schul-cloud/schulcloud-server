@@ -28,7 +28,7 @@ export class ToolLaunchService {
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
 		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
 		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
-		private readonly toolVersionService: ToolConfigurationStatusService
+		private readonly toolConfigurationStatusService: ToolConfigurationStatusService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
@@ -36,7 +36,7 @@ export class ToolLaunchService {
 		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
-	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
+	public generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
 		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
 		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
 
@@ -49,12 +49,15 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalToolLaunchable): Promise<ToolLaunchData> {
+	public async getLaunchData(
+		userId: EntityId,
+		contextExternalTool: ContextExternalToolLaunchable
+	): Promise<ToolLaunchData> {
 		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		await this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
@@ -84,22 +87,25 @@ export class ToolLaunchService {
 		};
 	}
 
-	private isToolStatusLaunchableOrThrow(
+	private async isToolStatusLaunchableOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalToolLaunchable
-	): void {
-		const status: ContextExternalToolConfigurationStatus = this.toolVersionService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+	): Promise<void> {
+		const status: ContextExternalToolConfigurationStatus =
+			await this.toolConfigurationStatusService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool,
+				userId
+			);
 
 		if (
 			status.isOutdatedOnScopeSchool ||
 			status.isOutdatedOnScopeContext ||
 			status.isDeactivated ||
+			status.isNotLicensed ||
 			status.isIncompleteOnScopeContext
 		) {
 			throw new ToolStatusNotLaunchableLoggableException(
@@ -109,7 +115,8 @@ export class ToolLaunchService {
 				status.isOutdatedOnScopeContext,
 				status.isIncompleteOnScopeContext,
 				status.isIncompleteOperationalOnScopeContext,
-				status.isDeactivated
+				status.isDeactivated,
+				status.isNotLicensed
 			);
 		}
 	}
