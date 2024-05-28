@@ -1,4 +1,5 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { UserLicenseModule } from '@modules/user-license';
+import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
@@ -15,6 +16,7 @@ import { ToolConfigurationStatusService } from './service/tool-configuration-sta
 		SchoolExternalToolModule,
 		LoggerModule,
 		ToolConfigModule,
+		UserLicenseModule,
 	],
 	providers: [
 		ContextExternalToolService,
