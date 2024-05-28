@@ -25,6 +25,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { UserImportConfig } from '../user-import/user-import-config';
 import { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -61,6 +62,7 @@ export interface ServerConfig
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
+		UserImportConfig,
 		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -232,6 +234,9 @@ const config: ServerConfig = {
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as Timezone,
+	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
+		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
+	) as number,
 	SCHULCONNEX_CLIENT__API_URL: Configuration.has('SCHULCONNEX_CLIENT__API_URL')
 		? (Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string)
 		: undefined,

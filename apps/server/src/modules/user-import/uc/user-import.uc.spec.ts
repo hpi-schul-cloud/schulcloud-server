@@ -137,7 +137,7 @@ describe('[ImportUserModule]', () => {
 				userMigrationEnabled: true,
 				userMigrationSystemId: new ObjectId().toHexString(),
 				useWithUserLoginMigration: false,
-				userMigrationRequestTimeout: 60000,
+				userMigrationRequestTimeout: 6000,
 			});
 		});
 
