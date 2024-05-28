@@ -25,7 +25,6 @@ describe('Account', () => {
 					systemId: 'systemId',
 					token: 'token',
 					credentialHash: 'credentialHash',
-					deactivatedAt: new Date(),
 				});
 				const accountSave = {
 					username: 'newUsername',
@@ -36,7 +35,6 @@ describe('Account', () => {
 					lasttriedFailedLogin: new Date(),
 					credentialHash: 'newCredentialHash',
 					token: 'newToken',
-					deactivatedAt: new Date(),
 				} as AccountSave;
 
 				return { account, accountSave };
@@ -56,7 +54,6 @@ describe('Account', () => {
 					id: 'id',
 					createdAt: new Date(),
 					updatedAt: new Date(),
-					deactivatedAt: new Date(),
 				});
 			});
 		});

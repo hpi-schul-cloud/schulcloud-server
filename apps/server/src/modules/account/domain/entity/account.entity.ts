@@ -35,9 +35,6 @@ export class AccountEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	activated?: boolean;
 
-	@Property({ nullable: true })
-	deactivatedAt?: Date;
-
 	constructor(props: IdmAccountProperties) {
 		super();
 		this.username = props.username;
@@ -49,6 +46,5 @@ export class AccountEntity extends BaseEntityWithTimestamps {
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
 		this.expiresAt = props.expiresAt;
 		this.activated = props.activated;
-		this.deactivatedAt = props.deactivatedAt;
 	}
 }

@@ -14,7 +14,6 @@ export class AccountDoToEntityMapper {
 			password: account.password,
 			systemId: account.systemId ? new ObjectId(account.systemId) : undefined,
 			token: account.token,
-			deactivatedAt: account.deactivatedAt,
 		});
 
 		if (account.id) {

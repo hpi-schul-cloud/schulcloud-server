@@ -56,10 +56,6 @@ export class ResolvedAccountDto {
 	@IsOptional()
 	idmReferenceId?: string;
 
-	@IsOptional()
-	@IsDate()
-	deactivatedAt?: Date;
-
 	constructor(account: ResolvedAccountDto) {
 		this.id = account.id;
 		this.username = account.username;
@@ -74,7 +70,6 @@ export class ResolvedAccountDto {
 		this.lasttriedFailedLogin = account.lasttriedFailedLogin;
 		this.expiresAt = account.expiresAt;
 		this.idmReferenceId = account.idmReferenceId;
-		this.deactivatedAt = account.deactivatedAt;
 	}
 }
 
