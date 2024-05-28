@@ -6,6 +6,8 @@ import { BoardDoAuthorizableService, ColumnBoardCopyService, ColumnBoardService 
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { SchoolService } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,7 +25,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { School, SchoolService } from '@src/modules/school';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
@@ -699,7 +700,7 @@ describe('ShareTokenUC', () => {
 		describe('when restricted to same school', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
-				const school = createMock<School>({});
+				const school = schoolFactory.build();
 				const user = userFactory.buildWithId({ school: schoolEntity });
 				const shareToken = shareTokenFactory.build({
 					context: { contextType: ShareTokenContextType.School, contextId: schoolEntity.id },
@@ -1128,7 +1129,7 @@ describe('ShareTokenUC', () => {
 		describe('when restricted to same school', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
-				const school = createMock<School>();
+				const school = schoolFactory.build();
 				const user = userFactory.buildWithId({ school: schoolEntity });
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
