@@ -119,6 +119,25 @@
       template: api-files-ingress.yml.j2
       apply: yes
 
+  - name: EduSharingDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-deployment.yml.j2
+
+  - name: EduSharingDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-deployment.yml.j2
+
+  - name: Edu Sharing Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-ingress.yml.j2
+      apply: yes
+
   - name: FwuLearningContentsDeployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
