@@ -37,8 +37,14 @@ export class EduSharingService {
 		console.log('this.baseUrl', this.baseUrl);
 		this.privateKey = this.configService.get<string>('PRIVATE_KEY');
 		console.log('this.privateKey', this.privateKey);
+		console.log('this.privateKey', this.privateKey.replace(/\\n/g, '\n'));
+		console.log('this.privateKey', this.privateKey.replace(/ /g, '\n'));
+		console.log('this.privateKey', this.privateKey.replace(' ', '\n'));
 		this.publicKey = this.configService.get<string>('PUBLIC_KEY');
 		console.log('this.publicKey', this.publicKey);
+		console.log('this.publicKey', this.publicKey.replace(/\\n/g, '\n'));
+		console.log('this.publicKey', this.publicKey.replace(/ /g, '\n'));
+		console.log('this.publicKey', this.publicKey.replace(' ', '\n'));
 		this.logger.setContext(EduSharingService.name);
 	}
 
