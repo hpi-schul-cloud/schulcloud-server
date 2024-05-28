@@ -388,7 +388,7 @@ export class UserImportUc {
 		if (!user) {
 			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
 		} else {
-			this.logger.notice(new UserAlreadyExistLoggable(importUser.user));
+			this.logger.notice(new UserAlreadyExistLoggable(importUser.user.id));
 		}
 	}
 

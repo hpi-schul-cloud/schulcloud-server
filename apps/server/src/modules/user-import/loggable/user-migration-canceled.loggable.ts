@@ -6,7 +6,7 @@ export class UserMigrationCanceledLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: 'The user migration was canceled',
+			message: 'The user migration was canceled.',
 			data: {
 				schoolName: this.school.name,
 				schoolId: this.school.id,

@@ -750,7 +750,7 @@ describe('[ImportUserModule]', () => {
 
 						await uc.saveAllUsersMatches(user.id);
 
-						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyExistLoggable(importUser.user!));
+						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyExistLoggable(importUser.user!.id));
 					});
 				});
 			});
