@@ -6,3 +6,5 @@ export * from './service/column.service';
 export * from './service/content-element.service';
 export * from './service/column-board-copy.service';
 export { BoardConfig } from './board.config';
+export { MongoIoAdapter } from './gateway/socket-mongodb-ioadapter';
+export { BoardCollaborationModule } from './board-collaboration.module';
