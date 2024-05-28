@@ -1,21 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { NewsRepo } from '@shared/repo';
-import { News } from '@shared/domain/entity';
-import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
 	DomainDeletionReport,
-	DomainName,
 	DomainDeletionReportBuilder,
+	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletionDomainOperationLoggable,
 	StatusModel,
+	UserDeletedEvent,
 } from '@modules/deletion';
+import { Injectable } from '@nestjs/common';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { News } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { NewsRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -23,11 +24,13 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 	constructor(
 		private readonly newsRepo: NewsRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(NewsService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

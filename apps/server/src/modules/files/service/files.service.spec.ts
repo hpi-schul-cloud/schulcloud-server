@@ -16,6 +16,7 @@ import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FileEntity } from '../entity';
+import { MikroORM } from '@mikro-orm/core';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;
@@ -24,6 +25,8 @@ describe(FilesService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				FilesService,
@@ -41,14 +44,16 @@ describe(FilesService.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesService);
 		repo = module.get(FilesRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

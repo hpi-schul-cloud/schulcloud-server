@@ -20,6 +20,7 @@ import { classEntityFactory } from '../entity/testing';
 import { ClassesRepo } from '../repo';
 import { ClassMapper } from '../repo/mapper';
 import { ClassService } from './class.service';
+import { MikroORM } from '@mikro-orm/core';
 
 describe(ClassService.name, () => {
 	let module: TestingModule;
@@ -28,6 +29,8 @@ describe(ClassService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				ClassService,
@@ -45,14 +48,16 @@ describe(ClassService.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(ClassService);
 		classesRepo = module.get(ClassesRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {

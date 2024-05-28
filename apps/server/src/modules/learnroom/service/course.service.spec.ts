@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -25,7 +26,7 @@ describe('CourseService', () => {
 	let legacyCourseRepo: DeepMocked<LegacyCourseRepo>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		const orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				CourseService,
@@ -46,6 +47,10 @@ describe('CourseService', () => {
 					useValue: {
 						publish: jest.fn(),
 					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
 				},
 			],
 		}).compile();
