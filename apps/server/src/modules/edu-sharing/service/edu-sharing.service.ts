@@ -32,9 +32,13 @@ export class EduSharingService {
 		private readonly logger: LegacyLogger
 	) {
 		this.appId = this.configService.get<string>('APP_ID');
+		console.log('this.appId', this.appId);
 		this.baseUrl = this.configService.get<string>('API_URL');
+		console.log('this.baseUrl', this.baseUrl);
 		this.privateKey = this.configService.get<string>('PRIVATE_KEY');
+		console.log('this.privateKey', this.privateKey);
 		this.publicKey = this.configService.get<string>('PUBLIC_KEY');
+		console.log('this.publicKey', this.publicKey);
 		this.logger.setContext(EduSharingService.name);
 	}
 
