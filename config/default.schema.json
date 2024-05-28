@@ -1743,11 +1743,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the new layout feature"
-		},
-		"EDU_SHARING__API_URL": {
-			"type": "string",
-			"default": "http://localhost:8100/edu-sharing/rest",
-			"description": "URL for connecting to the edu-sharing REST API"
 		}
 	},
 	"required": []
