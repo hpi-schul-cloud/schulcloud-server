@@ -3,10 +3,10 @@ import { AuthorizationReferenceModule } from '@modules/authorization/authorizati
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LessonModule } from '@modules/lesson';
+import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolModule } from '../school';
 import { ShareTokenController } from './controller/share-token.controller';
 import { ShareTokenRepo } from './repo/share-token.repo';
 import { ShareTokenService, TokenGenerator } from './service';
