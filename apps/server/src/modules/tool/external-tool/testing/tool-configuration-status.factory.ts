@@ -8,5 +8,6 @@ export const toolConfigurationStatusFactory = Factory.define<ContextExternalTool
 		isIncompleteOnScopeContext: false,
 		isIncompleteOperationalOnScopeContext: false,
 		isDeactivated: false,
+		isNotLicensed: false,
 	};
 });
