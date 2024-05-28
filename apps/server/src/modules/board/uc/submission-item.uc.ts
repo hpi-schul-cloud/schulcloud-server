@@ -95,12 +95,12 @@ export class SubmissionItemUc {
 		await this.boardPermissionService.checkPermission(userId, submissionItem, Action.write);
 
 		const element = this.boardNodeFactory.buildContentElement(type);
-
-		await this.boardNodeService.addToParent(submissionItem, element);
-
+		// TODO this is already taken care in add to parent, but TS complains without this type guard
 		if (!isFileElement(element) || !isRichTextElement(element)) {
 			throw new UnprocessableEntityException();
 		}
+
+		await this.boardNodeService.addToParent(submissionItem, element);
 
 		return element;
 	}

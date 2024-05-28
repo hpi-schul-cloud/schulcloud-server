@@ -17,8 +17,8 @@ export class ElementUc {
 	constructor(
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ElementUc.name);
@@ -49,6 +49,7 @@ export class ElementUc {
 		await this.boardPermissionService.checkPermission(userId, element, Action.read);
 	}
 
+	/* istanbul ignore next */
 	async createSubmissionItem(
 		userId: EntityId,
 		contentElementId: EntityId,

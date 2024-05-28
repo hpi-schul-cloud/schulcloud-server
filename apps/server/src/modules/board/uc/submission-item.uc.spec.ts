@@ -1,33 +1,34 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
-import {
-	BadRequestException,
-	ForbiddenException,
-	NotFoundException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import {
-	setupEntities,
-	userFactory,
+	BoardNodeAuthorizable,
+	BoardNodeFactory,
+	BoardRoles,
+	ContentElementType,
+	SubmissionContainerElement,
+	SubmissionItem,
+	UserWithBoardRoles,
+} from '../domain';
+import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
+import { SubmissionItemUc } from './submission-item.uc';
+import {
 	columnBoardFactory,
-	fileElementFactory,
+	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
-} from '@shared/testing';
-import { BoardNodeAuthorizable, BoardRoles, ContentElementType, UserWithBoardRoles } from '../domain';
-import { BoardNodeAuthorizableService } from '../service/board-node-authorizable.service';
-import { BoardNodePermissionService } from '../service/board-node-permission.service';
-import { SubmissionItemUc } from './submission-item.uc';
+} from '../testing';
 
 describe(SubmissionItemUc.name, () => {
 	let module: TestingModule;
 	let uc: SubmissionItemUc;
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let boardPermissionService: DeepMocked<BoardNodePermissionService>;
-	let elementService: DeepMocked<ContentElementService>;
-	let submissionItemService: DeepMocked<SubmissionItemService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
+	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,12 +43,12 @@ describe(SubmissionItemUc.name, () => {
 					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: SubmissionItemService,
-					useValue: createMock<SubmissionItemService>(),
+					provide: BoardNodeFactory,
+					useValue: createMock<BoardNodeFactory>(),
 				},
 			],
 		}).compile();
@@ -55,8 +56,8 @@ describe(SubmissionItemUc.name, () => {
 		uc = module.get(SubmissionItemUc);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		boardPermissionService = module.get(BoardNodePermissionService);
-		elementService = module.get(ContentElementService);
-		submissionItemService = module.get(SubmissionItemService);
+		boardNodeService = module.get(BoardNodeService);
+		boardNodeFactory = module.get(BoardNodeFactory);
 		await setupEntities();
 	});
 
@@ -76,18 +77,17 @@ describe(SubmissionItemUc.name, () => {
 					userId: user.id,
 				});
 
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-
 				const submissionContainerEl = submissionContainerElementFactory.build({
 					children: [submissionItem],
 				});
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionContainerEl);
 
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					new BoardNodeAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: submissionContainerEl.id,
-						boardDo: submissionContainerEl,
-						rootDo: columnBoardFactory.build(),
+						boardNode: submissionContainerEl,
+						rootNode: columnBoardFactory.build(),
 					})
 				);
 
@@ -96,23 +96,16 @@ describe(SubmissionItemUc.name, () => {
 
 			it('should call service to find the submission container ', async () => {
 				const { submissionContainerEl, user } = setup();
-				elementService.findById.mockResolvedValueOnce(submissionContainerEl);
 
 				await uc.findSubmissionItems(user.id, submissionContainerEl.id);
-				expect(elementService.findById).toHaveBeenCalledWith(submissionContainerEl.id);
-			});
-
-			it('should throw if element is not a submission container', async () => {
-				const { submissionItem, user } = setup();
-				const otherElement = richTextElementFactory.build();
-				elementService.findById.mockResolvedValueOnce(otherElement);
-
-				await expect(uc.findSubmissionItems(user.id, submissionItem.id)).rejects.toThrow(NotFoundException);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(
+					SubmissionContainerElement,
+					submissionContainerEl.id
+				);
 			});
 
 			it('should call Board Permission service to check user permission', async () => {
 				const { submissionContainerEl, user } = setup();
-				elementService.findById.mockResolvedValueOnce(submissionContainerEl);
 
 				await uc.findSubmissionItems(user.id, submissionContainerEl.id);
 				expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionContainerEl, Action.read);
@@ -145,12 +138,12 @@ describe(SubmissionItemUc.name, () => {
 					new BoardNodeAuthorizable({
 						users,
 						id: submissionContainerEl.id,
-						boardDo: submissionContainerEl,
-						rootDo: columnBoardFactory.build(),
+						boardNode: submissionContainerEl,
+						rootNode: columnBoardFactory.build(),
 					})
 				);
 
-				const elementSpy = elementService.findById.mockResolvedValueOnce(submissionContainerEl);
+				const elementSpy = boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionContainerEl);
 				return {
 					submissionContainerEl,
 					submissionItem1,
@@ -194,24 +187,6 @@ describe(SubmissionItemUc.name, () => {
 				expect(users.length).toBe(0);
 			});
 		});
-
-		describe('when called with wrong board node', () => {
-			const setup = () => {
-				const teacher = userFactory.buildWithId();
-				const fileEl = fileElementFactory.build();
-				elementService.findById.mockResolvedValueOnce(fileEl);
-
-				return { teacher, fileEl };
-			};
-
-			it('should throw HttpException', async () => {
-				const { teacher, fileEl } = setup();
-
-				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow(
-					new NotFoundException('Could not find a submission container with this id')
-				);
-			});
-		});
 	});
 
 	describe('updateSubmissionItem', () => {
@@ -222,7 +197,7 @@ describe(SubmissionItemUc.name, () => {
 				userId: user.id,
 			});
 
-			submissionItemService.findById.mockResolvedValueOnce(submissionItem);
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionItem);
 
 			return { submissionItem, user, boardNodeAuthorizableService };
 		};
@@ -230,7 +205,7 @@ describe(SubmissionItemUc.name, () => {
 		it('should call service to find the submission item ', async () => {
 			const { submissionItem, user } = setup();
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
-			expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(SubmissionItem, submissionItem.id);
 		});
 
 		it('should call Board Permission service to check user permission', async () => {
@@ -244,7 +219,7 @@ describe(SubmissionItemUc.name, () => {
 		it('should call service to update submission item', async () => {
 			const { submissionItem, user } = setup();
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
-			expect(submissionItemService.update).toHaveBeenCalledWith(submissionItem, false);
+			expect(boardNodeService.updateCompleted).toHaveBeenCalledWith(submissionItem, false);
 		});
 
 		it('should return updated submission item', async () => {
@@ -261,7 +236,7 @@ describe(SubmissionItemUc.name, () => {
 				userId: user.id,
 			});
 
-			submissionItemService.findById.mockResolvedValueOnce(submissionItem);
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionItem);
 
 			return { submissionItem, user };
 		};
@@ -269,7 +244,7 @@ describe(SubmissionItemUc.name, () => {
 		it('should call service to find the submission item ', async () => {
 			const { submissionItem, user } = setup();
 			await uc.deleteSubmissionItem(user.id, submissionItem.id);
-			expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(SubmissionItem, submissionItem.id);
 		});
 
 		it('should call Board Permission service to check user permission', async () => {
@@ -283,7 +258,7 @@ describe(SubmissionItemUc.name, () => {
 		it('should call service to delete submission item', async () => {
 			const { submissionItem, user } = setup();
 			await uc.deleteSubmissionItem(user.id, submissionItem.id);
-			expect(submissionItemService.delete).toHaveBeenCalledWith(submissionItem);
+			expect(boardNodeService.delete).toHaveBeenCalledWith(submissionItem);
 		});
 	});
 
@@ -297,23 +272,26 @@ describe(SubmissionItemUc.name, () => {
 
 				const element = richTextElementFactory.build();
 
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionItem);
+
 				const users = [{ userId: user.id, roles: [BoardRoles.READER] }];
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					new BoardNodeAuthorizable({
 						users,
 						id: submissionItem.id,
-						boardDo: submissionItem,
-						rootDo: columnBoardFactory.build(),
+						boardNode: submissionItem,
+						rootNode: columnBoardFactory.build(),
 					})
 				);
+
+				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
+				boardNodeFactory.buildContentElement.mockReturnValueOnce(element);
 
 				return { element, submissionItem, user, users };
 			};
 
 			it('should throw if type is not file or rich text', async () => {
-				const { element, submissionItem, user } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				elementService.create.mockResolvedValueOnce(element);
+				const { submissionItem, user } = setup();
 
 				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.LINK)).rejects.toThrow(
 					BadRequestException
@@ -321,20 +299,15 @@ describe(SubmissionItemUc.name, () => {
 			});
 
 			it('should call service to find the submission item ', async () => {
-				const { element, submissionItem, user } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				elementService.create.mockResolvedValueOnce(element);
-				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
+				const { submissionItem, user } = setup();
+
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 
-				expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(SubmissionItem, submissionItem.id);
 			});
 
 			it('should call Board Permission service to check user us a board reader', async () => {
-				const { element, submissionItem, user, users } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				elementService.create.mockResolvedValueOnce(element);
-				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
+				const { submissionItem, user, users } = setup();
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 
@@ -342,44 +315,58 @@ describe(SubmissionItemUc.name, () => {
 			});
 
 			it('should call Board Permission service to check user write permission', async () => {
-				const { element, submissionItem, user } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				elementService.create.mockResolvedValueOnce(element);
-				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
+				const { submissionItem, user } = setup();
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 
 				expect(boardPermissionService.checkPermission).toBeCalledWith(user.id, submissionItem, Action.write);
 			});
 
-			it('should call service to create element', async () => {
-				const { element, submissionItem, user } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				elementService.create.mockResolvedValueOnce(element);
-				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
+			it('should call factory to build content element', async () => {
+				const { submissionItem, user } = setup();
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 
-				expect(elementService.create).toHaveBeenCalledWith(submissionItem, ContentElementType.RICH_TEXT);
+				expect(boardNodeFactory.buildContentElement).toHaveBeenCalledWith(ContentElementType.RICH_TEXT);
 			});
+
+			it('should add element to submission item', async () => {});
 
 			it('should return element', async () => {
 				const { element, submissionItem, user } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				elementService.create.mockResolvedValueOnce(element);
-				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
 
 				const returnedElement = await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
 				expect(returnedElement).toEqual(element);
 			});
+		});
+
+		describe('when the factory ', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submissionItem = submissionItemFactory.build({
+					userId: user.id,
+				});
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionItem);
+				boardPermissionService.isUserBoardReader.mockReturnValueOnce(false);
+
+				const otherElement = linkElementFactory.build();
+				boardNodeFactory.buildContentElement.mockReturnValueOnce(otherElement);
+				const users = [{ userId: user.id, roles: [BoardRoles.READER] }];
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					new BoardNodeAuthorizable({
+						users,
+						id: submissionItem.id,
+						boardNode: submissionItem,
+						rootNode: columnBoardFactory.build(),
+					})
+				);
+
+				return { submissionItem, user };
+			};
 
 			it('should throw if returned element is not file or rich text', async () => {
 				const { submissionItem, user } = setup();
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
-				boardPermissionService.isUserBoardReader.mockReturnValueOnce(true);
-
-				const otherElement = submissionContainerElementFactory.build();
-				elementService.create.mockResolvedValueOnce(otherElement);
 
 				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
 					UnprocessableEntityException
@@ -395,17 +382,17 @@ describe(SubmissionItemUc.name, () => {
 				});
 				const element = richTextElementFactory.build();
 
-				submissionItemService.findById.mockResolvedValueOnce(submissionItem);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionItem);
 				boardPermissionService.isUserBoardReader.mockReturnValueOnce(false);
 
-				elementService.create.mockResolvedValueOnce(element);
+				boardNodeFactory.buildContentElement.mockReturnValueOnce(element);
 				const users = [{ userId: user.id, roles: [BoardRoles.READER] }];
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					new BoardNodeAuthorizable({
 						users,
 						id: submissionItem.id,
-						boardDo: submissionItem,
-						rootDo: columnBoardFactory.build(),
+						boardNode: submissionItem,
+						rootNode: columnBoardFactory.build(),
 					})
 				);
 
