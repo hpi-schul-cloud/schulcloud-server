@@ -16,6 +16,12 @@
       namespace: "{{ NAMESPACE }}"
       template: api-files-svc.yml.j2
 
+  - name: EduSharingService
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-edu-sharing-svc.yml.j2
+
   - name: FwuLearningContentsService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
