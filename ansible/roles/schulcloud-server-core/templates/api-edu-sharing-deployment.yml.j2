@@ -13,7 +13,7 @@ metadata:
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
-  replicas: {{ API_FILE_STORAGE_REPLICAS|default("1", true) }}
+  replicas: {{ API_EDU_SHARING_REPLICAS|default("1", true) }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -46,7 +46,7 @@ spec:
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 4444
+        - containerPort: 4450
           name: api-edu-sharing
           protocol: TCP
         envFrom:
@@ -58,7 +58,7 @@ spec:
         readinessProbe:
           httpGet:
             path: api/v3/docs
-            port: 4444
+            port: 4450
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
@@ -66,24 +66,24 @@ spec:
         livenessProbe:
           httpGet:
             path: api/v3/docs
-            port: 4444
+            port: 4450
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
             path: api/v3/docs
-            port: 4444
+            port: 4450
           timeoutSeconds: 4
           failureThreshold:  36
           periodSeconds: 5
         resources:
           limits:
-            cpu: {{ API_FILE_STORAGE_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_FILE_STORAGE_MEMORY_LIMITS|default("500Mi", true) }}
+            cpu: {{ API_EDU_SHARING_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ API_EDU_SHARING_MEMORY_LIMITS|default("500Mi", true) }}
           requests:
-            cpu: {{ API_FILE_STORAGE_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_FILE_STORAGE_MEMORY_REQUESTS|default("50Mi", true) }}
+            cpu: {{ API_EDU_SHARING_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ API_EDU_SHARING_MEMORY_REQUESTS|default("50Mi", true) }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:
