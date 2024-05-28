@@ -75,6 +75,7 @@ class API {
 			result: response.body as FileRecordResponse,
 			error: response.body as ApiValidationError,
 			status: response.status,
+			headers: response.headers as Record<string, string>,
 		};
 	}
 
@@ -287,7 +288,7 @@ describe('files-storage controller (API)', () => {
 		describe(`with valid request data`, () => {
 			describe(`with new file`, () => {
 				beforeEach(async () => {
-					const expectedResponse = TestHelper.createFile('bytes 0-3/4');
+					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
 					const uploadResponse = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
@@ -322,8 +323,8 @@ describe('files-storage controller (API)', () => {
 
 			describe(`with already existing file`, () => {
 				beforeEach(async () => {
-					const expectedResponse1 = TestHelper.createFile('bytes 0-3/4');
-					const expectedResponse2 = TestHelper.createFile('bytes 0-3/4');
+					const expectedResponse1 = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+					const expectedResponse2 = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse1).mockResolvedValueOnce(expectedResponse2);
 
@@ -376,35 +377,64 @@ describe('files-storage controller (API)', () => {
 		});
 
 		describe(`with valid request data`, () => {
-			const setup = async () => {
-				const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-				const expectedResponse = TestHelper.createFile('bytes 0-3/4');
+			describe('when mimetype is not application/pdf', () => {
+				const setup = async () => {
+					const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'image/webp' });
 
-				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
+					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
-				return { uploadedFile };
-			};
+					return { uploadedFile };
+				};
 
-			it('should return status 200 for successful download', async () => {
-				const { uploadedFile } = await setup();
+				it('should return status 200 for successful download', async () => {
+					const { uploadedFile } = await setup();
 
-				const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
 
-				expect(response.status).toEqual(200);
+					expect(response.status).toEqual(200);
+				});
+
+				it('should return status 206 and required headers for the successful partial file stream download', async () => {
+					const { uploadedFile } = await setup();
+
+					const response = await api.getDownloadFileBytesRange(
+						`/file/download/${uploadedFile.id}/${uploadedFile.name}`,
+						'bytes=0-'
+					);
+
+					expect(response.status).toEqual(206);
+
+					expect(response.headers['accept-ranges']).toMatch('bytes');
+					expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+				});
+
+				it('should set content-disposition header to attachment', async () => {
+					const { uploadedFile } = await setup();
+
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
+
+					expect(response.headers['content-disposition']).toMatch('attachment');
+				});
 			});
 
-			it('should return status 206 and required headers for the successful partial file stream download', async () => {
-				const { uploadedFile } = await setup();
+			describe('when mimetype is application/pdf', () => {
+				const setup = async () => {
+					const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'application/pdf' });
 
-				const response = await api.getDownloadFileBytesRange(
-					`/file/download/${uploadedFile.id}/${uploadedFile.name}`,
-					'bytes=0-'
-				);
+					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
-				expect(response.status).toEqual(206);
+					return { uploadedFile };
+				};
 
-				expect(response.headers['accept-ranges']).toMatch('bytes');
-				expect(response.headers['content-range']).toMatch('bytes 0-3/4');
+				it('should set content-disposition to inline', async () => {
+					const { uploadedFile } = await setup();
+
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
+
+					expect(response.headers['content-disposition']).toMatch('inline');
+				});
 			});
 		});
 	});
@@ -420,7 +450,7 @@ describe('files-storage controller (API)', () => {
 
 		describe(`with valid request data`, () => {
 			const setup = async () => {
-				const expectedResponse = TestHelper.createFile('bytes 0-3/4');
+				const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);

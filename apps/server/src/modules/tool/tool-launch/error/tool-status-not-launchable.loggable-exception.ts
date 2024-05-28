@@ -10,7 +10,8 @@ export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntit
 		private readonly isOutdatedOnScopeContext: boolean,
 		private readonly isIncompleteOnScopeContext: boolean,
 		private readonly isIncompleteOperationalOnScopeContext: boolean,
-		private readonly isDeactivated: boolean
+		private readonly isDeactivated: boolean,
+		private readonly isNotLicensed: boolean
 	) {
 		super();
 	}
@@ -28,6 +29,7 @@ export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntit
 				isIncompleteOnScopeContext: this.isIncompleteOnScopeContext,
 				isIncompleteOperationalOnScopeContext: this.isIncompleteOperationalOnScopeContext,
 				isDeactivated: this.isDeactivated,
+				isNotLicensed: this.isNotLicensed,
 			},
 		};
 	}
