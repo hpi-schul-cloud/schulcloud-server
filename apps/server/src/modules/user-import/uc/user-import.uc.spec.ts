@@ -28,9 +28,12 @@ import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory
 import { Logger } from '@src/core/logger';
 import { UserService } from '../../user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { SchoolNotMigratedLoggableException } from '../loggable';
-import { UserAlreadyExistLoggable } from '../loggable/user-migration-already-exist.loggable';
-import { UserMigrationCanceledLoggable } from '../loggable/user-migration-canceled.loggable';
+import {
+	SchoolNotMigratedLoggableException,
+	UserAlreadyMigratedLoggable,
+	UserMigrationCanceledLoggable,
+} from '../loggable';
+
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -134,6 +137,7 @@ describe('[ImportUserModule]', () => {
 				userMigrationEnabled: true,
 				userMigrationSystemId: new ObjectId().toHexString(),
 				useWithUserLoginMigration: false,
+				userMigrationRequestTimeout: 60000,
 			});
 		});
 
@@ -750,7 +754,7 @@ describe('[ImportUserModule]', () => {
 
 						await uc.saveAllUsersMatches(user.id);
 
-						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyExistLoggable(importUser.user!.id));
+						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyMigratedLoggable(importUser.user!.id));
 					});
 				});
 			});

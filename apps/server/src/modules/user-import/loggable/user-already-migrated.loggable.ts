@@ -1,6 +1,6 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class UserAlreadyExistLoggable implements Loggable {
+export class UserAlreadyMigratedLoggable implements Loggable {
 	constructor(private readonly userId: string) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {

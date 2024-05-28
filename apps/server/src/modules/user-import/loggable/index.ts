@@ -9,3 +9,5 @@ export { UserImportSchoolExternalIdMissingLoggableException } from './user-impor
 export { SchoolNotMigratedLoggableException } from './school-not-migrated.loggable-exception';
 export { UserMigrationIsNotEnabled } from './user-migration-not-enable.loggable';
 export { UserMigrationIsNotEnabledLoggableException } from './user-migration-not-enable-loggable-exception';
+export { UserMigrationCanceledLoggable } from './user-migration-canceled.loggable';
+export { UserAlreadyMigratedLoggable } from './user-already-migrated.loggable';

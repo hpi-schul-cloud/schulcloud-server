@@ -21,9 +21,10 @@ import {
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
+	UserAlreadyMigratedLoggable,
+	UserMigrationCanceledLoggable,
 } from '../loggable';
-import { UserAlreadyExistLoggable } from '../loggable/user-migration-already-exist.loggable';
-import { UserMigrationCanceledLoggable } from '../loggable/user-migration-canceled.loggable';
+
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -388,7 +389,7 @@ export class UserImportUc {
 		if (!user) {
 			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
 		} else {
-			this.logger.notice(new UserAlreadyExistLoggable(importUser.user.id));
+			this.logger.notice(new UserAlreadyMigratedLoggable(importUser.user.id));
 		}
 	}
 

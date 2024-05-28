@@ -144,9 +144,7 @@ export class ImportUserController {
 		description: 'Cancel current migration process',
 	})
 	@ApiNoContentResponse()
-	@ApiCreatedResponse()
 	@ApiUnauthorizedResponse()
-	@ApiServiceUnavailableResponse()
 	@ApiForbiddenResponse()
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {

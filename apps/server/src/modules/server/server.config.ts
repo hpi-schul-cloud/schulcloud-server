@@ -110,7 +110,6 @@ export interface ServerConfig
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: Timezone;
-	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: number;
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_NEW_LAYOUT_ENABLED: boolean;
 	SCHULCONNEX_CLIENT__API_URL: string | undefined;
@@ -262,9 +261,6 @@ const config: ServerConfig = {
 	PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
 	FEATURE_NEW_LAYOUT_ENABLED: Configuration.get('FEATURE_NEW_LAYOUT_ENABLED') as boolean,
-	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
-		'IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS'
-	) as number,
 };
 
 export const serverConfig = () => config;
