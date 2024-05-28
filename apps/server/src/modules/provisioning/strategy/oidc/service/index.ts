@@ -3,4 +3,4 @@ export { SchulconnexUserProvisioningService } from './schulconnex-user-provision
 export { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 export { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 export { SchulconnexLicenseProvisioningService } from './schulconnex-license-provisioning.service';
-export { SchulconnexCtlToolProvisioningService } from './schulconnex-ctl-tool-provisioning.service';
+export { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';

@@ -16,5 +16,5 @@ export class ProvisioningOptionsParams implements ProvisioningOptionsInterface {
 
 	@IsOptional()
 	@IsBoolean()
-	ctlToolProvisioningEnabled?: boolean;
+	schoolExternalToolProvisioningEnabled?: boolean;
 }

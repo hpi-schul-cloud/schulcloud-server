@@ -78,8 +78,10 @@ export class ExternalToolRepo {
 		return null;
 	}
 
-	public async findByMediumId(mediumId: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { medium: { mediumId } });
+	public async findByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
+			medium: { mediumId, mediaSourceId },
+		});
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;

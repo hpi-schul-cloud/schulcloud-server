@@ -13,12 +13,12 @@ export class ProvisioningOptionsEntity implements ProvisioningOptionsInterface {
 	groupProvisioningOtherEnabled?: boolean;
 
 	@Property({ nullable: true })
-	ctlToolProvisioningEnabled?: boolean;
+	schoolExternalToolProvisioningEnabled?: boolean;
 
 	constructor(props: ProvisioningOptionsInterface) {
 		this.groupProvisioningClassesEnabled = props.groupProvisioningClassesEnabled;
 		this.groupProvisioningCoursesEnabled = props.groupProvisioningCoursesEnabled;
 		this.groupProvisioningOtherEnabled = props.groupProvisioningOtherEnabled;
-		this.ctlToolProvisioningEnabled = props.ctlToolProvisioningEnabled;
+		this.schoolExternalToolProvisioningEnabled = props.schoolExternalToolProvisioningEnabled;
 	}
 }

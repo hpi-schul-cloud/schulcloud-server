@@ -101,8 +101,8 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
-	public findExternalToolByMediumId(mediumId: string): Promise<ExternalTool | null> {
-		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByMediumId(mediumId);
+	public findExternalToolByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByMedium(mediumId, mediaSourceId);
 		return externalTool;
 	}
 

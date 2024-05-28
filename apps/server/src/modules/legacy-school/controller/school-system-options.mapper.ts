@@ -7,7 +7,7 @@ export class SchoolSystemOptionsMapper {
 			groupProvisioningClassesEnabled: options.groupProvisioningClassesEnabled,
 			groupProvisioningCoursesEnabled: options.groupProvisioningCoursesEnabled,
 			groupProvisioningOtherEnabled: options.groupProvisioningOtherEnabled,
-			ctlToolProvisioningEnabled: options.ctlToolProvisioningEnabled,
+			schoolExternalToolProvisioningEnabled: options.schoolExternalToolProvisioningEnabled,
 		});
 
 		return mapped;

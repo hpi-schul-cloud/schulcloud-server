@@ -6,6 +6,6 @@ export type SchulConneXProvisioningOptionsInterface = Required<
 		| 'groupProvisioningClassesEnabled'
 		| 'groupProvisioningCoursesEnabled'
 		| 'groupProvisioningOtherEnabled'
-		| 'ctlToolProvisioningEnabled'
+		| 'schoolExternalToolProvisioningEnabled'
 	>
 >;
