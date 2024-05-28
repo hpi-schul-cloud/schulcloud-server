@@ -1,8 +1,7 @@
-import { BoardExternalReference, BoardLayout, MediaBoardProps } from '../types';
-import type { AnyMediaBoardNode } from './types/any-media-board-node';
+import type { BoardExternalReference, BoardLayout, MediaBoardProps } from '../types';
+import type { AnyMediaBoardNode, MediaBoardColors } from './types';
 import { MediaLine } from './media-line.do';
 import { BoardNode } from '../board-node.do';
-import { MediaBoardColors } from './types';
 
 export class MediaBoard extends BoardNode<MediaBoardProps> {
 	get context(): BoardExternalReference {

@@ -2,7 +2,7 @@ import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
 import { LegacyLogger } from '@src/core/logger';
-import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
+import { WsJwtAuthGuard } from '@modules/authentication/guard/ws-jwt-auth.guard';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,

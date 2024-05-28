@@ -5,16 +5,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardNodeAuthorizableService, BoardNodePermissionService, MediaBoardService } from '../../service';
+import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaLineUc } from './media-line.uc';
+import { MediaBoard, MediaLine } from '../../domain';
+import { MediaBoardColors } from '../../domain/media-board/types';
 
 describe(MediaLineUc.name, () => {
 	let module: TestingModule;
 	let uc: MediaLineUc;
 
 	let mediaBoardService: DeepMocked<MediaBoardService>;
-	let mediaLineService: DeepMocked<MediaLineService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 
@@ -29,12 +31,12 @@ describe(MediaLineUc.name, () => {
 					useValue: createMock<MediaBoardService>(),
 				},
 				{
-					provide: MediaLineService,
-					useValue: createMock<MediaLineService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: BoardNodeAuthorizableService,
-					useValue: createMock<BoardNodeAuthorizableService>(),
+					provide: BoardNodePermissionService,
+					useValue: createMock<BoardNodePermissionService>(),
 				},
 				{
 					provide: ConfigService,
@@ -45,7 +47,7 @@ describe(MediaLineUc.name, () => {
 
 		uc = module.get(MediaLineUc);
 		mediaBoardService = module.get(MediaBoardService);
-		mediaLineService = module.get(MediaLineService);
+		boardNodeService = module.get(BoardNodeService);
 		boardNodePermissionService = module.get(BoardNodePermissionService);
 		configService = module.get(ConfigService);
 	});
@@ -62,12 +64,12 @@ describe(MediaLineUc.name, () => {
 		describe('when the user moves a media line', () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
-				const mediaBoard = mediaBoardFactory.build();
+				const mediaBoard: MediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
-				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine).mockResolvedValueOnce(mediaBoard);
 
 				return {
 					user,
@@ -75,6 +77,14 @@ describe(MediaLineUc.name, () => {
 					mediaLine,
 				};
 			};
+			it('should call boardNodeService to find line, target board', async () => {
+				const { user, mediaLine, mediaBoard } = setup();
+
+				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaLine, mediaLine.id);
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaBoard, mediaBoard.id);
+			});
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine, mediaBoard } = setup();
@@ -89,7 +99,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
 
-				expect(mediaLineService.move).toHaveBeenCalledWith(mediaLine, mediaBoard, 1);
+				expect(boardNodeService.move).toHaveBeenCalledWith(mediaLine, mediaBoard, 1);
 			});
 		});
 
@@ -126,7 +136,7 @@ describe(MediaLineUc.name, () => {
 
 				configService.get.mockReturnValueOnce(true);
 
-				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
@@ -139,7 +149,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
 			});
 
 			it('should rename the line', async () => {
@@ -147,7 +157,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
-				expect(mediaLineService.updateTitle).toHaveBeenCalledWith(mediaLine, 'newTitle');
+				expect(boardNodeService.updateTitle).toHaveBeenCalledWith(mediaLine, 'newTitle');
 			});
 		});
 
@@ -181,7 +191,7 @@ describe(MediaLineUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
 				return { user, mediaLine };
 			};
@@ -191,7 +201,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user, mediaLine, Action.write);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
 			});
 
 			it('should delete the line', async () => {
@@ -199,7 +209,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
-				expect(mediaLineService.delete).toHaveBeenCalledWith(mediaLine);
+				expect(boardNodeService.delete).toHaveBeenCalledWith(mediaLine);
 			});
 		});
 
@@ -229,30 +239,23 @@ describe(MediaLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
 					mediaLine,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, boardDoAuthorizable } = setup();
+				const { user, mediaLine } = setup();
 
 				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
 			});
 
 			it('should set background color', async () => {
@@ -260,7 +263,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
-				expect(mediaLineService.updateColor).toHaveBeenCalledWith(mediaLine, 'blue');
+				expect(mediaBoardService.updateBackgroundColor).toHaveBeenCalledWith(mediaLine, 'blue');
 			});
 		});
 
@@ -292,30 +295,23 @@ describe(MediaLineUc.name, () => {
 			const setup = () => {
 				const user = userEntityFactory.build();
 				const mediaLine = mediaLineFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardDoAuthorizable);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				mediaLineService.findById.mockResolvedValueOnce(mediaLine);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 
 				return {
 					user,
 					mediaLine,
-					boardDoAuthorizable,
 				};
 			};
 
 			it('should check the authorization', async () => {
-				const { user, mediaLine, boardDoAuthorizable } = setup();
+				const { user, mediaLine } = setup();
 
 				await uc.collapseLine(user.id, mediaLine.id, true);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					boardDoAuthorizable,
-					AuthorizationContextBuilder.write([])
-				);
+				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
 			});
 
 			it('should collapse the line', async () => {
@@ -323,7 +319,7 @@ describe(MediaLineUc.name, () => {
 
 				await uc.collapseLine(user.id, mediaLine.id, true);
 
-				expect(mediaLineService.collapse).toHaveBeenCalledWith(mediaLine, true);
+				expect(mediaBoardService.updateCollapsed).toHaveBeenCalledWith(mediaLine, true);
 			});
 		});
 

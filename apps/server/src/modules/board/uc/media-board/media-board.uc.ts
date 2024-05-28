@@ -7,14 +7,14 @@ import type { EntityId } from '@shared/domain/types';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	BoardLayout,
 	MediaBoard,
+	MediaBoardColors,
 	MediaBoardNodeFactory,
 	MediaLine,
-	BoardLayout,
 } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
-import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaBoardUc {

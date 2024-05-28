@@ -49,8 +49,6 @@ export class MediaElementUc {
 
 		const line = await this.boardNodeService.findByClassAndId(MediaLine, lineId);
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-
 		await this.boardNodePermissionService.checkPermission(userId, line, Action.write);
 
 		const mediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, line.rootId);
@@ -59,6 +57,7 @@ export class MediaElementUc {
 
 		await this.checkElementExistsAlreadyOnBoardAndThrow(mediaBoard, schoolExternalTool);
 
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const createdContextExternalTool: ContextExternalTool =
 			await this.mediaBoardService.createContextExternalToolForMediaBoard(
 				user.school.id,

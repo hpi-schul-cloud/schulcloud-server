@@ -1,4 +1,4 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
@@ -20,7 +20,6 @@ import { MediaBoardColors } from '../../domain/media-board/types';
 @Injectable()
 export class MediaAvailableLineUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
@@ -37,10 +36,8 @@ export class MediaAvailableLineUc {
 
 		await this.boardNodePermissionService.checkPermission(userId, mediaBoard, Action.read);
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
-			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
+			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(userId, mediaBoard);
 
 		const availableExternalTools: ExternalTool[] =
 			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);

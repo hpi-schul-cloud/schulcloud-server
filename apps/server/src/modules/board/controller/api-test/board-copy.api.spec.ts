@@ -11,7 +11,7 @@ import {
 	columnBoardNodeFactory,
 	courseFactory,
 } from '@shared/testing';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 
 const baseRouteName = '/boards';
 

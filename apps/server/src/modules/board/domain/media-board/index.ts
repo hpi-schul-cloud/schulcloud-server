@@ -8,9 +8,7 @@ export {
 	isMediaExternalToolElement,
 } from './media-external-tool-element.do';
 
-export { MediaAvailableLine } from './media-available-line.do';
-export { MediaAvailableLineElement } from './media-available-line-element.do';
+export { MediaAvailableLine, MediaAvailableLineProps } from './media-available-line.do';
+export { MediaAvailableLineElement, MediaAvailableLineElementProps } from './media-available-line-element.do';
 
-export { AnyMediaBoardNode } from './types';
-
-export { MediaBoardColors } from './types';
+export * from './types';

@@ -17,7 +17,7 @@ describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let boardPernmissionService: DeepMocked<BoardNodePermissionService>;
+	let boardPermissionService: DeepMocked<BoardNodePermissionService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseRepo: DeepMocked<CourseRepo>;
@@ -60,7 +60,7 @@ describe(BoardUc.name, () => {
 
 		uc = module.get(BoardUc);
 		authorizationService = module.get(AuthorizationService);
-		boardPernmissionService = module.get(BoardNodePermissionService);
+		boardPermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		columnBoardService = module.get(ColumnBoardService);
 		courseRepo = module.get(CourseRepo);
@@ -206,7 +206,7 @@ describe(BoardUc.name, () => {
 
 			await uc.findBoard(user.id, board.id);
 
-			expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
 		it('should return the column board object', async () => {
@@ -234,7 +234,7 @@ describe(BoardUc.name, () => {
 
 			await uc.findBoardContext(user.id, board.id);
 
-			expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
 		it('should return the context object', async () => {
@@ -263,7 +263,7 @@ describe(BoardUc.name, () => {
 
 				await uc.deleteBoard(user.id, board.id);
 
-				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
 			});
 
 			it('should call the service to delete the board', async () => {
@@ -293,7 +293,7 @@ describe(BoardUc.name, () => {
 
 				await uc.updateBoardTitle(user.id, board.id, 'new title');
 
-				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
 			});
 
 			it('should call the service to update the board title', async () => {
@@ -324,7 +324,7 @@ describe(BoardUc.name, () => {
 
 				await uc.createColumn(user.id, board.id);
 
-				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
 			});
 
 			it('should call the factory to build column', async () => {
@@ -380,7 +380,7 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
-				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, column, Action.write);
 			});
 
 			it('should call the service to check the permissions for target board', async () => {
@@ -389,7 +389,7 @@ describe(BoardUc.name, () => {
 
 				await uc.moveColumn(user.id, column.id, board.id, 1);
 
-				expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
 			});
 
 			it('should call the service to move the column', async () => {
@@ -438,7 +438,7 @@ describe(BoardUc.name, () => {
 
 			await uc.copyBoard(user.id, board.id);
 
-			expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
 		it('should call authorization to check course permissions', async () => {
@@ -503,7 +503,7 @@ describe(BoardUc.name, () => {
 
 			await uc.updateVisibility(user.id, board.id, true);
 
-			expect(boardPernmissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
 		});
 
 		it('should call the service to update the board visibility', async () => {

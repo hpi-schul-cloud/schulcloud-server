@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
-import { type AuthorizationLoaderService } from '@src/modules/authorization';
+import { type AuthorizationLoaderService } from '@modules/authorization';
 import { AnyBoardNode, BoardNodeAuthorizable } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardContextService } from './internal/board-context.service';

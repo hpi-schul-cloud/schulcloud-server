@@ -1,7 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { BoardExternalReferenceType, BoardLayout, MediaBoard, MediaBoardProps, ROOT_PATH } from '../domain';
-import { MediaBoardColors } from '../domain/media-board/types';
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	MediaBoard,
+	MediaBoardColors,
+	MediaBoardProps,
+	ROOT_PATH,
+} from '../domain';
 
 export const mediaBoardFactory = BaseFactory.define<MediaBoard, MediaBoardProps>(MediaBoard, () => {
 	const props: MediaBoardProps = {
