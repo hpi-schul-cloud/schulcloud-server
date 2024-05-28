@@ -848,13 +848,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ContextExternalToolModule.html" data-type="entity-link" >ContextExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' }>
+                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-f3f8a9be2849eac211ac571b7decb67c438cbdf7effb25d651b77b8ee125c6520fb98f45b57286a8e4462a56cb07ba4c67e46b27b00799d138ebdc1a4c5a9822"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-f3f8a9be2849eac211ac571b7decb67c438cbdf7effb25d651b77b8ee125c6520fb98f45b57286a8e4462a56cb07ba4c67e46b27b00799d138ebdc1a4c5a9822"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' :
-                                        'id="xs-injectables-links-module-ContextExternalToolModule-87102cf342383e9b5cef141352013abaf28fe8475b6a212ca3bede8fe7bbb1d3bb1f546b7fcf9c3b87d66e01179bedde7ffa84395b649d6ae852fef21777c17b"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-f3f8a9be2849eac211ac571b7decb67c438cbdf7effb25d651b77b8ee125c6520fb98f45b57286a8e4462a56cb07ba4c67e46b27b00799d138ebdc1a4c5a9822"' :
+                                        'id="xs-injectables-links-module-ContextExternalToolModule-f3f8a9be2849eac211ac571b7decb67c438cbdf7effb25d651b77b8ee125c6520fb98f45b57286a8e4462a56cb07ba4c67e46b27b00799d138ebdc1a4c5a9822"' }>
                                         <li class="link">
                                             <a href="injectables/ContextExternalToolAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContextExternalToolAuthorizableService</a>
                                         </li>
@@ -9347,9 +9347,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ToolLaunchStrategy.html" data-type="entity-link" >ToolLaunchStrategy</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ToolVersion.html" data-type="entity-link" >ToolVersion</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TriggerDeletionExecutionOptions.html" data-type="entity-link" >TriggerDeletionExecutionOptions</a>

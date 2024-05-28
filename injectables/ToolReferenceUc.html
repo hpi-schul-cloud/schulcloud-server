@@ -276,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -357,8 +357,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -647,7 +647,10 @@ export class ToolReferenceUc {
 		try {
 			await this.ensureToolPermissions(user, contextExternalTool);
 
-			const toolReference: ToolReference &#x3D; await this.toolReferenceService.getToolReference(contextExternalTool.id);
+			const toolReference: ToolReference &#x3D; await this.toolReferenceService.getToolReference(
+				contextExternalTool.id,
+				user.id
+			);
 
 			return toolReference;
 		} catch (e: unknown) {
@@ -663,7 +666,10 @@ export class ToolReferenceUc {
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		await this.ensureToolPermissions(user, contextExternalTool);
 
-		const toolReference: ToolReference &#x3D; await this.toolReferenceService.getToolReference(contextExternalTool.id);
+		const toolReference: ToolReference &#x3D; await this.toolReferenceService.getToolReference(
+			contextExternalTool.id,
+			userId
+		);
 
 		return toolReference;
 	}

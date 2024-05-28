@@ -155,7 +155,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, toolVersionService: <a href="../injectables/ToolConfigurationStatusService.html" target="_self">ToolConfigurationStatusService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, toolConfigurationStatusService: <a href="../injectables/ToolConfigurationStatusService.html" target="_self">ToolConfigurationStatusService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -226,7 +226,7 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>toolVersionService</td>
+                                                        <td>toolConfigurationStatusService</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ToolConfigurationStatusService.html" target="_self" >ToolConfigurationStatusService</a></code>
@@ -266,7 +266,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getToolReference(contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>getToolReference(contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -296,6 +296,18 @@
                                     <tbody>
                                         <tr>
                                                 <td>contextExternalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -345,10 +357,10 @@ export class ToolReferenceService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly toolVersionService: ToolConfigurationStatusService
+		private readonly toolConfigurationStatusService: ToolConfigurationStatusService
 	) {}
 
-	async getToolReference(contextExternalToolId: EntityId): Promise&lt;ToolReference&gt; {
+	async getToolReference(contextExternalToolId: EntityId, userId: EntityId): Promise&lt;ToolReference&gt; {
 		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolService.findByIdOrFail(
 			contextExternalToolId
 		);
@@ -357,11 +369,13 @@ export class ToolReferenceService {
 		);
 		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		const status: ContextExternalToolConfigurationStatus &#x3D; this.toolVersionService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
-		);
+		const status: ContextExternalToolConfigurationStatus &#x3D;
+			await this.toolConfigurationStatusService.determineToolConfigurationStatus(
+				externalTool,
+				schoolExternalTool,
+				contextExternalTool,
+				userId
+			);
 
 		const toolReference: ToolReference &#x3D; ToolReferenceMapper.mapToToolReference(
 			externalTool,

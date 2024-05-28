@@ -135,6 +135,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#determineToolConfigurationStatus" >determineToolConfigurationStatus</a>
                             </li>
                             <li>
@@ -151,6 +152,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#isToolDeactivated" >isToolDeactivated</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#isToolLicensed" >isToolLicensed</a>
                             </li>
                         </ul>
                     </td>
@@ -170,12 +176,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>)</code>
+<code>constructor(commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>, userLicenseService: <a href="../injectables/UserLicenseService.html" target="_self">UserLicenseService</a>, mediaUserLicenseService: <a href="../injectables/MediaUserLicenseService.html" target="_self">MediaUserLicenseService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -204,6 +210,42 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>userLicenseService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserLicenseService.html" target="_self" >UserLicenseService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaUserLicenseService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaUserLicenseService.html" target="_self" >MediaUserLicenseService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/MediaBoard.html" target="_self" >ConfigService&lt;MediaBoardConfig | &gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -225,6 +267,7 @@
                     <a name="determineToolConfigurationStatus"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>determineToolConfigurationStatus</b></span>
                         <a href="#determineToolConfigurationStatus"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -233,15 +276,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>)</code>
+                    <code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../interfaces/ContextExternalToolLaunchable.html" target="_self">ContextExternalToolLaunchable</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -297,11 +340,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/ContextExternalToolConfigurationStatus.html" target="_self" >ContextExternalToolConfigurationStatus</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;ContextExternalToolConfigurationStatus&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -333,8 +388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -370,7 +425,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -400,8 +455,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -469,8 +524,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -538,8 +593,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -597,14 +652,101 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isToolLicensed"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>isToolLicensed</b></span>
+                        <a href="#isToolLicensed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isToolLicensed(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaBoardConfig } from &#x27;@modules/board/media-board.config&#x27;;
+import { MediaUserLicense, UserLicenseService } from &#x27;@modules/user-license&#x27;;
+import { MediaUserLicenseService } from &#x27;@modules/user-license/service&#x27;;
+import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterMandatoryValueMissingLoggableException,
@@ -617,19 +759,26 @@ import { ContextExternalToolLaunchable } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class ToolConfigurationStatusService {
-	constructor(private readonly commonToolValidationService: CommonToolValidationService) {}
+	constructor(
+		private readonly commonToolValidationService: CommonToolValidationService,
+		private readonly userLicenseService: UserLicenseService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly configService: ConfigService&lt;MediaBoardConfig, true&gt;
+	) {}
 
-	public determineToolConfigurationStatus(
+	public async determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalToolLaunchable
-	): ContextExternalToolConfigurationStatus {
+		contextExternalTool: ContextExternalToolLaunchable,
+		userId: EntityId
+	): Promise&lt;ContextExternalToolConfigurationStatus&gt; {
 		const configurationStatus: ContextExternalToolConfigurationStatus &#x3D; new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: false,
 			isIncompleteOnScopeContext: false,
 			isIncompleteOperationalOnScopeContext: false,
 			isOutdatedOnScopeSchool: false,
 			isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
+			isNotLicensed: !(await this.isToolLicensed(externalTool, userId)),
 		});
 
 		const schoolParameterErrors: ValidationError[] &#x3D; this.commonToolValidationService.validateParameters(
@@ -666,11 +815,23 @@ export class ToolConfigurationStatusService {
 		return configurationStatus;
 	}
 
-	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool): boolean {
 		return !!(externalTool.isDeactivated || (schoolExternalTool.status &amp;&amp; schoolExternalTool.status.isDeactivated));
 	}
 
-	private isIncompleteOperational(errors: ValidationError[]) {
+	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise&lt;boolean&gt; {
+		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;)) {
+			const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.userLicenseService.getMediaUserLicensesForUser(userId);
+
+			const externalToolMedium &#x3D; externalTool.medium;
+			if (externalToolMedium) {
+				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+			}
+		}
+		return true;
+	}
+
+	private isIncompleteOperational(errors: ValidationError[]): boolean {
 		return errors.some((error: ValidationError) &#x3D;&gt; error instanceof ToolParameterOptionalValueMissingLoggableException);
 	}
 
