@@ -11,12 +11,15 @@ import {
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolImportResultListResponse,
+	ExternalToolImportResultResponse,
 	ExternalToolMediumResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalToolImportResult } from '../uc';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -109,5 +112,16 @@ export class ExternalToolResponseMapper {
 				isProtected: customParameterDO.isProtected,
 			};
 		});
+	}
+
+	public static mapToImportResponse(results: ExternalToolImportResult[]): ExternalToolImportResultListResponse {
+		const response: ExternalToolImportResultListResponse = new ExternalToolImportResultListResponse({
+			results: results.map(
+				(result: ExternalToolImportResult): ExternalToolImportResultResponse =>
+					new ExternalToolImportResultResponse(result)
+			),
+		});
+
+		return response;
 	}
 }
