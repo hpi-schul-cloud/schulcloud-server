@@ -376,6 +376,28 @@ describe('ShareTokenUC', () => {
 			});
 		});
 
+		describe('when parent type is not allowed', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				return { user };
+			};
+
+			it('should throw', async () => {
+				const { user } = setup();
+
+				await expect(
+					uc.createShareToken(user.id, {
+						parentId: '123',
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						parentType: 'unknown-type',
+					})
+				).rejects.toThrow(new NotImplementedException('Import Feature not implemented'));
+			});
+		});
+
 		describe('when restricted to same school', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
@@ -698,42 +720,68 @@ describe('ShareTokenUC', () => {
 		});
 
 		describe('when restricted to same school', () => {
-			const setup = () => {
-				const schoolEntity = schoolEntityFactory.buildWithId();
-				const school = schoolFactory.build();
-				const user = userFactory.buildWithId({ school: schoolEntity });
-				const shareToken = shareTokenFactory.build({
-					context: { contextType: ShareTokenContextType.School, contextId: schoolEntity.id },
+			describe('when context type is school', () => {
+				const setup = () => {
+					const schoolEntity = schoolEntityFactory.buildWithId();
+					const school = schoolFactory.build();
+					const user = userFactory.buildWithId({ school: schoolEntity });
+					const shareToken = shareTokenFactory.build({
+						context: { contextType: ShareTokenContextType.School, contextId: schoolEntity.id },
+					});
+					const parentName = 'name';
+
+					service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName });
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+					return { user, shareToken, school };
+				};
+
+				it('should check look up permissions', async () => {
+					const { user, shareToken } = setup();
+
+					await uc.lookupShareToken(user.id, shareToken.token);
+
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.COURSE_CREATE]);
 				});
-				const parentName = 'name';
 
-				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName });
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				it('should check context read permission', async () => {
+					const { user, shareToken, school } = setup();
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+					await uc.lookupShareToken(user.id, shareToken.token);
 
-				return { user, shareToken, school };
-			};
-
-			it('should check look up permissions', async () => {
-				const { user, shareToken } = setup();
-
-				await uc.lookupShareToken(user.id, shareToken.token);
-
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.COURSE_CREATE]);
+					expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+						user,
+						school,
+						AuthorizationContextBuilder.read([])
+					);
+				});
 			});
 
-			it('should check context read permission', async () => {
-				const { user, shareToken, school } = setup();
+			describe('when context type is unknown', () => {
+				const setup = () => {
+					const schoolEntity = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({ school: schoolEntity });
+					const shareToken = shareTokenFactory.build({
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						context: { contextType: 'unknown', contextId: schoolEntity.id },
+					});
+					const parentName = 'name';
 
-				await uc.lookupShareToken(user.id, shareToken.token);
+					service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName });
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					school,
-					AuthorizationContextBuilder.read([])
-				);
+					return { user, shareToken };
+				};
+
+				it('should throw', async () => {
+					const { user, shareToken } = setup();
+
+					await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrow(NotImplementedException);
+				});
 			});
 		});
 

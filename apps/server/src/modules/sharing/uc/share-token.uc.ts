@@ -211,7 +211,6 @@ export class ShareTokenUC {
 				await this.checkColumnBoardWritePermission(user, payload.parentId, Permission.COURSE_EDIT);
 				break;
 			default:
-				throw new NotImplementedException();
 		}
 	}
 
