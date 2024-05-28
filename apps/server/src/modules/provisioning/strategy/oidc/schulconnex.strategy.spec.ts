@@ -31,6 +31,7 @@ import {
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './service';
 
@@ -57,6 +58,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	let schulconnexLicenseProvisioningService: DeepMocked<SchulconnexLicenseProvisioningService>;
 	let groupService: DeepMocked<GroupService>;
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
+	let schulconnexToolProvisioningService: DeepMocked<SchulconnexToolProvisioningService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -91,6 +93,10 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					useValue: createMock<GroupService>(),
 				},
 				{
+					provide: SchulconnexToolProvisioningService,
+					useValue: createMock<SchulconnexToolProvisioningService>(),
+				},
+				{
 					provide: ConfigService<ProvisioningConfig, true>,
 					useValue: createMock<ConfigService<ProvisioningConfig, true>>(),
 				},
@@ -106,6 +112,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 		schulconnexLicenseProvisioningService = module.get(SchulconnexLicenseProvisioningService);
 		groupService = module.get(GroupService);
 		configService = module.get(ConfigService);
+		schulconnexToolProvisioningService = module.get(SchulconnexToolProvisioningService);
 	});
 
 	beforeEach(() => {
@@ -557,6 +564,18 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 						oauthData.externalLicenses
 					);
 				});
+
+				it('should provision school external tool', async () => {
+					const { oauthData, user } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexToolProvisioningService.provisionSchoolExternalTools).toHaveBeenCalledWith(
+						user.id,
+						user.schoolId,
+						oauthData.system.systemId
+					);
+				});
 			});
 
 			describe('when the feature is disabled', () => {
@@ -589,6 +608,14 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					await strategy.apply(oauthData);
 
 					expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).not.toHaveBeenCalled();
+				});
+
+				it('should not provision school external tool', async () => {
+					const { oauthData } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexToolProvisioningService.provisionSchoolExternalTools).not.toHaveBeenCalled();
 				});
 			});
 		});
