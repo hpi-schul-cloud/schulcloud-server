@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
@@ -39,6 +39,7 @@ describe(MediaAvailableLineUc.name, () => {
 	let module: TestingModule;
 	let uc: MediaAvailableLineUc;
 
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
@@ -53,6 +54,10 @@ describe(MediaAvailableLineUc.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				MediaAvailableLineUc,
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 				{
 					provide: BoardNodePermissionService,
 					useValue: createMock<BoardNodePermissionService>(),
@@ -85,6 +90,7 @@ describe(MediaAvailableLineUc.name, () => {
 		}).compile();
 
 		uc = module.get(MediaAvailableLineUc);
+		authorizationService = module.get(AuthorizationService);
 		boardNodePermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
@@ -109,6 +115,8 @@ describe(MediaAvailableLineUc.name, () => {
 				configService.get.mockReturnValueOnce(false);
 
 				const user: User = userFactory.build();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
 				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
 
 				const mediaBoard = mediaBoardFactory.build({ children: [mediaExternalToolElement] });
@@ -158,7 +166,7 @@ describe(MediaAvailableLineUc.name, () => {
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(MediaBoard, mediaBoard.id);
 			});
 
-			it('should check the authorization', async () => {
+			it('should check the permissions', async () => {
 				const { user, mediaBoard } = setup();
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
@@ -166,15 +174,20 @@ describe(MediaAvailableLineUc.name, () => {
 				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaBoard, Action.read);
 			});
 
+			it('should get the user from authrorization service', async () => {
+				const { user, mediaBoard } = setup();
+
+				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
 			it('should call the service to get the unused available school external tools', async () => {
 				const { user, mediaBoard } = setup();
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-				expect(mediaAvailableLineService.getUnusedAvailableSchoolExternalTools).toHaveBeenCalledWith(
-					user.id,
-					mediaBoard
-				);
+				expect(mediaAvailableLineService.getUnusedAvailableSchoolExternalTools).toHaveBeenCalledWith(user, mediaBoard);
 			});
 
 			it('should call the service to get the unused available external tools for school', async () => {

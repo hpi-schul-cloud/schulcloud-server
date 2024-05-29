@@ -7,15 +7,13 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
-import { AuthorizationService } from '@modules/authorization';
+import { User } from '@shared/domain/entity';
 import { MediaAvailableLine, MediaAvailableLineElement, MediaBoard, MediaExternalToolElement } from '../../domain';
 import { MediaBoardService } from './media-board.service';
 
 @Injectable()
 export class MediaAvailableLineService {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
@@ -23,12 +21,7 @@ export class MediaAvailableLineService {
 		private readonly mediaBoardService: MediaBoardService
 	) {}
 
-	public async getUnusedAvailableSchoolExternalTools(
-		userId: EntityId,
-		board: MediaBoard
-	): Promise<SchoolExternalTool[]> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-
+	public async getUnusedAvailableSchoolExternalTools(user: User, board: MediaBoard): Promise<SchoolExternalTool[]> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
 			schoolId: user.school?.id,
 			isDeactivated: false,
