@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig } from 'axios';
 import { createSign } from 'crypto';
+import { readFileSync } from 'fs';
 import { lastValueFrom } from 'rxjs';
 import { EduSharingConfig } from '../edu-sharing.config';
 
@@ -33,26 +34,13 @@ export class EduSharingService {
 	) {
 		this.appId = this.configService.get<string>('APP_ID');
 		console.log('this.appId', this.appId);
-
 		this.baseUrl = this.configService.get<string>('API_URL');
 		console.log('this.baseUrl', this.baseUrl);
-
-		let convertPrivateKey = this.configService.get<string>('PRIVATE_KEY');
-		// cut off start and end string of private key and replace spaces with newlines
-		// - "-----BEGIN PRIVATE KEY-----" = 27 chars
-		// - "-----END PRIVATE KEY-----" = 25 chars
-		convertPrivateKey = convertPrivateKey.substring(27, convertPrivateKey.length - 25).replace(/ /g, '\n');
-		// add start and end string of private key
-		this.privateKey = `-----BEGIN PRIVATE KEY-----${convertPrivateKey}-----END PRIVATE KEY-----\n`;
+		// this.privateKey = readFileSync('config/private.key', 'base64');
+		this.privateKey = this.configService.get<string>('PRIVATE_KEY');
 		console.log('this.privateKey', this.privateKey);
-
-		let convertPublicKey = this.configService.get<string>('PUBLIC_KEY');
-		// cut off start and end string of public key and replace spaces with newlines
-		// - "-----BEGIN PUBLIC KEY-----" = 26 chars
-		// - "-----END PUBLIC KEY-----" = 24 chars
-		convertPublicKey = convertPublicKey.substring(26, convertPublicKey.length - 24).replace(/ /g, '\n');
-		// add start and end string of public key
-		this.publicKey = `-----BEGIN PUBLIC KEY-----${convertPublicKey}-----END PUBLIC KEY-----\n`;
+		// this.publicKey = readFileSync('config/public.key', 'base64');
+		this.publicKey = this.configService.get<string>('PUBLIC_KEY');
 		console.log('this.publicKey', this.publicKey);
 
 		this.logger.setContext(EduSharingService.name);
