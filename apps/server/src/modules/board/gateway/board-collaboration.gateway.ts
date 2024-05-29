@@ -226,6 +226,7 @@ export class BoardCollaborationGateway {
 	@UseRequestContext()
 	async moveCard(client: Socket, data: MoveCardMessageParams) {
 		try {
+			console.log('move-card-request', data);
 			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
