@@ -224,7 +224,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[POST] tools/external-tools', () => {
+	describe('[POST] tools/external-tools/import', () => {
 		const logoUrl = 'https://link.to-my-logo.com';
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',

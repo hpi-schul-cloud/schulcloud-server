@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsLocale, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsLocale, IsOptional, IsString, IsUrl } from 'class-validator';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../../../common/enum';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
@@ -8,7 +8,7 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 	@ApiProperty({ enum: ToolConfigType, enumName: 'ToolConfigType' })
 	type!: ToolConfigType;
 
-	@IsString()
+	@IsUrl({ require_protocol: true, protocols: ['https'] })
 	@ApiProperty()
 	baseUrl!: string;
 
