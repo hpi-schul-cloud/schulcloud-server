@@ -53,7 +53,7 @@ export class EduSharingService {
 	 * @throws Exception
 	 */
 	async getTicketForUser(
-		userName: string = 'admin',
+		userName = 'admin',
 		additionalFields?: { [key: string]: string | File } | undefined
 	): Promise<string> {
 		const options: AxiosRequestConfig = {
@@ -96,7 +96,7 @@ export class EduSharingService {
 		const options: AxiosRequestConfig = {
 			method: 'GET',
 			url: `${this.baseUrl}/rest/authentication/v1/validateSession`,
-			headers: headers,
+			headers,
 			timeout: 5000,
 		};
 		const response = await lastValueFrom(this.httpService.request(options));
