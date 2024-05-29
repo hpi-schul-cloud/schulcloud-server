@@ -47,9 +47,9 @@ async function bootstrap() {
 	rootExpress.listen(port);
 
 	console.log('#################################');
-	console.log(`### Start edu-sharing Server   ###`);
+	console.log(`### Start edu-sharing Server  ###`);
 	console.log(`### Port:     ${port}            ###`);
-	console.log(`### Base path: ${basePath}           ###`);
+	console.log(`### Base path: ${basePath}        ###`);
 	console.log('#################################');
 }
 void bootstrap();
