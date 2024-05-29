@@ -33,18 +33,28 @@ export class EduSharingService {
 	) {
 		this.appId = this.configService.get<string>('APP_ID');
 		console.log('this.appId', this.appId);
+
 		this.baseUrl = this.configService.get<string>('API_URL');
 		console.log('this.baseUrl', this.baseUrl);
-		this.privateKey = this.configService.get<string>('PRIVATE_KEY');
+
+		let convertPrivateKey = this.configService.get<string>('PRIVATE_KEY');
+		// cut off start and end string of private key and replace spaces with newlines
+		// - "-----BEGIN PRIVATE KEY-----" = 27 chars
+		// - "-----END PRIVATE KEY-----" = 25 chars
+		convertPrivateKey = convertPrivateKey.substring(27, convertPrivateKey.length - 25).replace(/ /g, '\n');
+		// add start and end string of private key
+		this.privateKey = `-----BEGIN PRIVATE KEY-----${convertPrivateKey}-----END PRIVATE KEY-----`;
 		console.log('this.privateKey', this.privateKey);
-		console.log('this.privateKey', this.privateKey.replace(/\\n/g, '\n'));
-		console.log('this.privateKey', this.privateKey.replace(/ /g, '\n'));
-		console.log('this.privateKey', this.privateKey.replace(' ', '\n'));
-		this.publicKey = this.configService.get<string>('PUBLIC_KEY');
+
+		let convertPublicKey = this.configService.get<string>('PUBLIC_KEY');
+		// cut off start and end string of public key and replace spaces with newlines
+		// - "-----BEGIN PUBLIC KEY-----" = 26 chars
+		// - "-----END PUBLIC KEY-----" = 24 chars
+		convertPublicKey = convertPublicKey.substring(26, convertPublicKey.length - 24).replace(/ /g, '\n');
+		// add start and end string of public key
+		this.publicKey = `-----BEGIN PUBLIC KEY-----${convertPublicKey}-----END PUBLIC KEY-----`;
 		console.log('this.publicKey', this.publicKey);
-		console.log('this.publicKey', this.publicKey.replace(/\\n/g, '\n'));
-		console.log('this.publicKey', this.publicKey.replace(/ /g, '\n'));
-		console.log('this.publicKey', this.publicKey.replace(' ', '\n'));
+
 		this.logger.setContext(EduSharingService.name);
 	}
 
