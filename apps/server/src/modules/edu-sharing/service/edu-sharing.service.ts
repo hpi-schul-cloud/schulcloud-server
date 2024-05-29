@@ -43,7 +43,7 @@ export class EduSharingService {
 		// - "-----END PRIVATE KEY-----" = 25 chars
 		convertPrivateKey = convertPrivateKey.substring(27, convertPrivateKey.length - 25).replace(/ /g, '\n');
 		// add start and end string of private key
-		this.privateKey = `-----BEGIN PRIVATE KEY-----${convertPrivateKey}-----END PRIVATE KEY-----`;
+		this.privateKey = `-----BEGIN PRIVATE KEY-----${convertPrivateKey}-----END PRIVATE KEY-----\n`;
 		console.log('this.privateKey', this.privateKey);
 
 		let convertPublicKey = this.configService.get<string>('PUBLIC_KEY');
@@ -52,7 +52,7 @@ export class EduSharingService {
 		// - "-----END PUBLIC KEY-----" = 24 chars
 		convertPublicKey = convertPublicKey.substring(26, convertPublicKey.length - 24).replace(/ /g, '\n');
 		// add start and end string of public key
-		this.publicKey = `-----BEGIN PUBLIC KEY-----${convertPublicKey}-----END PUBLIC KEY-----`;
+		this.publicKey = `-----BEGIN PUBLIC KEY-----${convertPublicKey}-----END PUBLIC KEY-----\n`;
 		console.log('this.publicKey', this.publicKey);
 
 		this.logger.setContext(EduSharingService.name);
