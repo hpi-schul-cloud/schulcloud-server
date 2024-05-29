@@ -7,12 +7,10 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 	Param,
-	Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
 import { EduSharingUC } from '../uc';
-import { TicketParams, UserNameParams } from './dto';
+import { TicketParams } from './dto';
 
 @ApiTags('edu-sharing')
 @Authenticate('jwt')
@@ -30,8 +28,8 @@ export class EduSharingController {
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/')
-	async getTicketForUser(@Query() params: UserNameParams): Promise<string> {
-		const ticket = await this.eduSharingUC.getTicketForUser(params);
+	async getTicketForUser(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		const ticket = await this.eduSharingUC.getTicketForUser(currentUser.userId);
 
 		return ticket;
 	}

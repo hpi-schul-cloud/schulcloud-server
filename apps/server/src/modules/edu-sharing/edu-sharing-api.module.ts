@@ -1,4 +1,5 @@
 import { AuthenticationModule } from '@modules/authentication';
+import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { EduSharingUC } from './uc';
 
 @Module({
 	imports: [
+		AuthorizationModule,
 		AuthorizationReferenceModule,
 		EduSharingModule,
 		AuthenticationModule,
