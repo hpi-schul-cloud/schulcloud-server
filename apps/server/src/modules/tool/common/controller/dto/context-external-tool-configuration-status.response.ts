@@ -34,11 +34,18 @@ export class ContextExternalToolConfigurationStatusResponse {
 	})
 	isDeactivated: boolean;
 
+	@ApiProperty({
+		type: Boolean,
+		description: 'True if the tool is not licensed for user',
+	})
+	isNotLicensed: boolean;
+
 	constructor(props: ContextExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
 		this.isIncompleteOnScopeContext = props.isIncompleteOnScopeContext;
 		this.isIncompleteOperationalOnScopeContext = props.isIncompleteOperationalOnScopeContext;
 		this.isDeactivated = props.isDeactivated;
+		this.isNotLicensed = props.isNotLicensed;
 	}
 }

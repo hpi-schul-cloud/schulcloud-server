@@ -15,7 +15,8 @@ describe('ToolStatusNotLaunchableLoggableException', () => {
 				toolConfigStatus.isOutdatedOnScopeContext,
 				toolConfigStatus.isIncompleteOnScopeContext,
 				toolConfigStatus.isIncompleteOperationalOnScopeContext,
-				toolConfigStatus.isDeactivated
+				toolConfigStatus.isDeactivated,
+				toolConfigStatus.isNotLicensed
 			);
 
 			return {
@@ -40,6 +41,7 @@ describe('ToolStatusNotLaunchableLoggableException', () => {
 					isIncompleteOnScopeContext: false,
 					isIncompleteOperationalOnScopeContext: false,
 					isDeactivated: false,
+					isNotLicensed: false,
 				},
 			});
 		});

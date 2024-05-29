@@ -855,7 +855,7 @@
 			"default": "etherpad.dbildungscloud.de",
 			"description": "The old etherpad domain."
 		},
-		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
+		"ETHERPAD_COOKIE_EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
 			"description": "Number of seconds after an etherpad cookie expires."

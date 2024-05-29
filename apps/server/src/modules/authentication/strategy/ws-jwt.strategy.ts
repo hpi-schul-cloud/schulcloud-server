@@ -6,8 +6,8 @@ import { jwtConstants } from '../constants';
 import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from '../mapper';
-import { JwtExtractor } from './jwt-extractor';
-import { JwtValidationAdapter } from './jwt-validation.adapter';
+import { JwtExtractor } from '../helper/jwt-extractor';
+import { JwtValidationAdapter } from '../helper/jwt-validation.adapter';
 
 @Injectable()
 export class WsJwtStrategy extends PassportStrategy(Strategy, 'wsjwt') {
