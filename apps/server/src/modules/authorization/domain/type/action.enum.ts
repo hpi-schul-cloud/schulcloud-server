@@ -1,4 +1,4 @@
 export enum Action {
-	read,
-	write,
+	read = 'read',
+	write = 'write',
 }
