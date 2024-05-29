@@ -56,7 +56,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('provisionSchoolExternalTool', () => {
@@ -224,7 +224,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
 				userLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce(mediaUserLicenses);
-				externalToolService.findExternalToolByMedium.mockResolvedValue(null);
+				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(null);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 
 				return {
