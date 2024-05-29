@@ -9,8 +9,8 @@ import { UserMapper } from './mapper/user.mapper';
 export class UserMikroOrmRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async getUsers(query: UserListQuery): Promise<User[]> {
-		const entities = await this.em.find(
+	public async getAndCountUsers(query: UserListQuery): Promise<[User[], number]> {
+		const [entities, total] = await this.em.findAndCount(
 			UserEntity,
 			{ school: query.schoolId, roles: query.roleId },
 			{ limit: query.limit, offset: query.offset }
@@ -18,7 +18,7 @@ export class UserMikroOrmRepo {
 
 		const users = UserMapper.mapToDos(entities);
 
-		return users;
+		return [users, total];
 	}
 
 	public async getUsersByIds(ids: string[], query: UserListQuery): Promise<User[]> {
