@@ -5,6 +5,7 @@ import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
+import { CommonCartridgeOrganizationNodeProps } from '../export/builders/common-cartridge-organization-node';
 import { CommonCartridgeMetadataElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-organization-element';
 import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-organizations-wrapper-element';
@@ -113,5 +114,14 @@ export function createCommonCartridgeOrganizationProps(): CommonCartridgeOrganiz
 	return {
 		title: faker.lorem.words(),
 		identifier: faker.string.uuid(),
+	};
+}
+
+export function createCommonCartridgeOrganizationNodeProps(): CommonCartridgeOrganizationNodeProps {
+	return {
+		type: CommonCartridgeElementType.ORGANIZATION,
+		identifier: faker.string.uuid(),
+		title: faker.lorem.words(),
+		version: CommonCartridgeVersion.V_1_1_0,
 	};
 }

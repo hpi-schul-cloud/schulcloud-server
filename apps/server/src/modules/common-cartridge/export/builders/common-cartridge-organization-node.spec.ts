@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-node-props.factory';
+import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-element-props.factory';
 import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';

@@ -1,4 +1,4 @@
-import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-node-props.factory';
+import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common-cartridge-element-props.factory';
 import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces';
