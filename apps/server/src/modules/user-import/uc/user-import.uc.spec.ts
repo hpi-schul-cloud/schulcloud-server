@@ -26,7 +26,7 @@ import {
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
-import { UserService } from '../../user';
+import { UserService } from '@modules/user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	SchoolNotMigratedLoggableException,
