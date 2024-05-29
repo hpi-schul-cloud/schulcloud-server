@@ -42,6 +42,7 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@sr
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { UserLicenseModule } from '../user-license';
+import { UserManagementModule } from '../user/user-management/user-management.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -93,6 +94,7 @@ const serverModules = [
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,
+	UserManagementModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
