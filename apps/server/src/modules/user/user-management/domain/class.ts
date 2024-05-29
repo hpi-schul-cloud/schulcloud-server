@@ -11,4 +11,8 @@ export class Class extends DomainObject<ClassProps> {
 
 		return result;
 	}
+
+	public getUserIds(): string[] {
+		return this.props.userIds;
+	}
 }
