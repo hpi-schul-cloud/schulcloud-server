@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Class } from '../domain/class';
 import { User } from '../domain/user';
 import { ClassMikroOrmRepo } from '../repo/class.repo';
 import { UserMikroOrmRepo } from '../repo/user.repo';
@@ -15,27 +16,56 @@ export class GetUserListUc {
 		let users: User[] = [];
 
 		if (query.classIds) {
-			const classes = await this.classRepo.getClassesForSchool(query.schoolId);
+			users = await this.getUsersByClasses(query);
 		}
 		// else if (query.sortQuery?.sortBy === SortableFields.class) {
 		// }
 		else {
-			const us = await this.userRepo.getUsers(query);
-			const classes = await this.classRepo.getClassesForSchool(query.schoolId);
-
-			us.forEach((u) => {
-				classes.forEach((c) => {
-					if (c.isClassOfUser(u.id)) {
-						u.addClass(c);
-					}
-				});
-			});
-
-			users = us;
+			users = await this.getUsers(query);
 		}
 
 		const dto = UserListDtoMapper.mapToDto(users, query);
 
 		return dto;
+	}
+
+	private async getUsersByClasses(query: UserListQuery) {
+		if (!query.classIds) {
+			throw new Error('The query must contain classIds for this method.');
+		}
+
+		const classes = await this.classRepo.getClassesByIds(query.classIds);
+		const userIds = this.extractUserIdsFromClasses(classes);
+		const users = await this.userRepo.getUsersByIds(userIds, query);
+
+		this.addClassesToUsers(users, classes);
+
+		return users;
+	}
+
+	private extractUserIdsFromClasses(classes: Class[]): string[] {
+		const userIds = classes.flatMap((c) => c.getUserIds());
+		const uniqueUserIds = Array.from(new Set(userIds));
+
+		return uniqueUserIds;
+	}
+
+	private async getUsers(query: UserListQuery): Promise<User[]> {
+		const users = await this.userRepo.getUsers(query);
+		const classes = await this.classRepo.getClassesForSchool(query.schoolId);
+
+		this.addClassesToUsers(users, classes);
+
+		return users;
+	}
+
+	private addClassesToUsers(users: User[], classes: Class[]) {
+		users.forEach((u) => {
+			classes.forEach((c) => {
+				if (c.isClassOfUser(u.id)) {
+					u.addClass(c);
+				}
+			});
+		});
 	}
 }

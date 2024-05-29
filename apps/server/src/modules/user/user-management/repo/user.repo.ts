@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
+import { User as UserEntity } from '@shared/domain/entity';
+import { User } from '../domain/user';
 import { UserListQuery } from '../uc/query/user-list.query';
 import { UserMapper } from './mapper/user.mapper';
 
@@ -8,12 +9,20 @@ import { UserMapper } from './mapper/user.mapper';
 export class UserMikroOrmRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async getUsers(query: UserListQuery) {
+	public async getUsers(query: UserListQuery): Promise<User[]> {
 		const entities = await this.em.find(
-			User,
+			UserEntity,
 			{ school: query.schoolId, roles: query.roleId },
 			{ limit: query.limit, offset: query.offset }
 		);
+
+		const users = UserMapper.mapToDos(entities);
+
+		return users;
+	}
+
+	public async getUsersByIds(ids: string[], query: UserListQuery): Promise<User[]> {
+		const entities = await this.em.find(UserEntity, { id: ids }, { limit: query.limit, offset: query.offset });
 
 		const users = UserMapper.mapToDos(entities);
 
