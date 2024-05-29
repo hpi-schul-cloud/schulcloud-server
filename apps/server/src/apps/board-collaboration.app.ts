@@ -9,7 +9,8 @@ import { install as sourceMapInstall } from 'source-map-support';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
-import { MongoIoAdapter, BoardCollaborationModule } from '@modules/board';
+import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
+import { MongoIoAdapter } from '@modules/board';
 
 async function bootstrap() {
 	sourceMapInstall();
