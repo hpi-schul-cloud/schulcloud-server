@@ -5,19 +5,13 @@ import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnBoardNode, ColumnNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { columnBoardFactory, columnFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
@@ -79,12 +73,12 @@ describe(`board delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.build({
+		const columnBoardNode = columnBoardFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 		await em.persistAndFlush([columnBoardNode]);
 
-		const columnNode = columnNodeFactory.build({ parent: columnBoardNode });
+		const columnNode = columnFactory.build({ parent: columnBoardNode });
 		await em.persistAndFlush([columnNode]);
 
 		em.clear();

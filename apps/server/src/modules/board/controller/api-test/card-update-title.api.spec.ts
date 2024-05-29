@@ -2,17 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { CardNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/cards';
 
@@ -49,11 +42,11 @@ describe(`card update title (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
 			await em.persistAndFlush([teacherAccount, teacherUser, cardNode, columnNode, columnBoardNode]);
 			em.clear();
@@ -106,13 +99,13 @@ describe(`card update title (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
 
 			const title = 'old title';
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode, title });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode, title });
 
 			await em.persistAndFlush([studentAccount, studentUser, cardNode, columnNode, columnBoardNode]);
 			em.clear();

@@ -5,19 +5,12 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { CardNode, ColumnNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
 
@@ -76,12 +69,12 @@ describe(`column delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const siblingColumnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const siblingColumnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
 		await em.persistAndFlush([user, cardNode, columnNode, columnBoardNode, siblingColumnNode]);
 		em.clear();

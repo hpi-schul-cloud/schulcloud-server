@@ -5,19 +5,12 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
 
@@ -77,15 +70,15 @@ describe(`column move (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 
 		const columnNodes = new Array(10)
 			.fill(1)
-			.map((_, i) => columnNodeFactory.buildWithId({ parent: columnBoardNode, position: i }));
+			.map((_, i) => columnFactory.buildWithId({ parent: columnBoardNode, position: i }));
 		const columnToMove = columnNodes[2];
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnToMove });
+		const cardNode = cardFactory.buildWithId({ parent: columnToMove });
 
 		await em.persistAndFlush([user, cardNode, ...columnNodes, columnBoardNode]);
 		em.clear();

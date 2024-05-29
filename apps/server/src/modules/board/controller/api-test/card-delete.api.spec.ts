@@ -5,20 +5,12 @@ import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { CardNode, RichTextElementNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	richTextElementNodeFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { cardFactory, columnBoardFactory, columnFactory, richTextElementFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/cards';
 
@@ -77,13 +69,13 @@ describe(`card delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const richTextElementNode = richTextElementNodeFactory.buildWithId({ parent: cardNode });
-		const siblingCardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode = cardFactory.buildWithId({ parent: columnNode });
+		const richTextElementNode = richTextElementFactory.buildWithId({ parent: cardNode });
+		const siblingCardNode = cardFactory.buildWithId({ parent: columnNode });
 
 		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, siblingCardNode, richTextElementNode]);
 		em.clear();

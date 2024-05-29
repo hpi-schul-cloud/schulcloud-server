@@ -2,19 +2,16 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { SubmissionItemNode } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
-	cardNodeFactory,
 	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
 	courseFactory,
-	submissionContainerElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory, submissionContainerElementFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/elements';
@@ -46,15 +43,15 @@ describe('submission create (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
 			em.clear();
@@ -80,15 +77,15 @@ describe('submission create (api)', () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
 			em.clear();
@@ -155,15 +152,15 @@ describe('submission create (api)', () => {
 			const course = courseFactory.build({ students: [] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
 			em.clear();
@@ -193,15 +190,15 @@ describe('submission create (api)', () => {
 
 			await em.persistAndFlush([user, teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
 
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
-			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
 			em.clear();

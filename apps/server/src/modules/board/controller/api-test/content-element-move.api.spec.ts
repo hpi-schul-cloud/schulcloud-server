@@ -5,20 +5,12 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { RichTextElementNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	richTextElementNodeFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { cardFactory, columnBoardFactory, columnFactory, richTextElementFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/elements';
 
@@ -78,14 +70,14 @@ describe(`content element move (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const parentCard = cardNodeFactory.buildWithId({ parent: column });
-		const targetCard = cardNodeFactory.buildWithId({ parent: column });
-		const targetCardElements = richTextElementNodeFactory.buildListWithId(4, { parent: targetCard });
-		const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+		const column = columnFactory.buildWithId({ parent: columnBoardNode });
+		const parentCard = cardFactory.buildWithId({ parent: column });
+		const targetCard = cardFactory.buildWithId({ parent: column });
+		const targetCardElements = richTextElementFactory.buildListWithId(4, { parent: targetCard });
+		const element = richTextElementFactory.buildWithId({ parent: parentCard });
 
 		await em.persistAndFlush([user, parentCard, column, targetCard, columnBoardNode, ...targetCardElements, element]);
 		em.clear();

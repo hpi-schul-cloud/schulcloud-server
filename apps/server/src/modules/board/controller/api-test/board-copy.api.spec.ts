@@ -2,16 +2,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	courseFactory,
-} from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { columnBoardFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 
@@ -46,7 +41,7 @@ describe(`board copy (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -114,7 +109,7 @@ describe(`board copy (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 

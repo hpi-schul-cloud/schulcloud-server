@@ -3,21 +3,18 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
 import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	fileElementNodeFactory,
-	richTextElementNodeFactory,
-	submissionContainerElementNodeFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	fileElementFactory,
+	richTextElementFactory,
+	submissionContainerElementFactory,
+} from '../../testing';
 
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;
@@ -50,21 +47,21 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
-			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({
+			const column = columnFactory.buildWithId({ parent: columnBoardNode });
+			const parentCard = cardFactory.buildWithId({ parent: column });
+			const richTextElement = richTextElementFactory.buildWithId({ parent: parentCard });
+			const fileElement = fileElementFactory.buildWithId({ parent: parentCard });
+			const submissionContainerElement = submissionContainerElementFactory.buildWithId({
 				parent: parentCard,
 				dueDate: null,
 			});
 
 			const tomorrow = new Date(Date.now() + 86400000);
-			const submissionContainerElementWithDueDate = submissionContainerElementNodeFactory.buildWithId({
+			const submissionContainerElementWithDueDate = submissionContainerElementFactory.buildWithId({
 				parent: parentCard,
 				dueDate: tomorrow,
 			});
@@ -242,14 +239,14 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [] });
 			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
+			const column = columnFactory.buildWithId({ parent: columnBoardNode });
+			const parentCard = cardFactory.buildWithId({ parent: column });
+			const richTextElement = richTextElementFactory.buildWithId({ parent: parentCard });
+			const submissionContainerElement = submissionContainerElementFactory.buildWithId({ parent: parentCard });
 
 			await em.persistAndFlush([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]);
 			em.clear();

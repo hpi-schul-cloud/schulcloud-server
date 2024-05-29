@@ -2,17 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { CardNode } from '@shared/domain/entity';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-} from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 describe(`card update height (api)`, () => {
 	let app: INestApplication;
@@ -43,11 +36,11 @@ describe(`card update height (api)`, () => {
 		const course = courseFactory.build({ teachers: [teacherUser] });
 		await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode = cardFactory.buildWithId({ parent: columnNode });
 
 		await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
 		em.clear();

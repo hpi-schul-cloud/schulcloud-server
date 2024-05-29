@@ -7,17 +7,9 @@ import { MediaUserLicenseEntity } from '@modules/user-license/entity';
 import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { MediaBoardNode } from '@shared/domain/entity';
-import {
-	type DatesToStrings,
-	mediaBoardNodeFactory,
-	mediaExternalToolElementNodeFactory,
-	mediaLineNodeFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { MediaBoardColors, MediaBoardLayoutType } from '../../../domain';
+import { type DatesToStrings, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardExternalReferenceType, MediaBoardColors, BoardLayout } from '../../../domain';
 import {
 	CollapsableBodyParams,
 	ColorBodyParams,
@@ -26,6 +18,7 @@ import {
 	type MediaBoardResponse,
 	MediaLineResponse,
 } from '../dto';
+import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../../testing';
 
 const baseRouteName = '/media-boards';
 
@@ -57,14 +50,14 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({ parent: mediaLine });
+				const mediaLine = mediaLineFactory.buildWithId({ parent: mediaBoard });
+				const mediaElement = mediaExternalToolElementFactory.buildWithId({ parent: mediaLine });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
 				em.clear();
@@ -90,7 +83,7 @@ describe('Media Board (API)', () => {
 						createdAt: mediaBoard.createdAt.toISOString(),
 						lastUpdatedAt: mediaBoard.updatedAt.toISOString(),
 					},
-					layout: MediaBoardLayoutType.LIST,
+					layout: BoardLayout.LIST,
 					lines: [
 						{
 							id: mediaLine.id,
@@ -181,7 +174,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -224,7 +217,7 @@ describe('Media Board (API)', () => {
 				config.FEATURE_MEDIA_SHELF_ENABLED = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -262,7 +255,7 @@ describe('Media Board (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -315,7 +308,7 @@ describe('Media Board (API)', () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -323,8 +316,8 @@ describe('Media Board (API)', () => {
 					mediaAvailableLineBackgroundColor: MediaBoardColors.RED,
 					mediaAvailableLineCollapsed: true,
 				});
-				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+				const mediaLine = mediaLineFactory.buildWithId({ parent: mediaBoard });
+				const mediaElement = mediaExternalToolElementFactory.buildWithId({
 					parent: mediaLine,
 					contextExternalTool,
 				});
@@ -380,7 +373,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -417,7 +410,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -457,7 +450,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -517,14 +510,14 @@ describe('Media Board (API)', () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+				const mediaLine = mediaLineFactory.buildWithId({ parent: mediaBoard });
+				const mediaElement = mediaExternalToolElementFactory.buildWithId({
 					parent: mediaLine,
 					contextExternalTool,
 				});
@@ -606,15 +599,15 @@ describe('Media Board (API)', () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
 
-				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard, collapsed: false });
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+				const mediaLine = mediaLineFactory.buildWithId({ parent: mediaBoard, collapsed: false });
+				const mediaElement = mediaExternalToolElementFactory.buildWithId({
 					parent: mediaLine,
 					contextExternalTool,
 				});
@@ -666,7 +659,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -708,7 +701,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -769,15 +762,15 @@ describe('Media Board (API)', () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
 
-				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard, collapsed: false });
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({
+				const mediaLine = mediaLineFactory.buildWithId({ parent: mediaBoard, collapsed: false });
+				const mediaElement = mediaExternalToolElementFactory.buildWithId({
 					parent: mediaLine,
 					contextExternalTool,
 				});
@@ -826,7 +819,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -865,7 +858,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -907,7 +900,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -951,14 +944,14 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineNodeFactory.buildWithId({ parent: mediaBoard });
-				const mediaElement = mediaExternalToolElementNodeFactory.buildWithId({ parent: mediaLine });
+				const mediaLine = mediaLineFactory.buildWithId({ parent: mediaBoard });
+				const mediaElement = mediaExternalToolElementFactory.buildWithId({ parent: mediaLine });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
 				em.clear();
@@ -977,12 +970,12 @@ describe('Media Board (API)', () => {
 				const { studentClient, mediaBoard } = await setup();
 
 				const response = await studentClient.patch<LayoutBodyParams>(`${mediaBoard.id}/layout`, {
-					layout: MediaBoardLayoutType.GRID,
+					layout: BoardLayout.GRID,
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 				const modifiedBoard = await em.findOneOrFail(MediaBoardNode, mediaBoard.id);
-				expect(modifiedBoard.layout).toBe(MediaBoardLayoutType.GRID);
+				expect(modifiedBoard.layout).toBe(BoardLayout.GRID);
 			});
 		});
 
@@ -993,7 +986,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -1030,7 +1023,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -1070,7 +1063,7 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardNodeFactory.buildWithId({
+				const mediaBoard = mediaBoardFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,

@@ -2,9 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardLayout } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { CreateBoardBodyParams } from '../dto';
 
 const baseRouteName = '/boards';

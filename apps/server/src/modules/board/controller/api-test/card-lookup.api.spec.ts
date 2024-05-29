@@ -5,21 +5,18 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import {
-	cardNodeFactory,
 	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
 	courseFactory,
 	mapUserToCurrentUser,
-	richTextElementNodeFactory,
 	roleFactory,
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { cardFactory, columnFactory, columnBoardFactory, richTextElementFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { CardIdsParams, CardListResponse } from '../dto';
 
 const baseRouteName = '/cards';
@@ -85,14 +82,14 @@ describe(`card lookup (api)`, () => {
 		const course = courseFactory.buildWithId({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode1 = cardNodeFactory.buildWithId({ parent: columnNode });
-		const cardNode2 = cardNodeFactory.buildWithId({ parent: columnNode });
-		const cardNode3 = cardNodeFactory.buildWithId({ parent: columnNode });
-		const richTextElement = richTextElementNodeFactory.buildWithId({ parent: cardNode1 });
+		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode1 = cardFactory.buildWithId({ parent: columnNode });
+		const cardNode2 = cardFactory.buildWithId({ parent: columnNode });
+		const cardNode3 = cardFactory.buildWithId({ parent: columnNode });
+		const richTextElement = richTextElementFactory.buildWithId({ parent: cardNode1 });
 
 		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, richTextElement]);
 		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3]);

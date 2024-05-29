@@ -2,16 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnNode } from '@shared/domain/entity';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-} from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { columnBoardFactory, columnFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
 
@@ -48,10 +42,10 @@ describe(`column update title (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
 
 			await em.persistAndFlush([teacherAccount, teacherUser, columnNode, columnBoardNode]);
 			em.clear();
@@ -104,11 +98,11 @@ describe(`column update title (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			const title = 'old title';
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode, title });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode, title });
 
 			await em.persistAndFlush([studentAccount, studentUser, columnNode, columnBoardNode]);
 			em.clear();

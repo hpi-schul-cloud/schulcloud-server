@@ -5,24 +5,21 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { DrawingElementNode, RichTextElementNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	richTextElementNodeFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	drawingElementFactory,
+	richTextElementFactory,
+} from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/elements';
 
@@ -89,13 +86,13 @@ describe(`content element delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const element = richTextElementNodeFactory.buildWithId({ parent: cardNode });
-		const sibling = richTextElementNodeFactory.buildWithId({ parent: cardNode });
+		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode = cardFactory.buildWithId({ parent: columnNode });
+		const element = richTextElementFactory.buildWithId({ parent: cardNode });
+		const sibling = richTextElementFactory.buildWithId({ parent: cardNode });
 
 		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element, sibling]);
 		em.clear();
@@ -155,12 +152,12 @@ describe(`content element delete (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacher], students: [student] });
 			await em.persistAndFlush([teacher, student, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-			const element = drawingElementNodeFactory.buildWithId({ parent: cardNode });
+			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const element = drawingElementFactory.buildWithId({ parent: cardNode });
 
 			filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([]);
 			drawingElementAdapterService.deleteDrawingBinData.mockResolvedValueOnce();

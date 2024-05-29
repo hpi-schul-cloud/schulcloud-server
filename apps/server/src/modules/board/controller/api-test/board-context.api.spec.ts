@@ -2,14 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	courseFactory,
-} from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { columnBoardFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardContextResponse } from '../dto/board/board-context.reponse';
 
 const baseRouteName = '/boards';
@@ -45,7 +40,7 @@ describe('board get context (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
