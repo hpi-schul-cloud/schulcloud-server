@@ -2,16 +2,12 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { ICurrentUser } from '@modules/authentication';
-import {
-	AuthorizableReferenceType,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
-import { BadRequestException, ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
@@ -37,11 +33,6 @@ import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, V
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
 	[BBBRole.VIEWER]: Permission.JOIN_MEETING,
-};
-
-const PermissionScopeMapping = {
-	[VideoConferenceScope.COURSE]: AuthorizableReferenceType.Course,
-	[VideoConferenceScope.EVENT]: AuthorizableReferenceType.Team,
 };
 
 /**
@@ -81,9 +72,9 @@ export class VideoConferenceDeprecatedUc {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
-		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, object);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(
@@ -145,9 +136,9 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, object);
 
 		const resolvedUser: UserDO = await this.userService.findById(userId);
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
@@ -200,9 +191,9 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, object);
 
 		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
 			meetingID: refId,
@@ -277,9 +268,9 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const { scopeId } = await this.getScopeInfo(userId, conferenceScope, refId);
+		const { object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, object);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
@@ -338,24 +329,31 @@ export class VideoConferenceDeprecatedUc {
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
 		refId: string
-	): Promise<ScopeInfo> {
+	): Promise<{ scopeInfo: ScopeInfo; object: AuthorizableObject }> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(refId);
 				return {
-					scopeId: refId,
-					scopeName: 'courses',
-					logoutUrl: `${this.hostURL}/courses/${refId}?activeTab=tools`,
-					title: course.name,
+					scopeInfo: {
+						scopeId: refId,
+						scopeName: 'courses',
+						logoutUrl: `${this.hostURL}/courses/${refId}?activeTab=tools`,
+						title: course.name,
+					},
+					object: course,
 				};
 			}
 			case VideoConferenceScope.EVENT: {
 				const event: CalendarEventDto = await this.calendarService.findEvent(userId, refId);
+				const team = await this.teamsRepo.findById(event.teamId);
 				return {
-					scopeId: event.teamId,
-					scopeName: 'teams',
-					logoutUrl: `${this.hostURL}/teams/${event.teamId}?activeTab=events`,
-					title: event.title,
+					scopeInfo: {
+						scopeId: event.teamId,
+						scopeName: 'teams',
+						logoutUrl: `${this.hostURL}/teams/${event.teamId}?activeTab=events`,
+						title: event.title,
+					},
+					object: team,
 				};
 			}
 			default:
@@ -371,80 +369,37 @@ export class VideoConferenceDeprecatedUc {
 	 * @throws {ForbiddenException}
 	 * @returns {Promise<BBBRole>}
 	 */
-	protected async checkPermission(
-		userId: EntityId,
-		conferenceScope: VideoConferenceScope,
-		entityId: EntityId
-	): Promise<BBBRole> {
+	protected async checkPermission(userId: EntityId, object: AuthorizableObject): Promise<BBBRole> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const permissionMap: Map<Permission, Promise<boolean>> = this.hasReadPermissions(
-			user,
-			PermissionScopeMapping[conferenceScope],
-			entityId,
-			[Permission.START_MEETING, Permission.JOIN_MEETING]
-		);
+		const permissionMap: Map<Permission, boolean> = this.hasReadPermissions(user, object, [
+			Permission.START_MEETING,
+			Permission.JOIN_MEETING,
+		]);
 
-		if (await permissionMap.get(Permission.START_MEETING)) {
+		if (permissionMap.get(Permission.START_MEETING)) {
 			return BBBRole.MODERATOR;
 		}
-		if (await permissionMap.get(Permission.JOIN_MEETING)) {
+		if (permissionMap.get(Permission.JOIN_MEETING)) {
 			return BBBRole.VIEWER;
 		}
+
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
 	private hasReadPermissions(
 		user: User,
-		entityName: AuthorizableReferenceType,
-		entityId: EntityId,
+		object: AuthorizableObject,
 		permissions: Permission[]
-	): Map<Permission, Promise<boolean>> {
-		const returnMap: Map<Permission, Promise<boolean>> = new Map();
+	): Map<Permission, boolean> {
+		const returnMap: Map<Permission, boolean> = new Map();
 		permissions.forEach((permission) => {
 			const context = AuthorizationContextBuilder.read([permission]);
-			const permissionPromise = this.hasCourseOrTeamReadPermission(user, entityName, entityId, context);
+			const permissionPromise = this.authorizationService.hasPermission(user, object, context);
 
 			returnMap.set(permission, permissionPromise);
 		});
 
 		return returnMap;
-	}
-
-	private hasCourseOrTeamReadPermission(
-		user: User,
-		entityName: AuthorizableReferenceType,
-		entityId: EntityId,
-		context: AuthorizationContext
-	): Promise<boolean> {
-		let hasPermission: Promise<boolean>;
-
-		if (entityName === AuthorizableReferenceType.Course) {
-			hasPermission = this.hasCourseReadPermission(user, entityId, context);
-		} else if (entityName === AuthorizableReferenceType.Team) {
-			hasPermission = this.hasTeamReadPermission(user, entityId, context);
-		} else {
-			throw new NotImplementedException('Unknown video conference scope');
-		}
-
-		return hasPermission;
-	}
-
-	private async hasCourseReadPermission(
-		user: User,
-		courseId: EntityId,
-		context: AuthorizationContext
-	): Promise<boolean> {
-		const course = await this.courseService.findById(courseId);
-		const hasPermission = this.authorizationService.hasPermission(user, course, context);
-
-		return hasPermission;
-	}
-
-	private async hasTeamReadPermission(user: User, teamId: EntityId, context: AuthorizationContext): Promise<boolean> {
-		const team = await this.teamsRepo.findById(teamId);
-		const hasPermission = this.authorizationService.hasPermission(user, team, context);
-
-		return hasPermission;
 	}
 
 	/**

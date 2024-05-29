@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { CalendarService } from '@infra/calendar';
-import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
+import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { ICurrentUser } from '@modules/authentication';
-import { AuthorizationService } from '@modules/authorization/domain';
-import { CourseService } from '@modules/learnroom/service';
+import { AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { RoleReference, UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import { Course, Role, TeamEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
@@ -35,16 +35,16 @@ import { ScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState }
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
 class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {
-	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<ScopeInfo> {
+	async getScopeInfoSpec(
+		userId: EntityId,
+		conferenceScope: VideoConferenceScope,
+		refId: string
+	): Promise<{ scopeInfo: ScopeInfo; object: AuthorizableObject }> {
 		return this.getScopeInfo(userId, conferenceScope, refId);
 	}
 
-	async checkPermissionSpec(
-		userId: EntityId,
-		conferenceScope: VideoConferenceScope,
-		entityId: EntityId
-	): Promise<BBBRole> {
-		return this.checkPermission(userId, conferenceScope, entityId);
+	async checkPermissionSpec(userId: EntityId, object: AuthorizableObject): Promise<BBBRole> {
+		return this.checkPermission(userId, object);
 	}
 
 	async throwOnFeaturesDisabledSpec(schoolId: EntityId): Promise<void> {
@@ -190,24 +190,26 @@ describe('VideoConferenceUc', () => {
 	describe('getScopeInfo', () => {
 		it('should return scope info for courses', async () => {
 			// Act
-			const scopeInfo: ScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.COURSE, course.id);
+			const result = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(scopeInfo.scopeId).toEqual(course.id);
-			expect(scopeInfo.title).toEqual(course.name);
-			expect(scopeInfo.logoutUrl).toEqual(`${hostUrl}/courses/${course.id}?activeTab=tools`);
-			expect(scopeInfo.scopeName).toEqual('courses');
+			expect(result.scopeInfo.scopeId).toEqual(course.id);
+			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/courses/${course.id}?activeTab=tools`);
+			expect(result.scopeInfo.scopeName).toEqual('courses');
+			expect(result.scopeInfo.title).toEqual(course.name);
+			expect(result.object).toEqual(course);
 		});
 
 		it('should return scope info for teams', async () => {
 			// Act
-			const scopeInfo: ScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
+			const result = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
 
 			// Assert
-			expect(scopeInfo.scopeId).toEqual(event.teamId);
-			expect(scopeInfo.title).toEqual(event.title);
-			expect(scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event.teamId}?activeTab=events`);
-			expect(scopeInfo.scopeName).toEqual('teams');
+			expect(result.scopeInfo.scopeId).toEqual(event.teamId);
+			expect(result.scopeInfo.title).toEqual(event.title);
+			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event.teamId}?activeTab=events`);
+			expect(result.scopeInfo.scopeName).toEqual('teams');
+			expect(result.object).toEqual(team);
 		});
 
 		it('should throw on unknown scope', async () => {
@@ -224,7 +226,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 			authorizationService.hasPermission.mockReturnValueOnce(false);
 			// Act
-			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
+			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', course);
 
 			// Assert
 			expect(bbbRole).toEqual(BBBRole.MODERATOR);
@@ -236,7 +238,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 
 			// Act
-			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
+			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', course);
 
 			// Assert
 			expect(bbbRole).toEqual(BBBRole.VIEWER);
@@ -248,7 +250,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(false);
 
 			// Act & Assert
-			await expect(useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId')).rejects.toThrow(
+			await expect(useCase.checkPermissionSpec('userId', course)).rejects.toThrow(
 				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
 			);
 		});
@@ -282,117 +284,130 @@ describe('VideoConferenceUc', () => {
 	});
 
 	describe('create', () => {
-		let vcDO: VideoConferenceDO;
-		let savedVcDO: VideoConferenceDO;
-		let builder: BBBCreateConfigBuilder;
-		let bbbResponse: BBBResponse<BBBCreateResponse>;
+		describe('when scope is course', () => {
+			let vcDO: VideoConferenceDO;
+			let savedVcDO: VideoConferenceDO;
+			let builder: BBBCreateConfigBuilder;
+			let bbbResponse: BBBResponse<BBBCreateResponse>;
 
-		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
+			beforeEach(() => {
+				userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+				userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
-			vcDO = new VideoConferenceDO({
-				target: course.id,
-				targetModel: VideoConferenceScope.COURSE,
-				options: defaultOptions,
-			});
-			savedVcDO = { ...vcDO };
-			savedVcDO.id = 'videoConferenceId';
-			builder = new BBBCreateConfigBuilder({
-				name: course.name,
-				meetingID: course.id,
-			}).withLogoutUrl(`${hostUrl}/courses/${course.id}?activeTab=tools`);
-			bbbResponse = { meetingID: course.id } as unknown as BBBResponse<BBBCreateResponse>;
-		});
-
-		it('should throw on insufficient permissions', async () => {
-			// Arrange
-			//	userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-			authorizationService.hasPermission.mockReturnValueOnce(false);
-			authorizationService.hasPermission.mockReturnValueOnce(true);
-
-			// Act & Assert
-			await expect(
-				useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions)
-			).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
-		});
-
-		it('should successfully execute and create a new preset in the database', async () => {
-			// Arrange
-			videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject());
-			bbbService.create.mockResolvedValue(bbbResponse);
-
-			// Act
-			const result: VideoConference<BBBCreateResponse> = await useCase.create(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id,
-				defaultOptions
-			);
-
-			// Assert
-			expect(videoConferenceRepo.save).toHaveBeenCalledWith(
-				new VideoConferenceDO({
+				vcDO = new VideoConferenceDO({
 					target: course.id,
 					targetModel: VideoConferenceScope.COURSE,
 					options: defaultOptions,
-				})
-			);
-			expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+				});
+				savedVcDO = { ...vcDO };
+				savedVcDO.id = 'videoConferenceId';
+				builder = new BBBCreateConfigBuilder({
+					name: course.name,
+					meetingID: course.id,
+				}).withLogoutUrl(`${hostUrl}/courses/${course.id}?activeTab=tools`);
+				bbbResponse = { meetingID: course.id } as unknown as BBBResponse<BBBCreateResponse>;
+			});
 
-			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
-			expect(result.permission).toEqual(Permission.START_MEETING);
-			expect(result.bbbResponse).toEqual(bbbResponse);
+			it('should throw on insufficient permissions', async () => {
+				// Arrange
+				//	userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+				authorizationService.hasPermission.mockReturnValueOnce(false);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+
+				// Act & Assert
+				await expect(
+					useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions)
+				).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+			});
+
+			it('should successfully execute and create a new preset in the database', async () => {
+				// Arrange
+				videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject());
+				bbbService.create.mockResolvedValue(bbbResponse);
+
+				// Act
+				const result: VideoConference<BBBCreateResponse> = await useCase.create(
+					defaultCurrentUser,
+					VideoConferenceScope.COURSE,
+					course.id,
+					defaultOptions
+				);
+
+				// Assert
+				expect(videoConferenceRepo.save).toHaveBeenCalledWith(
+					new VideoConferenceDO({
+						target: course.id,
+						targetModel: VideoConferenceScope.COURSE,
+						options: defaultOptions,
+					})
+				);
+				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+
+				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
+				expect(result.permission).toEqual(Permission.START_MEETING);
+				expect(result.bbbResponse).toEqual(bbbResponse);
+			});
+
+			it('should successfully execute and read a preset from the database', async () => {
+				// Arrange
+				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
+				bbbService.create.mockResolvedValue(bbbResponse);
+
+				// Act
+				const result: VideoConference<BBBCreateResponse> = await useCase.create(
+					defaultCurrentUser,
+					VideoConferenceScope.COURSE,
+					course.id,
+					defaultOptions
+				);
+
+				// Assert
+				expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalled();
+				expect(videoConferenceRepo.save).toHaveBeenCalled();
+				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+
+				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
+				expect(result.permission).toEqual(Permission.START_MEETING);
+				expect(result.bbbResponse).toEqual(bbbResponse);
+			});
+
+			it('should successfully execute with options set', async () => {
+				// Arrange
+				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
+				bbbService.create.mockResolvedValue(bbbResponse);
+				builder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
+				builder.withMuteOnStart(true);
+				defaultOptions.moderatorMustApproveJoinRequests = true;
+				defaultOptions.everyAttendeeJoinsMuted = true;
+
+				// Act
+				const result: VideoConference<BBBCreateResponse> = await useCase.create(
+					defaultCurrentUser,
+					VideoConferenceScope.COURSE,
+					course.id,
+					defaultOptions
+				);
+
+				// Assert
+				expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalled();
+				expect(videoConferenceRepo.save).toHaveBeenCalled();
+				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+
+				expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
+				expect(result.permission).toEqual(Permission.START_MEETING);
+				expect(result.bbbResponse).toEqual(bbbResponse);
+			});
 		});
 
-		it('should successfully execute and read a preset from the database', async () => {
-			// Arrange
-			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
-			bbbService.create.mockResolvedValue(bbbResponse);
+		describe('when user has no permission', () => {
+			it('should throw on unknown scope', async () => {
+				authorizationService.hasPermission.mockReturnValueOnce(false);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
 
-			// Act
-			const result: VideoConference<BBBCreateResponse> = await useCase.create(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id,
-				defaultOptions
-			);
-
-			// Assert
-			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalled();
-			expect(videoConferenceRepo.save).toHaveBeenCalled();
-			expect(bbbService.create).toHaveBeenCalledWith(builder.build());
-
-			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
-			expect(result.permission).toEqual(Permission.START_MEETING);
-			expect(result.bbbResponse).toEqual(bbbResponse);
-		});
-
-		it('should successfully execute with options set', async () => {
-			// Arrange
-			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(savedVcDO);
-			bbbService.create.mockResolvedValue(bbbResponse);
-			builder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
-			builder.withMuteOnStart(true);
-			defaultOptions.moderatorMustApproveJoinRequests = true;
-			defaultOptions.everyAttendeeJoinsMuted = true;
-
-			// Act
-			const result: VideoConference<BBBCreateResponse> = await useCase.create(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id,
-				defaultOptions
-			);
-
-			// Assert
-			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalled();
-			expect(videoConferenceRepo.save).toHaveBeenCalled();
-			expect(bbbService.create).toHaveBeenCalledWith(builder.build());
-
-			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
-			expect(result.permission).toEqual(Permission.START_MEETING);
-			expect(result.bbbResponse).toEqual(bbbResponse);
+				await expect(
+					useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions)
+				).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+			});
 		});
 	});
 
