@@ -12,6 +12,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
+	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
 	ExternalToolMediumParams,
 	ExternalToolSearchParams,
@@ -117,6 +118,14 @@ export class ExternalToolRequestMapper {
 			medium: this.mapRequestToExternalToolMedium(externalToolCreateParams.medium),
 			description: externalToolCreateParams.description,
 		};
+	}
+
+	public mapBulkCreateRequest(externalToolCreateParams: ExternalToolBulkCreateParams): ExternalToolCreate[] {
+		const toolList: ExternalToolCreate[] = externalToolCreateParams.data.map(
+			(createParams: ExternalToolCreateParams): ExternalToolCreate => this.mapCreateRequest(createParams)
+		);
+
+		return toolList;
 	}
 
 	private mapRequestToExternalToolMedium(

@@ -10,6 +10,7 @@ export class ToolStatusResponseMapper {
 				isIncompleteOnScopeContext: status.isIncompleteOnScopeContext,
 				isIncompleteOperationalOnScopeContext: status.isIncompleteOperationalOnScopeContext,
 				isDeactivated: status.isDeactivated,
+				isNotLicensed: status.isNotLicensed,
 			});
 
 		return configurationStatus;
