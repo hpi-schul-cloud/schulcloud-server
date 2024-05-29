@@ -16,6 +16,16 @@ metadata:
     nginx.ingress.kubernetes.io/large-client-header-buffers: 4 100k
     nginx.ingress.kubernetes.io/proxy-buffer-size: 96k
     nginx.org/websocket-services: "board-collaboration-svc"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      set $forwarded_client_ip "";
+      if ($http_x_forwarded_for ~ "^([^,]+)") {
+        set $forwarded_client_ip $1;
+      }
+      set $client_ip $remote_addr;
+      if ($forwarded_client_ip != "") {
+        set $client_ip $forwarded_client_ip;
+      }
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$client_ip"
 {% if CLUSTER_ISSUER is defined %}
     cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
 {% endif %}
