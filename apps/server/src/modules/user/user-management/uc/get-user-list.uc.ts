@@ -14,33 +14,36 @@ export class GetUserListUc {
 		// TODO: authorization
 
 		let users: User[] = [];
+		let total = 0;
 
 		if (query.classIds) {
-			users = await this.getUsersByClasses(query);
+			[users, total] = await this.getAndCountUsersByClasses(query);
 		}
 		// else if (query.sortQuery?.sortBy === SortableFields.class) {
 		// }
 		else {
-			users = await this.getUsers(query);
+			[users, total] = await this.getAndCountUsers(query);
 		}
 
-		const dto = UserListDtoMapper.mapToDto(users, query);
+		const dto = UserListDtoMapper.mapToDto(users, query, total);
 
 		return dto;
 	}
 
-	private async getUsersByClasses(query: UserListQuery) {
+	private async getAndCountUsersByClasses(query: UserListQuery): Promise<[User[], number]> {
 		if (!query.classIds) {
 			throw new Error('The query must contain classIds for this method.');
 		}
 
 		const classes = await this.classRepo.getClassesByIds(query.classIds);
 		const userIds = this.extractUserIdsFromClasses(classes);
+		const totalNumberOfUsers = userIds.length;
+
 		const users = await this.userRepo.getUsersByIds(userIds, query);
 
 		this.addClassesToUsers(users, classes);
 
-		return users;
+		return [users, totalNumberOfUsers];
 	}
 
 	private extractUserIdsFromClasses(classes: Class[]): string[] {
@@ -50,16 +53,16 @@ export class GetUserListUc {
 		return uniqueUserIds;
 	}
 
-	private async getUsers(query: UserListQuery): Promise<User[]> {
-		const users = await this.userRepo.getUsers(query);
+	private async getAndCountUsers(query: UserListQuery): Promise<[User[], number]> {
+		const [users, total] = await this.userRepo.getAndCountUsers(query);
 		const classes = await this.classRepo.getClassesForSchool(query.schoolId);
 
 		this.addClassesToUsers(users, classes);
 
-		return users;
+		return [users, total];
 	}
 
-	private addClassesToUsers(users: User[], classes: Class[]) {
+	private addClassesToUsers(users: User[], classes: Class[]): void {
 		users.forEach((u) => {
 			classes.forEach((c) => {
 				if (c.isClassOfUser(u.id)) {
