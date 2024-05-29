@@ -33,16 +33,9 @@ export class EduSharingService {
 		private readonly logger: LegacyLogger
 	) {
 		this.appId = this.configService.get<string>('APP_ID');
-		console.log('this.appId', this.appId);
 		this.baseUrl = this.configService.get<string>('API_URL');
-		console.log('this.baseUrl', this.baseUrl);
-		this.privateKey = readFileSync('config/private.key', 'base64');
-		// this.privateKey = this.configService.get<string>('PRIVATE_KEY');
-		console.log('this.privateKey', this.privateKey);
-		this.publicKey = readFileSync('config/public.key', 'base64');
-		// this.publicKey = this.configService.get<string>('PUBLIC_KEY');
-		console.log('this.publicKey', this.publicKey);
-
+		this.privateKey = readFileSync('config/private.key', 'utf-8');
+		this.publicKey = readFileSync('config/public.key', 'utf-8');
 		this.logger.setContext(EduSharingService.name);
 	}
 
