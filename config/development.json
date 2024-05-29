@@ -97,6 +97,5 @@
 		"PAD_URI": "http://localhost:9001/p"
 	},
 	"PROVISIONING_SCHULCONNEX_LIZENZ_INFO_URL": "http://localhost:8888/v1/lizenzinfo",
-	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
-	"EDU_SHARING__API_URL": "http://localhost:8100/edu-sharing"
+	"BOARD_COLLABORATION_URI": "ws://localhost:4450"
 }

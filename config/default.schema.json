@@ -221,16 +221,10 @@
 			"description": "edu-sharing server properties, required always to be defined",
 			"required": [],
 			"properties": {
-				"SERVICE_BASE_URL": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4450",
-					"description": "The URI of the edu-sharing service"
-				},
 				"APP_ID": {
 					"type": "string",
 					"description": "The app ID for the edu-sharing repository.",
-					"default": ""
+					"default": "schul-cloud"
 				},
 				"API_URL": {
 					"type": "string",
