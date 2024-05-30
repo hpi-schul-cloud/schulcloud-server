@@ -11,7 +11,7 @@ export class ClassMikroOrmRepo {
 		const entities = await this.em.find(
 			ClassEntity,
 			{ schoolId: new ObjectId(schoolId) },
-			{ fields: ['name', 'userIds'], orderBy: { gradeLevel: sortOrder, name: 1 } }
+			{ fields: ['name', 'userIds'], orderBy: { gradeLevel: sortOrder, name: sortOrder } }
 		);
 
 		const classes = ClassMapper.mapToDos(entities);
