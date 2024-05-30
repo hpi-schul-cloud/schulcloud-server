@@ -1384,12 +1384,12 @@
 				},
 				"MAX_CONCURRENT_DELETION_REQUESTS": {
 					"type": "number",
-					"default": 10,
+					"default": 100,
 					"description": "max amount of deletion requests proccessed concurently"
 				},
 				"DELETION_DELAY_MILLISECONDS": {
 					"type": "number",
-					"default": 10000,
+					"default": 5000,
 					"description": "deley in milliseconds to give time modules to perform deletion proccess"
 				}
 			},
