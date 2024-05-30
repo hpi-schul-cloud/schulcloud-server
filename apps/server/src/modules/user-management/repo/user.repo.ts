@@ -11,10 +11,12 @@ export class UserMikroOrmRepo implements UserRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async getAndCountUsers(query: UserListQuery): Promise<[User[], number]> {
+		const orderBy = query.sortBy && { [query.sortBy]: query.sortOrder };
+
 		const [entities, total] = await this.em.findAndCount(
 			UserEntity,
 			{ school: query.schoolId, roles: query.roleId },
-			{ limit: query.limit, offset: query.offset }
+			{ limit: query.limit, offset: query.offset, orderBy }
 		);
 
 		const users = UserMapper.mapToDos(entities);
@@ -23,10 +25,12 @@ export class UserMikroOrmRepo implements UserRepo {
 	}
 
 	public async getUsersByIds(ids: string[], query: UserListQuery): Promise<User[]> {
+		const orderBy = query.sortBy && { [query.sortBy]: query.sortOrder };
+
 		const entities = await this.em.find(
 			UserEntity,
 			{ school: query.schoolId, roles: query.roleId, id: ids },
-			{ limit: query.limit, offset: query.offset }
+			{ limit: query.limit, offset: query.offset, orderBy }
 		);
 
 		const users = UserMapper.mapToDos(entities);

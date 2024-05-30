@@ -21,8 +21,12 @@ export class ClassMikroOrmRepo implements ClassRepo {
 		return classes;
 	}
 
-	public async getClassesByIds(classIds: string[]): Promise<Class[]> {
-		const entities = await this.em.find(ClassEntity, { id: classIds }, { fields: ['name', 'userIds', 'teacherIds'] });
+	public async getClassesByIds(classIds: string[], sortOrder?: number): Promise<Class[]> {
+		const entities = await this.em.find(
+			ClassEntity,
+			{ id: classIds },
+			{ fields: ['name', 'userIds', 'teacherIds'], orderBy: { gradeLevel: sortOrder, name: sortOrder } }
+		);
 
 		const classes = ClassMapper.mapToDos(entities);
 

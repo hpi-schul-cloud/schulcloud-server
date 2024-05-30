@@ -51,11 +51,19 @@ export class GetUserListUc {
 			throw new Error('The query must contain classIds for this method.');
 		}
 
-		const classes = await this.classRepo.getClassesByIds(query.classIds);
+		// If the results should not be sorted by class, the order of the classes is irrelevant. We just set it to ascending.
+		const sortOrder = query.sortBy === SortableField.class ? query.sortOrder : 1;
+		const classes = await this.classRepo.getClassesByIds(query.classIds, sortOrder);
 		const userIds = await this.extractUserIdsFromClasses(classes, query);
 		const totalNumberOfUsers = userIds.length;
 
-		const users = await this.userRepo.getUsersByIds(userIds, query);
+		let users: User[] = [];
+
+		if (query.sortBy === SortableField.class) {
+			users = await this.userRepo.getUsersByIdsInOrderOfIds(userIds, query);
+		} else {
+			users = await this.userRepo.getUsersByIds(userIds, query);
+		}
 
 		this.addClassesToUsers(users, classes);
 
