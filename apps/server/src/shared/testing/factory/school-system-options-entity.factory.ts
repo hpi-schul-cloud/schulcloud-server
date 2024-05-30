@@ -15,6 +15,7 @@ export const schoolSystemOptionsEntityFactory = BaseFactory.define<
 			groupProvisioningOtherEnabled: false,
 			groupProvisioningCoursesEnabled: false,
 			groupProvisioningClassesEnabled: false,
+			schoolExternalToolProvisioningEnabled: false,
 		},
 	};
 });
