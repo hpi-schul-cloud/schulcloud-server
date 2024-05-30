@@ -157,6 +157,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#findExternalToolByMedium" >findExternalToolByMedium</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#findExternalToolByName" >findExternalToolByName</a>
                             </li>
                             <li>
@@ -344,8 +348,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="142"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:142</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:147</a></div>
                         </td>
                     </tr>
 
@@ -484,8 +488,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -592,6 +596,87 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/ExternalTool.html" target="_self" >Promise&lt;ExternalTool&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findExternalToolByMedium"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>findExternalToolByMedium</b></span>
+                        <a href="#findExternalToolByMedium"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findExternalToolByMedium(mediumId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, mediaSourceId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:104</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mediumId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mediaSourceId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ExternalTool.html" target="_self" >Promise&lt;ExternalTool | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -914,8 +999,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:122</a></div>
                         </td>
                     </tr>
 
@@ -984,8 +1069,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -1161,6 +1246,11 @@ export class ExternalToolService {
 
 	public findExternalToolByOAuth2ConfigClientId(clientId: string): Promise&lt;ExternalTool | null&gt; {
 		const externalTool: Promise&lt;ExternalTool | null&gt; &#x3D; this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
+		return externalTool;
+	}
+
+	public findExternalToolByMedium(mediumId: string, mediaSourceId?: string): Promise&lt;ExternalTool | null&gt; {
+		const externalTool: Promise&lt;ExternalTool | null&gt; &#x3D; this.externalToolRepo.findByMedium(mediumId, mediaSourceId);
 		return externalTool;
 	}
 

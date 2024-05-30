@@ -2450,13 +2450,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ProvisioningModule.html" data-type="entity-link" >ProvisioningModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' : 'data-bs-target="#xs-injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' }>
+                                        'data-bs-target="#injectables-links-module-ProvisioningModule-4f952374c79eb5d48e503b364d39c432b4db2731026e5b93ddf00bd80df718a4a5fc2bede7f5f80d64804f4aee76ed6554cb71322e6e730dbee5c37fb7253d66"' : 'data-bs-target="#xs-injectables-links-module-ProvisioningModule-4f952374c79eb5d48e503b364d39c432b4db2731026e5b93ddf00bd80df718a4a5fc2bede7f5f80d64804f4aee76ed6554cb71322e6e730dbee5c37fb7253d66"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' :
-                                        'id="xs-injectables-links-module-ProvisioningModule-61577050aa3bf474dfc3c64ee4a8dc553e8158daf83880f2a44da0f40f485cec441d3d0be173e275dd78389a3eca6385b60e83d2deb9580952b96727cbc39ed3"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ProvisioningModule-4f952374c79eb5d48e503b364d39c432b4db2731026e5b93ddf00bd80df718a4a5fc2bede7f5f80d64804f4aee76ed6554cb71322e6e730dbee5c37fb7253d66"' :
+                                        'id="xs-injectables-links-module-ProvisioningModule-4f952374c79eb5d48e503b364d39c432b4db2731026e5b93ddf00bd80df718a4a5fc2bede7f5f80d64804f4aee76ed6554cb71322e6e730dbee5c37fb7253d66"' }>
                                         <li class="link">
                                             <a href="injectables/IservProvisioningStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >IservProvisioningStrategy</a>
                                         </li>
@@ -2483,6 +2483,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchulconnexSchoolProvisioningService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexSchoolProvisioningService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/SchulconnexToolProvisioningService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexToolProvisioningService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchulconnexUserProvisioningService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchulconnexUserProvisioningService</a>
@@ -5796,6 +5799,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Migration20240517135008.html" data-type="entity-link" >Migration20240517135008</a>
                             </li>
                             <li class="link">
+                                <a href="classes/Migration20240529091306.html" data-type="entity-link" >Migration20240529091306</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MigrationAlreadyActivatedException.html" data-type="entity-link" >MigrationAlreadyActivatedException</a>
                             </li>
                             <li class="link">
@@ -6301,6 +6307,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolExternalToolConfigurationTemplateResponse.html" data-type="entity-link" >SchoolExternalToolConfigurationTemplateResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolExternalToolCreatedLoggable.html" data-type="entity-link" >SchoolExternalToolCreatedLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolExternalToolFactory.html" data-type="entity-link" >SchoolExternalToolFactory</a>
@@ -7997,6 +8006,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchulconnexSchoolProvisioningService.html" data-type="entity-link" >SchulconnexSchoolProvisioningService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/SchulconnexToolProvisioningService.html" data-type="entity-link" >SchulconnexToolProvisioningService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchulconnexUserProvisioningService.html" data-type="entity-link" >SchulconnexUserProvisioningService</a>

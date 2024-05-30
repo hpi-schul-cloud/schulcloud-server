@@ -158,6 +158,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findByMedium" >findByMedium</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByName" >findByName</a>
                             </li>
                             <li>
@@ -351,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -554,6 +559,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByMedium"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findByMedium</b></span>
+                        <a href="#findByMedium"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByMedium(mediumId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, mediaSourceId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mediumId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mediaSourceId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ExternalTool.html" target="_self" >Promise&lt;ExternalTool | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findByName"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -712,8 +799,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -781,8 +868,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -1004,6 +1091,17 @@ export class ExternalToolRepo {
 
 	public async findByOAuth2ConfigClientId(clientId: string): Promise&lt;ExternalTool | null&gt; {
 		const entity: ExternalToolEntity | null &#x3D; await this.em.findOne(this.entityName, { config: { clientId } });
+		if (entity !&#x3D;&#x3D; null) {
+			const domainObject: ExternalTool &#x3D; this.mapEntityToDomainObject(entity);
+			return domainObject;
+		}
+		return null;
+	}
+
+	public async findByMedium(mediumId: string, mediaSourceId?: string): Promise&lt;ExternalTool | null&gt; {
+		const entity: ExternalToolEntity | null &#x3D; await this.em.findOne(this.entityName, {
+			medium: { mediumId, mediaSourceId },
+		});
 		if (entity !&#x3D;&#x3D; null) {
 			const domainObject: ExternalTool &#x3D; this.mapEntityToDomainObject(entity);
 			return domainObject;

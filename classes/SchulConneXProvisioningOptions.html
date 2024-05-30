@@ -160,6 +160,9 @@
                             <li>
                                 <a href="#groupProvisioningOtherEnabled" >groupProvisioningOtherEnabled</a>
                             </li>
+                            <li>
+                                <a href="#schoolExternalToolProvisioningEnabled" >schoolExternalToolProvisioningEnabled</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -286,6 +289,31 @@
 
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolExternalToolProvisioningEnabled"></a>
+                    <span class="name">
+                        <span ><b>schoolExternalToolProvisioningEnabled</b></span>
+                        <a href="#schoolExternalToolProvisioningEnabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
 </section>
 
             <section data-compodoc="block-methods">
@@ -319,7 +347,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseProvisioningOptions.html#source" target="_self" >BaseProvisioningOptions:19</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseProvisioningOptions.html#source" target="_self" >BaseProvisioningOptions:21</a></code>
 </div>
                         </td>
                     </tr>
@@ -460,7 +488,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:15</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:17</a></div>
                                 </td>
                             </tr>
 
@@ -485,6 +513,8 @@ export class SchulConneXProvisioningOptions
 
 	groupProvisioningOtherEnabled &#x3D; false;
 
+	schoolExternalToolProvisioningEnabled &#x3D; false;
+
 	get getType(): ProvisioningOptionsType {
 		return ProvisioningOptionsType.SCHULCONNEX;
 	}
@@ -493,6 +523,7 @@ export class SchulConneXProvisioningOptions
 		this.groupProvisioningClassesEnabled &#x3D; props.groupProvisioningClassesEnabled;
 		this.groupProvisioningCoursesEnabled &#x3D; props.groupProvisioningCoursesEnabled;
 		this.groupProvisioningOtherEnabled &#x3D; props.groupProvisioningOtherEnabled;
+		this.schoolExternalToolProvisioningEnabled &#x3D; props.schoolExternalToolProvisioningEnabled;
 
 		return this;
 	}
