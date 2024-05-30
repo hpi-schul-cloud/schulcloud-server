@@ -45,6 +45,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 
@@ -72,6 +73,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningClassesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 			});
@@ -159,6 +161,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: false,
 						groupProvisioningOtherEnabled: false,
+						schoolExternalToolProvisioningEnabled: false,
 					},
 				});
 			});
@@ -188,6 +191,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningClassesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					}),
 				});
 
@@ -210,6 +214,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 							groupProvisioningOtherEnabled: true,
 							groupProvisioningClassesEnabled: true,
 							groupProvisioningCoursesEnabled: true,
+							schoolExternalToolProvisioningEnabled: true,
 						},
 					})
 				);
@@ -228,6 +233,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningClassesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 			});
