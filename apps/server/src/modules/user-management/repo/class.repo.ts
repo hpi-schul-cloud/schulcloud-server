@@ -13,7 +13,7 @@ export class ClassMikroOrmRepo implements ClassRepo {
 		const entities = await this.em.find(
 			ClassEntity,
 			{ schoolId: new ObjectId(schoolId) },
-			{ fields: ['name', 'userIds'], orderBy: { gradeLevel: sortOrder, name: sortOrder } }
+			{ fields: ['name', 'userIds', 'teacherIds'], orderBy: { gradeLevel: sortOrder, name: sortOrder } }
 		);
 
 		const classes = ClassMapper.mapToDos(entities);
@@ -22,7 +22,7 @@ export class ClassMikroOrmRepo implements ClassRepo {
 	}
 
 	public async getClassesByIds(classIds: string[]): Promise<Class[]> {
-		const entities = await this.em.find(ClassEntity, { id: classIds }, { fields: ['name', 'userIds'] });
+		const entities = await this.em.find(ClassEntity, { id: classIds }, { fields: ['name', 'userIds', 'teacherIds'] });
 
 		const classes = ClassMapper.mapToDos(entities);
 

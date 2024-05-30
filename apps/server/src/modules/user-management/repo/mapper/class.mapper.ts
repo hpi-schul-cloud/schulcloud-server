@@ -6,12 +6,14 @@ export class ClassMapper {
 		// TODO: Remove ts-ignore when reference types are fixed in ClassEntity.
 		// @ts-ignore Needed because of wrong reference types in ClassEntity.
 		const userIds = entity.userIds?.map((user) => user._id.toString()) ?? [];
+		// @ts-ignore Needed because of wrong reference types in ClassEntity.
+		const teacherIds = entity.teacherIds?.map((teacher) => teacher._id.toString()) ?? [];
 
 		const c = new Class({
 			id: entity.id,
 			name: entity.name,
-			// @ts-ignore Needed because of wrong reference types in ClassEntity.
-			userIds,
+			studentIds: userIds,
+			teacherIds,
 		});
 
 		return c;

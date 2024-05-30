@@ -2,17 +2,22 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 
 export interface ClassProps extends AuthorizableObject {
 	name: string;
-	userIds: string[];
+	studentIds: string[];
+	teacherIds: string[];
 }
 
 export class Class extends DomainObject<ClassProps> {
 	public isClassOfUser(userId: string): boolean {
-		const result = this.props.userIds.includes(userId);
+		const result = this.props.studentIds.includes(userId);
 
 		return result;
 	}
 
-	public getUserIds(): string[] {
-		return this.props.userIds;
+	public getStudentIds(): string[] {
+		return this.props.studentIds;
+	}
+
+	public getTeacherIds(): string[] {
+		return this.props.teacherIds;
 	}
 }

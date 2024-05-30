@@ -1,19 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { Class } from '../domain/class';
 import { User } from '../domain/user';
 import { ClassMikroOrmRepo } from '../repo/class.repo';
+import { RoleMikroOrmRepo } from '../repo/role.repo';
 import { UserMikroOrmRepo } from '../repo/user.repo';
 import { CLASS_REPO } from './interface/class.repo.interface';
+import { ROLE_REPO } from './interface/role.repo.interface';
 import { USER_REPO } from './interface/user.repo.interface';
 import { UserListDtoMapper } from './mapper/user-list.dto.mapper';
 import { UserListQuery } from './query/user-list.query';
+import { RequestableRoleName } from './type/requestable-role-name';
 import { SortableField } from './type/sortable-field';
 
 @Injectable()
 export class GetUserListUc {
 	constructor(
 		@Inject(USER_REPO) private readonly userRepo: UserMikroOrmRepo,
-		@Inject(CLASS_REPO) private readonly classRepo: ClassMikroOrmRepo
+		@Inject(CLASS_REPO) private readonly classRepo: ClassMikroOrmRepo,
+		@Inject(ROLE_REPO) private readonly roleRepo: RoleMikroOrmRepo
 	) {}
 
 	public async execute(query: UserListQuery) {
@@ -43,7 +47,7 @@ export class GetUserListUc {
 		}
 
 		const classes = await this.classRepo.getClassesByIds(query.classIds);
-		const userIds = this.extractUserIdsFromClasses(classes);
+		const userIds = await this.extractUserIdsFromClasses(classes, query);
 		const totalNumberOfUsers = userIds.length;
 
 		const users = await this.userRepo.getUsersByIds(userIds, query);
@@ -55,7 +59,7 @@ export class GetUserListUc {
 
 	private async getAndCountUsersSortedByClass(query: UserListQuery): Promise<[User[], number]> {
 		const classes = await this.classRepo.getClassesForSchool(query.schoolId, query.sortOrder);
-		const idsOfUsersWithClasses = this.extractUserIdsFromClasses(classes);
+		const idsOfUsersWithClasses = await this.extractUserIdsFromClasses(classes, query);
 
 		let users: User[] = [];
 
@@ -79,8 +83,19 @@ export class GetUserListUc {
 		return [users, total];
 	}
 
-	private extractUserIdsFromClasses(classes: Class[]): string[] {
-		const userIds = classes.flatMap((c) => c.getUserIds());
+	private async extractUserIdsFromClasses(classes: Class[], query: UserListQuery): Promise<string[]> {
+		const roleName = await this.roleRepo.getNameForId(query.roleId);
+
+		let userIds: string[] = [];
+
+		if (roleName === RequestableRoleName.STUDENT) {
+			userIds = classes.flatMap((c) => c.getStudentIds());
+		} else if (roleName === RequestableRoleName.TEACHER) {
+			userIds = classes.flatMap((c) => c.getTeacherIds());
+		} else {
+			throw new NotImplementedException(`User-List is not implemented for role ${roleName}.`);
+		}
+
 		const uniqueUserIds = Array.from(new Set(userIds));
 
 		return uniqueUserIds;
