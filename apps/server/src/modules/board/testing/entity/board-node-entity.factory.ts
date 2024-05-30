@@ -1,7 +1,5 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import type { EntityId } from '@shared/domain/types';
 import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
-import { AnyBoardNodeProps, BoardNodeType } from '../../domain';
+import { AnyBoardNodeProps, BoardNodeType, pathOfChildren } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 
 export type PropsWithType<T extends AnyBoardNodeProps> = T & { type: BoardNodeType };
@@ -42,6 +40,10 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 		return factory;
 	}
 
+	withParent(parent: BoardNodeEntity) {
+		return this.params({ path: pathOfChildren(parent) } as DeepPartial<T>);
+	}
+
 	/**
 	 * Build an entity using your factory
 	 * @param params
@@ -62,11 +64,12 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	 * @returns an entity
 	 */
 	buildWithId(params?: DeepPartial<T>, id?: string, options: BuildOptions<T, I> = {}): BoardNodeEntity {
-		const entity = this.build(params, options) as { _id: ObjectId; id: EntityId };
-		const generatedId = new ObjectId(id);
-		const entityWithId = Object.assign(entity, { _id: generatedId, id: generatedId.toHexString() });
+		const entity = this.build(params, options);
+		if (id) {
+			entity.id = id;
+		}
 
-		return entityWithId as BoardNodeEntity;
+		return entity;
 	}
 
 	/**
