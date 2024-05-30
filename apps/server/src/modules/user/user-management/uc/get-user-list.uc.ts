@@ -13,7 +13,6 @@ export class GetUserListUc {
 	public async execute(query: UserListQuery) {
 		// TODO: authorization
 
-		// Set limit and offset here to be able to overwrite them afterwards in the query.
 		const { limit, offset } = query;
 
 		let users: User[] = [];
@@ -110,19 +109,6 @@ export class GetUserListUc {
 		return users;
 	}
 
-	private async addUsersWithoutClasses(
-		query: UserListQuery,
-		usersWithClasses: User[],
-		idsOfUsersWithClasses: string[]
-	) {
-		query.limit -= usersWithClasses.length;
-		query.offset = 0;
-		const [usersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(idsOfUsersWithClasses, query);
-		const users = usersWithClasses.concat(usersWithoutClasses);
-
-		return users;
-	}
-
 	private async getUsersSortedByClassAscendingly(
 		idsOfUsersWithClasses: string[],
 		query: UserListQuery,
@@ -150,6 +136,24 @@ export class GetUserListUc {
 		return users;
 	}
 
+	private async addUsersWithoutClasses(
+		query: UserListQuery,
+		usersWithClasses: User[],
+		idsOfUsersWithClasses: string[]
+	) {
+		const limit = query.limit - usersWithClasses.length;
+		const offset = 0;
+		const [usersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(
+			idsOfUsersWithClasses,
+			query,
+			limit,
+			offset
+		);
+		const users = usersWithClasses.concat(usersWithoutClasses);
+
+		return users;
+	}
+
 	private async addUsersWithClasses(
 		query: UserListQuery,
 		usersWithoutClasses: User[],
@@ -157,15 +161,14 @@ export class GetUserListUc {
 		idsOfUsersWithClasses: string[],
 		classes: Class[]
 	) {
-		query.limit -= usersWithoutClasses.length;
+		const limit = query.limit - usersWithoutClasses.length;
+		let offset = 0;
 
 		if (numberOfUsersWithoutClasses < query.offset) {
-			query.offset -= numberOfUsersWithoutClasses;
-		} else {
-			query.offset = 0;
+			offset = query.offset - numberOfUsersWithoutClasses;
 		}
 
-		const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
+		const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query, limit, offset);
 		this.addClassesToUsers(usersWithClasses, classes);
 
 		const users = usersWithoutClasses.concat(usersWithClasses);
