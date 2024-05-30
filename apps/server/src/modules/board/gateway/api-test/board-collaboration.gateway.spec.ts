@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
+import { MongoIoAdapter } from '@infra/socketio';
 import { BoardExternalReferenceType, CardProps, ContentElementType } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
@@ -18,7 +19,6 @@ import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 import { BoardObjectType, ErrorType } from '../types';
-import { MongoIoAdapter } from '../socket-mongodb-ioadapter';
 
 describe(BoardCollaborationGateway.name, () => {
 	let app: INestApplication;
