@@ -43,12 +43,14 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					}),
 				});
 				const newProvisioningOptions = new SchulConneXProvisioningOptions().set({
 					groupProvisioningClassesEnabled: false,
 					groupProvisioningOtherEnabled: true,
 					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 				const group: Group = groupFactory.build({ type: GroupTypes.CLASS });
 				const page: Page<Group> = new Page<Group>([group], 1);
@@ -101,12 +103,14 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					}),
 				});
 				const newProvisioningOptions = new SchulConneXProvisioningOptions().set({
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,
 					groupProvisioningCoursesEnabled: false,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 				const group: Group = groupFactory.build({ type: GroupTypes.COURSE });
 				const page: Page<Group> = new Page<Group>([group], 1);
@@ -159,12 +163,14 @@ describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningOtherEnabled: true,
 						groupProvisioningCoursesEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					}),
 				});
 				const newProvisioningOptions = new SchulConneXProvisioningOptions().set({
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: false,
 					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 				const group: Group = groupFactory.build({ type: GroupTypes.OTHER });
 				const page: Page<Group> = new Page<Group>([group], 1);

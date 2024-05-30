@@ -327,6 +327,71 @@ describe(ExternalToolRepo.name, () => {
 		});
 	});
 
+	describe('findByMedium', () => {
+		describe('when external tool is found', () => {
+			const setup2 = async () => {
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+						mediaSourceId: 'mediaSourceId',
+					},
+				});
+
+				const otherExternalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+					},
+				});
+
+				await em.persistAndFlush([externalToolEntity, otherExternalToolEntity]);
+				em.clear();
+
+				return {
+					externalToolEntity,
+					otherExternalToolEntity,
+				};
+			};
+
+			it('should find an external tool with given medium', async () => {
+				const { externalToolEntity } = await setup2();
+
+				const result: ExternalTool | null = await repo.findByMedium('mediumId', 'mediaSourceId');
+
+				expect(result?.name).toEqual(externalToolEntity.name);
+			});
+
+			it('should find an external tool with given mediumId without mediaSourceId', async () => {
+				const { otherExternalToolEntity } = await setup2();
+
+				const result: ExternalTool | null = await repo.findByMedium('mediumId');
+
+				expect(result?.name).toEqual(otherExternalToolEntity.name);
+			});
+		});
+
+		describe('when external tool is not found', () => {
+			const setup2 = async () => {
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+						mediaSourceId: 'mediaSourceId',
+					},
+				});
+
+				await em.persistAndFlush(externalToolEntity);
+				em.clear();
+			};
+
+			it('should return null when no external tool with the given mediumId was found', async () => {
+				await setup2();
+
+				const result: ExternalTool | null = await repo.findByMedium('notExisting');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('deleteById', () => {
 		const setup2 = async () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();

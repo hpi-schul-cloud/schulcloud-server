@@ -75,35 +75,16 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount) {
 		await this.checkUpdateMyAccountPrerequisites(updateData, account);
 
-		let updateUser = false;
-		let updateAccount = false;
+		const accountSave = new AccountSave({
+			id: account.id,
+		});
 
-		let newAccountPassword: string | undefined;
-		let newAccountUsername: string | undefined;
+		const updatedPassword = this.updateAccountPassword(updateData, accountSave);
+		const updatedEmail = await this.updateUserEmail(updateData, user, account, accountSave);
+		const updatedNames = this.updateUserNames(updateData, user);
 
-		if (updateData.passwordNew) {
-			newAccountPassword = updateData.passwordNew;
-			updateAccount = true;
-		}
-
-		if (updateData.email && user.email !== updateData.email) {
-			const newMail = updateData.email.toLowerCase();
-			await this.checkUniqueEmail(account, user, newMail);
-			user.email = newMail;
-			newAccountUsername = newMail;
-			updateUser = true;
-			updateAccount = true;
-		}
-
-		if (updateData.firstName && user.firstName !== updateData.firstName) {
-			user.firstName = updateData.firstName;
-			updateUser = true;
-		}
-
-		if (updateData.lastName && user.lastName !== updateData.lastName) {
-			user.lastName = updateData.lastName;
-			updateUser = true;
-		}
+		const updateUser = updatedNames || updatedEmail;
+		const updateAccount = updatedPassword || updatedEmail;
 
 		if (updateUser) {
 			try {
@@ -114,17 +95,53 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		if (updateAccount) {
 			try {
-				const updateProps = new AccountSave({
-					id: account.id,
-					password: newAccountPassword,
-					username: newAccountUsername,
-				});
-
-				await this.save(updateProps);
+				await this.save(accountSave);
 			} catch (err) {
+				if (err instanceof ValidationError) {
+					throw err;
+				}
 				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
+	}
+
+	private updateAccountPassword(updateData: UpdateMyAccount, accountSave: AccountSave): boolean {
+		if (updateData.passwordNew) {
+			accountSave.password = updateData.passwordNew;
+			return true;
+		}
+		return false;
+	}
+
+	private async updateUserEmail(
+		updateData: UpdateMyAccount,
+		user: User,
+		account: Account,
+		accountSave: AccountSave
+	): Promise<boolean> {
+		if (updateData.email && user.email !== updateData.email) {
+			const newMail = updateData.email.toLowerCase();
+			await this.checkUniqueEmail(account, user, newMail);
+			user.email = newMail;
+			accountSave.username = newMail;
+			return true;
+		}
+		return false;
+	}
+
+	private updateUserNames(updateData: UpdateMyAccount, user: User): boolean {
+		let updateUserName = false;
+		if (updateData.firstName && user.firstName !== updateData.firstName) {
+			user.firstName = updateData.firstName;
+			updateUserName = true;
+		}
+
+		if (updateData.lastName && user.lastName !== updateData.lastName) {
+			user.lastName = updateData.lastName;
+			updateUserName = true;
+		}
+
+		return updateUserName;
 	}
 
 	private async checkUpdateMyAccountPrerequisites(updateData: UpdateMyAccount, account: Account) {
@@ -256,18 +273,25 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 	async save(accountSave: AccountSave): Promise<Account> {
 		const ret = await this.accountDb.save(accountSave);
-		const newAccount: AccountSave = {
+		const newAccount = new AccountSave({
 			...accountSave,
 			id: accountSave.id,
 			idmReferenceId: ret.id,
 			password: accountSave.password,
-		};
+		});
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(new SavingAccountLoggable(ret.id));
 			const account = await this.accountIdm.save(newAccount);
 			this.logger.debug(new SavedAccountLoggable(ret.id));
 			return account;
 		});
+
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			if (idmAccount === null || (accountSave.username && idmAccount.username !== accountSave.username)) {
+				throw new ValidationError('Account could not be updated');
+			}
+		}
+
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
