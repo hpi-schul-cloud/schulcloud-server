@@ -18,9 +18,9 @@ import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 import { BoardObjectType, ErrorType } from '../types';
+import { MongoIoAdapter } from '../socket-mongodb-ioadapter';
 
 describe(BoardCollaborationGateway.name, () => {
-	let ws: BoardCollaborationGateway;
 	let app: INestApplication;
 	let ioClient: Socket;
 	let em: EntityManager;
@@ -33,7 +33,11 @@ describe(BoardCollaborationGateway.name, () => {
 		await app.init();
 
 		em = app.get(EntityManager);
-		ws = app.get(BoardCollaborationGateway);
+		const mongoUrl = em.config.getClientUrl();
+
+		const mongoIoAdapter = new MongoIoAdapter(app);
+		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		app.useWebSocketAdapter(mongoIoAdapter);
 
 		await app.listen(0);
 	});
@@ -68,11 +72,6 @@ describe(BoardCollaborationGateway.name, () => {
 
 		return { user, columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
 	};
-
-	it('should be defined', async () => {
-		await setup();
-		expect(ws).toBeDefined();
-	});
 
 	describe('validation errors', () => {
 		it('should answer with failure', async () => {

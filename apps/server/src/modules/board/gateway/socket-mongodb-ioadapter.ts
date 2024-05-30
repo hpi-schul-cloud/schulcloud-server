@@ -6,10 +6,10 @@ import { MongoClient } from 'mongodb';
 export class MongoIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
-	async connectToMongoDb(): Promise<void> {
+	async connectToMongoDb(connectionString?: string): Promise<void> {
 		const COLLECTION = 'socket.io-adapter-events';
 
-		const mongoClient = new MongoClient('mongodb://mongo-svc:27017/scapp?directConnection=true');
+		const mongoClient = new MongoClient(connectionString || 'mongodb://mongo-svc:27017/scapp?directConnection=true');
 
 		await mongoClient.connect();
 
