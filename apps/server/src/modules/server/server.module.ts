@@ -34,6 +34,7 @@ import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
+import { UserManagementModule } from '@modules/user-management/user-management.module';
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
@@ -43,7 +44,6 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { UserManagementModule } from '../user/user-management/user-management.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
