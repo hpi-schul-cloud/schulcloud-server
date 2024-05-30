@@ -4,6 +4,8 @@ import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system/system.module';
+import { ExternalToolModule } from '@modules/tool';
+import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
@@ -22,6 +24,7 @@ import {
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/oidc/service';
 
@@ -38,6 +41,8 @@ import {
 		LearnroomModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
+		ExternalToolModule,
+		SchoolExternalToolModule,
 	],
 	providers: [
 		ProvisioningService,
@@ -47,6 +52,7 @@ import {
 		SchulconnexGroupProvisioningService,
 		SchulconnexCourseSyncService,
 		SchulconnexLicenseProvisioningService,
+		SchulconnexToolProvisioningService,
 		SanisProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
