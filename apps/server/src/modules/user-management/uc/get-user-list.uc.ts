@@ -23,6 +23,11 @@ export class GetUserListUc {
 	public async execute(query: UserListQuery) {
 		// TODO: authorization
 
+		const roleName = await this.roleRepo.getNameForId(query.roleId);
+		if (roleName !== RequestableRoleName.STUDENT && roleName !== RequestableRoleName.TEACHER) {
+			throw new NotImplementedException(`user-list is not implemented for role ${roleName}.`);
+		}
+
 		const { limit, offset } = query;
 
 		let users: User[] = [];
@@ -93,7 +98,7 @@ export class GetUserListUc {
 		} else if (roleName === RequestableRoleName.TEACHER) {
 			userIds = classes.flatMap((c) => c.getTeacherIds());
 		} else {
-			throw new NotImplementedException(`User-List is not implemented for role ${roleName}.`);
+			throw new NotImplementedException(`user-list is not implemented for role ${roleName}.`);
 		}
 
 		const uniqueUserIds = Array.from(new Set(userIds));
