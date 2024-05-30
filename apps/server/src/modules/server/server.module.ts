@@ -32,6 +32,7 @@ import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
+import { UserManagementModule } from '@modules/user-management/user-management.module';
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
@@ -42,9 +43,8 @@ import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@sr
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { UserLicenseModule } from '../user-license';
-import { UserManagementModule } from '../user/user-management/user-management.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
-import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { serverConfig, SERVER_CONFIG_TOKEN } from './server.config';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
