@@ -33,7 +33,12 @@ export class UserMikroOrmRepo {
 		return users;
 	}
 
-	public async getUsersByIdsInOrderOfIds(ids: string[], query: UserListQuery): Promise<User[]> {
+	public async getUsersByIdsInOrderOfIds(
+		ids: string[],
+		query: UserListQuery,
+		limit?: number,
+		offset?: number
+	): Promise<User[]> {
 		const objectIds = ids.map((id) => new ObjectId(id));
 
 		// Aggregation inspired by https://stackoverflow.com/a/42293303/11854580
@@ -41,8 +46,8 @@ export class UserMikroOrmRepo {
 			{ $match: { _id: { $in: objectIds } } },
 			{ $addFields: { __order: { $indexOfArray: [objectIds, '$_id'] } } },
 			{ $sort: { __order: 1 } },
-			{ $skip: query.offset },
-			{ $limit: query.limit },
+			{ $skip: offset ?? query.offset },
+			{ $limit: limit ?? query.limit },
 			// It is necessary to add the id field here because the result does not contain MikroOrm entities with the id prop.
 			{ $addFields: { id: { $toString: '$_id' } } },
 		]);
@@ -54,11 +59,16 @@ export class UserMikroOrmRepo {
 		return users;
 	}
 
-	public async getAndCountUsersExceptWithIds(idsToOmit: string[], query: UserListQuery): Promise<[User[], number]> {
+	public async getAndCountUsersExceptWithIds(
+		idsToOmit: string[],
+		query: UserListQuery,
+		limit?: number,
+		offset?: number
+	): Promise<[User[], number]> {
 		const [entities, total] = await this.em.findAndCount(
 			UserEntity,
 			{ school: query.schoolId, roles: query.roleId, id: { $nin: idsToOmit } },
-			{ limit: query.limit, offset: query.offset }
+			{ limit: limit ?? query.limit, offset: offset ?? query.offset }
 		);
 
 		const users = UserMapper.mapToDos(entities);
