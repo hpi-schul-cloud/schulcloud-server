@@ -13,6 +13,9 @@ export class GetUserListUc {
 	public async execute(query: UserListQuery) {
 		// TODO: authorization
 
+		// Set limit and offset here to be able to overwrite them afterwards in the query.
+		const { limit, offset } = query;
+
 		let users: User[] = [];
 		let total = 0;
 
@@ -24,7 +27,7 @@ export class GetUserListUc {
 			[users, total] = await this.getAndCountUsers(query);
 		}
 
-		const dto = UserListDtoMapper.mapToDto(users, query, total);
+		const dto = UserListDtoMapper.mapToDto(users, limit, offset, total);
 
 		return dto;
 	}
@@ -56,24 +59,32 @@ export class GetUserListUc {
 			this.addClassesToUsers(usersWithClasses, classes);
 
 			if (usersWithClasses.length < query.limit) {
-				const usersWithoutClasses = await this.userRepo.getUsersExceptWithIds(
-					idsOfUsersWithClasses,
-					query.limit - usersWithClasses.length,
-					query
-				);
+				query.limit -= usersWithClasses.length;
+				query.offset = 0;
+				const [usersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(idsOfUsersWithClasses, query);
 				users = usersWithClasses.concat(usersWithoutClasses);
 			} else {
 				users = usersWithClasses;
 			}
 		} else {
-			const usersWithoutClasses = await this.userRepo.getUsersExceptWithIds(idsOfUsersWithClasses, query.limit, query);
+			const [usersWithoutClasses, numberOfUsersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(
+				idsOfUsersWithClasses,
+				query
+			);
 
 			if (usersWithoutClasses.length < query.limit) {
+				query.limit -= usersWithoutClasses.length;
+
+				if (numberOfUsersWithoutClasses < query.offset) {
+					query.offset -= numberOfUsersWithoutClasses;
+				} else {
+					query.offset = 0;
+				}
+
 				const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
 				this.addClassesToUsers(usersWithClasses, classes);
 
-				const usersToAppend = usersWithClasses.slice(0, query.limit - usersWithoutClasses.length);
-				users = usersWithoutClasses.concat(usersToAppend);
+				users = usersWithoutClasses.concat(usersWithClasses);
 			} else {
 				users = usersWithoutClasses;
 			}

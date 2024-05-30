@@ -54,16 +54,16 @@ export class UserMikroOrmRepo {
 		return users;
 	}
 
-	public async getUsersExceptWithIds(idsToOmit: string[], limit: number, query: UserListQuery) {
-		const entities = await this.em.find(
+	public async getAndCountUsersExceptWithIds(idsToOmit: string[], query: UserListQuery): Promise<[User[], number]> {
+		const [entities, total] = await this.em.findAndCount(
 			UserEntity,
 			{ school: query.schoolId, roles: query.roleId, id: { $nin: idsToOmit } },
-			{ limit }
+			{ limit: query.limit, offset: query.offset }
 		);
 
 		const users = UserMapper.mapToDos(entities);
 
-		return users;
+		return [users, total];
 	}
 
 	public async countUsers(query: UserListQuery): Promise<number> {
