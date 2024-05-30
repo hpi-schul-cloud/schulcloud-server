@@ -4,7 +4,7 @@ import { User } from '../domain/user';
 import { ClassMikroOrmRepo } from '../repo/class.repo';
 import { UserMikroOrmRepo } from '../repo/user.repo';
 import { UserListDtoMapper } from './mapper/user-list.dto.mapper';
-import { UserListQuery } from './query/user-list.query';
+import { SortableFields, UserListQuery } from './query/user-list.query';
 
 @Injectable()
 export class GetUserListUc {
@@ -18,10 +18,9 @@ export class GetUserListUc {
 
 		if (query.classIds) {
 			[users, total] = await this.getAndCountUsersByClasses(query);
-		}
-		// else if (query.sortQuery?.sortBy === SortableFields.class) {
-		// }
-		else {
+		} else if (query.sortBy === SortableFields.class) {
+			[users, total] = await this.getAndCountUsersSortedByClass(query);
+		} else {
 			[users, total] = await this.getAndCountUsers(query);
 		}
 
@@ -46,11 +45,43 @@ export class GetUserListUc {
 		return [users, totalNumberOfUsers];
 	}
 
-	private extractUserIdsFromClasses(classes: Class[]): string[] {
-		const userIds = classes.flatMap((c) => c.getUserIds());
-		const uniqueUserIds = Array.from(new Set(userIds));
+	private async getAndCountUsersSortedByClass(query: UserListQuery): Promise<[User[], number]> {
+		const classes = await this.classRepo.getClassesForSchool(query.schoolId, query.sortOrder);
+		const idsOfUsersWithClasses = this.extractUserIdsFromClasses(classes);
 
-		return uniqueUserIds;
+		let users: User[] = [];
+
+		if (query.sortOrder === -1) {
+			const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
+			this.addClassesToUsers(usersWithClasses, classes);
+
+			if (usersWithClasses.length < query.limit) {
+				const usersWithoutClasses = await this.userRepo.getUsersExceptWithIds(
+					idsOfUsersWithClasses,
+					query.limit - usersWithClasses.length,
+					query
+				);
+				users = usersWithClasses.concat(usersWithoutClasses);
+			} else {
+				users = usersWithClasses;
+			}
+		} else {
+			const usersWithoutClasses = await this.userRepo.getUsersExceptWithIds(idsOfUsersWithClasses, query.limit, query);
+
+			if (usersWithoutClasses.length < query.limit) {
+				const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
+				this.addClassesToUsers(usersWithClasses, classes);
+
+				const usersToAppend = usersWithClasses.slice(0, query.limit - usersWithoutClasses.length);
+				users = usersWithoutClasses.concat(usersToAppend);
+			} else {
+				users = usersWithoutClasses;
+			}
+		}
+
+		const total = await this.userRepo.countUsers(query);
+
+		return [users, total];
 	}
 
 	private async getAndCountUsers(query: UserListQuery): Promise<[User[], number]> {
@@ -60,6 +91,13 @@ export class GetUserListUc {
 		this.addClassesToUsers(users, classes);
 
 		return [users, total];
+	}
+
+	private extractUserIdsFromClasses(classes: Class[]): string[] {
+		const userIds = classes.flatMap((c) => c.getUserIds());
+		const uniqueUserIds = Array.from(new Set(userIds));
+
+		return uniqueUserIds;
 	}
 
 	private addClassesToUsers(users: User[], classes: Class[]): void {

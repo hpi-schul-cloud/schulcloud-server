@@ -32,7 +32,7 @@ export class UserListQuery {
 	public sortBy?: SortableFields;
 
 	@IsOptional()
-	@IsIn([0, 1])
+	@IsIn([-1, 1])
 	public sortOrder?: number;
 
 	@IsOptional()
