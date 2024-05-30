@@ -116,6 +116,7 @@ describe(SchoolSystemOptionsService.name, () => {
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningCoursesEnabled: false,
 					groupProvisioningOtherEnabled: false,
+					schoolExternalToolProvisioningEnabled: false,
 				});
 			});
 		});
