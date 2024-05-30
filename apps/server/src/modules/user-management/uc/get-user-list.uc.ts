@@ -1,14 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Class } from '../domain/class';
 import { User } from '../domain/user';
 import { ClassMikroOrmRepo } from '../repo/class.repo';
 import { UserMikroOrmRepo } from '../repo/user.repo';
+import { CLASS_REPO } from './interface/class.repo.interface';
+import { USER_REPO } from './interface/user.repo.interface';
 import { UserListDtoMapper } from './mapper/user-list.dto.mapper';
 import { SortableFields, UserListQuery } from './query/user-list.query';
 
 @Injectable()
 export class GetUserListUc {
-	constructor(private readonly userRepo: UserMikroOrmRepo, private readonly classRepo: ClassMikroOrmRepo) {}
+	constructor(
+		@Inject(USER_REPO) private readonly userRepo: UserMikroOrmRepo,
+		@Inject(CLASS_REPO) private readonly classRepo: ClassMikroOrmRepo
+	) {}
 
 	public async execute(query: UserListQuery) {
 		// TODO: authorization

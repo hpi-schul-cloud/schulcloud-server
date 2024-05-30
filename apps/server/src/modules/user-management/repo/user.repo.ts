@@ -2,11 +2,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { User as UserEntity } from '@shared/domain/entity';
 import { User } from '../domain/user';
+import { UserRepo } from '../uc/interface/user.repo.interface';
 import { UserListQuery } from '../uc/query/user-list.query';
 import { UserMapper } from './mapper/user.mapper';
 
 @Injectable()
-export class UserMikroOrmRepo {
+export class UserMikroOrmRepo implements UserRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async getAndCountUsers(query: UserListQuery): Promise<[User[], number]> {
