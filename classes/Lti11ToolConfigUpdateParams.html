@@ -225,7 +225,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@ApiProperty()<br />
+                            @IsUrl({require_protocol: true, protocols: undefined}, {message: &#x27;baseUrl must be a URL address with https protocol&#x27;})<br />@ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
@@ -237,7 +237,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfigCreateParams.html#source" target="_self" >ExternalToolConfigCreateParams:13</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfigCreateParams.html#source" target="_self" >ExternalToolConfigCreateParams:16</a></code>
 </div>
                         </td>
                     </tr>
@@ -275,7 +275,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -312,7 +312,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -349,7 +349,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -386,7 +386,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -425,7 +425,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/config/lti11-tool-config-update.params.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -489,7 +489,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
-import { IsEnum, IsLocale, IsOptional, IsString } from &#x27;class-validator&#x27;;
+import { IsEnum, IsLocale, IsOptional, IsString, IsUrl } from &#x27;class-validator&#x27;;
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from &#x27;../../../../../common/enum&#x27;;
 import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.params&#x27;;
 
@@ -498,7 +498,10 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 	@ApiProperty({ enum: ToolConfigType, enumName: &#x27;ToolConfigType&#x27; })
 	type!: ToolConfigType;
 
-	@IsString()
+	@IsUrl(
+		{ require_protocol: true, protocols: [&#x27;https&#x27;] },
+		{ message: &#x27;baseUrl must be a URL address with https protocol&#x27; }
+	)
 	@ApiProperty()
 	baseUrl!: string;
 

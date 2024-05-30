@@ -198,7 +198,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@ApiProperty()<br />
+                            @IsUrl({require_protocol: true, protocols: undefined}, {message: &#x27;baseUrl must be a URL address with https protocol&#x27;})<br />@ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
@@ -210,7 +210,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfigCreateParams.html#source" target="_self" >ExternalToolConfigCreateParams:13</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfigCreateParams.html#source" target="_self" >ExternalToolConfigCreateParams:16</a></code>
 </div>
                         </td>
                     </tr>
@@ -274,17 +274,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsEnum, IsString } from &#x27;class-validator&#x27;;
-import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.params&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { IsEnum, IsUrl } from &#x27;class-validator&#x27;;
 import { ToolConfigType } from &#x27;../../../../../common/enum&#x27;;
+import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.params&#x27;;
 
 export class BasicToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
 	@ApiProperty()
 	type!: ToolConfigType;
 
-	@IsString()
+	@IsUrl(
+		{ require_protocol: true, protocols: [&#x27;https&#x27;] },
+		{ message: &#x27;baseUrl must be a URL address with https protocol&#x27; }
+	)
 	@ApiProperty()
 	baseUrl!: string;
 }
