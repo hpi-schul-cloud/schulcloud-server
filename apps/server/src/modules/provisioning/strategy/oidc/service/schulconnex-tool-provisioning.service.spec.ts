@@ -11,6 +11,7 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolSystemOptionsFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 
 describe(SchulconnexToolProvisioningService.name, () => {
 	let module: TestingModule;
@@ -40,6 +41,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				{
 					provide: SchoolSystemOptionsService,
 					useValue: createMock<SchoolSystemOptionsService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

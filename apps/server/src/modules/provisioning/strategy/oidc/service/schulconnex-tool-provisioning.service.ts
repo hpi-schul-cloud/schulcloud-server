@@ -9,6 +9,8 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { SchoolExternalToolCreatedLoggable } from '../../../loggable';
 
 @Injectable()
 export class SchulconnexToolProvisioningService {
@@ -16,7 +18,8 @@ export class SchulconnexToolProvisioningService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly userLicenseService: UserLicenseService,
-		private readonly schoolSystemOptionsService: SchoolSystemOptionsService
+		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
+		private readonly logger: Logger
 	) {}
 
 	public async provisionSchoolExternalTools(userId: EntityId, schoolId: EntityId, systemId: string): Promise<void> {
@@ -46,7 +49,9 @@ export class SchulconnexToolProvisioningService {
 				});
 
 				if (schoolExternalTools.length === 0) {
-					await this.createSchoolExternalTool(externalTool, schoolId);
+					const schoolExternalTool: SchoolExternalTool = await this.createSchoolExternalTool(externalTool, schoolId);
+
+					this.logger.notice(new SchoolExternalToolCreatedLoggable(license, schoolExternalTool));
 				}
 			})
 		);
@@ -60,14 +65,18 @@ export class SchulconnexToolProvisioningService {
 		return hasOnlyGlobalParameters;
 	}
 
-	private async createSchoolExternalTool(externalTool: ExternalTool, schoolId: EntityId) {
-		const schoolExternalTool = new SchoolExternalTool({
+	private async createSchoolExternalTool(externalTool: ExternalTool, schoolId: EntityId): Promise<SchoolExternalTool> {
+		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			id: new ObjectId().toHexString(),
 			toolId: externalTool.id,
 			schoolId,
 			parameters: [],
 		});
 
-		await this.schoolExternalToolService.saveSchoolExternalTool(schoolExternalTool);
+		const savedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
+			schoolExternalTool
+		);
+
+		return savedSchoolExternalTool;
 	}
 }
