@@ -1,4 +1,4 @@
-import { UserDto } from './user.dto';
+import { UserForUserListDto } from './user-for-user-list.dto';
 
 export class UserListDto {
 	public limit: number;
@@ -7,7 +7,7 @@ export class UserListDto {
 
 	public total: number;
 
-	public data: UserDto[];
+	public data: UserForUserListDto[];
 
 	constructor(props: UserListDto) {
 		this.limit = props.limit;

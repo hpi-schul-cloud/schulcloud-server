@@ -6,7 +6,8 @@ import { UserMikroOrmRepo } from '../repo/user.repo';
 import { CLASS_REPO } from './interface/class.repo.interface';
 import { USER_REPO } from './interface/user.repo.interface';
 import { UserListDtoMapper } from './mapper/user-list.dto.mapper';
-import { SortableFields, UserListQuery } from './query/user-list.query';
+import { UserListQuery } from './query/user-list.query';
+import { SortableFields } from './type/sortable-fields';
 
 @Injectable()
 export class GetUserListUc {

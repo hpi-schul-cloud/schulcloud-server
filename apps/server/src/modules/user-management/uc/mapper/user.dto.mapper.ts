@@ -1,13 +1,13 @@
 import { User } from '../../domain/user';
-import { UserDto } from '../dto/user.dto';
+import { UserForUserListDto } from '../dto/user-for-user-list.dto';
 import { ClassDtoMapper } from './class.dto.mapper';
 
 export class UserDtoMapper {
-	public static mapToDto(user: User): UserDto {
+	public static mapToDto(user: User): UserForUserListDto {
 		const userProps = user.getProps();
 		const classes = ClassDtoMapper.mapToDtos(userProps.classes);
 
-		const dto = new UserDto({
+		const dto = new UserForUserListDto({
 			id: userProps.id,
 			firstName: userProps.firstName,
 			lastName: userProps.lastName,
@@ -18,7 +18,7 @@ export class UserDtoMapper {
 		return dto;
 	}
 
-	public static mapToDtos(users: User[]): UserDto[] {
+	public static mapToDtos(users: User[]): UserForUserListDto[] {
 		const dtos = users.map((user) => UserDtoMapper.mapToDto(user));
 
 		return dtos;

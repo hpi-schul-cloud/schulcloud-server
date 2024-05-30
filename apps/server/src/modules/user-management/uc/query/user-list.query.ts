@@ -1,15 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { IsBoolean, IsDate, IsEnum, IsIn, IsInt, IsMongoId, IsOptional, Max, Min } from 'class-validator';
-
-export enum SortableFields {
-	firstName = 'firstName',
-	lastName = 'lastName',
-	birthday = 'birthday',
-	email = 'email',
-	class = 'class',
-	registration = 'registration',
-	createdAt = 'createdAt',
-}
+import { SortableFields } from '../type/sortable-fields';
 
 export class UserListQuery {
 	@IsMongoId()

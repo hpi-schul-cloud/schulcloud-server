@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
-import { ClassDto } from './class.dto';
+import { ClassForUserListDto } from './class-for-user-list.dto';
 
-export class UserDto {
+export class UserForUserListDto {
 	public id: EntityId;
 
 	public firstName: string;
@@ -10,9 +10,9 @@ export class UserDto {
 
 	public email: string;
 
-	public classes: ClassDto[] = [];
+	public classes: ClassForUserListDto[] = [];
 
-	constructor(props: UserDto) {
+	constructor(props: UserForUserListDto) {
 		this.id = props.id;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
