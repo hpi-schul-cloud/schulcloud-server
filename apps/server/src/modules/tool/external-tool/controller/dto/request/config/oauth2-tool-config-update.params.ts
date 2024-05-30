@@ -8,7 +8,10 @@ export class Oauth2ToolConfigUpdateParams extends ExternalToolConfigCreateParams
 	@ApiProperty()
 	type!: ToolConfigType;
 
-	@IsUrl({ require_protocol: true, protocols: ['https'] })
+	@IsUrl(
+		{ require_protocol: true, protocols: ['https'] },
+		{ message: 'baseUrl must be a URL address with https protocol' }
+	)
 	@ApiProperty()
 	baseUrl!: string;
 
