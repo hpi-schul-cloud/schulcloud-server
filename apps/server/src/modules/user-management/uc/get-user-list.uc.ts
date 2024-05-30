@@ -7,7 +7,7 @@ import { CLASS_REPO } from './interface/class.repo.interface';
 import { USER_REPO } from './interface/user.repo.interface';
 import { UserListDtoMapper } from './mapper/user-list.dto.mapper';
 import { UserListQuery } from './query/user-list.query';
-import { SortableFields } from './type/sortable-fields';
+import { SortableField } from './type/sortable-field';
 
 @Injectable()
 export class GetUserListUc {
@@ -26,7 +26,7 @@ export class GetUserListUc {
 
 		if (query.classIds) {
 			[users, total] = await this.getAndCountUsersByClasses(query);
-		} else if (query.sortBy === SortableFields.class) {
+		} else if (query.sortBy === SortableField.class) {
 			[users, total] = await this.getAndCountUsersSortedByClass(query);
 		} else {
 			[users, total] = await this.getAndCountUsers(query);
