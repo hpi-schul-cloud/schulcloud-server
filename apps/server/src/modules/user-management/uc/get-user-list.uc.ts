@@ -33,6 +33,9 @@ export class GetUserListUc {
 		let users: User[] = [];
 		let total = 0;
 
+		// The following distinction is for performance reasons.
+		// If the results shall be filtered or sorted by class, we cannot paginate the users before attaching the classes.
+		// To load all users and then attach the classes is too slow. Thus we only load the needed users from the classes and paginate afterwards.
 		if (query.classIds) {
 			[users, total] = await this.getAndCountUsersByClasses(query);
 		} else if (query.sortBy === SortableField.class) {
