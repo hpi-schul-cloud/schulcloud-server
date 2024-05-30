@@ -1,6 +1,9 @@
-import { BoardNodeAuthorizableService } from '@modules/board';
+// TODO fix modules circular dependency
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { BoardNodeAuthorizableService } from '@modules/board/service';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 import { LessonService } from '@modules/lesson';
-import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
