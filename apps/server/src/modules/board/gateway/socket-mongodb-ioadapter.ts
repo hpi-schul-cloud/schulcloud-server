@@ -23,6 +23,7 @@ export class MongoIoAdapter extends IoAdapter {
 	}
 
 	createIOServer(port: number, options?: ServerOptions): Server {
+		// istanbul ignore next
 		if (!this.adapterConstructor) {
 			throw new Error('MongoIOAdapter is not connected to MongoDB yet.');
 		}
