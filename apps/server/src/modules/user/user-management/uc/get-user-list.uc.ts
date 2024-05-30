@@ -55,39 +55,9 @@ export class GetUserListUc {
 		let users: User[] = [];
 
 		if (query.sortOrder === -1) {
-			const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
-			this.addClassesToUsers(usersWithClasses, classes);
-
-			if (usersWithClasses.length < query.limit) {
-				query.limit -= usersWithClasses.length;
-				query.offset = 0;
-				const [usersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(idsOfUsersWithClasses, query);
-				users = usersWithClasses.concat(usersWithoutClasses);
-			} else {
-				users = usersWithClasses;
-			}
+			users = await this.getUsersSortedByClassDescendingly(idsOfUsersWithClasses, query, classes);
 		} else {
-			const [usersWithoutClasses, numberOfUsersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(
-				idsOfUsersWithClasses,
-				query
-			);
-
-			if (usersWithoutClasses.length < query.limit) {
-				query.limit -= usersWithoutClasses.length;
-
-				if (numberOfUsersWithoutClasses < query.offset) {
-					query.offset -= numberOfUsersWithoutClasses;
-				} else {
-					query.offset = 0;
-				}
-
-				const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
-				this.addClassesToUsers(usersWithClasses, classes);
-
-				users = usersWithoutClasses.concat(usersWithClasses);
-			} else {
-				users = usersWithoutClasses;
-			}
+			users = await this.getUsersSortedByClassAscendingly(idsOfUsersWithClasses, query, classes);
 		}
 
 		const total = await this.userRepo.countUsers(query);
@@ -119,5 +89,87 @@ export class GetUserListUc {
 				}
 			});
 		});
+	}
+
+	private async getUsersSortedByClassDescendingly(
+		idsOfUsersWithClasses: string[],
+		query: UserListQuery,
+		classes: Class[]
+	) {
+		let users: User[] = [];
+
+		const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
+		this.addClassesToUsers(usersWithClasses, classes);
+
+		if (usersWithClasses.length < query.limit) {
+			users = await this.addUsersWithoutClasses(query, usersWithClasses, idsOfUsersWithClasses);
+		} else {
+			users = usersWithClasses;
+		}
+
+		return users;
+	}
+
+	private async addUsersWithoutClasses(
+		query: UserListQuery,
+		usersWithClasses: User[],
+		idsOfUsersWithClasses: string[]
+	) {
+		query.limit -= usersWithClasses.length;
+		query.offset = 0;
+		const [usersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(idsOfUsersWithClasses, query);
+		const users = usersWithClasses.concat(usersWithoutClasses);
+
+		return users;
+	}
+
+	private async getUsersSortedByClassAscendingly(
+		idsOfUsersWithClasses: string[],
+		query: UserListQuery,
+		classes: Class[]
+	) {
+		let users: User[] = [];
+
+		const [usersWithoutClasses, numberOfUsersWithoutClasses] = await this.userRepo.getAndCountUsersExceptWithIds(
+			idsOfUsersWithClasses,
+			query
+		);
+
+		if (usersWithoutClasses.length < query.limit) {
+			users = await this.addUsersWithClasses(
+				query,
+				usersWithoutClasses,
+				numberOfUsersWithoutClasses,
+				idsOfUsersWithClasses,
+				classes
+			);
+		} else {
+			users = usersWithoutClasses;
+		}
+
+		return users;
+	}
+
+	private async addUsersWithClasses(
+		query: UserListQuery,
+		usersWithoutClasses: User[],
+		numberOfUsersWithoutClasses: number,
+		idsOfUsersWithClasses: string[],
+		classes: Class[]
+	) {
+		query.limit -= usersWithoutClasses.length;
+
+		if (numberOfUsersWithoutClasses < query.offset) {
+			query.offset -= numberOfUsersWithoutClasses;
+		} else {
+			query.offset = 0;
+		}
+
+		const usersWithClasses = await this.userRepo.getUsersByIdsInOrderOfIds(idsOfUsersWithClasses, query);
+		this.addClassesToUsers(usersWithClasses, classes);
+
+		const users = usersWithoutClasses.concat(usersWithClasses);
+
+		return users;
 	}
 }
