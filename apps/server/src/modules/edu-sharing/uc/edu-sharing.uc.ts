@@ -3,6 +3,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { TicketParams } from '../controller/dto';
+import { LoginDto } from '../dto';
 import { EduSharingService } from '../service/edu-sharing.service';
 
 @Injectable()
@@ -14,12 +15,8 @@ export class EduSharingUC {
 		private readonly eduSharingService: EduSharingService
 	) {}
 
-	public async getTicketForUser(userId: EntityId): Promise<string> {
-		this.logger.debug({ action: 'getTicketForUser', userId });
-
+	public async getTicketForUser(userId: EntityId): Promise<string | undefined> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-
-		// TODO: permission check?
 
 		const userName = `${user.firstName}.${user.lastName}`;
 
@@ -28,7 +25,7 @@ export class EduSharingUC {
 		return ticket;
 	}
 
-	public async getTicketAuthenticationInfo(params: TicketParams): Promise<any> {
+	public async getTicketAuthenticationInfo(params: TicketParams): Promise<LoginDto> {
 		const ticketInfo = await this.eduSharingService.getTicketAuthenticationInfo(params.ticket);
 
 		return ticketInfo;

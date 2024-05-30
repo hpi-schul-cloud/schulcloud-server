@@ -2,10 +2,11 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LegacyLogger } from '@src/core/logger';
-import { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { createSign } from 'crypto';
 import { readFileSync } from 'fs';
 import { lastValueFrom } from 'rxjs';
+import { AuthenticationTokenDto, ErrorResponseDto, LoginDto } from '../dto';
 import { EduSharingConfig } from '../edu-sharing.config';
 
 @Injectable()
@@ -55,7 +56,7 @@ export class EduSharingService {
 	async getTicketForUser(
 		userName = 'admin',
 		additionalFields?: { [key: string]: string | File } | undefined
-	): Promise<string> {
+	): Promise<string | undefined> {
 		const options: AxiosRequestConfig = {
 			method: 'POST',
 			url: `${this.baseUrl}/rest/authentication/v1/appauth/${encodeURIComponent(userName)}`,
@@ -65,14 +66,14 @@ export class EduSharingService {
 		if (additionalFields !== null) {
 			options.data = additionalFields;
 		}
-		const response = await lastValueFrom(this.httpService.request(options));
-		const data = response.data;
-		const gotError = data.error !== undefined;
+		const response: AxiosResponse<AuthenticationTokenDto> = await lastValueFrom(this.httpService.request(options));
+		const { data } = response;
+		const gotError = (data as ErrorResponseDto).error !== undefined;
 		const responseOk = !gotError;
-		if (responseOk && (data.userId === userName || data.userId.startsWith(userName + '@'))) {
+		if (responseOk && (data.userId === userName || data.userId?.startsWith(`${userName}@`))) {
 			return data.ticket;
 		}
-		throw new Error(data.message || '');
+		throw new Error((data as ErrorResponseDto).message || '');
 	}
 
 	/**
@@ -87,7 +88,7 @@ export class EduSharingService {
 	 * @throws Exception
 	 * Thrown if the ticket is not valid anymore
 	 */
-	async getTicketAuthenticationInfo(ticket: string): Promise<any> {
+	async getTicketAuthenticationInfo(ticket: string): Promise<LoginDto> {
 		const headers = {
 			Authorization: this.getRESTAuthenticationHeader(ticket),
 			Accept: 'application/json',
@@ -99,8 +100,8 @@ export class EduSharingService {
 			headers,
 			timeout: 5000,
 		};
-		const response = await lastValueFrom(this.httpService.request(options));
-		const data = response.data;
+		const response: AxiosResponse<LoginDto> = await lastValueFrom(this.httpService.request(options));
+		const { data } = response;
 		if (data.statusCode !== 'OK') {
 			throw new Error('The given ticket is not valid anymore.');
 		}

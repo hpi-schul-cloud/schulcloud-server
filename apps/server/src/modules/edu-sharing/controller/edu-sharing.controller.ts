@@ -9,6 +9,7 @@ import {
 	Param,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginDto } from '../dto';
 import { EduSharingUC } from '../uc';
 import { TicketParams } from './dto';
 
@@ -28,7 +29,7 @@ export class EduSharingController {
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/')
-	async getTicketForUser(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
+	async getTicketForUser(@CurrentUser() currentUser: ICurrentUser): Promise<string | undefined> {
 		const ticket = await this.eduSharingUC.getTicketForUser(currentUser.userId);
 
 		return ticket;
@@ -45,7 +46,7 @@ export class EduSharingController {
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/validate/:ticket')
-	async getTicketAuthenticationInfo(@Param() params: TicketParams): Promise<string> {
+	async getTicketAuthenticationInfo(@Param() params: TicketParams): Promise<LoginDto> {
 		const result = await this.eduSharingUC.getTicketAuthenticationInfo(params);
 
 		return result;
