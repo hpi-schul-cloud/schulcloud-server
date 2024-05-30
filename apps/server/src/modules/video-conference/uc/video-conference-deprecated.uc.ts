@@ -333,6 +333,7 @@ export class VideoConferenceDeprecatedUc {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(refId);
+
 				return {
 					scopeInfo: {
 						scopeId: refId,
@@ -345,7 +346,8 @@ export class VideoConferenceDeprecatedUc {
 			}
 			case VideoConferenceScope.EVENT: {
 				const event: CalendarEventDto = await this.calendarService.findEvent(userId, refId);
-				const team = await this.teamsRepo.findById(event.teamId);
+				const team = await this.teamsRepo.findById(event.teamId, true);
+
 				return {
 					scopeInfo: {
 						scopeId: event.teamId,
