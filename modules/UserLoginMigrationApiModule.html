@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -62,9 +62,11 @@
                toggleDarkMode(darkModeState);
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -73,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -115,175 +117,175 @@
 <title>cluster_UserLoginMigrationApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 2667,-195 2667,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_UserLoginMigrationApiModule_providers</title>
-<polygon fill="none" stroke="black" points="1067,-78 1067,-130 2659,-130 2659,-78 1067,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_UserLoginMigrationApiModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 1059,-130 1059,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1616,-78 1616,-130 2659,-130 2659,-78 1616,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_UserLoginMigrationApiModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1608,-130 1608,-78 16,-78"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
 <title>AuthenticationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1051.25,-122 1048.25,-126 1027.25,-126 1024.25,-122 908.75,-122 908.75,-86 1051.25,-86 1051.25,-122"/>
-<text text-anchor="middle" x="980" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2651.25,-122 2648.25,-126 2627.25,-126 2624.25,-122 2508.75,-122 2508.75,-86 2651.25,-86 2651.25,-122"/>
+<text text-anchor="middle" x="2580" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
 </g>
 <!-- UserLoginMigrationApiModule -->
 <g id="node8" class="node">
 <title>UserLoginMigrationApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1078.41,-187 1075.41,-191 1054.41,-191 1051.41,-187 881.59,-187 881.59,-151 1078.41,-151 1078.41,-187"/>
-<text text-anchor="middle" x="980" y="-164.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1810.41,-187 1807.41,-191 1786.41,-191 1783.41,-187 1613.59,-187 1613.59,-151 1810.41,-151 1810.41,-187"/>
+<text text-anchor="middle" x="1712" y="-164.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationApiModule</text>
 </g>
 <!-- AuthenticationModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge1" class="edge">
 <title>AuthenticationModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M980,-122.11C980,-122.11 980,-140.99 980,-140.99"/>
-<polygon fill="black" stroke="black" points="976.5,-140.99 980,-150.99 983.5,-140.99 976.5,-140.99"/>
+<path fill="none" stroke="black" d="M2580,-122.09C2580,-145.13 2580,-182 2580,-182 2580,-182 1820.3,-182 1820.3,-182"/>
+<polygon fill="black" stroke="black" points="1820.3,-178.5 1810.3,-182 1820.3,-185.5 1820.3,-178.5"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node2" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="890.81,-122 887.81,-126 866.81,-126 863.81,-122 753.19,-122 753.19,-86 890.81,-86 890.81,-122"/>
-<text text-anchor="middle" x="822" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2490.81,-122 2487.81,-126 2466.81,-126 2463.81,-122 2353.19,-122 2353.19,-86 2490.81,-86 2490.81,-122"/>
+<text text-anchor="middle" x="2422" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge2" class="edge">
 <title>AuthorizationModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M886.23,-122.11C886.23,-122.11 886.23,-140.99 886.23,-140.99"/>
-<polygon fill="black" stroke="black" points="882.73,-140.99 886.23,-150.99 889.73,-140.99 882.73,-140.99"/>
+<path fill="none" stroke="black" d="M2422,-122.28C2422,-143.32 2422,-175 2422,-175 2422,-175 1820.35,-175 1820.35,-175"/>
+<polygon fill="black" stroke="black" points="1820.35,-171.5 1810.35,-175 1820.35,-178.5 1820.35,-171.5"/>
 </g>
 <!-- LegacySchoolModule -->
 <g id="node3" class="node">
 <title>LegacySchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="735.63,-122 732.63,-126 711.63,-126 708.63,-122 596.37,-122 596.37,-86 735.63,-86 735.63,-122"/>
-<text text-anchor="middle" x="666" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2335.63,-122 2332.63,-126 2311.63,-126 2308.63,-122 2196.37,-122 2196.37,-86 2335.63,-86 2335.63,-122"/>
+<text text-anchor="middle" x="2266" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge3" class="edge">
 <title>LegacySchoolModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M666,-122.24C666,-137.57 666,-157 666,-157 666,-157 871.51,-157 871.51,-157"/>
-<polygon fill="black" stroke="black" points="871.51,-160.5 881.51,-157 871.51,-153.5 871.51,-160.5"/>
+<path fill="none" stroke="black" d="M2266,-122.11C2266,-141.34 2266,-169 2266,-169 2266,-169 1820.41,-169 1820.41,-169"/>
+<polygon fill="black" stroke="black" points="1820.41,-165.5 1810.41,-169 1820.41,-172.5 1820.41,-165.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node4" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="577.98,-122 574.98,-126 553.98,-126 550.98,-122 478.02,-122 478.02,-86 577.98,-86 577.98,-122"/>
-<text text-anchor="middle" x="528" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2177.98,-122 2174.98,-126 2153.98,-126 2150.98,-122 2078.02,-122 2078.02,-86 2177.98,-86 2177.98,-122"/>
+<text text-anchor="middle" x="2128" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge4" class="edge">
 <title>LoggerModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M528,-122.02C528,-139.37 528,-163 528,-163 528,-163 871.64,-163 871.64,-163"/>
-<polygon fill="black" stroke="black" points="871.64,-166.5 881.64,-163 871.64,-159.5 871.64,-166.5"/>
+<path fill="none" stroke="black" d="M2128,-122.02C2128,-139.37 2128,-163 2128,-163 2128,-163 1820.32,-163 1820.32,-163"/>
+<polygon fill="black" stroke="black" points="1820.32,-159.5 1810.32,-163 1820.32,-166.5 1820.32,-159.5"/>
 </g>
 <!-- OauthModule -->
 <g id="node5" class="node">
 <title>OauthModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="459.76,-122 456.76,-126 435.76,-126 432.76,-122 366.24,-122 366.24,-86 459.76,-86 459.76,-122"/>
-<text text-anchor="middle" x="413" y="-99.8" font-family="Times,serif" font-size="14.00">OauthModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2059.76,-122 2056.76,-126 2035.76,-126 2032.76,-122 1966.24,-122 1966.24,-86 2059.76,-86 2059.76,-122"/>
+<text text-anchor="middle" x="2013" y="-99.8" font-family="Times,serif" font-size="14.00">OauthModule</text>
 </g>
 <!-- OauthModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge5" class="edge">
 <title>OauthModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M413,-122.11C413,-141.34 413,-169 413,-169 413,-169 871.56,-169 871.56,-169"/>
-<polygon fill="black" stroke="black" points="871.56,-172.5 881.56,-169 871.56,-165.5 871.56,-172.5"/>
+<path fill="none" stroke="black" d="M2013,-122.24C2013,-137.57 2013,-157 2013,-157 2013,-157 1820.56,-157 1820.56,-157"/>
+<polygon fill="black" stroke="black" points="1820.56,-153.5 1810.56,-157 1820.56,-160.5 1820.56,-153.5"/>
 </g>
 <!-- ProvisioningModule -->
 <g id="node6" class="node">
 <title>ProvisioningModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="348.61,-122 345.61,-126 324.61,-126 321.61,-122 217.39,-122 217.39,-86 348.61,-86 348.61,-122"/>
-<text text-anchor="middle" x="283" y="-99.8" font-family="Times,serif" font-size="14.00">ProvisioningModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1948.61,-122 1945.61,-126 1924.61,-126 1921.61,-122 1817.39,-122 1817.39,-86 1948.61,-86 1948.61,-122"/>
+<text text-anchor="middle" x="1883" y="-99.8" font-family="Times,serif" font-size="14.00">ProvisioningModule</text>
 </g>
 <!-- ProvisioningModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge6" class="edge">
 <title>ProvisioningModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M283,-122.28C283,-143.32 283,-175 283,-175 283,-175 871.62,-175 871.62,-175"/>
-<polygon fill="black" stroke="black" points="871.62,-178.5 881.62,-175 871.62,-171.5 871.62,-178.5"/>
+<path fill="none" stroke="black" d="M1817.15,-104C1809.83,-104 1804.95,-104 1804.95,-104 1804.95,-104 1804.95,-140.89 1804.95,-140.89"/>
+<polygon fill="black" stroke="black" points="1801.45,-140.89 1804.95,-150.89 1808.45,-140.89 1801.45,-140.89"/>
 </g>
 <!-- UserLoginMigrationModule -->
 <g id="node7" class="node">
 <title>UserLoginMigrationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="199.91,-122 196.91,-126 175.91,-126 172.91,-122 24.09,-122 24.09,-86 199.91,-86 199.91,-122"/>
-<text text-anchor="middle" x="112" y="-99.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1799.91,-122 1796.91,-126 1775.91,-126 1772.91,-122 1624.09,-122 1624.09,-86 1799.91,-86 1799.91,-122"/>
+<text text-anchor="middle" x="1712" y="-99.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationModule</text>
 </g>
 <!-- UserLoginMigrationModule&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge7" class="edge">
 <title>UserLoginMigrationModule&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M112,-122.09C112,-145.13 112,-182 112,-182 112,-182 871.7,-182 871.7,-182"/>
-<polygon fill="black" stroke="black" points="871.7,-185.5 881.7,-182 871.7,-178.5 871.7,-185.5"/>
+<path fill="none" stroke="black" d="M1712,-122.11C1712,-122.11 1712,-140.99 1712,-140.99"/>
+<polygon fill="black" stroke="black" points="1708.5,-140.99 1712,-150.99 1715.5,-140.99 1708.5,-140.99"/>
 </g>
 <!-- CloseUserLoginMigrationUc -->
 <g id="node9" class="node">
 <title>CloseUserLoginMigrationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="2527" cy="-104" rx="124.42" ry="18"/>
-<text text-anchor="middle" x="2527" y="-99.8" font-family="Times,serif" font-size="14.00">CloseUserLoginMigrationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1476" cy="-104" rx="124.42" ry="18"/>
+<text text-anchor="middle" x="1476" y="-99.8" font-family="Times,serif" font-size="14.00">CloseUserLoginMigrationUc</text>
 </g>
 <!-- CloseUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge8" class="edge">
 <title>CloseUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M2527,-122.09C2527,-145.13 2527,-182 2527,-182 2527,-182 1088.24,-182 1088.24,-182"/>
-<polygon fill="black" stroke="black" points="1088.24,-178.5 1078.24,-182 1088.24,-185.5 1088.24,-178.5"/>
+<path fill="none" stroke="black" d="M1600.34,-104C1611.7,-104 1619.05,-104 1619.05,-104 1619.05,-104 1619.05,-140.89 1619.05,-140.89"/>
+<polygon fill="black" stroke="black" points="1615.55,-140.89 1619.05,-150.89 1622.55,-140.89 1615.55,-140.89"/>
 </g>
 <!-- RestartUserLoginMigrationUc -->
 <g id="node10" class="node">
 <title>RestartUserLoginMigrationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="2255" cy="-104" rx="129.63" ry="18"/>
-<text text-anchor="middle" x="2255" y="-99.8" font-family="Times,serif" font-size="14.00">RestartUserLoginMigrationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1204" cy="-104" rx="129.63" ry="18"/>
+<text text-anchor="middle" x="1204" y="-99.8" font-family="Times,serif" font-size="14.00">RestartUserLoginMigrationUc</text>
 </g>
 <!-- RestartUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge9" class="edge">
 <title>RestartUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M2255,-122.28C2255,-143.32 2255,-175 2255,-175 2255,-175 1088.46,-175 1088.46,-175"/>
-<polygon fill="black" stroke="black" points="1088.46,-171.5 1078.46,-175 1088.46,-178.5 1088.46,-171.5"/>
+<path fill="none" stroke="black" d="M1204,-122.24C1204,-137.57 1204,-157 1204,-157 1204,-157 1603.75,-157 1603.75,-157"/>
+<polygon fill="black" stroke="black" points="1603.75,-160.5 1613.75,-157 1603.75,-153.5 1603.75,-160.5"/>
 </g>
 <!-- StartUserLoginMigrationUc -->
 <g id="node11" class="node">
 <title>StartUserLoginMigrationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1987" cy="-104" rx="120.4" ry="18"/>
-<text text-anchor="middle" x="1987" y="-99.8" font-family="Times,serif" font-size="14.00">StartUserLoginMigrationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="936" cy="-104" rx="120.4" ry="18"/>
+<text text-anchor="middle" x="936" y="-99.8" font-family="Times,serif" font-size="14.00">StartUserLoginMigrationUc</text>
 </g>
 <!-- StartUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge10" class="edge">
 <title>StartUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M1987,-122.11C1987,-141.34 1987,-169 1987,-169 1987,-169 1088.39,-169 1088.39,-169"/>
-<polygon fill="black" stroke="black" points="1088.39,-165.5 1078.39,-169 1088.39,-172.5 1088.39,-165.5"/>
+<path fill="none" stroke="black" d="M936,-122.02C936,-139.37 936,-163 936,-163 936,-163 1603.72,-163 1603.72,-163"/>
+<polygon fill="black" stroke="black" points="1603.72,-166.5 1613.72,-163 1603.72,-159.5 1603.72,-166.5"/>
 </g>
 <!-- ToggleUserLoginMigrationUc -->
 <g id="node12" class="node">
 <title>ToggleUserLoginMigrationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1719" cy="-104" rx="129.64" ry="18"/>
-<text text-anchor="middle" x="1719" y="-99.8" font-family="Times,serif" font-size="14.00">ToggleUserLoginMigrationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="668" cy="-104" rx="129.64" ry="18"/>
+<text text-anchor="middle" x="668" y="-99.8" font-family="Times,serif" font-size="14.00">ToggleUserLoginMigrationUc</text>
 </g>
 <!-- ToggleUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge11" class="edge">
 <title>ToggleUserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M1719,-122.02C1719,-139.37 1719,-163 1719,-163 1719,-163 1088.52,-163 1088.52,-163"/>
-<polygon fill="black" stroke="black" points="1088.52,-159.5 1078.52,-163 1088.52,-166.5 1088.52,-159.5"/>
+<path fill="none" stroke="black" d="M668,-122.11C668,-141.34 668,-169 668,-169 668,-169 1603.78,-169 1603.78,-169"/>
+<polygon fill="black" stroke="black" points="1603.78,-172.5 1613.78,-169 1603.78,-165.5 1603.78,-172.5"/>
 </g>
 <!-- UserLoginMigrationRollbackUc -->
 <g id="node13" class="node">
 <title>UserLoginMigrationRollbackUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1434" cy="-104" rx="137.16" ry="18"/>
-<text text-anchor="middle" x="1434" y="-99.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationRollbackUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="383" cy="-104" rx="137.16" ry="18"/>
+<text text-anchor="middle" x="383" y="-99.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationRollbackUc</text>
 </g>
 <!-- UserLoginMigrationRollbackUc&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge12" class="edge">
 <title>UserLoginMigrationRollbackUc&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M1434,-122.24C1434,-137.57 1434,-157 1434,-157 1434,-157 1088.23,-157 1088.23,-157"/>
-<polygon fill="black" stroke="black" points="1088.23,-153.5 1078.23,-157 1088.23,-160.5 1088.23,-153.5"/>
+<path fill="none" stroke="black" d="M383,-122.28C383,-143.32 383,-175 383,-175 383,-175 1603.74,-175 1603.74,-175"/>
+<polygon fill="black" stroke="black" points="1603.74,-178.5 1613.74,-175 1603.74,-171.5 1603.74,-178.5"/>
 </g>
 <!-- UserLoginMigrationUc -->
 <g id="node14" class="node">
 <title>UserLoginMigrationUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1177" cy="-104" rx="102.43" ry="18"/>
-<text text-anchor="middle" x="1177" y="-99.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="126" cy="-104" rx="102.43" ry="18"/>
+<text text-anchor="middle" x="126" y="-99.8" font-family="Times,serif" font-size="14.00">UserLoginMigrationUc</text>
 </g>
 <!-- UserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule -->
 <g id="edge13" class="edge">
 <title>UserLoginMigrationUc&#45;&gt;UserLoginMigrationApiModule</title>
-<path fill="none" stroke="black" d="M1074.42,-104C1067.43,-104 1063.08,-104 1063.08,-104 1063.08,-104 1063.08,-140.89 1063.08,-140.89"/>
-<polygon fill="black" stroke="black" points="1059.58,-140.89 1063.08,-150.89 1066.58,-140.89 1059.58,-140.89"/>
+<path fill="none" stroke="black" d="M126,-122.09C126,-145.13 126,-182 126,-182 126,-182 1603.69,-182 1603.69,-182"/>
+<polygon fill="black" stroke="black" points="1603.69,-185.5 1613.69,-182 1603.69,-178.5 1603.69,-185.5"/>
 </g>
 </g>
 </svg>

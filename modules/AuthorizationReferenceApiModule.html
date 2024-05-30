@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -62,9 +62,11 @@
                toggleDarkMode(darkModeState);
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -73,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -115,43 +117,43 @@
 <title>cluster_AuthorizationReferenceApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 488,-195 488,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_AuthorizationReferenceApiModule_providers</title>
-<polygon fill="none" stroke="black" points="234,-78 234,-130 480,-130 480,-78 234,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_AuthorizationReferenceApiModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 226,-130 226,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="270,-78 270,-130 480,-130 480,-78 270,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_AuthorizationReferenceApiModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 262,-130 262,-78 16,-78"/>
 </g>
 <!-- AuthorizationReferenceModule -->
 <g id="node1" class="node">
 <title>AuthorizationReferenceModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="218.04,-122 215.04,-126 194.04,-126 191.04,-122 23.96,-122 23.96,-86 218.04,-86 218.04,-122"/>
-<text text-anchor="middle" x="121" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationReferenceModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="472.04,-122 469.04,-126 448.04,-126 445.04,-122 277.96,-122 277.96,-86 472.04,-86 472.04,-122"/>
+<text text-anchor="middle" x="375" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationReferenceModule</text>
 </g>
 <!-- AuthorizationReferenceApiModule -->
 <g id="node2" class="node">
 <title>AuthorizationReferenceApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="347.54,-187 344.54,-191 323.54,-191 320.54,-187 132.46,-187 132.46,-151 347.54,-151 347.54,-187"/>
-<text text-anchor="middle" x="240" y="-164.8" font-family="Times,serif" font-size="14.00">AuthorizationReferenceApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="362.54,-187 359.54,-191 338.54,-191 335.54,-187 147.46,-187 147.46,-151 362.54,-151 362.54,-187"/>
+<text text-anchor="middle" x="255" y="-164.8" font-family="Times,serif" font-size="14.00">AuthorizationReferenceApiModule</text>
 </g>
 <!-- AuthorizationReferenceModule&#45;&gt;AuthorizationReferenceApiModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationReferenceModule&#45;&gt;AuthorizationReferenceApiModule</title>
-<path fill="none" stroke="black" d="M175.25,-122.11C175.25,-122.11 175.25,-140.99 175.25,-140.99"/>
-<polygon fill="black" stroke="black" points="171.75,-140.99 175.25,-150.99 178.75,-140.99 171.75,-140.99"/>
+<path fill="none" stroke="black" d="M320.25,-122.11C320.25,-122.11 320.25,-140.99 320.25,-140.99"/>
+<polygon fill="black" stroke="black" points="316.75,-140.99 320.25,-150.99 323.75,-140.99 316.75,-140.99"/>
 </g>
 <!-- AuthorizationReferenceUc -->
 <g id="node3" class="node">
 <title>AuthorizationReferenceUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="357" cy="-104" rx="115.13" ry="18"/>
-<text text-anchor="middle" x="357" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationReferenceUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="139" cy="-104" rx="115.13" ry="18"/>
+<text text-anchor="middle" x="139" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationReferenceUc</text>
 </g>
 <!-- AuthorizationReferenceUc&#45;&gt;AuthorizationReferenceApiModule -->
 <g id="edge2" class="edge">
 <title>AuthorizationReferenceUc&#45;&gt;AuthorizationReferenceApiModule</title>
-<path fill="none" stroke="black" d="M294.73,-119.4C294.73,-119.4 294.73,-140.94 294.73,-140.94"/>
-<polygon fill="black" stroke="black" points="291.23,-140.94 294.73,-150.94 298.23,-140.94 291.23,-140.94"/>
+<path fill="none" stroke="black" d="M200.77,-119.4C200.77,-119.4 200.77,-140.94 200.77,-140.94"/>
+<polygon fill="black" stroke="black" points="197.27,-140.94 200.77,-150.94 204.27,-140.94 197.27,-140.94"/>
 </g>
 </g>
 </svg>

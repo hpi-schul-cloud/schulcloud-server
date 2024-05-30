@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -62,9 +62,11 @@
                toggleDarkMode(darkModeState);
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -73,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -115,13 +117,13 @@
 <title>cluster_ExternalToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2579,-268 2579,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ExternalToolModule_providers</title>
-<polygon fill="none" stroke="black" points="780,-78 780,-130 2571,-130 2571,-78 780,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_ExternalToolModule_exports</title>
 <polygon fill="none" stroke="black" points="599,-208 599,-260 1531,-260 1531,-208 599,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_ExternalToolModule_providers</title>
+<polygon fill="none" stroke="black" points="780,-78 780,-130 2571,-130 2571,-78 780,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_ExternalToolModule_imports</title>

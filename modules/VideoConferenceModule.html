@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -62,9 +62,11 @@
                toggleDarkMode(darkModeState);
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -73,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -119,13 +121,13 @@
 <title>cluster_VideoConferenceModule_imports</title>
 <polygon fill="none" stroke="black" points="1177,-78 1177,-130 2191,-130 2191,-78 1177,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_VideoConferenceModule_exports</title>
-<polygon fill="none" stroke="black" points="1069,-208 1069,-260 1353,-260 1353,-208 1069,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_VideoConferenceModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 1169,-130 1169,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_VideoConferenceModule_exports</title>
+<polygon fill="none" stroke="black" points="1069,-208 1069,-260 1353,-260 1353,-208 1069,-208"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
