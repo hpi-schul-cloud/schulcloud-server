@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { IsBoolean, IsDate, IsEnum, IsIn, IsInt, IsMongoId, IsOptional, Max, Min } from 'class-validator';
-import { SortableFields } from '../type/sortable-fields';
+import { SortableField } from '../type/sortable-field';
 
 export class UserListQuery {
 	@IsMongoId()
@@ -19,8 +19,8 @@ export class UserListQuery {
 	public offset!: number;
 
 	@IsOptional()
-	@IsEnum(SortableFields)
-	public sortBy?: SortableFields;
+	@IsEnum(SortableField)
+	public sortBy?: SortableField;
 
 	@IsOptional()
 	@IsIn([-1, 1])

@@ -1,4 +1,4 @@
-export enum SortableFields {
+export enum SortableField {
 	firstName = 'firstName',
 	lastName = 'lastName',
 	birthday = 'birthday',
