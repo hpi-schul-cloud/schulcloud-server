@@ -96,7 +96,7 @@ export class SubmissionItemUc {
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 		// TODO this is already taken care in add to parent, but TS complains without this type guard
-		if (!isFileElement(element) || !isRichTextElement(element)) {
+		if (!(isFileElement(element) || isRichTextElement(element))) {
 			throw new UnprocessableEntityException();
 		}
 

@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
-import { BadRequestException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
@@ -13,7 +13,6 @@ import {
 	UserWithBoardRoles,
 } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
-import { SubmissionItemUc } from './submission-item.uc';
 import {
 	columnBoardFactory,
 	linkElementFactory,
@@ -21,6 +20,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '../testing';
+import { SubmissionItemUc } from './submission-item.uc';
 
 describe(SubmissionItemUc.name, () => {
 	let module: TestingModule;
@@ -368,8 +368,8 @@ describe(SubmissionItemUc.name, () => {
 			it('should throw if returned element is not file or rich text', async () => {
 				const { submissionItem, user } = setup();
 
-				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT)).rejects.toThrow(
-					UnprocessableEntityException
+				await expect(uc.createElement(user.id, submissionItem.id, ContentElementType.EXTERNAL_TOOL)).rejects.toThrow(
+					BadRequestException
 				);
 			});
 		});
