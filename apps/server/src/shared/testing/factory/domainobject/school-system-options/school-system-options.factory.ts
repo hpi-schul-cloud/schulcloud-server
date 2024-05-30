@@ -19,6 +19,7 @@ export const schoolSystemOptionsFactory = DomainObjectFactory.define<
 			groupProvisioningClassesEnabled: true,
 			groupProvisioningCoursesEnabled: false,
 			groupProvisioningOtherEnabled: false,
+			schoolExternalToolProvisioningEnabled: false,
 		}),
 	};
 });

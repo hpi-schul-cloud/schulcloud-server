@@ -1,5 +1,5 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningOptionsInterface } from '../interface';
+import { SchulConneXProvisioningOptionsInterface } from '../interface';
 import {
 	ProvisioningStrategyInvalidOptionsLoggableException,
 	ProvisioningStrategyNoOptionsLoggableException,
@@ -34,10 +34,11 @@ describe(SchoolSystemOptionsBuilder.name, () => {
 	describe('buildProvisioningOptions', () => {
 		describe('when the provisioning strategy is "SANIS" and the options are valid', () => {
 			const setup = () => {
-				const options: ProvisioningOptionsInterface = {
+				const options: SchulConneXProvisioningOptionsInterface = {
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningCoursesEnabled: true,
 					groupProvisioningOtherEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				};
 
 				return {
