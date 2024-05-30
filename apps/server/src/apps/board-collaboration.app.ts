@@ -6,11 +6,12 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { LegacyLogger } from '@src/core/logger';
-import { enableOpenApiDocs } from '@src/shared/controller/swagger';
-import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
 import { MongoIoAdapter } from '@modules/board';
+import { SwaggerDocumentOptions } from '@nestjs/swagger';
+import { DB_URL } from '@src/config';
+import { LegacyLogger } from '@src/core/logger';
+import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
+import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -24,7 +25,7 @@ async function bootstrap() {
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
 	const mongoIoAdapter = new MongoIoAdapter(nestApp);
-	await mongoIoAdapter.connectToMongoDb();
+	await mongoIoAdapter.connectToMongoDb(DB_URL);
 
 	nestApp.useWebSocketAdapter(mongoIoAdapter);
 

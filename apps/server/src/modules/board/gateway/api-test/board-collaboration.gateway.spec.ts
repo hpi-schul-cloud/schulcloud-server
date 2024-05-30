@@ -30,7 +30,6 @@ describe(BoardCollaborationGateway.name, () => {
 			imports: [BoardCollaborationTestingModule],
 		}).compile();
 		app = testingModule.createNestApplication();
-		await app.init();
 
 		em = app.get(EntityManager);
 		const mongoUrl = em.config.getClientUrl();
@@ -38,6 +37,7 @@ describe(BoardCollaborationGateway.name, () => {
 		const mongoIoAdapter = new MongoIoAdapter(app);
 		await mongoIoAdapter.connectToMongoDb(mongoUrl);
 		app.useWebSocketAdapter(mongoIoAdapter);
+		await app.init();
 
 		await app.listen(0);
 	});
