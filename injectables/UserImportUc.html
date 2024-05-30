@@ -136,6 +136,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#cancelMigration" >cancelMigration</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#checkMigrationActive" >checkMigrationActive</a>
@@ -159,6 +164,7 @@
                                 <a href="#checkSchoolNumber" >checkSchoolNumber</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#endSchoolInMaintenance" >endSchoolInMaintenance</a>
                             </li>
@@ -203,6 +209,7 @@
                                 <a href="#setMatch" >setMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#startSchoolInUserMigration" >startSchoolInUserMigration</a>
                             </li>
@@ -244,12 +251,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userImportService: <a href="../injectables/UserImportService.html" target="_self">UserImportService</a>, userImportFeatures: <a href="../interfaces/IUserImportFeatures.html" target="_self">IUserImportFeatures</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>)</code>
+<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userImportService: <a href="../injectables/UserImportService.html" target="_self">UserImportService</a>, userImportFeatures: <a href="../interfaces/IUserImportFeatures.html" target="_self">IUserImportFeatures</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:41</a></div>
                             </td>
                         </tr>
 
@@ -339,6 +346,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>logger</td>
                                                   
                                                         <td>
@@ -416,6 +435,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="cancelMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>cancelMigration</b></span>
+                        <a href="#cancelMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>cancelMigration(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="329"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:329</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="checkMigrationActive"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -435,8 +524,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="291"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:291</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="296"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:296</a></div>
                         </td>
                     </tr>
 
@@ -505,8 +594,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="386"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:386</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="413"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:413</a></div>
                         </td>
                     </tr>
 
@@ -575,8 +664,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="277"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:277</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="282"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:282</a></div>
                         </td>
                     </tr>
 
@@ -656,8 +745,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="406"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:406</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="433"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:433</a></div>
                         </td>
                     </tr>
 
@@ -725,8 +814,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="400"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:400</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="427"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:427</a></div>
                         </td>
                     </tr>
 
@@ -778,6 +867,7 @@
                 <td class="col-md-4">
                     <a name="endSchoolInMaintenance"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>endSchoolInMaintenance</b></span>
                         <a href="#endSchoolInMaintenance"><span class="icon ion-ios-link"></span></a>
@@ -794,8 +884,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="301"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:301</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="306"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:306</a></div>
                         </td>
                     </tr>
 
@@ -864,8 +954,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="224"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:224</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:229</a></div>
                         </td>
                     </tr>
 
@@ -934,8 +1024,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -1030,8 +1120,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="160"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:160</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="165"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:165</a></div>
                         </td>
                     </tr>
 
@@ -1137,8 +1227,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="369"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:369</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="396"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:396</a></div>
                         </td>
                     </tr>
 
@@ -1207,8 +1297,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="324"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:324</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="345"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:345</a></div>
                         </td>
                     </tr>
 
@@ -1289,8 +1379,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="112"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:112</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -1371,8 +1461,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="176"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:176</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="181"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:181</a></div>
                         </td>
                     </tr>
 
@@ -1441,8 +1531,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -1521,6 +1611,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
                     <a name="startSchoolInUserMigration"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>startSchoolInUserMigration</b></span>
                         <a href="#startSchoolInUserMigration"><span class="icon ion-ios-link"></span></a>
@@ -1537,8 +1628,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="235"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:235</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="240"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:240</a></div>
                         </td>
                     </tr>
 
@@ -1624,8 +1715,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -1718,8 +1809,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="331"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:331</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="352"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:352</a></div>
                         </td>
                     </tr>
 
@@ -1800,8 +1891,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="341"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:341</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="362"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:362</a></div>
                         </td>
                     </tr>
 
@@ -1882,8 +1973,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="361"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:361</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="382"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:382</a></div>
                         </td>
                     </tr>
 
@@ -1943,12 +2034,13 @@ import { UserLoginMigrationService, UserMigrationService } from &#x27;@modules/u
 import { BadRequestException, ForbiddenException, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserAlreadyAssignedToImportUserError } from &#x27;@shared/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { LegacySchoolDo, UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { ImportUser, MatchCreator, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { IFindOptions, Permission } from &#x27;@shared/domain/interface&#x27;;
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from &#x27;@shared/domain/types&#x27;;
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
+import { UserService } from &#x27;@modules/user&#x27;;
 import { IUserImportFeatures, UserImportFeatures } from &#x27;../config&#x27;;
 import {
 	MigrationMayBeCompleted,
@@ -1957,7 +2049,10 @@ import {
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
+	UserAlreadyMigratedLoggable,
+	UserMigrationCanceledLoggable,
 } from &#x27;../loggable&#x27;;
+
 import { UserImportService } from &#x27;../service&#x27;;
 import {
 	LdapAlreadyPersistedException,
@@ -1979,6 +2074,7 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
@@ -2169,7 +2265,7 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap &#x3D; true): Promise&lt;void&gt; {
+	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap &#x3D; true): Promise&lt;void&gt; {
 		const { useWithUserLoginMigration } &#x3D; this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
@@ -2235,7 +2331,7 @@ export class UserImportUc {
 		}
 	}
 
-	async endSchoolInMaintenance(currentUserId: EntityId): Promise&lt;void&gt; {
+	public async endSchoolInMaintenance(currentUserId: EntityId): Promise&lt;void&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
 
@@ -2256,6 +2352,22 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 
 		this.logger.notice(new SchoolInUserMigrationEndLoggable(school.name));
+	}
+
+	public async cancelMigration(currentUserId: EntityId): Promise&lt;void&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+
+		this.userImportService.checkFeatureEnabled(school);
+
+		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
+
+		school.inUserMigration &#x3D; undefined;
+		school.inMaintenanceSince &#x3D; undefined;
+
+		await this.schoolService.save(school, true);
+
+		this.logger.notice(new UserMigrationCanceledLoggable(school));
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise&lt;User&gt; {
@@ -2300,7 +2412,13 @@ export class UserImportUc {
 			return;
 		}
 
-		await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		const user: UserDO | null &#x3D; await this.userService.findByExternalId(importUser.externalId, importUser.system.id);
+
+		if (!user) {
+			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		} else {
+			this.logger.notice(new UserAlreadyMigratedLoggable(importUser.user.id));
+		}
 	}
 
 	private async getAccount(user: User): Promise&lt;Account&gt; {

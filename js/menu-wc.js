@@ -7038,6 +7038,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UserAlreadyAssignedToImportUserError.html" data-type="entity-link" >UserAlreadyAssignedToImportUserError</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserAlreadyMigratedLoggable.html" data-type="entity-link" >UserAlreadyMigratedLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UserAndAccountTestFactory.html" data-type="entity-link" >UserAndAccountTestFactory</a>
                             </li>
                             <li class="link">
@@ -7156,6 +7159,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserMatchResponse.html" data-type="entity-link" >UserMatchResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserMigrationCanceledLoggable.html" data-type="entity-link" >UserMigrationCanceledLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserMigrationDatabaseOperationFailedLoggableException.html" data-type="entity-link" >UserMigrationDatabaseOperationFailedLoggableException</a>
@@ -9438,6 +9444,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserGroups.html" data-type="entity-link" >UserGroups</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserImportConfig.html" data-type="entity-link" >UserImportConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserInfo.html" data-type="entity-link" >UserInfo</a>

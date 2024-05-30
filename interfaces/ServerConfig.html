@@ -155,6 +155,7 @@
                             <code><a href="../interfaces/DeletionConfig.html" target="_self" >DeletionConfig</a></code>
                             <code><a href="../interfaces/CollaborativeTextEditorConfig.html" target="_self" >CollaborativeTextEditorConfig</a></code>
                             <code><a href="../interfaces/ProvisioningConfig.html" target="_self" >ProvisioningConfig</a></code>
+                            <code><a href="../interfaces/UserImportConfig.html" target="_self" >UserImportConfig</a></code>
                             <code><a href="../interfaces/AlertConfig.html" target="_self" >AlertConfig</a></code>
             </p>
 
@@ -2325,6 +2326,7 @@ import { LanguageType } from &#x27;@shared/domain/interface&#x27;;
 import { SchulcloudTheme } from &#x27;@shared/domain/types&#x27;;
 import type { CoreModuleConfig } from &#x27;@src/core&#x27;;
 import type { MailConfig } from &#x27;@src/infra/mail/interfaces/mail-config&#x27;;
+import { UserImportConfig } from &#x27;../user-import/user-import-config&#x27;;
 import { Timezone } from &#x27;./types/timezone.enum&#x27;;
 
 export enum NodeEnvType {
@@ -2361,6 +2363,7 @@ export interface ServerConfig
 		DeletionConfig,
 		CollaborativeTextEditorConfig,
 		ProvisioningConfig,
+		UserImportConfig,
 		AlertConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
@@ -2532,6 +2535,9 @@ const config: ServerConfig &#x3D; {
 	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get(&#x27;I18N__DEFAULT_TIMEZONE&#x27;) as Timezone,
+	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS: Configuration.get(
+		&#x27;IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS&#x27;
+	) as number,
 	SCHULCONNEX_CLIENT__API_URL: Configuration.has(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;)
 		? (Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string)
 		: undefined,
