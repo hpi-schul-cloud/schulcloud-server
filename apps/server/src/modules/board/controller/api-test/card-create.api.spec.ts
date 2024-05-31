@@ -8,7 +8,7 @@ import { ApiValidationError } from '@shared/common';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { columnBoardFactory, columnFactory } from '../../testing';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import { CardResponse } from '../dto';
 
@@ -71,11 +71,11 @@ describe(`card create (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 
-		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
 		await em.persistAndFlush([columnBoardNode, columnNode]);
 		em.clear();

@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
 import { BoardNodeEntity } from '../../repo';
-import { columnBoardEnFactory, columnFactory } from '../../testing/entity';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing/entity';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
@@ -42,10 +42,10 @@ describe(`column update title (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
 			await em.persistAndFlush([teacherAccount, teacherUser, columnNode, columnBoardNode]);
 			em.clear();
@@ -98,11 +98,11 @@ describe(`column update title (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			const title = 'old title';
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode, title });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build({ title });
 
 			await em.persistAndFlush([studentAccount, studentUser, columnNode, columnBoardNode]);
 			em.clear();

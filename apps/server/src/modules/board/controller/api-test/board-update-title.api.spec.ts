@@ -3,9 +3,9 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnBoardNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { columnBoardFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
@@ -41,7 +41,7 @@ describe(`board update title (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -70,7 +70,7 @@ describe(`board update title (api)`, () => {
 
 			await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
 
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
@@ -82,7 +82,7 @@ describe(`board update title (api)`, () => {
 			const sanitizedTitle = 'foo bar';
 
 			await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: unsanitizedTitle });
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
 		});
@@ -128,7 +128,7 @@ describe(`board update title (api)`, () => {
 			await em.persistAndFlush([studentUser, course]);
 
 			const title = 'old title';
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				title,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
@@ -150,7 +150,7 @@ describe(`board update title (api)`, () => {
 
 			expect(response.status).toEqual(403);
 
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 			expect(result.title).toEqual(title);
 		});
 	});

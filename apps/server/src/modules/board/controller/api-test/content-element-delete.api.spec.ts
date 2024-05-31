@@ -5,19 +5,19 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { DrawingElementNode, RichTextElementNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { BoardNodeEntity } from '../../repo';
 import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	drawingElementFactory,
-	richTextElementFactory,
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	drawingElementEntityFactory,
+	richTextElementEntityFactory,
 } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
@@ -86,13 +86,13 @@ describe(`content element delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardFactory.buildWithId({ parent: columnNode });
-		const element = richTextElementFactory.buildWithId({ parent: cardNode });
-		const sibling = richTextElementFactory.buildWithId({ parent: cardNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode = cardEntityFactory.withParent(columnNode).build();
+		const element = richTextElementEntityFactory.withParent(cardNode).build();
+		const sibling = richTextElementEntityFactory.withParent(cardNode).build();
 
 		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element, sibling]);
 		em.clear();
@@ -116,7 +116,7 @@ describe(`content element delete (api)`, () => {
 
 			await api.delete(element.id);
 
-			await expect(em.findOneOrFail(RichTextElementNode, element.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, element.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
@@ -125,7 +125,7 @@ describe(`content element delete (api)`, () => {
 
 			await api.delete(element.id);
 
-			const siblingFromDb = await em.findOneOrFail(RichTextElementNode, sibling.id);
+			const siblingFromDb = await em.findOneOrFail(BoardNodeEntity, sibling.id);
 			expect(siblingFromDb).toBeDefined();
 		});
 	});
@@ -152,12 +152,12 @@ describe(`content element delete (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacher], students: [student] });
 			await em.persistAndFlush([teacher, student, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
-			const element = drawingElementFactory.buildWithId({ parent: cardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
+			const element = drawingElementEntityFactory.withParent(cardNode).build();
 
 			filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([]);
 			drawingElementAdapterService.deleteDrawingBinData.mockResolvedValueOnce();
@@ -184,7 +184,7 @@ describe(`content element delete (api)`, () => {
 
 				await api.delete(element.id);
 
-				await expect(em.findOneOrFail(DrawingElementNode, element.id)).rejects.toThrow();
+				await expect(em.findOneOrFail(BoardNodeEntity, element.id)).rejects.toThrow();
 			});
 		});
 

@@ -5,11 +5,11 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
@@ -70,15 +70,15 @@ describe(`column move (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 
 		const columnNodes = new Array(10)
 			.fill(1)
-			.map((_, i) => columnFactory.buildWithId({ parent: columnBoardNode, position: i }));
+			.map((_, i) => columnEntityFactory.withParent(columnBoardNode).build({ position: i }));
 		const columnToMove = columnNodes[2];
-		const cardNode = cardFactory.buildWithId({ parent: columnToMove });
+		const cardNode = cardEntityFactory.withParent(columnToMove).build();
 
 		await em.persistAndFlush([user, cardNode, ...columnNodes, columnBoardNode]);
 		em.clear();
@@ -101,7 +101,7 @@ describe(`column move (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			await api.move(columnToMove.id, columnBoardNode.id, 5);
-			const result = await em.findOneOrFail(ColumnNode, columnToMove.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnToMove.id);
 
 			expect(result.position).toEqual(5);
 		});

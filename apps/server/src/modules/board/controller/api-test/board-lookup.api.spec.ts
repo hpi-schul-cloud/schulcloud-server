@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 
-import { cardFactory, columnFactory, columnBoardFactory } from '../../testing';
+import { cardEntityFactory, columnEntityFactory, columnBoardEntityFactory } from '../../testing';
 import { BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
@@ -41,14 +41,14 @@ describe(`board lookup (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course, teacherAccount]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode1 = cardFactory.buildWithId({ parent: columnNode });
-			const cardNode2 = cardFactory.buildWithId({ parent: columnNode });
-			const cardNode3 = cardFactory.buildWithId({ parent: columnNode });
-			const notOfThisBoardCardNode = cardFactory.buildWithId();
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+			const cardNode1 = cardEntityFactory.withParent(columnNode).build();
+			const cardNode2 = cardEntityFactory.withParent(columnNode).build();
+			const cardNode3 = cardEntityFactory.withParent(columnNode).build();
+			const notOfThisBoardCardNode = cardEntityFactory.buildWithId();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]);
 			em.clear();
@@ -110,7 +110,7 @@ describe(`board lookup (api)`, () => {
 			const course = courseFactory.build();
 			await em.persistAndFlush([teacherUser, course, teacherAccount]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			await em.persistAndFlush([columnBoardNode]);

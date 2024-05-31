@@ -3,7 +3,12 @@ import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { cardFactory, columnFactory, columnBoardFactory, drawingElementFactory } from '../../testing';
+import {
+	cardEntityFactory,
+	columnEntityFactory,
+	columnBoardEntityFactory,
+	drawingElementEntityFactory,
+} from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/elements';
@@ -35,15 +40,15 @@ describe('drawing permission check (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const drawingItemNode = drawingElementFactory.buildWithId({ parent: cardNode });
+			const drawingItemNode = drawingElementEntityFactory.withParent(cardNode).build();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
 			em.clear();
@@ -72,15 +77,15 @@ describe('drawing permission check (api)', () => {
 			const course = courseFactory.build({ students: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, studentAccount, studentUser]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.buildWithId({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const drawingItemNode = drawingElementFactory.buildWithId({ parent: cardNode });
+			const drawingItemNode = drawingElementEntityFactory.withParent(cardNode).build();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
 			em.clear();

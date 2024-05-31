@@ -5,12 +5,12 @@ import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnBoardNode, ColumnNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { columnBoardFactory, columnFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardResponse } from '../dto';
 
@@ -73,12 +73,12 @@ describe(`board delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.build({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 		await em.persistAndFlush([columnBoardNode]);
 
-		const columnNode = columnFactory.build({ parent: columnBoardNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 		await em.persistAndFlush([columnNode]);
 
 		em.clear();
@@ -102,7 +102,7 @@ describe(`board delete (api)`, () => {
 
 			await api.delete(columnBoardNode.id);
 
-			await expect(em.findOneOrFail(ColumnBoardNode, columnBoardNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, columnBoardNode.id)).rejects.toThrow();
 		});
 
 		it('should actually delete columns of the board', async () => {
@@ -111,7 +111,7 @@ describe(`board delete (api)`, () => {
 
 			await api.delete(columnBoardNode.id);
 
-			await expect(em.findOneOrFail(ColumnNode, columnNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
 		});
 	});
 

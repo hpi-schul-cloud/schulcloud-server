@@ -5,11 +5,16 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { RichTextElementNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { cardFactory, columnBoardFactory, columnFactory, richTextElementFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	richTextElementEntityFactory,
+} from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/elements';
@@ -70,14 +75,14 @@ describe(`content element move (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const column = columnFactory.buildWithId({ parent: columnBoardNode });
-		const parentCard = cardFactory.buildWithId({ parent: column });
-		const targetCard = cardFactory.buildWithId({ parent: column });
-		const targetCardElements = richTextElementFactory.buildListWithId(4, { parent: targetCard });
-		const element = richTextElementFactory.buildWithId({ parent: parentCard });
+		const column = columnEntityFactory.withParent(columnBoardNode).build();
+		const parentCard = cardEntityFactory.withParent(column).build();
+		const targetCard = cardEntityFactory.withParent(column).build();
+		const targetCardElements = richTextElementEntityFactory.buildListWithId(4, { parent: targetCard });
+		const element = richTextElementEntityFactory.withParent(parentCard).build();
 
 		await em.persistAndFlush([user, parentCard, column, targetCard, columnBoardNode, ...targetCardElements, element]);
 		em.clear();
@@ -100,7 +105,7 @@ describe(`content element move (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			await api.move(element.id, targetCard.id, 2);
-			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, element.id);
 
 			expect(result.parentId).toEqual(targetCard.id);
 			expect(result.position).toEqual(2);

@@ -5,11 +5,11 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode, ColumnNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
@@ -69,12 +69,12 @@ describe(`column delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-		const siblingColumnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardFactory.buildWithId({ parent: columnNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		const siblingColumnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 		await em.persistAndFlush([user, cardNode, columnNode, columnBoardNode, siblingColumnNode]);
 		em.clear();
@@ -98,7 +98,7 @@ describe(`column delete (api)`, () => {
 
 			await api.delete(columnNode.id);
 
-			await expect(em.findOneOrFail(ColumnNode, columnNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
 		});
 
 		it('should actually delete cards of the column', async () => {
@@ -107,7 +107,7 @@ describe(`column delete (api)`, () => {
 
 			await api.delete(columnNode.id);
 
-			await expect(em.findOneOrFail(CardNode, cardNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, cardNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
@@ -116,9 +116,9 @@ describe(`column delete (api)`, () => {
 
 			await api.delete(columnNode.id);
 
-			await expect(em.findOneOrFail(ColumnNode, columnNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
 
-			const siblingFromDb = await em.findOneOrFail(ColumnNode, siblingColumnNode.id);
+			const siblingFromDb = await em.findOneOrFail(BoardNodeEntity, siblingColumnNode.id);
 			expect(siblingFromDb).toBeDefined();
 		});
 	});
