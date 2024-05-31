@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardNodeType, CardProps, ROOT_PATH } from '../../domain';
 import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
 
-export const cardFactory = BoardNodeEntityFactory.define<PropsWithType<CardProps>>(({ sequence }) => {
+export const cardEntityFactory = BoardNodeEntityFactory.define<PropsWithType<CardProps>>(({ sequence }) => {
 	const props: PropsWithType<CardProps> = {
 		id: new ObjectId().toHexString(),
 		path: ROOT_PATH,

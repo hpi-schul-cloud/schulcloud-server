@@ -3,6 +3,7 @@ export * from './collaborative-text-editor.factory';
 export * from './column-board.factory';
 export * from './column.factory';
 export * from './drawing-element.factory';
+export * from './entity';
 export * from './external-tool-element.factory';
 export * from './file-element.factory';
 export * from './link-element.factory';
