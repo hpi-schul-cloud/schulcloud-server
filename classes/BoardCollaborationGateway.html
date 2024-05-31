@@ -2295,7 +2295,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { WsValidationPipe, Socket } from &#x27;@infra/socketio&#x27;;
+import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import { UseGuards, UsePipes } from &#x27;@nestjs/common&#x27;;
 import { SubscribeMessage, WebSocketGateway, WsException } from &#x27;@nestjs/websockets&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
@@ -2325,8 +2326,7 @@ import { UpdateBoardVisibilityMessageParams } from &#x27;./dto/update-board-visi
 import { UpdateCardHeightMessageParams } from &#x27;./dto/update-card-height.message.param&#x27;;
 import { UpdateCardTitleMessageParams } from &#x27;./dto/update-card-title.message.param&#x27;;
 import { UpdateContentElementMessageParams } from &#x27;./dto/update-content-element.message.param&#x27;;
-import { BoardObjectType, ErrorType, Socket } from &#x27;./types&#x27;;
-import { WsValidationPipe } from &#x27;./ws-validation.pipe&#x27;;
+import { BoardObjectType, ErrorType } from &#x27;./types&#x27;;
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)

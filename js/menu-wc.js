@@ -5826,6 +5826,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MoinSchuleSystemNotFoundLoggableException.html" data-type="entity-link" >MoinSchuleSystemNotFoundLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/MongoIoAdapter.html" data-type="entity-link" >MongoIoAdapter</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MongoPatterns.html" data-type="entity-link" >MongoPatterns</a>
                             </li>
                             <li class="link">
