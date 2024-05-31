@@ -6,11 +6,15 @@ import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../../repo';
 import { BoardExternalReferenceType } from '../../../domain';
 import { MoveElementBodyParams } from '../dto';
-import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../../testing';
+import {
+	mediaBoardEntityFactory,
+	mediaExternalToolElementEntityFactory,
+	mediaLineEntityFactory,
+} from '../../../testing';
 
 const baseRouteName = '/media-elements';
 
@@ -42,23 +46,15 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
-				const mediaElementA = mediaExternalToolElementFactory.buildWithId({
-					parent: mediaLine,
-					position: 0,
-				});
-				const mediaElementB = mediaExternalToolElementFactory.buildWithId({
-					parent: mediaLine,
-					position: 1,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
+				const mediaElementA = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
+				const mediaElementB = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 1 });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElementA, mediaElementB]);
 				em.clear();
@@ -82,8 +78,8 @@ describe('Media Element (API)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const modifiedElementA = await em.findOneOrFail(BoardNode, mediaElementA.id);
-				const modifiedElementB = await em.findOneOrFail(BoardNode, mediaElementB.id);
+				const modifiedElementA = await em.findOneOrFail(BoardNodeEntity, mediaElementA.id);
+				const modifiedElementB = await em.findOneOrFail(BoardNodeEntity, mediaElementB.id);
 				expect(modifiedElementA.position).toEqual(1);
 				expect(modifiedElementB.position).toEqual(0);
 			});
@@ -96,19 +92,14 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
-				const mediaElement = mediaExternalToolElementFactory.buildWithId({
-					parent: mediaLine,
-					position: 0,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
+				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
 				em.clear();
@@ -146,19 +137,14 @@ describe('Media Element (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.buildWithId({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
-				const mediaElement = mediaExternalToolElementFactory.buildWithId({
-					parent: mediaLine,
-					position: 0,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
+				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 
 				await em.persistAndFlush([mediaBoard, mediaLine]);
 				em.clear();
@@ -202,15 +188,13 @@ describe('Media Element (API)', () => {
 					tool: externalTool,
 					school: studentUser.school,
 				});
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
 				await em.persistAndFlush([
 					studentAccount,
@@ -327,24 +311,19 @@ describe('Media Element (API)', () => {
 					tool: externalTool,
 					school: studentUser.school,
 				});
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.buildWithId({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalTool,
 					contextType: ContextExternalToolType.MEDIA_BOARD,
 					contextId: mediaBoard.id,
 				});
-				const mediaElement = mediaExternalToolElementFactory.buildWithId({
-					parent: mediaLine,
-					contextExternalTool,
-				});
+				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ contextExternalTool });
 
 				await em.persistAndFlush([
 					studentAccount,
@@ -372,7 +351,7 @@ describe('Media Element (API)', () => {
 				const response = await studentClient.delete(`${mediaElement.id}`);
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const deletedElement = await em.findOne(BoardNode, mediaElement.id);
+				const deletedElement = await em.findOne(BoardNodeEntity, mediaElement.id);
 				expect(deletedElement).toBeNull();
 
 				const deletedContextExternalTool = await em.findOne(
