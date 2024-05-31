@@ -49,7 +49,7 @@ describe(`content element create (api)`, () => {
 				const course = courseFactory.build({ teachers: [teacherUser] });
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -177,7 +177,7 @@ describe(`content element create (api)`, () => {
 					const course = courseFactory.build({});
 					await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-					const columnBoardNode = columnBoardEntityFactory.buildWithId({
+					const columnBoardNode = columnBoardEntityFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
 					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -209,7 +209,7 @@ describe(`content element create (api)`, () => {
 						const course = courseFactory.build({ students: [studentUser] });
 						await em.persistAndFlush([studentAccount, studentUser, course]);
 
-						const columnBoardNode = columnBoardEntityFactory.buildWithId({
+						const columnBoardNode = columnBoardEntityFactory.build({
 							context: { id: course.id, type: BoardExternalReferenceType.Course },
 						});
 						const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -260,7 +260,7 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -347,7 +347,7 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -390,7 +390,7 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -434,7 +434,7 @@ describe(`content element create (api)`, () => {
 
 				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();

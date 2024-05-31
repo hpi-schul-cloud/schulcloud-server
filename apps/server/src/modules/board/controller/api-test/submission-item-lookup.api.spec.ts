@@ -60,7 +60,7 @@ describe('submission item lookup (api)', () => {
 				course,
 			]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -70,19 +70,19 @@ describe('submission item lookup (api)', () => {
 
 			const submissionContainerNode1 = submissionContainerElementEntityFactory.withParent(cardNode).build();
 			const submissionContainerNode2 = submissionContainerElementEntityFactory.withParent(cardNode).build();
-			const item11 = submissionItemEntityFactory.buildWithId({
+			const item11 = submissionItemEntityFactory.build({
 				parent: submissionContainerNode1,
 				userId: studentUser1.id,
 			});
-			const item12 = submissionItemEntityFactory.buildWithId({
+			const item12 = submissionItemEntityFactory.build({
 				parent: submissionContainerNode1,
 				userId: studentUser2.id,
 			});
-			const item21 = submissionItemEntityFactory.buildWithId({
+			const item21 = submissionItemEntityFactory.build({
 				parent: submissionContainerNode2,
 				userId: studentUser1.id,
 			});
-			const item22 = submissionItemEntityFactory.buildWithId({
+			const item22 = submissionItemEntityFactory.build({
 				parent: submissionContainerNode2,
 				userId: studentUser2.id,
 			});
@@ -170,7 +170,7 @@ describe('submission item lookup (api)', () => {
 			const course = courseFactory.build({ teachers: [], students: [studentUser1, studentUser2] });
 			await em.persistAndFlush([studentAccount1, studentUser1, studentAccount2, studentUser2, course]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -179,11 +179,11 @@ describe('submission item lookup (api)', () => {
 			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
-			const item1 = submissionItemEntityFactory.buildWithId({
+			const item1 = submissionItemEntityFactory.build({
 				parent: submissionContainerNode,
 				userId: studentUser1.id,
 			});
-			const item2 = submissionItemEntityFactory.buildWithId({
+			const item2 = submissionItemEntityFactory.build({
 				parent: submissionContainerNode,
 				userId: studentUser2.id,
 			});
@@ -232,7 +232,7 @@ describe('submission item lookup (api)', () => {
 
 			await em.persistAndFlush([user, teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -272,7 +272,7 @@ describe('submission item lookup (api)', () => {
 				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
 				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 
@@ -281,7 +281,7 @@ describe('submission item lookup (api)', () => {
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 				const submissionContainer = submissionContainerElementEntityFactory.withParent(cardNode).build();
-				const submissionItem = submissionItemEntityFactory.buildWithId({
+				const submissionItem = submissionItemEntityFactory.build({
 					parent: submissionContainer,
 					userId: studentUser.id,
 				});
@@ -328,7 +328,7 @@ describe('submission item lookup (api)', () => {
 				const course = courseFactory.build({ teachers: [teacherUser], students: [studentUser] });
 				await em.persistAndFlush([studentAccount, studentUser, teacherAccount, teacherUser, course]);
 
-				const columnBoardNode = columnBoardEntityFactory.buildWithId({
+				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
 
@@ -337,7 +337,7 @@ describe('submission item lookup (api)', () => {
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 				const submissionContainer = submissionContainerElementEntityFactory.withParent(cardNode).build();
-				const submissionItem = submissionItemEntityFactory.buildWithId({
+				const submissionItem = submissionItemEntityFactory.build({
 					parent: submissionContainer,
 					userId: studentUser.id,
 				});

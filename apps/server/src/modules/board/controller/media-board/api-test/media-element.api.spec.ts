@@ -46,7 +46,7 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -92,7 +92,7 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -137,7 +137,7 @@ describe('Media Element (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -183,12 +183,12 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const externalTool = externalToolEntityFactory.buildWithId();
-				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId({
+				const externalTool = externalToolEntityFactory.build();
+				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					tool: externalTool,
 					school: studentUser.school,
 				});
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -306,19 +306,19 @@ describe('Media Element (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const externalTool = externalToolEntityFactory.buildWithId();
-				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId({
+				const externalTool = externalToolEntityFactory.build();
+				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					tool: externalTool,
 					school: studentUser.school,
 				});
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
-				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
+				const contextExternalTool = contextExternalToolEntityFactory.build({
 					schoolTool: schoolExternalTool,
 					contextType: ContextExternalToolType.MEDIA_BOARD,
 					contextId: mediaBoard.id,

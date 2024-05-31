@@ -39,7 +39,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -133,7 +133,7 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -179,7 +179,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -221,7 +221,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -348,7 +348,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -391,7 +391,7 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -435,7 +435,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -475,7 +475,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -516,7 +516,7 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
@@ -560,7 +560,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -598,7 +598,7 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
@@ -637,7 +637,7 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardEntityFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,

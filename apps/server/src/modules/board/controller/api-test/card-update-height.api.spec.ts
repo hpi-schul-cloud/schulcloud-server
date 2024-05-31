@@ -36,7 +36,7 @@ describe(`card update height (api)`, () => {
 		const course = courseFactory.build({ teachers: [teacherUser] });
 		await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-		const columnBoardNode = columnBoardEntityFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();

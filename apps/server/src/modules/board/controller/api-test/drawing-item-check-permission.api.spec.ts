@@ -40,7 +40,7 @@ describe('drawing permission check (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -77,7 +77,7 @@ describe('drawing permission check (api)', () => {
 			const course = courseFactory.build({ students: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, studentAccount, studentUser]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 

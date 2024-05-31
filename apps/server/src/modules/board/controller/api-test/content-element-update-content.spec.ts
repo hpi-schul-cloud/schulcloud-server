@@ -47,7 +47,7 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -239,7 +239,7 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [] });
 			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 

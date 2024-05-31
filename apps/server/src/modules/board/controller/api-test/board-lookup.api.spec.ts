@@ -41,14 +41,14 @@ describe(`board lookup (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course, teacherAccount]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 			const cardNode1 = cardEntityFactory.withParent(columnNode).build();
 			const cardNode2 = cardEntityFactory.withParent(columnNode).build();
 			const cardNode3 = cardEntityFactory.withParent(columnNode).build();
-			const notOfThisBoardCardNode = cardEntityFactory.buildWithId();
+			const notOfThisBoardCardNode = cardEntityFactory.build();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]);
 			em.clear();
@@ -110,7 +110,7 @@ describe(`board lookup (api)`, () => {
 			const course = courseFactory.build();
 			await em.persistAndFlush([teacherUser, course, teacherAccount]);
 
-			const columnBoardNode = columnBoardEntityFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			await em.persistAndFlush([columnBoardNode]);
