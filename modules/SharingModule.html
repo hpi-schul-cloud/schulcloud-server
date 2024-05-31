@@ -121,13 +121,13 @@
 <title>cluster_SharingModule_imports</title>
 <polygon fill="none" stroke="black" points="554,-78 554,-130 1511,-130 1511,-78 554,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_SharingModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 546,-130 546,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_SharingModule_exports</title>
 <polygon fill="none" stroke="black" points="702,-208 702,-260 848,-260 848,-208 702,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_SharingModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 546,-130 546,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
@@ -378,6 +378,7 @@ import { AuthorizationReferenceModule } from &#x27;@modules/authorization/author
 import { BoardModule } from &#x27;@modules/board&#x27;;
 import { LearnroomModule } from &#x27;@modules/learnroom&#x27;;
 import { LessonModule } from &#x27;@modules/lesson&#x27;;
+import { SchoolModule } from &#x27;@modules/school&#x27;;
 import { TaskModule } from &#x27;@modules/task&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
@@ -412,6 +413,7 @@ export class SharingModule {}
 		TaskModule,
 		LoggerModule,
 		BoardModule,
+		SchoolModule,
 	],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC],
