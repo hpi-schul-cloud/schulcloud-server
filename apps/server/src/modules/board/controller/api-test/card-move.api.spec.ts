@@ -10,7 +10,7 @@ import { Request } from 'express';
 import request from 'supertest';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
+import { BoardExternalReferenceType, pathOfChildren } from '../../domain';
 
 const baseRouteName = '/cards';
 
@@ -110,7 +110,7 @@ describe(`card move (api)`, () => {
 			await api.move(cardNode1.id, targetColumn.id, 3);
 			const result = await em.findOneOrFail(BoardNodeEntity, cardNode1.id);
 
-			expect(result.parentId).toEqual(targetColumn.id);
+			expect(result.path).toEqual(pathOfChildren(targetColumn));
 			expect(result.position).toEqual(3);
 		});
 
@@ -122,7 +122,7 @@ describe(`card move (api)`, () => {
 				await api.move(cardNode2.id, parentColumn.id, 0);
 
 				const result = await em.findOneOrFail(BoardNodeEntity, cardNode2.id);
-				expect(result.parentId).toEqual(parentColumn.id);
+				expect(result.path).toEqual(pathOfChildren(parentColumn));
 			});
 
 			it('should update the card positions', async () => {

@@ -70,22 +70,18 @@ describe('submission item lookup (api)', () => {
 
 			const submissionContainerNode1 = submissionContainerElementEntityFactory.withParent(cardNode).build();
 			const submissionContainerNode2 = submissionContainerElementEntityFactory.withParent(cardNode).build();
-			const item11 = submissionItemEntityFactory.build({
-				parent: submissionContainerNode1,
+			const item11 = submissionItemEntityFactory.withParent(submissionContainerNode1).build({
 				userId: studentUser1.id,
 			});
-			const item12 = submissionItemEntityFactory.build({
-				parent: submissionContainerNode1,
+			const item12 = submissionItemEntityFactory.withParent(submissionContainerNode1).build({
 				userId: studentUser2.id,
 			});
-			const item21 = submissionItemEntityFactory.build({
-				parent: submissionContainerNode2,
+			const item21 = submissionItemEntityFactory.withParent(submissionContainerNode2).build({
 				userId: studentUser1.id,
 			});
-			const item22 = submissionItemEntityFactory.build({
-				parent: submissionContainerNode2,
-				userId: studentUser2.id,
-			});
+			const item22 = submissionItemEntityFactory
+				.withParent(submissionContainerNode2)
+				.build({ userId: studentUser2.id });
 
 			await em.persistAndFlush([
 				columnBoardNode,
@@ -179,14 +175,8 @@ describe('submission item lookup (api)', () => {
 			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
-			const item1 = submissionItemEntityFactory.build({
-				parent: submissionContainerNode,
-				userId: studentUser1.id,
-			});
-			const item2 = submissionItemEntityFactory.build({
-				parent: submissionContainerNode,
-				userId: studentUser2.id,
-			});
+			const item1 = submissionItemEntityFactory.withParent(submissionContainerNode).build({ userId: studentUser1.id });
+			const item2 = submissionItemEntityFactory.withParent(submissionContainerNode).build({ userId: studentUser2.id });
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, item1, item2]);
 			em.clear();
@@ -281,10 +271,9 @@ describe('submission item lookup (api)', () => {
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 				const submissionContainer = submissionContainerElementEntityFactory.withParent(cardNode).build();
-				const submissionItem = submissionItemEntityFactory.build({
-					parent: submissionContainer,
-					userId: studentUser.id,
-				});
+				const submissionItem = submissionItemEntityFactory
+					.withParent(submissionContainer)
+					.build({ userId: studentUser.id });
 				const richTextElement = richTextElementEntityFactory.withParent(submissionItem).build();
 
 				await em.persistAndFlush([
@@ -337,10 +326,9 @@ describe('submission item lookup (api)', () => {
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 				const submissionContainer = submissionContainerElementEntityFactory.withParent(cardNode).build();
-				const submissionItem = submissionItemEntityFactory.build({
-					parent: submissionContainer,
-					userId: studentUser.id,
-				});
+				const submissionItem = submissionItemEntityFactory
+					.withParent(submissionContainer)
+					.build({ userId: studentUser.id });
 				const fileElement = fileElementEntityFactory.withParent(submissionItem).build();
 
 				await em.persistAndFlush([
