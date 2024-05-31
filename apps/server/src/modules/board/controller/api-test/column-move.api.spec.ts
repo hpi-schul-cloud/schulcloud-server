@@ -6,7 +6,7 @@ import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFac
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { MoveCardBodyParams, MoveColumnBodyParams } from '../dto';
+import { MoveColumnBodyParams } from '../dto';
 
 const baseRouteName = '/columns';
 
