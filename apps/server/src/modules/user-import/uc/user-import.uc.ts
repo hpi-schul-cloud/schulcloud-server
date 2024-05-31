@@ -6,12 +6,13 @@ import { UserLoginMigrationService, UserMigrationService } from '@modules/user-l
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { UserService } from '@modules/user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
@@ -20,7 +21,10 @@ import {
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
+	UserAlreadyMigratedLoggable,
+	UserMigrationCanceledLoggable,
 } from '../loggable';
+
 import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
@@ -42,6 +46,7 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
@@ -232,7 +237,7 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
+	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const { useWithUserLoginMigration } = this.userImportFeatures;
 
 		if (useWithUserLoginMigration) {
@@ -298,7 +303,7 @@ export class UserImportUc {
 		}
 	}
 
-	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
+	public async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
@@ -319,6 +324,22 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 
 		this.logger.notice(new SchoolInUserMigrationEndLoggable(school.name));
+	}
+
+	public async cancelMigration(currentUserId: EntityId): Promise<void> {
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+
+		this.userImportService.checkFeatureEnabled(school);
+
+		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
+
+		school.inUserMigration = undefined;
+		school.inMaintenanceSince = undefined;
+
+		await this.schoolService.save(school, true);
+
+		this.logger.notice(new UserMigrationCanceledLoggable(school));
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
@@ -363,7 +384,13 @@ export class UserImportUc {
 			return;
 		}
 
-		await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		const user: UserDO | null = await this.userService.findByExternalId(importUser.externalId, importUser.system.id);
+
+		if (!user) {
+			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);
+		} else {
+			this.logger.notice(new UserAlreadyMigratedLoggable(importUser.user.id));
+		}
 	}
 
 	private async getAccount(user: User): Promise<Account> {

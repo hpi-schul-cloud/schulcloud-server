@@ -78,6 +78,17 @@ export class ExternalToolRepo {
 		return null;
 	}
 
+	public async findByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
+			medium: { mediumId, mediaSourceId },
+		});
+		if (entity !== null) {
+			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+			return domainObject;
+		}
+		return null;
+	}
+
 	public async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
