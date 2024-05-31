@@ -61,8 +61,6 @@ describe(`content element move (api)`, () => {
 
 		return {
 			loggedInClient,
-			teacherAccount,
-			teacherUser,
 			parentCard,
 			column,
 			targetCard,
@@ -113,8 +111,6 @@ describe(`content element move (api)`, () => {
 
 			return {
 				...vars,
-				noAccessAccount,
-				noAccessUser,
 				loggedInClient,
 			};
 		};

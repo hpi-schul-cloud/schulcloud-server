@@ -5,12 +5,19 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	courseFactory,
+	mapUserToCurrentUser,
+	TestApiClient,
+	UserAndAccountTestFactory,
+	userFactory,
+} from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
+import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
 
@@ -36,27 +43,21 @@ class API {
 describe(`column delete (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		testApiClient = new TestApiClient(app, baseRouteName);
+	});
+
+	beforeEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
@@ -64,10 +65,10 @@ describe(`column delete (api)`, () => {
 	});
 
 	const setup = async () => {
-		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+		const course = courseFactory.build({ teachers: [teacherUser] });
+		await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -76,45 +77,43 @@ describe(`column delete (api)`, () => {
 		const siblingColumnNode = columnEntityFactory.withParent(columnBoardNode).build();
 		const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-		await em.persistAndFlush([user, cardNode, columnNode, columnBoardNode, siblingColumnNode]);
+		await em.persistAndFlush([cardNode, columnNode, columnBoardNode, siblingColumnNode]);
 		em.clear();
 
-		return { user, cardNode, columnNode, columnBoardNode, siblingColumnNode };
+		const loggedInClient = await testApiClient.login(teacherAccount);
+
+		return { loggedInClient, cardNode, columnNode, columnBoardNode, siblingColumnNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 204', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnNode } = await setup();
 
-			const response = await api.delete(columnNode.id);
+			const response = await loggedInClient.delete(columnNode.id);
 
 			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete the column', async () => {
-			const { user, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnNode } = await setup();
 
-			await api.delete(columnNode.id);
+			await loggedInClient.delete(columnNode.id);
 
 			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
 		});
 
 		it('should actually delete cards of the column', async () => {
-			const { user, cardNode, columnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, cardNode, columnNode } = await setup();
 
-			await api.delete(columnNode.id);
+			await loggedInClient.delete(columnNode.id);
 
 			await expect(em.findOneOrFail(BoardNodeEntity, cardNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
-			const { user, columnNode, siblingColumnNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnNode, siblingColumnNode } = await setup();
 
-			await api.delete(columnNode.id);
+			await loggedInClient.delete(columnNode.id);
 
 			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
 
@@ -124,14 +123,23 @@ describe(`column delete (api)`, () => {
 	});
 
 	describe('with invalid user', () => {
+		const setupNoAccess = async () => {
+			const vars = await setup();
+
+			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
+			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			const loggedInClient = await testApiClient.login(noAccessAccount);
+
+			return {
+				...vars,
+				loggedInClient,
+			};
+		};
+
 		it('should return status 403', async () => {
-			const { columnNode } = await setup();
+			const { loggedInClient, columnNode } = await setupNoAccess();
 
-			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
-			currentUser = mapUserToCurrentUser(invalidUser);
-
-			const response = await api.delete(columnNode.id);
+			const response = await loggedInClient.delete(columnNode.id);
 
 			expect(response.status).toEqual(403);
 		});
