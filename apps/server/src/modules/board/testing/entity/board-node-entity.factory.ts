@@ -41,7 +41,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T>
 	}
 
 	withParent(parent: BoardNodeEntity) {
-		return this.params({ path: pathOfChildren(parent) } as DeepPartial<T>);
+		return this.params({ path: pathOfChildren(parent), level: parent.level + 1 } as DeepPartial<T>);
 	}
 
 	/**
