@@ -46,7 +46,12 @@ export class UserDeletedEventHandlerService implements DeletionService, IEventHa
 			id: userId,
 		});
 
-		await this.boardNodeService.delete(mediaBoards);
+		await Promise.all(
+			mediaBoards.map(async (mb) => {
+				await this.boardNodeService.delete(mb);
+			})
+		);
+
 		const numberOfDeletedBoards = mediaBoards.length;
 		const boardIds = mediaBoards.map((mb) => mb.id);
 

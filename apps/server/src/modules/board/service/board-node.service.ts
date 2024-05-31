@@ -97,9 +97,9 @@ export class BoardNodeService {
 		const boardNodes = await this.boardNodeRepo.findByIds(ids, depth);
 		const filteredNodes = boardNodes.filter((node) => node instanceof Constructor);
 
-		if (filteredNodes.length !== ids.length) {
-			throw new NotFoundException(`There is no '${Constructor.name}' with these ids`);
-		}
+		// if (filteredNodes.length !== ids.length) {
+		// 	throw new NotFoundException(`There is no '${Constructor.name}' with these ids`);
+		// }
 
 		return filteredNodes as T[];
 	}
@@ -126,7 +126,11 @@ export class BoardNodeService {
 		return rootNode;
 	}
 
-	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	async delete(boardNode: AnyBoardNode): Promise<void> {
+		const parent = await this.findParent(boardNode);
+		if (parent) {
+			parent.removeChild(boardNode);
+		}
 		await this.boardNodeRepo.delete(boardNode);
 		await this.boardNodeDeleteHooksService.afterDelete(boardNode);
 	}
