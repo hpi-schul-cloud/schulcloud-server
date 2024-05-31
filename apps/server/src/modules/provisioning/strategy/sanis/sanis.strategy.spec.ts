@@ -33,6 +33,7 @@ import {
 	SchulconnexGroupProvisioningService,
 	SchulconnexLicenseProvisioningService,
 	SchulconnexSchoolProvisioningService,
+	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from '../oidc/service';
 import { SanisProvisioningStrategy } from './sanis.strategy';
@@ -86,6 +87,10 @@ describe(SanisProvisioningStrategy.name, () => {
 				{
 					provide: SchulconnexLicenseProvisioningService,
 					useValue: createMock<SchulconnexLicenseProvisioningService>(),
+				},
+				{
+					provide: SchulconnexToolProvisioningService,
+					useValue: createMock<SchulconnexToolProvisioningService>(),
 				},
 				{
 					provide: ProvisioningFeatures,

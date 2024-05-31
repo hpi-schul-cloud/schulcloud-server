@@ -134,6 +134,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningOtherEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					}),
 				});
 
@@ -222,12 +223,14 @@ describe(SchoolSystemOptionsUc.name, () => {
 						groupProvisioningClassesEnabled: false,
 						groupProvisioningCoursesEnabled: false,
 						groupProvisioningOtherEnabled: false,
+						schoolExternalToolProvisioningEnabled: false,
 					}),
 				});
 				const newOptions: AnyProvisioningOptions = new SchulConneXProvisioningOptions().set({
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningCoursesEnabled: true,
 					groupProvisioningOtherEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 
 				systemService.findById.mockResolvedValueOnce(system);
