@@ -3,6 +3,7 @@ import { AuthorizationReferenceModule } from '@modules/authorization/authorizati
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
 import { LessonModule } from '@modules/lesson';
+import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
@@ -37,6 +38,7 @@ export class SharingModule {}
 		TaskModule,
 		LoggerModule,
 		BoardModule,
+		SchoolModule,
 	],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC],
