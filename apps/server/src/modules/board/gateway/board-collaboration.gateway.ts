@@ -43,25 +43,23 @@ export class BoardCollaborationGateway {
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
-	private getCurrentUser(client: Socket) {
-		const { user } = client.handshake;
+	private getCurrentUser(socket: Socket) {
+		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
 	}
 
 	@SubscribeMessage('delete-board-request')
 	@UseRequestContext()
-	async deleteBoard(client: Socket, data: DeleteBoardMessageParams) {
+	async deleteBoard(socket: Socket, data: DeleteBoardMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const rootId = await this.getRootIdForId(data.boardId);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } = this.getCurrentUser(socket);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			const room = await this.joinBoardRoom(client, rootId);
-			client.to(room).emit('delete-board-success', { ...data, isOwnAction: false });
-			client.emit('delete-board-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('delete-board-success', data);
 		} catch (err) {
-			client.emit('delete-board-failure', {
+			socket.emit('delete-board-failure', {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -71,16 +69,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-board-title-request')
 	@UseRequestContext()
-	async updateBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
+	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } = this.getCurrentUser(socket);
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
-			const room = await this.ensureUserInRootRoom(client, data.boardId);
-			client.to(room).emit('update-board-title-success', { ...data, isOwnAction: false });
-			client.emit('update-board-title-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('update-board-title-success', data);
 		} catch (err) {
-			client.emit('update-board-title-failure', {
+			socket.emit('update-board-title-failure', {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -90,16 +87,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-card-title-request')
 	@UseRequestContext()
-	async updateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
+	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } = this.getCurrentUser(socket);
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-			const room = await this.ensureUserInRootRoom(client, data.cardId);
-			client.to(room).emit('update-card-title-success', { ...data, isOwnAction: false });
-			client.emit('update-card-title-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('update-card-title-success', data);
 		} catch (err) {
-			client.emit('update-card-title-failure', {
+			socket.emit('update-card-title-failure', {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -109,16 +105,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-card-height-request')
 	@UseRequestContext()
-	async updateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
+	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } = this.getCurrentUser(socket);
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
-			const room = await this.ensureUserInRootRoom(client, data.cardId);
-			client.to(room).emit('update-card-height-success', { ...data, isOwnAction: false });
-			client.emit('update-card-height-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('update-card-height-success', data);
 		} catch (err) {
-			client.emit('update-card-height-failure', {
+			socket.emit('update-card-height-failure', {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -128,17 +123,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('delete-card-request')
 	@UseRequestContext()
-	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
+	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const rootId = await this.getRootIdForId(data.cardId);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } = this.getCurrentUser(socket);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			const room = await this.joinBoardRoom(client, rootId);
-			client.to(room).emit('delete-card-success', { ...data, isOwnAction: false });
-			client.emit('delete-card-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('delete-card-success', data);
 		} catch (err) {
-			client.emit('delete-card-failure', {
+			socket.emit('delete-card-failure', {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -148,20 +141,19 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
-	async createCard(client: Socket, data: CreateCardMessageParams) {
+	async createCard(socket: Socket, data: CreateCardMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.columnId);
+			const { userId } = this.getCurrentUser(socket);
 			const card = await this.columnUc.createCard(userId, data.columnId);
 			const responsePayload = {
 				...data,
 				newCard: card.getProps(),
 			};
 
-			const room = await this.ensureUserInRootRoom(client, data.columnId);
-			client.to(room).emit('create-card-success', { ...responsePayload, isOwnAction: false });
-			client.emit('create-card-success', { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom('create-card-success', responsePayload);
 		} catch (err) {
-			client.emit('create-card-failure', {
+			socket.emit('create-card-failure', {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
@@ -171,9 +163,10 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
-	async createColumn(client: Socket, data: CreateColumnMessageParams) {
+	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } = this.getCurrentUser(socket);
 			const column = await this.boardUc.createColumn(userId, data.boardId);
 			const newColumn = ColumnResponseMapper.mapToResponse(column);
 			const responsePayload = {
@@ -181,15 +174,13 @@ export class BoardCollaborationGateway {
 				newColumn,
 			};
 
-			const room = await this.ensureUserInRootRoom(client, data.boardId);
-			client.to(room).emit('create-column-success', { ...responsePayload, isOwnAction: false });
-			client.emit('create-column-success', { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom('create-column-success', responsePayload);
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
 			return responsePayload;
 		} catch (err) {
-			client.emit('create-column-failure', {
+			socket.emit('create-column-failure', {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
@@ -200,17 +191,17 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('fetch-board-request')
 	@UseRequestContext()
-	async fetchBoard(client: Socket, data: FetchBoardMessageParams) {
+	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } = this.getCurrentUser(socket);
+
 			const board = await this.boardUc.findBoard(userId, data.boardId);
 
-			await this.ensureUserInRootRoom(client, data.boardId);
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
-
-			client.emit('fetch-board-success', responsePayload);
+			await emitter.emitToClient('fetch-board-success', responsePayload);
 		} catch (err) {
-			client.emit('fetch-board-failure', {
+			socket.emit('fetch-board-failure', {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_LOADED,
 				requestPayload: data,
@@ -220,16 +211,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('move-card-request')
 	@UseRequestContext()
-	async moveCard(client: Socket, data: MoveCardMessageParams) {
+	async moveCard(socket: Socket, data: MoveCardMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
-			const room = await this.ensureUserInRootRoom(client, data.cardId);
-			client.to(room).emit('move-card-success', { ...data, isOwnAction: false });
-			client.emit('move-card-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('move-card-success', data);
 		} catch (err) {
-			client.emit('move-card-failure', {
+			socket.emit('move-card-failure', {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -239,16 +230,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('move-column-request')
 	@UseRequestContext()
-	async moveColumn(client: Socket, data: MoveColumnMessageParams) {
+	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.targetBoardId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
-			const room = await this.ensureUserInRootRoom(client, data.targetBoardId);
-			client.to(room).emit('move-column-success', { ...data, isOwnAction: false });
-			client.emit('move-column-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('move-column-success', data);
 		} catch (err) {
-			client.emit('move-column-failure', {
+			socket.emit('move-column-failure', {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -258,16 +249,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-column-title-request')
 	@UseRequestContext()
-	async updateColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
+	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.columnId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
-			const room = await this.ensureUserInRootRoom(client, data.columnId);
-			client.to(room).emit('update-column-title-success', { ...data, isOwnAction: false });
-			client.emit('update-column-title-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('update-column-title-success', data);
 		} catch (err) {
-			client.emit('update-column-title-failure', {
+			socket.emit('update-column-title-failure', {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -277,16 +268,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-board-visibility-request')
 	@UseRequestContext()
-	async updateBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
+	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
-			const room = await this.ensureUserInRootRoom(client, data.boardId);
-			client.to(room).emit('update-board-visibility-success', { ...data, isOwnAction: false });
-			client.emit('update-board-visibility-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('update-board-visibility-success', data);
 		} catch (err) {
-			client.emit('update-board-visibility-failure', {
+			socket.emit('update-board-visibility-failure', {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -296,17 +287,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('delete-column-request')
 	@UseRequestContext()
-	async deleteColumn(client: Socket, data: DeleteColumnMessageParams) {
+	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
-			const rootId = await this.getRootIdForId(data.columnId);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.columnId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
-			const room = await this.joinBoardRoom(client, rootId);
-			client.to(room).emit('delete-column-success', { ...data, isOwnAction: false });
-			client.emit('delete-column-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('delete-column-success', data);
 		} catch (err) {
-			client.emit('delete-column-failure', {
+			socket.emit('delete-column-failure', {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -316,16 +306,17 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('fetch-card-request')
 	@UseRequestContext()
-	async fetchCards(client: Socket, data: FetchCardsMessageParams) {
+	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.cardIds[0]);
+			const { userId } = this.getCurrentUser(socket);
+
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			await this.ensureUserInRootRoom(client, data.cardIds[0]);
-			client.emit('fetch-card-success', { cards: cardResponses, isOwnAction: true });
+			await emitter.emitToClient('fetch-card-success', { cards: cardResponses, isOwnAction: false });
 		} catch (err) {
-			client.emit('fetch-card-failure', {
+			socket.emit('fetch-card-failure', {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_LOADED,
 				requestPayload: data,
@@ -335,20 +326,20 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('create-element-request')
 	@UseRequestContext()
-	async createElement(client: Socket, data: CreateContentElementMessageParams) {
+	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } = this.getCurrentUser(socket);
+
 			const element = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
+
 			const responsePayload = {
 				...data,
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
-
-			const room = await this.ensureUserInRootRoom(client, data.cardId);
-			client.to(room).emit('create-element-success', { ...responsePayload, isOwnAction: false });
-			client.emit('create-element-success', { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom('create-element-success', responsePayload);
 		} catch (err) {
-			client.emit('create-element-failure', {
+			socket.emit('create-element-failure', {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
@@ -358,16 +349,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('update-element-request')
 	@UseRequestContext()
-	async updateElement(client: Socket, data: UpdateContentElementMessageParams) {
+	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.elementId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 
-			const room = await this.ensureUserInRootRoom(client, data.elementId);
-			client.to(room).emit('update-element-success', { ...data, isOwnAction: false });
-			client.emit('update-element-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('update-element-success', data);
 		} catch (err) {
-			client.emit('update-element-failure', {
+			socket.emit('update-element-failure', {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -377,18 +368,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('delete-element-request')
 	@UseRequestContext()
-	async deleteElement(client: Socket, data: DeleteContentElementMessageParams) {
+	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.elementId);
+			const { userId } = this.getCurrentUser(socket);
 
-			const rootId = await this.getRootIdForId(data.elementId);
 			await this.elementUc.deleteElement(userId, data.elementId);
 
-			const room = await this.joinBoardRoom(client, rootId);
-			client.to(room).emit('delete-element-success', { ...data, isOwnAction: false });
-			client.emit('delete-element-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('delete-element-success', data);
 		} catch (err) {
-			client.emit('delete-element-failure', {
+			socket.emit('delete-element-failure', {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -398,16 +387,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage('move-element-request')
 	@UseRequestContext()
-	async moveElement(client: Socket, data: MoveContentElementMessageParams) {
+	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
 		try {
-			const { userId } = this.getCurrentUser(client);
+			const emitter = await this.buildBoardSocketEmitter(socket, data.elementId);
+			const { userId } = this.getCurrentUser(socket);
+
 			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
 
-			const room = await this.ensureUserInRootRoom(client, data.elementId);
-			client.to(room).emit('move-element-success', { ...data, isOwnAction: false });
-			client.emit('move-element-success', { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom('move-element-success', data);
 		} catch (err) {
-			client.emit('move-element-failure', {
+			socket.emit('move-element-failure', {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -415,21 +404,21 @@ export class BoardCollaborationGateway {
 		}
 	}
 
-	private async ensureUserInRootRoom(client: Socket, id: string) {
-		const boardId = await this.getRootIdForId(id);
-		const room = await this.joinBoardRoom(client, boardId);
-		return room;
+	private async buildBoardSocketEmitter(client: Socket, id: string) {
+		const rootId = await this.getRootIdForId(id);
+		const room = `board_${rootId}`;
+		return {
+			async emitToClient(event: string, data: object) {
+				await client.join(room);
+				client.emit(event, { ...data, isOwnAction: true });
+			},
+			async emitToClientAndRoom(event: string, data: object) {
+				await client.join(room);
+				client.to(room).emit(event, { ...data, isOwnAction: false });
+				client.emit(event, { ...data, isOwnAction: true });
+			},
+		};
 	}
-
-	private async joinBoardRoom(client: Socket, boardId: string) {
-		const room = `board_${boardId}`;
-		await client.join(room);
-		return room;
-	}
-
-	// private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
-	// 	return anyDo.ancestorIds[0];
-	// }
 
 	private async getRootIdForId(id: string) {
 		const authorizable = await this.authorizableService.findById(id);
