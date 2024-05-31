@@ -2,7 +2,6 @@ import { WsValidationPipe, Socket } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import { LegacyLogger } from '@src/core/logger';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
@@ -35,9 +34,7 @@ import { BoardObjectType, ErrorType } from './types';
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway {
-	// TODO: use loggables instead of legacy logger
 	constructor(
-		private readonly logger: LegacyLogger,
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
@@ -52,18 +49,15 @@ export class BoardCollaborationGateway {
 		return user;
 	}
 
-	public afterInit(): void {
-		this.logger.log('Socket gateway initialized');
-	}
-
 	@SubscribeMessage('delete-board-request')
 	@UseRequestContext()
 	async deleteBoard(client: Socket, data: DeleteBoardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.boardId);
+			const rootId = await this.getRootIdForId(data.boardId);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
+			const room = await this.joinBoardRoom(client, rootId);
 			client.to(room).emit('delete-board-success', { ...data, isOwnAction: false });
 			client.emit('delete-board-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -82,7 +76,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
+			const room = await this.ensureUserInRootRoom(client, data.boardId);
 			client.to(room).emit('update-board-title-success', { ...data, isOwnAction: false });
 			client.emit('update-board-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -101,7 +95,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
+			const room = await this.ensureUserInRootRoom(client, data.cardId);
 			client.to(room).emit('update-card-title-success', { ...data, isOwnAction: false });
 			client.emit('update-card-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -120,7 +114,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
+			const room = await this.ensureUserInRootRoom(client, data.cardId);
 			client.to(room).emit('update-card-height-success', { ...data, isOwnAction: false });
 			client.emit('update-card-height-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -137,9 +131,10 @@ export class BoardCollaborationGateway {
 	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.cardId);
+			const rootId = await this.getRootIdForId(data.cardId);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
+			const room = await this.joinBoardRoom(client, rootId);
 			client.to(room).emit('delete-card-success', { ...data, isOwnAction: false });
 			client.emit('delete-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -162,7 +157,7 @@ export class BoardCollaborationGateway {
 				newCard: card.getProps(),
 			};
 
-			const room = await this.ensureUserInRoom(client, data.columnId);
+			const room = await this.ensureUserInRootRoom(client, data.columnId);
 			client.to(room).emit('create-card-success', { ...responsePayload, isOwnAction: false });
 			client.emit('create-card-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
@@ -186,7 +181,7 @@ export class BoardCollaborationGateway {
 				newColumn,
 			};
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
+			const room = await this.ensureUserInRootRoom(client, data.boardId);
 			client.to(room).emit('create-column-success', { ...responsePayload, isOwnAction: false });
 			client.emit('create-column-success', { ...responsePayload, isOwnAction: true });
 
@@ -229,7 +224,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
+			const room = await this.ensureUserInRootRoom(client, data.cardId);
 			client.to(room).emit('move-card-success', { ...data, isOwnAction: false });
 			client.emit('move-card-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -248,7 +243,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
-			const room = await this.ensureUserInRoom(client, data.targetBoardId);
+			const room = await this.ensureUserInRootRoom(client, data.targetBoardId);
 			client.to(room).emit('move-column-success', { ...data, isOwnAction: false });
 			client.emit('move-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -267,7 +262,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
-			const room = await this.ensureUserInRoom(client, data.columnId);
+			const room = await this.ensureUserInRootRoom(client, data.columnId);
 			client.to(room).emit('update-column-title-success', { ...data, isOwnAction: false });
 			client.emit('update-column-title-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -286,7 +281,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
-			const room = await this.ensureUserInRoom(client, data.boardId);
+			const room = await this.ensureUserInRootRoom(client, data.boardId);
 			client.to(room).emit('update-board-visibility-success', { ...data, isOwnAction: false });
 			client.emit('update-board-visibility-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -303,9 +298,10 @@ export class BoardCollaborationGateway {
 	async deleteColumn(client: Socket, data: DeleteColumnMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.columnId);
+			const rootId = await this.getRootIdForId(data.columnId);
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
+			const room = await this.joinBoardRoom(client, rootId);
 			client.to(room).emit('delete-column-success', { ...data, isOwnAction: false });
 			client.emit('delete-column-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -325,7 +321,7 @@ export class BoardCollaborationGateway {
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			await this.ensureUserInRoom(client, data.cardIds[0]);
+			await this.ensureUserInRootRoom(client, data.cardIds[0]);
 			client.emit('fetch-card-success', { cards: cardResponses, isOwnAction: true });
 		} catch (err) {
 			client.emit('fetch-card-failure', {
@@ -347,7 +343,7 @@ export class BoardCollaborationGateway {
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
 
-			const room = await this.ensureUserInRoom(client, data.cardId);
+			const room = await this.ensureUserInRootRoom(client, data.cardId);
 			client.to(room).emit('create-element-success', { ...responsePayload, isOwnAction: false });
 			client.emit('create-element-success', { ...responsePayload, isOwnAction: true });
 		} catch (err) {
@@ -366,7 +362,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 
-			const room = await this.ensureUserInRoom(client, data.elementId);
+			const room = await this.ensureUserInRootRoom(client, data.elementId);
 			client.to(room).emit('update-element-success', { ...data, isOwnAction: false });
 			client.emit('update-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -383,9 +379,11 @@ export class BoardCollaborationGateway {
 	async deleteElement(client: Socket, data: DeleteContentElementMessageParams) {
 		try {
 			const { userId } = this.getCurrentUser(client);
-			const room = await this.ensureUserInRoom(client, data.elementId);
+
+			const rootId = await this.getRootIdForId(data.elementId);
 			await this.elementUc.deleteElement(userId, data.elementId);
 
+			const room = await this.joinBoardRoom(client, rootId);
 			client.to(room).emit('delete-element-success', { ...data, isOwnAction: false });
 			client.emit('delete-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -404,7 +402,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
 
-			const room = await this.ensureUserInRoom(client, data.elementId);
+			const room = await this.ensureUserInRootRoom(client, data.elementId);
 			client.to(room).emit('move-element-success', { ...data, isOwnAction: false });
 			client.emit('move-element-success', { ...data, isOwnAction: true });
 		} catch (err) {
@@ -416,9 +414,14 @@ export class BoardCollaborationGateway {
 		}
 	}
 
-	private async ensureUserInRoom(client: Socket, id: string) {
-		const rootId = await this.getRootIdForId(id);
-		const room = `board_${rootId}`;
+	private async ensureUserInRootRoom(client: Socket, id: string) {
+		const boardId = await this.getRootIdForId(id);
+		const room = await this.joinBoardRoom(client, boardId);
+		return room;
+	}
+
+	private async joinBoardRoom(client: Socket, boardId: string) {
+		const room = `board_${boardId}`;
 		await client.join(room);
 		return room;
 	}
