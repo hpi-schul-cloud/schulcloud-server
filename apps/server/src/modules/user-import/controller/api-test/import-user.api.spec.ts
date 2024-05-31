@@ -23,13 +23,13 @@ import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@sha
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
@@ -46,11 +46,12 @@ describe('ImportUser Controller (API)', () => {
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
 		features: SchoolFeature[] = [],
-		schoolHasExternalId = true
+		schoolHasExternalId = true,
+		officialSchoolNumber = 'foo'
 	) => {
 		const system = systemEntityFactory.buildWithId();
 		const school = schoolEntityFactory.build({
-			officialSchoolNumber: 'foo',
+			officialSchoolNumber,
 			features,
 			systems: [system],
 			externalId: schoolHasExternalId ? system.id : undefined,
@@ -1115,6 +1116,67 @@ describe('ImportUser Controller (API)', () => {
 						await testApiClient.post('startSync').expect(HttpStatus.CREATED);
 					});
 				});
+			});
+		});
+	});
+
+	describe('[POST] /user/import/cancel', () => {
+		describe('when user is unauthorized', () => {
+			const setup = () => {
+				return {
+					notLoggedInClient: new TestApiClient(app, 'user/import'),
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { notLoggedInClient } = setup();
+
+				await notLoggedInClient.post('cancel').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has no permission', () => {
+			const setup = async () => {
+				const { account, system } = await authenticatedUser([]);
+				setConfig(system._id.toString());
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return unauthorized', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.post('cancel').expect(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when import was successfully canceled', () => {
+			const setup = async () => {
+				const { school, system, account } = await authenticatedUser(
+					[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
+					[],
+					true,
+					'00100'
+				);
+				setConfig(system._id.toString());
+
+				const importusers = importUserFactory.buildList(10, { school });
+				await em.persistAndFlush(importusers);
+
+				const loggedInClient = await testApiClient.login(account);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return no content', async () => {
+				const { loggedInClient } = await setup();
+
+				await loggedInClient.post('cancel').expect(HttpStatus.NO_CONTENT);
 			});
 		});
 	});

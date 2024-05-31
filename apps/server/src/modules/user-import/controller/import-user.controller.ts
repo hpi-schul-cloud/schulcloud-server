@@ -1,9 +1,10 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNoContentResponse,
 	ApiOperation,
 	ApiServiceUnavailableResponse,
 	ApiTags,
@@ -103,6 +104,7 @@ export class ImportUserController {
 		return response as unknown as UserMatchListResponse;
 	}
 
+	@RequestTimeout('IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS')
 	@Post('migrate')
 	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
@@ -134,5 +136,18 @@ export class ImportUserController {
 	@ApiForbiddenResponse()
 	async populateImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportFetchUc.populateImportUsers(currentUser.userId);
+	}
+
+	@Post('cancel')
+	@ApiOperation({
+		summary: 'Cancel migration wizard',
+		description: 'Cancel current migration process',
+	})
+	@ApiNoContentResponse()
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async cancelMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.cancelMigration(currentUser.userId);
 	}
 }

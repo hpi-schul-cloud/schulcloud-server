@@ -98,6 +98,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_MEDIA_SHELF_ENABLED',
 				'FEATURE_NEW_LAYOUT_ENABLED',
 				'BOARD_COLLABORATION_URI',
+				'FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

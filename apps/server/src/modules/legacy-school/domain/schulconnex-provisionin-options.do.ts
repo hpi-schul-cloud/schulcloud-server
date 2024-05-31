@@ -12,6 +12,8 @@ export class SchulConneXProvisioningOptions
 
 	groupProvisioningOtherEnabled = false;
 
+	schoolExternalToolProvisioningEnabled = false;
+
 	get getType(): ProvisioningOptionsType {
 		return ProvisioningOptionsType.SCHULCONNEX;
 	}
@@ -20,6 +22,7 @@ export class SchulConneXProvisioningOptions
 		this.groupProvisioningClassesEnabled = props.groupProvisioningClassesEnabled;
 		this.groupProvisioningCoursesEnabled = props.groupProvisioningCoursesEnabled;
 		this.groupProvisioningOtherEnabled = props.groupProvisioningOtherEnabled;
+		this.schoolExternalToolProvisioningEnabled = props.schoolExternalToolProvisioningEnabled;
 
 		return this;
 	}
