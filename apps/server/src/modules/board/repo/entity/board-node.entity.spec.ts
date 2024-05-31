@@ -1,6 +1,7 @@
 import { MikroORM, ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { BoardExternalReferenceType, BoardNodeType } from '../../domain';
+import { columnBoardEntityFactory } from '../../testing';
 import { BoardNodeEntity } from './board-node.entity';
 import { Context } from './embeddables';
 
@@ -34,6 +35,16 @@ describe('entity', () => {
 				type: BoardExternalReferenceType.Course,
 				id: new ObjectId().toHexString(),
 			});
+
+			await orm.em.persistAndFlush(entity);
+			orm.em.clear();
+
+			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			expect(result.context).toEqual(entity.context);
+		});
+
+		it('should persist factory generated object', async () => {
+			const entity = columnBoardEntityFactory.build();
 
 			await orm.em.persistAndFlush(entity);
 			orm.em.clear();

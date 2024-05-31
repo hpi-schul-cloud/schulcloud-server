@@ -2,10 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 
 const baseRouteName = '/cards';
 
@@ -35,20 +35,18 @@ describe(`card update title (api)`, () => {
 
 	describe('with valid user', () => {
 		const setup = async () => {
-			await cleanupCollections(em);
-
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, course]);
+			await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			await em.persistAndFlush([teacherAccount, teacherUser, cardNode, columnNode, columnBoardNode]);
+			await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -72,7 +70,7 @@ describe(`card update title (api)`, () => {
 
 			await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
 
-			const result = await em.findOneOrFail(CardNode, cardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, cardNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
@@ -84,7 +82,7 @@ describe(`card update title (api)`, () => {
 			const sanitizedTitle = 'foo bar';
 
 			await loggedInClient.patch(`${cardNode.id}/title`, { title: unsanitizedTitle });
-			const result = await em.findOneOrFail(CardNode, cardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, cardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
 		});
@@ -92,22 +90,20 @@ describe(`card update title (api)`, () => {
 
 	describe('with non authorised user', () => {
 		const setup = async () => {
-			await cleanupCollections(em);
-
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 			const course = courseFactory.build({ students: [studentUser] });
-			await em.persistAndFlush([studentUser, course]);
+			await em.persistAndFlush([studentUser, studentAccount, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
 			const title = 'old title';
-			const cardNode = cardFactory.buildWithId({ parent: columnNode, title });
+			const cardNode = cardEntityFactory.withParent(columnNode).build({ title });
 
-			await em.persistAndFlush([studentAccount, studentUser, cardNode, columnNode, columnBoardNode]);
+			await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
@@ -123,7 +119,7 @@ describe(`card update title (api)`, () => {
 			const response = await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
 			expect(response.statusCode).toEqual(403);
 
-			const result = await em.findOneOrFail(CardNode, cardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, cardNode.id);
 			expect(result.title).toEqual(title);
 		});
 	});
