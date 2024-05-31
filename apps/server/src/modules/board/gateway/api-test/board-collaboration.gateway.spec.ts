@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
+import { MongoIoAdapter } from '@infra/socketio';
 import { BoardExternalReferenceType, CardProps, ContentElementType } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
@@ -20,7 +21,6 @@ import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 import { BoardObjectType, ErrorType } from '../types';
 
 describe(BoardCollaborationGateway.name, () => {
-	let ws: BoardCollaborationGateway;
 	let app: INestApplication;
 	let ioClient: Socket;
 	let em: EntityManager;
@@ -30,10 +30,14 @@ describe(BoardCollaborationGateway.name, () => {
 			imports: [BoardCollaborationTestingModule],
 		}).compile();
 		app = testingModule.createNestApplication();
-		await app.init();
 
 		em = app.get(EntityManager);
-		ws = app.get(BoardCollaborationGateway);
+		const mongoUrl = em.config.getClientUrl();
+
+		const mongoIoAdapter = new MongoIoAdapter(app);
+		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		app.useWebSocketAdapter(mongoIoAdapter);
+		await app.init();
 
 		await app.listen(0);
 	});
@@ -68,11 +72,6 @@ describe(BoardCollaborationGateway.name, () => {
 
 		return { user, columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
 	};
-
-	it('should be defined', async () => {
-		await setup();
-		expect(ws).toBeDefined();
-	});
 
 	describe('validation errors', () => {
 		it('should answer with failure', async () => {
