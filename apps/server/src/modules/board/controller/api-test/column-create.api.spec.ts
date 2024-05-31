@@ -8,7 +8,7 @@ import { ApiValidationError } from '@shared/common';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { columnBoardFactory } from '../../testing';
+import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 import { ColumnResponse } from '../dto';
 
@@ -70,7 +70,7 @@ describe(`board create (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 

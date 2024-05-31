@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { columnBoardFactory } from '../../testing';
+import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardContextResponse } from '../dto/board/board-context.reponse';
 
@@ -40,7 +40,7 @@ describe('board get context (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 

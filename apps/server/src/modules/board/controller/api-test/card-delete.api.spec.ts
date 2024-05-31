@@ -5,11 +5,16 @@ import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode, RichTextElementNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { cardFactory, columnBoardFactory, columnFactory, richTextElementFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	richTextElementEntityFactory,
+} from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/cards';
@@ -69,13 +74,13 @@ describe(`card delete (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardFactory.buildWithId({ parent: columnNode });
-		const richTextElementNode = richTextElementFactory.buildWithId({ parent: cardNode });
-		const siblingCardNode = cardFactory.buildWithId({ parent: columnNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode = cardEntityFactory.withParent(columnNode).build();
+		const richTextElementNode = richTextElementEntityFactory.withParent(cardNode).build();
+		const siblingCardNode = cardEntityFactory.withParent(columnNode).build();
 
 		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, siblingCardNode, richTextElementNode]);
 		em.clear();
@@ -99,7 +104,7 @@ describe(`card delete (api)`, () => {
 
 			await api.delete(cardNode.id);
 
-			await expect(em.findOneOrFail(CardNode, cardNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, cardNode.id)).rejects.toThrow();
 		});
 
 		it('should actually delete elements of the card', async () => {
@@ -108,7 +113,7 @@ describe(`card delete (api)`, () => {
 
 			await api.delete(cardNode.id);
 
-			await expect(em.findOneOrFail(RichTextElementNode, richTextElementNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(BoardNodeEntity, richTextElementNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
@@ -117,7 +122,7 @@ describe(`card delete (api)`, () => {
 
 			await api.delete(cardNode.id);
 
-			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
+			const siblingFromDb = await em.findOneOrFail(BoardNodeEntity, siblingCardNode.id);
 			expect(siblingFromDb).toBeDefined();
 		});
 
@@ -130,7 +135,7 @@ describe(`card delete (api)`, () => {
 
 			await api.delete(cardNode.id);
 
-			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
+			const siblingFromDb = await em.findOneOrFail(BoardNodeEntity, siblingCardNode.id);
 			expect(siblingFromDb.position).toEqual(0);
 		});
 	});

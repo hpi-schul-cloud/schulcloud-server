@@ -5,11 +5,11 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
-import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/cards';
@@ -70,14 +70,14 @@ describe(`card move (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const parentColumn = columnFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode1 = cardFactory.buildWithId({ parent: parentColumn });
-		const cardNode2 = cardFactory.buildWithId({ parent: parentColumn });
-		const targetColumn = columnFactory.buildWithId({ parent: columnBoardNode });
-		const targetColumnCards = cardFactory.buildListWithId(4, { parent: targetColumn });
+		const parentColumn = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode1 = cardEntityFactory.withParent(parentColumn).build();
+		const cardNode2 = cardEntityFactory.withParent(parentColumn).build();
+		const targetColumn = columnEntityFactory.withParent(columnBoardNode).build();
+		const targetColumnCards = cardEntityFactory.withParent(targetColumn).buildList(4);
 
 		await em.persistAndFlush([
 			user,
@@ -108,7 +108,7 @@ describe(`card move (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			await api.move(cardNode1.id, targetColumn.id, 3);
-			const result = await em.findOneOrFail(CardNode, cardNode1.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, cardNode1.id);
 
 			expect(result.parentId).toEqual(targetColumn.id);
 			expect(result.position).toEqual(3);
@@ -121,7 +121,7 @@ describe(`card move (api)`, () => {
 
 				await api.move(cardNode2.id, parentColumn.id, 0);
 
-				const result = await em.findOneOrFail(CardNode, cardNode2.id);
+				const result = await em.findOneOrFail(BoardNodeEntity, cardNode2.id);
 				expect(result.parentId).toEqual(parentColumn.id);
 			});
 
@@ -131,8 +131,8 @@ describe(`card move (api)`, () => {
 
 				await api.move(cardNode2.id, parentColumn.id, 0);
 
-				const result1 = await em.findOneOrFail(CardNode, cardNode1.id);
-				const result2 = await em.findOneOrFail(CardNode, cardNode2.id);
+				const result1 = await em.findOneOrFail(BoardNodeEntity, cardNode1.id);
+				const result2 = await em.findOneOrFail(BoardNodeEntity, cardNode2.id);
 				expect(result1.position).toEqual(1);
 				expect(result2.position).toEqual(0);
 			});

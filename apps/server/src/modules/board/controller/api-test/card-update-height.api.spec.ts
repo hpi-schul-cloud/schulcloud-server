@@ -2,9 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 describe(`card update height (api)`, () => {
@@ -36,11 +36,11 @@ describe(`card update height (api)`, () => {
 		const course = courseFactory.build({ teachers: [teacherUser] });
 		await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-		const columnBoardNode = columnBoardFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
-		const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardFactory.buildWithId({ parent: columnNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode = cardEntityFactory.withParent(columnNode).build();
 
 		await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
 		em.clear();
@@ -67,7 +67,7 @@ describe(`card update height (api)`, () => {
 
 			await teacherClient.patch(`${cardNode.id}/height`, { height: newHeight });
 
-			const result = await em.findOneOrFail(CardNode, cardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, cardNode.id);
 
 			expect(result.height).toEqual(newHeight);
 		});

@@ -3,17 +3,17 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	fileElementFactory,
-	richTextElementFactory,
-	submissionContainerElementFactory,
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	fileElementEntityFactory,
+	richTextElementEntityFactory,
+	submissionContainerElementEntityFactory,
 } from '../../testing';
 
 describe(`content element update content (api)`, () => {
@@ -47,24 +47,24 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const column = columnFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardFactory.buildWithId({ parent: column });
-			const richTextElement = richTextElementFactory.buildWithId({ parent: parentCard });
-			const fileElement = fileElementFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementFactory.buildWithId({
-				parent: parentCard,
+			const column = columnEntityFactory.withParent(columnBoardNode).build();
+			const parentCard = cardEntityFactory.withParent(column).build();
+			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
+			const fileElement = fileElementEntityFactory.withParent(parentCard).build();
+			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build({
 				dueDate: null,
 			});
 
 			const tomorrow = new Date(Date.now() + 86400000);
-			const submissionContainerElementWithDueDate = submissionContainerElementFactory.buildWithId({
-				parent: parentCard,
-				dueDate: tomorrow,
-			});
+			const submissionContainerElementWithDueDate = submissionContainerElementEntityFactory
+				.withParent(parentCard)
+				.build({
+					dueDate: tomorrow,
+				});
 
 			await em.persistAndFlush([
 				teacherAccount,
@@ -112,7 +112,7 @@ describe(`content element update content (api)`, () => {
 					type: ContentElementType.RICH_TEXT,
 				},
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, richTextElement.id);
 
 			expect(result.text).toEqual('hello world');
 		});
@@ -127,7 +127,7 @@ describe(`content element update content (api)`, () => {
 			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: ContentElementType.RICH_TEXT },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, richTextElement.id);
 
 			expect(result.text).toEqual(sanitizedText);
 		});
@@ -141,7 +141,7 @@ describe(`content element update content (api)`, () => {
 				data: { content: { caption, alternativeText: '' }, type: ContentElementType.FILE },
 			});
 
-			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, fileElement.id);
 
 			expect(result.caption).toEqual('rich text 1 some more text');
 		});
@@ -154,7 +154,7 @@ describe(`content element update content (api)`, () => {
 			await loggedInClient.patch(`${fileElement.id}/content`, {
 				data: { content: { caption: '', alternativeText }, type: ContentElementType.FILE },
 			});
-			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, fileElement.id);
 
 			expect(result.alternativeText).toEqual('rich text 1 some more text');
 		});
@@ -180,7 +180,7 @@ describe(`content element update content (api)`, () => {
 					type: 'submissionContainer',
 				},
 			});
-			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
 			expect(result.dueDate).toBeNull();
 		});
 
@@ -195,7 +195,7 @@ describe(`content element update content (api)`, () => {
 					type: 'submissionContainer',
 				},
 			});
-			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
 
 			expect(result.dueDate).toEqual(inThreeDays);
 		});
@@ -211,7 +211,7 @@ describe(`content element update content (api)`, () => {
 					type: 'submissionContainer',
 				},
 			});
-			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElementWithDueDate.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElementWithDueDate.id);
 
 			expect(result.dueDate).toBeNull();
 		});
@@ -239,14 +239,14 @@ describe(`content element update content (api)`, () => {
 			const course = courseFactory.build({ teachers: [] });
 			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const column = columnFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardFactory.buildWithId({ parent: column });
-			const richTextElement = richTextElementFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementFactory.buildWithId({ parent: parentCard });
+			const column = columnEntityFactory.withParent(columnBoardNode).build();
+			const parentCard = cardEntityFactory.withParent(column).build();
+			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
+			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build();
 
 			await em.persistAndFlush([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]);
 			em.clear();

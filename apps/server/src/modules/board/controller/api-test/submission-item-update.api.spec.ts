@@ -2,14 +2,14 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubmissionItemNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../repo';
 import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	submissionContainerElementFactory,
-	submissionItemFactory,
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	submissionContainerElementEntityFactory,
+	submissionItemEntityFactory,
 } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 import { SubmissionItemResponse } from '../dto';
@@ -43,18 +43,17 @@ describe('submission item update (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
-			const submissionItemNode = submissionItemFactory.buildWithId({
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: 'foo',
-				parent: submissionContainerNode,
 				completed: true,
 			});
 
@@ -77,7 +76,7 @@ describe('submission item update (api)', () => {
 
 			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});
@@ -90,19 +89,18 @@ describe('submission item update (api)', () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			const submissionItemNode = submissionItemFactory.buildWithId({
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: studentUser.id,
-				parent: submissionContainerNode,
 				completed: true,
 			});
 
@@ -127,7 +125,7 @@ describe('submission item update (api)', () => {
 
 			const submissionItemResponse = response.body as SubmissionItemResponse;
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemResponse.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemResponse.id);
 			expect(result.id).toEqual(submissionItemNode.id);
 			expect(result.completed).toEqual(false);
 		});
@@ -149,19 +147,18 @@ describe('submission item update (api)', () => {
 			const course = courseFactory.build({ students: [studentUser, studentUser2] });
 			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			const submissionItemNode = submissionItemFactory.buildWithId({
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: studentUser.id,
-				parent: submissionContainerNode,
 				completed: true,
 			});
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
@@ -184,7 +181,7 @@ describe('submission item update (api)', () => {
 
 			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});
@@ -198,19 +195,18 @@ describe('submission item update (api)', () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentAccount, studentUser, studentAccount2, studentUser2, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			const columnNode = columnFactory.buildWithId({ parent: columnBoardNode });
+			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-			const cardNode = cardFactory.buildWithId({ parent: columnNode });
+			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			const submissionContainerNode = submissionContainerElementFactory.buildWithId({ parent: cardNode });
+			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			const submissionItemNode = submissionItemFactory.buildWithId({
+			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
 				userId: studentUser.id,
-				parent: submissionContainerNode,
 				completed: true,
 			});
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode, submissionItemNode]);
@@ -234,7 +230,7 @@ describe('submission item update (api)', () => {
 
 			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
 
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});

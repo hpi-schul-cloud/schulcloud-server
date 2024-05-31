@@ -2,12 +2,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardNode, MediaLineNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardNodeEntity } from '../../../repo';
 import { BoardExternalReferenceType, MediaBoardColors } from '../../../domain';
 import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
 import { CollapsableBodyParams, ColorBodyParams } from '../dto';
-import { mediaBoardFactory, mediaLineFactory } from '../../../testing';
+import { mediaBoardEntityFactory, mediaLineEntityFactory } from '../../../testing';
 
 const baseRouteName = '/media-lines';
 
@@ -39,18 +39,16 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLineA = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLineA = mediaLineEntityFactory.withParent(mediaBoard).build({
 					position: 0,
 				});
-				const mediaLineB = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLineB = mediaLineEntityFactory.withParent(mediaBoard).build({
 					position: 1,
 				});
 
@@ -76,8 +74,8 @@ describe('Media Line (API)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const modifiedLineA = await em.findOneOrFail(BoardNode, mediaLineA.id);
-				const modifiedLineB = await em.findOneOrFail(BoardNode, mediaLineB.id);
+				const modifiedLineA = await em.findOneOrFail(BoardNodeEntity, mediaLineA.id);
+				const modifiedLineB = await em.findOneOrFail(BoardNodeEntity, mediaLineB.id);
 				expect(modifiedLineA.position).toEqual(1);
 				expect(modifiedLineB.position).toEqual(0);
 			});
@@ -90,14 +88,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					position: 0,
 				});
 
@@ -136,14 +133,13 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					position: 0,
 				});
 
@@ -183,14 +179,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					title: '',
 				});
 
@@ -214,7 +209,7 @@ describe('Media Line (API)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const modifiedLine = await em.findOneOrFail(BoardNode, mediaLine.id);
+				const modifiedLine = await em.findOneOrFail(BoardNodeEntity, mediaLine.id);
 				expect(modifiedLine.title).toEqual('newTitle');
 			});
 		});
@@ -226,14 +221,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					title: '',
 				});
 
@@ -270,14 +264,13 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					title: '',
 				});
 
@@ -315,15 +308,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
 				em.clear();
@@ -345,7 +336,7 @@ describe('Media Line (API)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const modifiedLine = await em.findOneOrFail(MediaLineNode, mediaLine.id);
+				const modifiedLine = await em.findOneOrFail(BoardNodeEntity, mediaLine.id);
 				expect(modifiedLine.backgroundColor).toEqual(MediaBoardColors.BLUE);
 			});
 		});
@@ -357,16 +348,15 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-					backgroundColor: MediaBoardColors.TRANSPARENT,
-				});
+				const mediaLine = mediaLineEntityFactory
+					.withParent(mediaBoard)
+					.build({ backgroundColor: MediaBoardColors.TRANSPARENT });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
 				em.clear();
@@ -401,14 +391,13 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					backgroundColor: MediaBoardColors.TRANSPARENT,
 				});
 
@@ -446,16 +435,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-					collapsed: false,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ collapsed: false });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
 				em.clear();
@@ -477,7 +463,7 @@ describe('Media Line (API)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const modifiedLine = await em.findOneOrFail(MediaLineNode, mediaLine.id);
+				const modifiedLine = await em.findOneOrFail(BoardNodeEntity, mediaLine.id);
 				expect(modifiedLine.collapsed).toEqual(true);
 			});
 		});
@@ -489,16 +475,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-					title: '',
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ title: '' });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
 				em.clear();
@@ -533,14 +516,13 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
 					title: '',
 				});
 
@@ -578,15 +560,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
 				em.clear();
@@ -606,7 +586,7 @@ describe('Media Line (API)', () => {
 				const response = await studentClient.delete(`${mediaLine.id}`);
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				const modifiedLine = await em.findOne(BoardNode, mediaLine.id);
+				const modifiedLine = await em.findOne(BoardNodeEntity, mediaLine.id);
 				expect(modifiedLine).toBeNull();
 			});
 		});
@@ -618,15 +598,13 @@ describe('Media Line (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine]);
 				em.clear();
@@ -659,15 +637,13 @@ describe('Media Line (API)', () => {
 				const config: ServerConfig = serverConfig();
 				config.FEATURE_MEDIA_SHELF_ENABLED = true;
 
-				const mediaBoard = mediaBoardFactory.buildWithId({
+				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
 						id: new ObjectId().toHexString(),
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineFactory.buildWithId({
-					parent: mediaBoard,
-				});
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
 				await em.persistAndFlush([mediaBoard, mediaLine]);
 				em.clear();

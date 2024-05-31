@@ -2,9 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { columnBoardFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
@@ -40,7 +40,7 @@ describe(`board update visibility (api)`, () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				isVisible: false,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
@@ -70,7 +70,7 @@ describe(`board update visibility (api)`, () => {
 
 			await loggedInClient.patch(`${columnBoardNode.id}/visibility`, { isVisible });
 
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 
 			expect(result.isVisible).toEqual(isVisible);
 		});
@@ -83,7 +83,7 @@ describe(`board update visibility (api)`, () => {
 			const course = courseFactory.build({ students: [studentUser] });
 			await em.persistAndFlush([studentUser, course]);
 
-			const columnBoardNode = columnBoardFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				isVisible: false,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
@@ -109,7 +109,7 @@ describe(`board update visibility (api)`, () => {
 			const { loggedInClient, columnBoardNode } = await setup();
 			const isVisible = true;
 			await loggedInClient.patch(`${columnBoardNode.id}/visibility`, { isVisible });
-			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnBoardNode.id);
 			expect(result.isVisible).toEqual(false);
 		});
 	});
