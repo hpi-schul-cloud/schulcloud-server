@@ -22,7 +22,7 @@ import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountEntityToDoMapper } from '../../repo/micro-orm/mapper';
-import { accountFactory } from '../../testing';
+import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountEntity } from '../entity/account.entity';
 import { IdmCallbackLoggableException } from '../error';
 import { AccountServiceDb } from './account-db.service';
@@ -252,19 +252,18 @@ describe('AccountService', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
 
-				accountServiceDb.save.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
+				const account = accountDoFactory.build();
 
-				return newAccountService();
+				accountServiceDb.save.mockResolvedValueOnce(account);
+				accountServiceIdm.save.mockResolvedValueOnce(account);
+
+				return { service: newAccountService(), account };
 			};
 
 			it('should call save in accountServiceIdm', async () => {
-				const service = setup();
+				const { service, account } = setup();
 
-				await expect(service.save({} as Account)).resolves.not.toThrow();
+				await expect(service.save(account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -293,19 +292,57 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				accountServiceDb.save.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
 
-				return newAccountService();
+				const account = accountDoFactory.build();
+
+				accountServiceDb.save.mockResolvedValueOnce(account);
+				accountServiceIdm.save.mockResolvedValueOnce(account);
+
+				return { service: newAccountService(), account };
 			};
 
 			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.save({ username: 'username' } as AccountSave)).resolves.not.toThrow();
+				const { service, account } = setup();
+				await expect(service.save(account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe(`when identity management is primary and can't update account`, () => {
+			const setup = () => {
+				configService.get.mockReturnValue(true);
+
+				const account = accountDoFactory.build();
+
+				accountServiceDb.save.mockResolvedValueOnce(account);
+				accountServiceIdm.save.mockImplementation(() => Promise.reject(new Error()));
+
+				return { service: newAccountService(), account };
+			};
+
+			it('should throw ValidationError', async () => {
+				const { service, account } = setup();
+				await expect(service.save(account)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe(`when identity management is primary and can't update username`, () => {
+			const setup = () => {
+				configService.get.mockReturnValue(true);
+
+				const account = accountDoFactory.build();
+
+				accountServiceDb.save.mockResolvedValueOnce(account);
+				accountServiceIdm.save.mockImplementation(() =>
+					Promise.resolve(new Account({ username: 'otherUsername', id: '' }))
+				);
+
+				return { service: newAccountService(), account };
+			};
+
+			it('should throw ValidationError', async () => {
+				const { service, account } = setup();
+				await expect(service.save(account)).rejects.toThrow(ValidationError);
 			});
 		});
 	});
@@ -439,21 +476,23 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				accountServiceDb.save.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
+
+				const account = accountDoFactory.build({
+					password: defaultPasswordHash,
+					username: 'username@mail.tld',
+				});
+
+				accountServiceDb.save.mockResolvedValueOnce(account);
+				accountServiceIdm.save.mockResolvedValueOnce(account);
+
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
 
-				return newAccountService();
+				return { service: newAccountService(), account };
 			};
 
 			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(
-					service.saveWithValidation({ username: 'username@mail.tld', password: 'Password_123' } as AccountSave)
-				).resolves.not.toThrow();
+				const { service, account } = setup();
+				await expect(service.saveWithValidation(account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -1302,6 +1341,39 @@ describe('AccountService', () => {
 						email: 'fail@to.update',
 					})
 				).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+
+		describe('When save throws ValidationError', () => {
+			const setup = () => {
+				const mockSchool = schoolEntityFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
+
+				userRepo.save.mockResolvedValueOnce(undefined);
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockRejectedValueOnce(new ValidationError('fail to update'));
+
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+
+			it('should rethrow ValidationError', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: 'fail@to.update',
+					})
+				).rejects.toThrow(ValidationError);
 			});
 		});
 	});

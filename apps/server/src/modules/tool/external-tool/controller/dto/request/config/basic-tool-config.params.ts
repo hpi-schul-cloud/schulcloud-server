@@ -1,14 +1,17 @@
-import { IsEnum, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ExternalToolConfigCreateParams } from './external-tool-config.params';
+import { IsEnum, IsUrl } from 'class-validator';
 import { ToolConfigType } from '../../../../../common/enum';
+import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
 export class BasicToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
 	@ApiProperty()
 	type!: ToolConfigType;
 
-	@IsString()
+	@IsUrl(
+		{ require_protocol: true, protocols: ['https'] },
+		{ message: 'baseUrl must be a URL address with https protocol' }
+	)
 	@ApiProperty()
 	baseUrl!: string;
 }
