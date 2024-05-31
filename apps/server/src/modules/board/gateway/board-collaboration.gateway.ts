@@ -205,6 +205,7 @@ export class BoardCollaborationGateway {
 			const { userId } = this.getCurrentUser(client);
 			const board = await this.boardUc.findBoard(userId, data.boardId);
 
+			await this.ensureUserInRootRoom(client, data.boardId);
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 
 			client.emit('fetch-board-success', responsePayload);
