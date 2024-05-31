@@ -2,9 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnNode } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { columnBoardEnFactory, columnFactory } from '../../testing/entity';
 import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/columns';
@@ -71,7 +71,7 @@ describe(`column update title (api)`, () => {
 
 			await loggedInClient.patch(`${columnNode.id}/title`, { title: newTitle });
 
-			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
@@ -83,7 +83,7 @@ describe(`column update title (api)`, () => {
 			const sanitizedTitle = 'foo bar';
 
 			await loggedInClient.patch(`${columnNode.id}/title`, { title: unsanitizedTitle });
-			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
 		});
@@ -121,7 +121,7 @@ describe(`column update title (api)`, () => {
 
 			expect(response.statusCode).toEqual(403);
 
-			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnNode.id);
 			expect(result.title).toEqual(title);
 		});
 	});
