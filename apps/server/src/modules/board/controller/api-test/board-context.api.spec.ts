@@ -65,12 +65,7 @@ describe('board get context (api)', () => {
 
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 
-			const expectedBody: BoardContextResponse = {
-				id: columnBoardNode.context.id,
-				type: columnBoardNode.context.type,
-			};
-
-			expect(response.body).toEqual(expectedBody);
+			expect(response.body).toEqual({ id: columnBoardNode.context?.id, type: columnBoardNode.context?.type });
 		});
 	});
 });
