@@ -3,15 +3,15 @@ import { Readable } from 'stream';
 import { GetFileResponse } from '../interface';
 
 export class TestHelper {
-	public static createFile = (contentRange?: string): GetFile => {
+	public static createFile = (props?: { contentRange?: string; mimeType?: string }): GetFile => {
 		const text = 'testText';
 		const readable = Readable.from(text);
 
 		const fileResponse = {
 			data: readable,
-			contentType: 'image/webp',
+			contentType: props?.mimeType ?? 'image/webp',
 			contentLength: text.length,
-			contentRange,
+			contentRange: props?.contentRange,
 			etag: 'testTag',
 		};
 
@@ -20,7 +20,7 @@ export class TestHelper {
 
 	public static createFileResponse = (contentRange?: string): GetFileResponse => {
 		const name = 'testName';
-		const file = this.createFile(contentRange);
+		const file = this.createFile({ contentRange });
 		const fileResponse = { ...file, name };
 
 		return fileResponse;

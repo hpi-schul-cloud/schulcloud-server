@@ -42,7 +42,8 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { UserLicenseModule } from '../user-license';
+import { UserLicenseModule } from '@modules/user-license';
+import { AuthorizationReferenceApiModule } from '@modules/authorization/authorization-reference.api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { serverConfig, SERVER_CONFIG_TOKEN } from './server.config';
 
@@ -50,6 +51,7 @@ const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AuthorizationReferenceApiModule,
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,

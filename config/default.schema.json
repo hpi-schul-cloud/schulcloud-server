@@ -824,7 +824,7 @@
 			"default": "etherpad.dbildungscloud.de",
 			"description": "The old etherpad domain."
 		},
-		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
+		"ETHERPAD_COOKIE_EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
 			"description": "Number of seconds after an etherpad cookie expires."
@@ -1192,6 +1192,11 @@
 			"type": "string",
 			"default": "",
 			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
+		},
+		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
+			"type": "integer",
+			"description": "Timeout in milliseconds for saving all import user matches",
+			"default": 60000
 		},
 		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",

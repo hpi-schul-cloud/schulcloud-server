@@ -107,6 +107,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningOtherEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					})
 				);
 
@@ -160,6 +161,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: false,
 						groupProvisioningOtherEnabled: false,
+						schoolExternalToolProvisioningEnabled: false,
 					})
 				);
 
@@ -201,6 +203,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						groupProvisioningClassesEnabled: false,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningOtherEnabled: false,
+						schoolExternalToolProvisioningEnabled: false,
 					})
 				);
 
@@ -242,6 +245,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 						groupProvisioningClassesEnabled: false,
 						groupProvisioningCoursesEnabled: false,
 						groupProvisioningOtherEnabled: true,
+						schoolExternalToolProvisioningEnabled: false,
 					})
 				);
 
