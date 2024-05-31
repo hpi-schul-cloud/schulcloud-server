@@ -1,6 +1,6 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { IToolFeatures } from '@modules/tool/tool-config';
@@ -33,7 +33,8 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	constructor(
 		private readonly fileCopyService: SchoolSpecificFileCopyService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly toolFeatures: IToolFeatures
+		private readonly toolFeatures: IToolFeatures,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	public async copy(original: AnyBoardDo): Promise<CopyStatus> {
@@ -61,11 +62,14 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			layout: original.layout,
 		});
 
+		const copyStatusOfChildren = this.getCopyStatusesForChildrenOf(original);
+		const status = this.copyHelperService.deriveStatusFromElements(copyStatusOfChildren);
+
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.COLUMNBOARD,
-			status: CopyStatusEnum.SUCCESS,
-			elements: this.getCopyStatusesForChildrenOf(original),
+			status,
+			elements: copyStatusOfChildren,
 		});
 		this.copyMap.set(original.id, copy);
 	}
@@ -347,6 +351,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 				childstatusses.push(childStatus);
 			}
 		});
+		console.log(childstatusses);
 
 		return childstatusses;
 	}
