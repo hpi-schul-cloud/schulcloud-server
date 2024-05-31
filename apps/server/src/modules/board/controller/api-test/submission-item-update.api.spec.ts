@@ -12,7 +12,6 @@ import {
 	submissionItemEntityFactory,
 } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
-import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/board-submissions';
 describe('submission item update (api)', () => {
@@ -121,11 +120,9 @@ describe('submission item update (api)', () => {
 
 		it('should actually update the submission item', async () => {
 			const { loggedInClient, submissionItemNode } = await setup();
-			const response = await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
+			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
 
-			const submissionItemResponse = response.body as SubmissionItemResponse;
-
-			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemResponse.id);
+			const result = await em.findOneOrFail(BoardNodeEntity, submissionItemNode.id);
 			expect(result.id).toEqual(submissionItemNode.id);
 			expect(result.completed).toEqual(false);
 		});
