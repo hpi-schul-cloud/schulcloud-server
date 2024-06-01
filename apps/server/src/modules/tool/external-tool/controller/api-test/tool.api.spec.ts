@@ -786,10 +786,9 @@ describe('ToolController (API)', () => {
 				});
 
 				const board = columnBoardEntityFactory.build();
-				const externalToolElements = [
-					externalToolElementEntityFactory.withParent(board).build({ contextExternalToolId: boardTools[0].id }),
-					externalToolElementEntityFactory.withParent(board).build({ contextExternalToolId: boardTools[0].id }),
-				];
+				const externalToolElements = externalToolElementEntityFactory
+					.withParent(board)
+					.buildList(2, { contextExternalToolId: boardTools[0].id });
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([
