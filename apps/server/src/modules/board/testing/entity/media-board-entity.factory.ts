@@ -1,5 +1,4 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
 import {
 	BoardExternalReferenceType,
 	BoardLayout,
@@ -8,8 +7,21 @@ import {
 	MediaBoardProps,
 	ROOT_PATH,
 } from '../../domain';
+import { Context } from '../../repo/entity/embeddables';
+import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
 
-export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithType<MediaBoardProps>>(() => {
+export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithType<MediaBoardProps>>(({ params }) => {
+	const context =
+		params.context && params.context.type && params.context.id
+			? new Context({
+					type: params.context.type,
+					id: params.context.id,
+			  })
+			: new Context({
+					type: BoardExternalReferenceType.Course,
+					id: new ObjectId().toHexString(),
+			  });
+
 	const props: PropsWithType<MediaBoardProps> = {
 		id: new ObjectId().toHexString(),
 		path: ROOT_PATH,
@@ -18,10 +30,7 @@ export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithTy
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		context: {
-			type: BoardExternalReferenceType.Course,
-			id: new ObjectId().toHexString(),
-		},
+		context,
 		backgroundColor: MediaBoardColors.TRANSPARENT,
 		collapsed: false,
 		layout: BoardLayout.LIST,
