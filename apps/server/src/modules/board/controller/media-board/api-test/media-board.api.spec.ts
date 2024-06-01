@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
+import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
@@ -7,22 +7,22 @@ import { MediaUserLicenseEntity } from '@modules/user-license/entity';
 import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { type DatesToStrings, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, type DatesToStrings } from '@shared/testing';
+import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
-import { BoardExternalReferenceType, MediaBoardColors, BoardLayout } from '../../../domain';
-import {
-	CollapsableBodyParams,
-	ColorBodyParams,
-	LayoutBodyParams,
-	MediaAvailableLineResponse,
-	type MediaBoardResponse,
-	MediaLineResponse,
-} from '../dto';
 import {
 	mediaBoardEntityFactory,
 	mediaExternalToolElementEntityFactory,
 	mediaLineEntityFactory,
 } from '../../../testing';
+import {
+	CollapsableBodyParams,
+	ColorBodyParams,
+	LayoutBodyParams,
+	MediaAvailableLineResponse,
+	MediaLineResponse,
+	type MediaBoardResponse,
+} from '../dto';
 
 const baseRouteName = '/media-boards';
 
@@ -61,7 +61,10 @@ describe('Media Board (API)', () => {
 					},
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
-				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build();
+				const contextExternalToolId = new ObjectId().toHexString();
+				const mediaElement = mediaExternalToolElementEntityFactory
+					.withParent(mediaLine)
+					.build({ contextExternalToolId });
 
 				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
 				em.clear();
@@ -73,11 +76,12 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					mediaLine,
 					mediaElement,
+					contextExternalToolId,
 				};
 			};
 
 			it('should return the media board of the user', async () => {
-				const { studentClient, mediaBoard, mediaLine, mediaElement } = await setup();
+				const { studentClient, mediaBoard, mediaLine, mediaElement, contextExternalToolId } = await setup();
 
 				const response = await studentClient.get('me');
 
@@ -97,7 +101,7 @@ describe('Media Board (API)', () => {
 							},
 							collapsed: false,
 							backgroundColor: MediaBoardColors.TRANSPARENT,
-							title: mediaLine.title,
+							title: mediaLine.title as string,
 							elements: [
 								{
 									id: mediaElement.id,
@@ -106,7 +110,7 @@ describe('Media Board (API)', () => {
 										lastUpdatedAt: mediaElement.updatedAt.toISOString(),
 									},
 									content: {
-										contextExternalToolId: mediaElement.contextExternalTool.id,
+										contextExternalToolId,
 									},
 								},
 							],
@@ -308,7 +312,7 @@ describe('Media Board (API)', () => {
 					tool: unusedExternalTool,
 					school: studentUser.school,
 				});
-				const contextExternalTool = contextExternalToolEntityFactory.build({
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalTool,
 				});
 
@@ -321,7 +325,9 @@ describe('Media Board (API)', () => {
 					collapsed: true,
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
-				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ contextExternalTool });
+				const mediaElement = mediaExternalToolElementEntityFactory
+					.withParent(mediaLine)
+					.build({ contextExternalToolId: contextExternalTool.id });
 
 				await em.persistAndFlush([
 					studentAccount,
@@ -361,8 +367,8 @@ describe('Media Board (API)', () => {
 							description: unusedExternalTool.description,
 						},
 					],
-					collapsed: mediaBoard.collapsed,
-					backgroundColor: mediaBoard.backgroundColor,
+					collapsed: mediaBoard.collapsed as boolean,
+					backgroundColor: mediaBoard.backgroundColor as MediaBoardColors,
 				});
 			});
 		});
@@ -507,7 +513,7 @@ describe('Media Board (API)', () => {
 					tool: unusedExternalTool,
 					school: studentUser.school,
 				});
-				const contextExternalTool = contextExternalToolEntityFactory.build({
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalTool,
 				});
 
@@ -519,7 +525,7 @@ describe('Media Board (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({
-					contextExternalTool,
+					contextExternalToolId: contextExternalTool.id,
 				});
 
 				const userLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({
@@ -595,7 +601,7 @@ describe('Media Board (API)', () => {
 					tool: unusedExternalTool,
 					school: studentUser.school,
 				});
-				const contextExternalTool = contextExternalToolEntityFactory.build({
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalTool,
 				});
 
@@ -607,7 +613,9 @@ describe('Media Board (API)', () => {
 				});
 
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ collapsed: false });
-				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ contextExternalTool });
+				const mediaElement = mediaExternalToolElementEntityFactory
+					.withParent(mediaLine)
+					.build({ contextExternalToolId: contextExternalTool.id });
 
 				await em.persistAndFlush([
 					studentAccount,
@@ -755,7 +763,7 @@ describe('Media Board (API)', () => {
 					tool: unusedExternalTool,
 					school: studentUser.school,
 				});
-				const contextExternalTool = contextExternalToolEntityFactory.build({
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalTool,
 				});
 
@@ -767,7 +775,9 @@ describe('Media Board (API)', () => {
 				});
 
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ collapsed: false });
-				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ contextExternalTool });
+				const mediaElement = mediaExternalToolElementEntityFactory
+					.withParent(mediaLine)
+					.build({ contextExternalToolId: contextExternalTool.id });
 
 				await em.persistAndFlush([
 					studentAccount,
