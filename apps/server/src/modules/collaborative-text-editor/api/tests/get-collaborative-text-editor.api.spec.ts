@@ -3,18 +3,15 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	collaborativeTextEditorNodeFactory,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
+import { BoardExternalReferenceType } from '@src/modules/board';
+import {
+	cardEntityFactory,
+	collaborativeTextEditorEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+} from '@src/modules/board/testing';
 import { ServerTestModule } from '@src/modules/server';
 
 describe('Collaborative Text Editor Controller (API)', () => {
@@ -110,22 +107,16 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const course = courseFactory.build({ students: [studentUser] });
 
-					await em.persistAndFlush([studentUser, course]);
+					await em.persistAndFlush([studentAccount, studentUser, course]);
 
-					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					const columnBoardNode = columnBoardEntityFactory.buildWithId({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-					const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						studentAccount,
-						collaborativeTextEditorElement,
-						columnBoardNode,
-						columnNode,
-						cardNode,
-					]);
+					await em.persistAndFlush([collaborativeTextEditorElement, columnBoardNode, columnNode, cardNode]);
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -183,12 +174,12 @@ describe('Collaborative Text Editor Controller (API)', () => {
 
 					await em.persistAndFlush([studentUser, course]);
 
-					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					const columnBoardNode = columnBoardEntityFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-					const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
 					await em.persistAndFlush([
 						studentAccount,
@@ -254,12 +245,12 @@ describe('Collaborative Text Editor Controller (API)', () => {
 
 					await em.persistAndFlush([studentUser, course]);
 
-					const columnBoardNode = columnBoardNodeFactory.buildWithId({
+					const columnBoardNode = columnBoardEntityFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-					const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-					const collaborativeTextEditorElement = collaborativeTextEditorNodeFactory.build({ parent: cardNode });
+					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+					const cardNode = cardEntityFactory.withParent(columnNode).build();
+					const collaborativeTextEditorElement = collaborativeTextEditorEntityFactory.withParent(cardNode).build();
 
 					await em.persistAndFlush([
 						studentAccount,
