@@ -89,8 +89,8 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'boolean', nullable: true })
 	completed: boolean | undefined;
 
-	@Property({ type: 'string', nullable: true })
-	userId: string | undefined;
+	@Property({ type: ObjectIdType, nullable: true })
+	userId: EntityId | undefined;
 
 	// ExternalToolElement, MediaExternalToolElement
 	// --------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -53,7 +53,7 @@ describe('submission item delete (api)', () => {
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 			const submissionItemNode = submissionItemEntityFactory.withParent(submissionContainerNode).build({
-				userId: 'foo',
+				userId: new ObjectId().toHexString(),
 				completed: true,
 			});
 
