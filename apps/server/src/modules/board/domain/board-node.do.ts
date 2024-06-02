@@ -72,9 +72,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	hasChild(child: AnyBoardNode): boolean {
-		// TODO check by object identity instead of id
-		// requires identity map for domain objects
-		const exists = this.children.some((obj) => obj.id === child.id);
+		const exists = this.children.includes(child);
 		return exists;
 	}
 

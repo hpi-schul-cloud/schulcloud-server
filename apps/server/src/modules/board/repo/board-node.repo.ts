@@ -106,9 +106,6 @@ export class BoardNodeRepo {
 	}
 
 	private async findDescendants(props: BoardNodeEntity, depth?: number): Promise<BoardNodeEntity[]> {
-		// TODO Currently we cannot limit the depth because that can potentially overwrite an already loaded tree in the identity map
-		depth = undefined;
-
 		const levelQuery = depth !== undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
 
 		const descendants = await this.em.find(BoardNodeEntity, {
@@ -123,9 +120,6 @@ export class BoardNodeRepo {
 		entities: BoardNodeEntity[],
 		depth?: number
 	): Promise<Record<string, BoardNodeEntity[]>> {
-		// TODO Currently we cannot limit the depth because that can potentially overwrite an already loaded tree in the identity map
-		depth = undefined;
-
 		const pathQueries = entities.map((props) => {
 			const levelQuery = depth !== undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
 

@@ -12,13 +12,27 @@ export class TreeBuilder {
 	}
 
 	build(entity: BoardNodeEntity): AnyBoardNode {
-		entity.children = this.getChildren(entity).map((childProps) => this.build(childProps));
+		const children = this.getChildren(entity).map((childProps) => this.build(childProps));
+
+		// Assign children only when not present.
+		// This prevents already loaded children from being overwritten
+		// when building a tree with a smaller depth.
+		if (!entity.children || entity.children.length === 0) {
+			entity.children = children;
+		}
+
+		// check identity map reference
+		if (entity.domainObject) {
+			return entity.domainObject;
+		}
 
 		const Constructor = getBoardNodeConstructor(entity.type);
 
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const boardNode = new Constructor(entity);
+		// attach to identity map
+		entity.domainObject = boardNode;
 
 		return boardNode;
 	}

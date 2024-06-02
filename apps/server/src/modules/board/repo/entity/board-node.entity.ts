@@ -28,6 +28,9 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ persist: false })
 	children: AnyBoardNode[] = [];
 
+	@Property({ persist: false })
+	domainObject: AnyBoardNode | undefined;
+
 	// Card, Column, ColumnBoard, LinkElement, MedialLine
 	// --------------------------------------------------------------------------
 	@Property({ nullable: true })

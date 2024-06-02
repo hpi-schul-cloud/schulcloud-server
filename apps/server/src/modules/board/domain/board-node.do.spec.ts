@@ -274,13 +274,11 @@ describe('BoardNode', () => {
 			return { parent, child, extraChild };
 		};
 
-		// TODO unfortunately we're not able to check by object reference
-		// that requrires using the identity map which is not implemented yet
-		it('should check by id', () => {
+		it('should check by reference', () => {
 			const { parent, child, extraChild } = setup();
 
 			expect(parent.hasChild(child)).toBe(true);
-			expect(parent.hasChild(extraChild)).toBe(true);
+			expect(parent.hasChild(extraChild)).toBe(false);
 		});
 	});
 
