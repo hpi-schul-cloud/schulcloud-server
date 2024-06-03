@@ -141,8 +141,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#afterInit" >afterInit</a>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#buildBoardSocketEmitter" >buildBoardSocketEmitter</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -185,11 +186,6 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteElement" >deleteElement</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#ensureUserInRoom" >ensureUserInRoom</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -284,12 +280,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, authorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
+<code>constructor(orm: MikroORM, boardUc: <a href="../injectables/BoardUc.html" target="_self">BoardUc</a>, columnUc: <a href="../injectables/ColumnUc.html" target="_self">ColumnUc</a>, cardUc: <a href="../injectables/CardUc.html" target="_self">CardUc</a>, elementUc: <a href="../injectables/ElementUc.html" target="_self">ElementUc</a>, authorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:36</a></div>
                             </td>
                         </tr>
 
@@ -306,18 +302,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>logger</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>orm</td>
                                                   
@@ -409,696 +393,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="afterInit"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>afterInit</b></span>
-                        <a href="#afterInit"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>afterInit()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:55</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createCard"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>createCard</b></span>
-                        <a href="#createCard"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createCard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateCardMessageParams.html" target="_self">CreateCardMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;create-card-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:156</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/CreateCardMessageParams.html" target="_self" >CreateCardMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createColumn"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>createColumn</b></span>
-                        <a href="#createColumn"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createColumn(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateColumnMessageParams.html" target="_self">CreateColumnMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;create-column-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:179</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/CreateColumnMessageParams.html" target="_self" >CreateColumnMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createElement"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>createElement</b></span>
-                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateContentElementMessageParams.html" target="_self">CreateContentElementMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;create-element-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="341"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:341</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/CreateContentElementMessageParams.html" target="_self" >CreateContentElementMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteBoard"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteBoard</b></span>
-                        <a href="#deleteBoard"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteBoard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteBoardMessageParams.html" target="_self">DeleteBoardMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;delete-board-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:61</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/DeleteBoardMessageParams.html" target="_self" >DeleteBoardMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteCard"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteCard</b></span>
-                        <a href="#deleteCard"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteCard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteCardMessageParams.html" target="_self">DeleteCardMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;delete-card-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="137"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:137</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/DeleteCardMessageParams.html" target="_self" >DeleteCardMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteColumn"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteColumn</b></span>
-                        <a href="#deleteColumn"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteColumn(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteColumnMessageParams.html" target="_self">DeleteColumnMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;delete-column-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="303"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:303</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/DeleteColumnMessageParams.html" target="_self" >DeleteColumnMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteElement"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteElement</b></span>
-                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteContentElementMessageParams.html" target="_self">DeleteContentElementMessageParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@SubscribeMessage(&#x27;delete-element-request&#x27;)<br />@UseRequestContext()<br /></code>
-                </td>
-            </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="383"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:383</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>client</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>data</td>
-                                            <td>
-                                                            <code><a href="../classes/DeleteContentElementMessageParams.html" target="_self" >DeleteContentElementMessageParams</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="ensureUserInRoom"></a>
+                    <a name="buildBoardSocketEmitter"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>ensureUserInRoom</b></span>
-                        <a href="#ensureUserInRoom"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>buildBoardSocketEmitter</b></span>
+                        <a href="#buildBoardSocketEmitter"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureUserInRoom(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>buildBoardSocketEmitter(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="419"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:419</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="407"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:407</a></div>
                         </td>
                     </tr>
 
@@ -1160,20 +475,20 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="fetchBoard"></a>
+                    <a name="createCard"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Async</span>
-                        <span ><b>fetchBoard</b></span>
-                        <a href="#fetchBoard"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createCard</b></span>
+                        <a href="#createCard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>fetchBoard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/FetchBoardMessageParams.html" target="_self">FetchBoardMessageParams</a>)</code>
+                    <code>createCard(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateCardMessageParams.html" target="_self">CreateCardMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1181,14 +496,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@SubscribeMessage(&#x27;fetch-board-request&#x27;)<br />@UseRequestContext()<br /></code>
+                    <code>@SubscribeMessage(&#x27;create-card-request&#x27;)<br />@UseRequestContext()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="208"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:208</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -1209,7 +524,637 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateCardMessageParams.html" target="_self" >CreateCardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createColumn"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createColumn</b></span>
+                        <a href="#createColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createColumn(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateColumnMessageParams.html" target="_self">CreateColumnMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;create-column-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:166</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateColumnMessageParams.html" target="_self" >CreateColumnMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/CreateContentElementMessageParams.html" target="_self">CreateContentElementMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;create-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="329"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:329</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateContentElementMessageParams.html" target="_self" >CreateContentElementMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteBoard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteBoard</b></span>
+                        <a href="#deleteBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteBoard(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteBoardMessageParams.html" target="_self">DeleteBoardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-board-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteBoardMessageParams.html" target="_self" >DeleteBoardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteCard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteCard</b></span>
+                        <a href="#deleteCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteCard(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteCardMessageParams.html" target="_self">DeleteCardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-card-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteCardMessageParams.html" target="_self" >DeleteCardMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteColumn"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteColumn</b></span>
+                        <a href="#deleteColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteColumn(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteColumnMessageParams.html" target="_self">DeleteColumnMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-column-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="290"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:290</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteColumnMessageParams.html" target="_self" >DeleteColumnMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteElement"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteElement</b></span>
+                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteElement(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/DeleteContentElementMessageParams.html" target="_self">DeleteContentElementMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;delete-element-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="371"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:371</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/DeleteContentElementMessageParams.html" target="_self" >DeleteContentElementMessageParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchBoard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchBoard</b></span>
+                        <a href="#fetchBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchBoard(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/FetchBoardMessageParams.html" target="_self">FetchBoardMessageParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;fetch-board-request&#x27;)<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="194"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:194</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1263,7 +1208,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>fetchCards(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/FetchCardsMessageParams.html" target="_self">FetchCardsMessageParams</a>)</code>
+                    <code>fetchCards(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/FetchCardsMessageParams.html" target="_self">FetchCardsMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1277,8 +1222,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="322"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:322</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="309"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:309</a></div>
                         </td>
                     </tr>
 
@@ -1299,7 +1244,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1351,15 +1296,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getCurrentUser(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>)</code>
+                    <code>getCurrentUser(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -1380,7 +1325,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1428,8 +1373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="430"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:430</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="423"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:423</a></div>
                         </td>
                     </tr>
 
@@ -1492,7 +1437,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>moveCard(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveCardMessageParams.html" target="_self">MoveCardMessageParams</a>)</code>
+                    <code>moveCard(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveCardMessageParams.html" target="_self">MoveCardMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1506,8 +1451,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="227"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:227</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="214"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:214</a></div>
                         </td>
                     </tr>
 
@@ -1528,7 +1473,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1582,7 +1527,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>moveColumn(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveColumnMessageParams.html" target="_self">MoveColumnMessageParams</a>)</code>
+                    <code>moveColumn(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveColumnMessageParams.html" target="_self">MoveColumnMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1596,8 +1541,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="246"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:246</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:233</a></div>
                         </td>
                     </tr>
 
@@ -1618,7 +1563,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1672,7 +1617,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>moveElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveContentElementMessageParams.html" target="_self">MoveContentElementMessageParams</a>)</code>
+                    <code>moveElement(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/MoveContentElementMessageParams.html" target="_self">MoveContentElementMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1686,8 +1631,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="402"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:402</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="390"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:390</a></div>
                         </td>
                     </tr>
 
@@ -1708,7 +1653,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1762,7 +1707,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateBoardTitle(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateBoardTitleMessageParams.html" target="_self">UpdateBoardTitleMessageParams</a>)</code>
+                    <code>updateBoardTitle(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateBoardTitleMessageParams.html" target="_self">UpdateBoardTitleMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1776,8 +1721,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -1798,7 +1743,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1852,7 +1797,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateBoardVisibility(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateBoardVisibilityMessageParams.html" target="_self">UpdateBoardVisibilityMessageParams</a>)</code>
+                    <code>updateBoardVisibility(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateBoardVisibilityMessageParams.html" target="_self">UpdateBoardVisibilityMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1866,8 +1811,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="284"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:284</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="271"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:271</a></div>
                         </td>
                     </tr>
 
@@ -1888,7 +1833,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -1942,7 +1887,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateCardHeight(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateCardHeightMessageParams.html" target="_self">UpdateCardHeightMessageParams</a>)</code>
+                    <code>updateCardHeight(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateCardHeightMessageParams.html" target="_self">UpdateCardHeightMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -1956,8 +1901,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -1978,7 +1923,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -2032,7 +1977,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateCardTitle(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateCardTitleMessageParams.html" target="_self">UpdateCardTitleMessageParams</a>)</code>
+                    <code>updateCardTitle(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateCardTitleMessageParams.html" target="_self">UpdateCardTitleMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -2046,8 +1991,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -2068,7 +2013,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -2122,7 +2067,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateColumnTitle(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateColumnTitleMessageParams.html" target="_self">UpdateColumnTitleMessageParams</a>)</code>
+                    <code>updateColumnTitle(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateColumnTitleMessageParams.html" target="_self">UpdateColumnTitleMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -2136,8 +2081,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="265"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:265</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="252"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:252</a></div>
                         </td>
                     </tr>
 
@@ -2158,7 +2103,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -2212,7 +2157,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElement(client: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateContentElementMessageParams.html" target="_self">UpdateContentElementMessageParams</a>)</code>
+                    <code>updateElement(socket: <a href="../undefineds/Socket.html" target="_self">Socket</a>, data: <a href="../classes/UpdateContentElementMessageParams.html" target="_self">UpdateContentElementMessageParams</a>)</code>
                 </td>
             </tr>
 
@@ -2226,8 +2171,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="364"
-                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:364</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="352"
+                                    class="link-to-prism">apps/server/src/modules/board/gateway/board-collaboration.gateway.ts:352</a></div>
                         </td>
                     </tr>
 
@@ -2248,7 +2193,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>client</td>
+                                                <td>socket</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#Socket" target="_self" >Socket</a></code>
                                             </td>
@@ -2299,7 +2244,6 @@
 import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import { UseGuards, UsePipes } from &#x27;@nestjs/common&#x27;;
 import { SubscribeMessage, WebSocketGateway, WsException } from &#x27;@nestjs/websockets&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { WsJwtAuthGuard } from &#x27;@src/modules/authentication/guard/ws-jwt-auth.guard&#x27;;
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from &#x27;../controller/mapper&#x27;;
 import { ColumnResponseMapper } from &#x27;../controller/mapper/column-response.mapper&#x27;;
@@ -2332,9 +2276,7 @@ import { BoardObjectType, ErrorType } from &#x27;./types&#x27;;
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway {
-	// TODO: use loggables instead of legacy logger
 	constructor(
-		private readonly logger: LegacyLogger,
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
@@ -2343,28 +2285,23 @@ export class BoardCollaborationGateway {
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
-	private getCurrentUser(client: Socket) {
-		const { user } &#x3D; client.handshake;
+	private getCurrentUser(socket: Socket) {
+		const { user } &#x3D; socket.handshake;
 		if (!user) throw new WsException(&#x27;Not Authenticated.&#x27;);
 		return user;
 	}
 
-	public afterInit(): void {
-		this.logger.log(&#x27;Socket gateway initialized&#x27;);
-	}
-
 	@SubscribeMessage(&#x27;delete-board-request&#x27;)
 	@UseRequestContext()
-	async deleteBoard(client: Socket, data: DeleteBoardMessageParams) {
+	async deleteBoard(socket: Socket, data: DeleteBoardMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
-			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			client.to(room).emit(&#x27;delete-board-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;delete-board-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;delete-board-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;delete-board-failure&#x27;, {
+			socket.emit(&#x27;delete-board-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -2374,16 +2311,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;update-board-title-request&#x27;)
 	@UseRequestContext()
-	async updateBoardTitle(client: Socket, data: UpdateBoardTitleMessageParams) {
+	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit(&#x27;update-board-title-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;update-board-title-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;update-board-title-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;update-board-title-failure&#x27;, {
+			socket.emit(&#x27;update-board-title-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2393,16 +2329,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;update-card-title-request&#x27;)
 	@UseRequestContext()
-	async updateCardTitle(client: Socket, data: UpdateCardTitleMessageParams) {
+	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;update-card-title-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;update-card-title-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;update-card-title-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;update-card-title-failure&#x27;, {
+			socket.emit(&#x27;update-card-title-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2412,16 +2347,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;update-card-height-request&#x27;)
 	@UseRequestContext()
-	async updateCardHeight(client: Socket, data: UpdateCardHeightMessageParams) {
+	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;update-card-height-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;update-card-height-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;update-card-height-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;update-card-height-failure&#x27;, {
+			socket.emit(&#x27;update-card-height-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2431,16 +2365,15 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;delete-card-request&#x27;)
 	@UseRequestContext()
-	async deleteCard(client: Socket, data: DeleteCardMessageParams) {
+	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
-			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			client.to(room).emit(&#x27;delete-card-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;delete-card-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;delete-card-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;delete-card-failure&#x27;, {
+			socket.emit(&#x27;delete-card-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -2450,20 +2383,19 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;create-card-request&#x27;)
 	@UseRequestContext()
-	async createCard(client: Socket, data: CreateCardMessageParams) {
+	async createCard(socket: Socket, data: CreateCardMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.columnId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			const card &#x3D; await this.columnUc.createCard(userId, data.columnId);
 			const responsePayload &#x3D; {
 				...data,
 				newCard: card.getProps(),
 			};
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit(&#x27;create-card-success&#x27;, { ...responsePayload, isOwnAction: false });
-			client.emit(&#x27;create-card-success&#x27;, { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;create-card-success&#x27;, responsePayload);
 		} catch (err) {
-			client.emit(&#x27;create-card-failure&#x27;, {
+			socket.emit(&#x27;create-card-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
@@ -2473,9 +2405,10 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;create-column-request&#x27;)
 	@UseRequestContext()
-	async createColumn(client: Socket, data: CreateColumnMessageParams) {
+	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
 			const column &#x3D; await this.boardUc.createColumn(userId, data.boardId);
 			const newColumn &#x3D; ColumnResponseMapper.mapToResponse(column);
 			const responsePayload &#x3D; {
@@ -2483,15 +2416,13 @@ export class BoardCollaborationGateway {
 				newColumn,
 			};
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit(&#x27;create-column-success&#x27;, { ...responsePayload, isOwnAction: false });
-			client.emit(&#x27;create-column-success&#x27;, { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;create-column-success&#x27;, responsePayload);
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
 			return responsePayload;
 		} catch (err) {
-			client.emit(&#x27;create-column-failure&#x27;, {
+			socket.emit(&#x27;create-column-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
@@ -2502,16 +2433,17 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;fetch-board-request&#x27;)
 	@UseRequestContext()
-	async fetchBoard(client: Socket, data: FetchBoardMessageParams) {
+	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			const board &#x3D; await this.boardUc.findBoard(userId, data.boardId);
 
 			const responsePayload &#x3D; BoardResponseMapper.mapToResponse(board);
-
-			client.emit(&#x27;fetch-board-success&#x27;, responsePayload);
+			await emitter.emitToClient(&#x27;fetch-board-success&#x27;, responsePayload);
 		} catch (err) {
-			client.emit(&#x27;fetch-board-failure&#x27;, {
+			socket.emit(&#x27;fetch-board-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_LOADED,
 				requestPayload: data,
@@ -2521,16 +2453,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;move-card-request&#x27;)
 	@UseRequestContext()
-	async moveCard(client: Socket, data: MoveCardMessageParams) {
+	async moveCard(socket: Socket, data: MoveCardMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;move-card-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;move-card-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;move-card-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;move-card-failure&#x27;, {
+			socket.emit(&#x27;move-card-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2540,16 +2472,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;move-column-request&#x27;)
 	@UseRequestContext()
-	async moveColumn(client: Socket, data: MoveColumnMessageParams) {
+	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.targetBoardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.targetBoardId);
-			client.to(room).emit(&#x27;move-column-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;move-column-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;move-column-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;move-column-failure&#x27;, {
+			socket.emit(&#x27;move-column-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2559,16 +2491,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;update-column-title-request&#x27;)
 	@UseRequestContext()
-	async updateColumnTitle(client: Socket, data: UpdateColumnTitleMessageParams) {
+	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.columnId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
-			client.to(room).emit(&#x27;update-column-title-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;update-column-title-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;update-column-title-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;update-column-title-failure&#x27;, {
+			socket.emit(&#x27;update-column-title-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2578,16 +2510,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;update-board-visibility-request&#x27;)
 	@UseRequestContext()
-	async updateBoardVisibility(client: Socket, data: UpdateBoardVisibilityMessageParams) {
+	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.boardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.boardId);
-			client.to(room).emit(&#x27;update-board-visibility-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;update-board-visibility-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;update-board-visibility-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;update-board-visibility-failure&#x27;, {
+			socket.emit(&#x27;update-board-visibility-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2597,16 +2529,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;delete-column-request&#x27;)
 	@UseRequestContext()
-	async deleteColumn(client: Socket, data: DeleteColumnMessageParams) {
+	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
-			const room &#x3D; await this.ensureUserInRoom(client, data.columnId);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.columnId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
-			client.to(room).emit(&#x27;delete-column-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;delete-column-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;delete-column-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;delete-column-failure&#x27;, {
+			socket.emit(&#x27;delete-column-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_COLUMN,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -2616,16 +2548,17 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;fetch-card-request&#x27;)
 	@UseRequestContext()
-	async fetchCards(client: Socket, data: FetchCardsMessageParams) {
+	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.cardIds[0]);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			const cards &#x3D; await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses &#x3D; cards.map((card) &#x3D;&gt; CardResponseMapper.mapToResponse(card));
 
-			await this.ensureUserInRoom(client, data.cardIds[0]);
-			client.emit(&#x27;fetch-card-success&#x27;, { cards: cardResponses, isOwnAction: true });
+			await emitter.emitToClient(&#x27;fetch-card-success&#x27;, { cards: cardResponses, isOwnAction: false });
 		} catch (err) {
-			client.emit(&#x27;fetch-card-failure&#x27;, {
+			socket.emit(&#x27;fetch-card-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_CARD,
 				errorType: ErrorType.NOT_LOADED,
 				requestPayload: data,
@@ -2635,20 +2568,20 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;create-element-request&#x27;)
 	@UseRequestContext()
-	async createElement(client: Socket, data: CreateContentElementMessageParams) {
+	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.cardId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			const element &#x3D; await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
+
 			const responsePayload &#x3D; {
 				...data,
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
-
-			const room &#x3D; await this.ensureUserInRoom(client, data.cardId);
-			client.to(room).emit(&#x27;create-element-success&#x27;, { ...responsePayload, isOwnAction: false });
-			client.emit(&#x27;create-element-success&#x27;, { ...responsePayload, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;create-element-success&#x27;, responsePayload);
 		} catch (err) {
-			client.emit(&#x27;create-element-failure&#x27;, {
+			socket.emit(&#x27;create-element-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_CREATED,
 				requestPayload: data,
@@ -2658,16 +2591,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;update-element-request&#x27;)
 	@UseRequestContext()
-	async updateElement(client: Socket, data: UpdateContentElementMessageParams) {
+	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.elementId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.elementId);
-			client.to(room).emit(&#x27;update-element-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;update-element-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;update-element-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;update-element-failure&#x27;, {
+			socket.emit(&#x27;update-element-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2677,16 +2610,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;delete-element-request&#x27;)
 	@UseRequestContext()
-	async deleteElement(client: Socket, data: DeleteContentElementMessageParams) {
+	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
-			const room &#x3D; await this.ensureUserInRoom(client, data.elementId);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.elementId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.elementUc.deleteElement(userId, data.elementId);
 
-			client.to(room).emit(&#x27;delete-element-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;delete-element-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;delete-element-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;delete-element-failure&#x27;, {
+			socket.emit(&#x27;delete-element-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_DELETED,
 				requestPayload: data,
@@ -2696,16 +2629,16 @@ export class BoardCollaborationGateway {
 
 	@SubscribeMessage(&#x27;move-element-request&#x27;)
 	@UseRequestContext()
-	async moveElement(client: Socket, data: MoveContentElementMessageParams) {
+	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
 		try {
-			const { userId } &#x3D; this.getCurrentUser(client);
+			const emitter &#x3D; await this.buildBoardSocketEmitter(socket, data.elementId);
+			const { userId } &#x3D; this.getCurrentUser(socket);
+
 			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
 
-			const room &#x3D; await this.ensureUserInRoom(client, data.elementId);
-			client.to(room).emit(&#x27;move-element-success&#x27;, { ...data, isOwnAction: false });
-			client.emit(&#x27;move-element-success&#x27;, { ...data, isOwnAction: true });
+			await emitter.emitToClientAndRoom(&#x27;move-element-success&#x27;, data);
 		} catch (err) {
-			client.emit(&#x27;move-element-failure&#x27;, {
+			socket.emit(&#x27;move-element-failure&#x27;, {
 				boardObjectType: BoardObjectType.BOARD_ELEMENT,
 				errorType: ErrorType.NOT_UPDATED,
 				requestPayload: data,
@@ -2713,16 +2646,21 @@ export class BoardCollaborationGateway {
 		}
 	}
 
-	private async ensureUserInRoom(client: Socket, id: string) {
+	private async buildBoardSocketEmitter(client: Socket, id: string) {
 		const rootId &#x3D; await this.getRootIdForId(id);
 		const room &#x3D; &#x60;board_${rootId}&#x60;;
-		await client.join(room);
-		return room;
+		return {
+			async emitToClient(event: string, data: object) {
+				await client.join(room);
+				client.emit(event, { ...data, isOwnAction: true });
+			},
+			async emitToClientAndRoom(event: string, data: object) {
+				await client.join(room);
+				client.to(room).emit(event, { ...data, isOwnAction: false });
+				client.emit(event, { ...data, isOwnAction: true });
+			},
+		};
 	}
-
-	// private async getRootIdForBoardDo(anyBoardDo: AnyBoardDo) {
-	// 	return anyDo.ancestorIds[0];
-	// }
 
 	private async getRootIdForId(id: string) {
 		const authorizable &#x3D; await this.authorizableService.findById(id);
