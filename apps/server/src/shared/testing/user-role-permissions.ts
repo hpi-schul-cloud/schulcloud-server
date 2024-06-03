@@ -1,6 +1,11 @@
 /*
 	This permission set is based on the current state of dBildungscloud.
 	Last Update: 2023-03-21
+
+	Removed from List but not cleanup/migrate to SCHOOL_* over migration from database, must be done as follow up task:
+	- Permission.IMPORT_USER_MIGRATE,
+	- Permission.IMPORT_USER_UPDATE,
+	- Permission.IMPORT_USER_VIEW,
 */
 import { Permission } from '@shared/domain/interface';
 
@@ -137,9 +142,6 @@ export const adminPermissions = [
 	Permission.SYNC_START,
 	Permission.SCHOOL_PERMISSION_VIEW,
 	Permission.SCHOOL_PERMISSION_CHANGE,
-	Permission.IMPORT_USER_MIGRATE,
-	Permission.IMPORT_USER_UPDATE,
-	Permission.IMPORT_USER_VIEW,
 	Permission.SCHOOL_TOOL_ADMIN,
 	Permission.GROUP_FULL_ADMIN,
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
