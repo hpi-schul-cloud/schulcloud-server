@@ -351,7 +351,6 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 				childstatusses.push(childStatus);
 			}
 		});
-		console.log(childstatusses);
 
 		return childstatusses;
 	}
