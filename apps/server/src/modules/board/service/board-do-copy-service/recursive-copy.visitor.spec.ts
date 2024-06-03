@@ -213,7 +213,7 @@ describe(RecursiveCopyVisitor.name, () => {
 			expect(status).toEqual<CopyStatus>({
 				copyEntity: expectedCopyEntity,
 				type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
-				status: CopyStatusEnum.SUCCESS,
+				status: CopyStatusEnum.PARTIAL,
 			});
 		});
 
