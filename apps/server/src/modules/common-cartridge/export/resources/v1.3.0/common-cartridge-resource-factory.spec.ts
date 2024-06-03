@@ -1,7 +1,4 @@
 import {
-	CommonCartridgeWebContentResourceV130
-} from "@modules/common-cartridge/export/resources/v1.3.0/common-cartridge-web-content-resource";
-import {
 	createCommonCartridgeManifestResourcePropsV130,
 	createCommonCartridgeWebContentResourcePropsV130,
 	createCommonCartridgeWeblinkResourcePropsV130,
@@ -9,6 +6,7 @@ import {
 import { ResourceTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
 import { CommonCartridgeResourceFactoryV130 } from './common-cartridge-resource-factory';
+import { CommonCartridgeWebContentResourceV130 } from './common-cartridge-web-content-resource';
 import {
 	CommonCartridgeWebLinkResourcePropsV130,
 	CommonCartridgeWebLinkResourceV130,

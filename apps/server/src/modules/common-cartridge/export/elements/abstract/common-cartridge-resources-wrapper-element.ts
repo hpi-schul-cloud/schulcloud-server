@@ -2,14 +2,14 @@ import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeElement, XmlObject } from '../../interfaces';
 
-export type CommonCartridgeOrganizationsWrapperElementProps = {
-	type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
+export type CommonCartridgeResourcesWrapperElementProps = {
+	type: CommonCartridgeElementType.RESOURCES_WRAPPER;
 	version: CommonCartridgeVersion;
 	items: CommonCartridgeElement[];
 };
 
-export abstract class CommonCartridgeOrganizationsWrapperElement extends CommonCartridgeElement {
-	constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementProps) {
+export abstract class CommonCartridgeResourcesWrapperElement extends CommonCartridgeElement {
+	constructor(private readonly props: CommonCartridgeResourcesWrapperElementProps) {
 		super(props);
 	}
 
@@ -17,7 +17,7 @@ export abstract class CommonCartridgeOrganizationsWrapperElement extends CommonC
 
 	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
 		switch (elementType) {
-			case CommonCartridgeElementType.ORGANIZATIONS_WRAPPER:
+			case CommonCartridgeElementType.RESOURCES_WRAPPER:
 				return this.getManifestXmlObjectInternal();
 			default:
 				throw new ElementTypeNotSupportedLoggableException(elementType);
@@ -26,22 +26,9 @@ export abstract class CommonCartridgeOrganizationsWrapperElement extends CommonC
 
 	private getManifestXmlObjectInternal(): XmlObject {
 		return {
-			organization: [
+			resources: [
 				{
-					$: {
-						identifier: 'org-1',
-						structure: 'rooted-hierarchy',
-					},
-					item: [
-						{
-							$: {
-								identifier: 'LearningModules',
-							},
-							item: this.props.items.map((items) =>
-								items.getManifestXmlObject(CommonCartridgeElementType.ORGANIZATION)
-							),
-						},
-					],
+					resource: this.props.items.map((items) => items.getManifestXmlObject(CommonCartridgeElementType.RESOURCE)),
 				},
 			],
 		};
