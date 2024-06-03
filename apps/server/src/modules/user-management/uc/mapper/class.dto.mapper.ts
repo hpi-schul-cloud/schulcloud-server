@@ -1,4 +1,4 @@
-import { Class } from '../../domain/class';
+import { Class } from '@src/modules/class/domain';
 import { ClassForUserListDto } from '../dto/class-for-user-list.dto';
 
 export class ClassDtoMapper {

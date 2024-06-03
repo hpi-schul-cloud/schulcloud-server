@@ -34,7 +34,7 @@ import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
-import { UserManagementModule } from '@modules/user-management/user-management.module';
+import { UserManagementApiModule } from '@modules/user-management/user-management-api.module';
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
@@ -96,7 +96,7 @@ const serverModules = [
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,
-	UserManagementModule,
+	UserManagementApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

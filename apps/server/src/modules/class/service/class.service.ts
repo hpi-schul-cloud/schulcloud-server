@@ -36,14 +36,20 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
-		const classes: Class[] = await this.classesRepo.findAllBySchoolId(schoolId);
+	public async findClassesForSchool(schoolId: EntityId, sortOrder?: number): Promise<Class[]> {
+		const classes: Class[] = await this.classesRepo.findAllBySchoolId(schoolId, sortOrder);
 
 		return classes;
 	}
 
 	public async findAllByUserId(userId: EntityId): Promise<Class[]> {
 		const classes: Class[] = await this.classesRepo.findAllByUserId(userId);
+
+		return classes;
+	}
+
+	public async getClassesByIds(classIds: string[], sortOrder?: number): Promise<Class[]> {
+		const classes: Class[] = await this.classesRepo.getClassesByIds(classIds, sortOrder);
 
 		return classes;
 	}

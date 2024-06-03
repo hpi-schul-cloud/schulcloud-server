@@ -1,6 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { User as UserEntity } from '@shared/domain/entity';
+import { RoleDto } from '@src/modules/role';
+import { School } from '@src/modules/school';
 import { User } from '../domain/user';
 import { UserRepo } from '../uc/interface/user.repo.interface';
 import { UserListQuery } from '../uc/query/user-list.query';
@@ -10,12 +12,16 @@ import { UserMapper } from './mapper/user.mapper';
 export class UserMikroOrmRepo implements UserRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async getAndCountUsers(query: UserListQuery): Promise<[User[], number]> {
+	public async getAndCountUsersBySchoolAndRole(
+		school: School,
+		role: RoleDto,
+		query: UserListQuery
+	): Promise<[User[], number]> {
 		const orderBy = query.sortBy && { [query.sortBy]: query.sortOrder };
 
 		const [entities, total] = await this.em.findAndCount(
 			UserEntity,
-			{ school: query.schoolId, roles: query.roleId },
+			{ school: school.id, roles: role.id },
 			{ limit: query.limit, offset: query.offset, orderBy }
 		);
 
@@ -24,12 +30,12 @@ export class UserMikroOrmRepo implements UserRepo {
 		return [users, total];
 	}
 
-	public async getUsersByIds(ids: string[], query: UserListQuery): Promise<User[]> {
+	public async getUsersByIds(ids: string[], school: School, role: RoleDto, query: UserListQuery): Promise<User[]> {
 		const orderBy = query.sortBy && { [query.sortBy]: query.sortOrder };
 
 		const entities = await this.em.find(
 			UserEntity,
-			{ school: query.schoolId, roles: query.roleId, id: ids },
+			{ school: school.id, roles: role.id, id: ids },
 			{ limit: query.limit, offset: query.offset, orderBy }
 		);
 
@@ -66,13 +72,15 @@ export class UserMikroOrmRepo implements UserRepo {
 
 	public async getAndCountUsersExceptWithIds(
 		idsToOmit: string[],
+		school: School,
+		role: RoleDto,
 		query: UserListQuery,
 		limit?: number,
 		offset?: number
 	): Promise<[User[], number]> {
 		const [entities, total] = await this.em.findAndCount(
 			UserEntity,
-			{ school: query.schoolId, roles: query.roleId, id: { $nin: idsToOmit } },
+			{ school: school.id, roles: role.id, id: { $nin: idsToOmit } },
 			{ limit: limit ?? query.limit, offset: offset ?? query.offset }
 		);
 
@@ -81,8 +89,8 @@ export class UserMikroOrmRepo implements UserRepo {
 		return [users, total];
 	}
 
-	public async countUsers(query: UserListQuery): Promise<number> {
-		const total = await this.em.count(UserEntity, { school: query.schoolId, roles: query.roleId });
+	public async countUsers(school: School, role: RoleDto): Promise<number> {
+		const total = await this.em.count(UserEntity, { school: school.id, roles: role.id });
 
 		return total;
 	}
