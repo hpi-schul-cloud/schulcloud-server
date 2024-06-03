@@ -7,7 +7,9 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
+import { DB_URL } from '@src/config';
 import { LegacyLogger } from '@src/core/logger';
+import { MongoIoAdapter } from '@src/infra/socketio';
 import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
@@ -21,6 +23,11 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
+
+	const mongoIoAdapter = new MongoIoAdapter(nestApp);
+	await mongoIoAdapter.connectToMongoDb(DB_URL);
+
+	nestApp.useWebSocketAdapter(mongoIoAdapter);
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
