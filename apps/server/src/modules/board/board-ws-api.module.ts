@@ -4,11 +4,12 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { BoardModule } from './board.module';
 import { BoardCollaborationGateway } from './gateway/board-collaboration.gateway';
+import { MetricsService } from './metrics/metrics.service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 
 @Module({
 	imports: [BoardModule, forwardRef(() => AuthorizationModule), LoggerModule],
-	providers: [BoardCollaborationGateway, CardUc, ColumnUc, ElementUc, BoardUc, CourseRepo],
+	providers: [BoardCollaborationGateway, CardUc, ColumnUc, ElementUc, BoardUc, CourseRepo, MetricsService],
 	exports: [],
 })
 export class BoardWsApiModule {}
