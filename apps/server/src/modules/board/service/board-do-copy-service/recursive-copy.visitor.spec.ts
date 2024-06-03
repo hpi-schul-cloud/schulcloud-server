@@ -2,9 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CollaborativeTextEditorElement, LinkElement } from '@shared/domain/domainobject';
+import { Card, CollaborativeTextEditorElement, Column, LinkElement } from '@shared/domain/domainobject';
 import {
+	cardFactory,
 	collaborativeTextEditorElementFactory,
+	columnBoardFactory,
+	columnFactory,
 	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -12,7 +15,7 @@ import {
 	setupEntities,
 } from '@shared/testing';
 import { CopyFileDto } from '@src/modules/files-storage-client/dto';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../../copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '../../../copy-helper';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 import { SchoolSpecificFileCopyServiceFactory } from './school-specific-file-copy-service.factory';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
@@ -22,6 +25,7 @@ describe(RecursiveCopyVisitor.name, () => {
 
 	let fileCopyServiceFactory: DeepMocked<SchoolSpecificFileCopyServiceFactory>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let toolFeatures: IToolFeatures;
 
@@ -38,6 +42,10 @@ describe(RecursiveCopyVisitor.name, () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
+				{
 					provide: ToolFeatures,
 					useValue: {
 						ctlToolsCopyEnabled: true,
@@ -48,6 +56,7 @@ describe(RecursiveCopyVisitor.name, () => {
 
 		fileCopyServiceFactory = module.get(SchoolSpecificFileCopyServiceFactory);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		copyHelperService = module.get(CopyHelperService);
 		toolFeatures = module.get(ToolFeatures);
 
 		await setupEntities();
@@ -86,7 +95,12 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock } = setup();
 
 				const linkElement = linkElementFactory.build();
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(
+					fileCopyServiceMock,
+					contextExternalToolService,
+					toolFeatures,
+					copyHelperService
+				);
 
 				await visitor.visitLinkElementAsync(linkElement);
 
@@ -99,7 +113,12 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock, imageUrl } = setup({ withFileCopy: true });
 
 				const linkElement = linkElementFactory.build({ imageUrl });
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(
+					fileCopyServiceMock,
+					contextExternalToolService,
+					toolFeatures,
+					copyHelperService
+				);
 
 				await visitor.visitLinkElementAsync(linkElement);
 
@@ -112,7 +131,12 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock, imageUrl, newFileId } = setup({ withFileCopy: true });
 
 				const linkElement = linkElementFactory.build({ imageUrl });
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(
+					fileCopyServiceMock,
+					contextExternalToolService,
+					toolFeatures,
+					copyHelperService
+				);
 
 				await visitor.visitLinkElementAsync(linkElement);
 				const copy = visitor.copyMap.get(linkElement.id) as LinkElement;
@@ -126,7 +150,12 @@ describe(RecursiveCopyVisitor.name, () => {
 				const { fileCopyServiceMock } = setup({ withFileCopy: true });
 
 				const linkElement = linkElementFactory.build({ imageUrl: `https://abc.de/file/unknown-file-id` });
-				const visitor = new RecursiveCopyVisitor(fileCopyServiceMock, contextExternalToolService, toolFeatures);
+				const visitor = new RecursiveCopyVisitor(
+					fileCopyServiceMock,
+					contextExternalToolService,
+					toolFeatures,
+					copyHelperService
+				);
 
 				await visitor.visitLinkElementAsync(linkElement);
 				const copy = visitor.copyMap.get(linkElement.id) as LinkElement;
@@ -145,7 +174,8 @@ describe(RecursiveCopyVisitor.name, () => {
 			const visitor = new RecursiveCopyVisitor(
 				createMock<SchoolSpecificFileCopyService>(),
 				contextExternalToolService,
-				toolFeatures
+				toolFeatures,
+				copyHelperService
 			);
 
 			return {
@@ -184,7 +214,8 @@ describe(RecursiveCopyVisitor.name, () => {
 			const visitor = new RecursiveCopyVisitor(
 				createMock<SchoolSpecificFileCopyService>(),
 				contextExternalToolService,
-				toolFeatures
+				toolFeatures,
+				copyHelperService
 			);
 			const nowMock = new Date(2020, 1, 1, 0, 0, 0);
 
@@ -226,6 +257,95 @@ describe(RecursiveCopyVisitor.name, () => {
 			expect(copyMapElement?.id).toBeDefined();
 			expect(copyMapElement?.createdAt).toEqual(nowMock);
 			expect(copyMapElement?.updatedAt).toEqual(nowMock);
+		});
+	});
+
+	describe('visitColumnBoardAsync', () => {
+		const setup = () => {
+			const recursiveCopyVisitor = new RecursiveCopyVisitor(
+				createMock<SchoolSpecificFileCopyService>(),
+				contextExternalToolService,
+				toolFeatures,
+				copyHelperService
+			);
+
+			const collaborativeTextEditorElement = collaborativeTextEditorElementFactory.build();
+			const card = cardFactory.build({ children: [collaborativeTextEditorElement] });
+			const boardDo = columnFactory.build({ children: [card] });
+			const columnBoard = columnBoardFactory.build({ children: [boardDo] });
+
+			copyHelperService.deriveStatusFromElements.mockReturnValueOnce(CopyStatusEnum.PARTIAL);
+
+			return {
+				columnBoard,
+				recursiveCopyVisitor,
+				collaborativeTextEditorElement,
+			};
+		};
+
+		it('should set result map', async () => {
+			const { columnBoard, recursiveCopyVisitor } = setup();
+
+			await recursiveCopyVisitor.visitColumnBoardAsync(columnBoard);
+
+			const expectedElements = [
+				{
+					copyEntity: expect.any(Column),
+					elements: [
+						{
+							copyEntity: expect.any(Card),
+							elements: [
+								{
+									copyEntity: expect.any(CollaborativeTextEditorElement),
+									status: CopyStatusEnum.PARTIAL,
+									type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+								},
+							],
+							status: CopyStatusEnum.SUCCESS,
+							type: CopyElementType.CARD,
+						},
+					],
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.COLUMN,
+				},
+			];
+			const expectedEntity = {
+				id: expect.any(String),
+				title: columnBoard.title,
+				context: columnBoard.context,
+				createdAt: expect.any(Date),
+				updatedAt: expect.any(Date),
+				isVisible: false,
+				layout: columnBoard.layout,
+			};
+			const expectedResult = {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				copyEntity: expect.objectContaining(expectedEntity),
+				type: CopyElementType.COLUMNBOARD,
+				status: CopyStatusEnum.PARTIAL,
+				elements: expectedElements,
+			};
+
+			expect(recursiveCopyVisitor.resultMap.get(columnBoard.id)).toEqual(expectedResult);
+		});
+
+		it('should set copyMap', async () => {
+			const { columnBoard, recursiveCopyVisitor } = setup();
+
+			await recursiveCopyVisitor.visitColumnBoardAsync(columnBoard);
+
+			const expectedEntity = {
+				id: expect.any(String),
+				title: columnBoard.title,
+				context: columnBoard.context,
+				createdAt: expect.any(Date),
+				updatedAt: expect.any(Date),
+				isVisible: false,
+				layout: columnBoard.layout,
+			};
+
+			const copyMapElement = recursiveCopyVisitor.copyMap.get(columnBoard.id);
+			expect(copyMapElement).toEqual(expect.objectContaining(expectedEntity));
 		});
 	});
 });
