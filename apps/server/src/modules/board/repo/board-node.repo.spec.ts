@@ -190,4 +190,73 @@ describe('BoardNodeRepo', () => {
 			expect(await em.count(BoardNodeEntity)).toBe(0);
 		});
 	});
+
+	describe('identity map', () => {
+		const setup = async () => {
+			const cards = cardFactory.buildList(2);
+			const column = columnFactory.build({ children: cards });
+			const board = columnBoardFactory.build({ children: [column] });
+
+			await repo.save(board);
+			em.clear();
+
+			return { boardId: board.id, columnId: column.id, cardIds: cards.map((c) => c.id) };
+		};
+
+		describe('when loading a node twice', () => {
+			it('should keep referential identity', async () => {
+				const { boardId } = await setup();
+
+				const result1 = await repo.findById(boardId);
+				const result2 = await repo.findById(boardId);
+
+				expect(result1 === result2).toBe(true);
+			});
+		});
+
+		describe('when loading a child', () => {
+			it('should ensure referential identity', async () => {
+				const { boardId, columnId } = await setup();
+
+				const resultBoard = await repo.findById(boardId);
+				const resultColumn = await repo.findById(columnId);
+
+				expect(resultColumn === resultBoard.children[0]).toBe(true);
+			});
+		});
+
+		describe('when loading a parent', () => {
+			it('should ensure referential identity', async () => {
+				const { boardId, columnId } = await setup();
+
+				const resultColumn = await repo.findById(columnId);
+				const resultBoard = await repo.findById(boardId);
+
+				expect(resultColumn === resultBoard.children[0]).toBe(true);
+			});
+
+			describe('with limited depth', () => {
+				it('should keep referential identity', async () => {
+					const { boardId, columnId } = await setup();
+
+					const resultColumn = await repo.findById(columnId);
+					const resultBoard = await repo.findById(boardId, 1);
+
+					expect(resultBoard.children[0] === resultColumn).toBe(true);
+				});
+
+				it('should not overwrite any descendants', async () => {
+					const { boardId, columnId, cardIds } = await setup();
+
+					const resultColumn = await repo.findById(columnId);
+					await repo.findById(boardId, 1);
+					const resultCard1 = await repo.findById(cardIds[0]);
+					const resultCard2 = await repo.findById(cardIds[1]);
+
+					expect(resultColumn.children[0] === resultCard1).toBe(true);
+					expect(resultColumn.children[1] === resultCard2).toBe(true);
+				});
+			});
+		});
+	});
 });
