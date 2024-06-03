@@ -316,7 +316,17 @@ export class BoardNodeCopyService {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		context: CopyContext
 	): Promise<CopyStatus> {
-		return Promise.reject(new Error(`Cannot copy element of type: '${original.constructor.name}'`));
+		const copy = new CollaborativeTextEditorElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+			status: CopyStatusEnum.PARTIAL,
+		};
+		return Promise.resolve(result);
 	}
 
 	async copyMediaBoard(original: MediaBoard, context: CopyContext): Promise<CopyStatus> {
