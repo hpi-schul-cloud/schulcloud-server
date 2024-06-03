@@ -11,7 +11,7 @@ import {
 	isSubmissionItemContent,
 	SubmissionItem,
 	UserWithBoardRoles,
-} from '@modules/board';
+} from '@modules/board/domain';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 
