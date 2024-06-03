@@ -1,10 +1,12 @@
 import { WsValidationPipe, Socket } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
+import { Server } from 'socket.io';
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
+import { MetricsService } from '../metrics/metrics.service';
 import { BoardDoAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
@@ -33,12 +35,17 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway {
+	@WebSocketServer()
+	server?: Server;
+
+	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
+		private readonly metricsService: MetricsService,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -46,6 +53,28 @@ export class BoardCollaborationGateway {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
+	}
+
+	private getActiveBoardRooms() {
+		if (!this.server) {
+			throw new Error('Server is not initialized');
+		}
+
+		const activeRooms = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) => key.startsWith('board_'));
+		return activeRooms;
+	}
+
+	private getActiveUsers() {
+		if (!this.server) {
+			throw new Error('Server is not initialized');
+		}
+
+		const activeRooms = Array.from(this.server.of('/').adapter.sids.keys());
+		return activeRooms;
+	}
+
+	public afterInit(): void {
+		// this.logger.log('Socket gateway initialized');
 	}
 
 	@SubscribeMessage('delete-board-request')
@@ -171,6 +200,12 @@ export class BoardCollaborationGateway {
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 			await emitter.emitToClient('fetch-board-success', responsePayload);
+
+			const roomCount = Object.keys(this.getActiveBoardRooms()).length;
+			console.log('rooms', this.getActiveBoardRooms());
+			console.log('roomCount', this.getActiveBoardRooms());
+			console.log('active users', this.getActiveUsers());
+			this.metricsService.setNumberOfBoardRooms(roomCount);
 		} catch (err) {
 			socket.emit('fetch-board-failure', data);
 		}
