@@ -80,7 +80,7 @@ describe(UserDeletedEventHandlerService.name, () => {
 
 				await service.deleteUserData(userId);
 
-				expect(boardNodeService.delete).toHaveBeenCalledWith([board]);
+				expect(boardNodeService.delete).toHaveBeenCalledWith(board);
 			});
 
 			it('should return a report report', async () => {

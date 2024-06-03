@@ -16,7 +16,7 @@ import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { BoardExternalReferenceType, MediaBoard } from '../../domain';
 import { BoardNodeService } from '../board-node.service';
-import { MediaBoardService } from '../media-board';
+import { MediaBoardService } from '../media-board/media-board.service';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

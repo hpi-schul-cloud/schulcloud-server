@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
