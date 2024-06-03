@@ -56,7 +56,7 @@ describe(`content element update content (api)`, () => {
 			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
 			const fileElement = fileElementEntityFactory.withParent(parentCard).build();
 			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build({
-				dueDate: null,
+				dueDate: undefined,
 			});
 
 			const tomorrow = new Date(Date.now() + 86400000);
@@ -181,7 +181,8 @@ describe(`content element update content (api)`, () => {
 				},
 			});
 			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
-			expect(result.dueDate).toBeNull();
+			expect(result.id).toEqual(submissionContainerElement.id);
+			expect(result.dueDate).toBeUndefined();
 		});
 
 		it('should set dueDate value when provided for submission container element', async () => {
@@ -212,8 +213,8 @@ describe(`content element update content (api)`, () => {
 				},
 			});
 			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElementWithDueDate.id);
-
-			expect(result.dueDate).toBeNull();
+			expect(result.id).toEqual(submissionContainerElementWithDueDate.id);
+			expect(result.dueDate).toBeUndefined();
 		});
 
 		it('should return status 400 for wrong date format for submission container element', async () => {
