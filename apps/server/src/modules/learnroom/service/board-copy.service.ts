@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
 import {
 	ColumnboardBoardElement,
+	ColumnBoardNode,
 	Course,
 	isLesson,
 	isTask,
@@ -96,7 +97,10 @@ export class BoardCopyService {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
-			if (element.boardElementType === LegacyBoardElementType.ColumnBoard && element.target instanceof ColumnBoard) {
+			if (
+				element.boardElementType === LegacyBoardElementType.ColumnBoard &&
+				element.target instanceof ColumnBoardNode
+			) {
 				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
@@ -128,7 +132,11 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyColumnBoard(columnBoard: ColumnBoard, user: User, destinationCourse: Course): Promise<CopyStatus> {
+	private async copyColumnBoard(
+		columnBoard: ColumnBoardNode,
+		user: User,
+		destinationCourse: Course
+	): Promise<CopyStatus> {
 		return this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: columnBoard.id,
 			userId: user.id,
