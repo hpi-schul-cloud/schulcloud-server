@@ -169,7 +169,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
 			expect(data.length).toBe(2);
@@ -196,7 +196,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
 			expect(data.length).toBe(2);
@@ -221,7 +221,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
 			expect(data.length).toBe(2);
@@ -266,7 +266,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(0);
 			expect(data.length).toBe(0);
@@ -291,7 +291,7 @@ describe('users admin repo', () => {
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
 			const userListResponse = response as UserListResponse[];
-			const data = userListResponse[0].data;
+			const { data } = userListResponse[0];
 
 			expect(data.length).toBe(0);
 			expect(userListResponse[0].total).toBe(2);
