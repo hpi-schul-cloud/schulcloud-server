@@ -3,19 +3,17 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 import { MongoIoAdapter } from '@infra/socketio';
-import { BoardExternalReferenceType, CardProps, ContentElementType } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	richTextElementNodeFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections, courseFactory, userFactory } from '@shared/testing';
 import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	richTextElementEntityFactory,
+} from '../../testing';
+import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 
@@ -55,15 +53,15 @@ describe(BoardCollaborationGateway.name, () => {
 
 		ioClient = await getSocketApiClient(app, user);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const columnNode2 = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		const columnNode2 = columnEntityFactory.withParent(columnBoardNode).build();
 
-		const cardNodes = cardNodeFactory.buildListWithId(2, { parent: columnNode });
-		const elementNodes = richTextElementNodeFactory.buildListWithId(3, { parent: cardNodes[0] });
+		const cardNodes = cardEntityFactory.withParent(columnBoardNode).buildList(2);
+		const elementNodes = richTextElementEntityFactory.withParent(cardNodes[0]).buildList(3);
 
 		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]);
 
