@@ -1,4 +1,4 @@
-import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +13,6 @@ export class RoomsService {
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,
 		private readonly boardRepo: LegacyBoardRepo,
-		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
