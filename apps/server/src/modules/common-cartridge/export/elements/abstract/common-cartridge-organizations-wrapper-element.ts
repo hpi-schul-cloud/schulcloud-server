@@ -8,6 +8,10 @@ export type CommonCartridgeOrganizationsWrapperElementProps = {
 	items: CommonCartridgeElement[];
 };
 
+/**
+ * This abstract class was created to reduce code duplication and
+ * keep the SonarCloud code duplication rate below 3%.
+ */
 export abstract class CommonCartridgeOrganizationsWrapperElement extends CommonCartridgeElement {
 	constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementProps) {
 		super(props);
