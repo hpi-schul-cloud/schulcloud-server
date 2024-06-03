@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
@@ -48,6 +48,7 @@ describe('recursive board copy visitor', () => {
 	let service: BoardDoCopyService;
 
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,6 +57,10 @@ describe('recursive board copy visitor', () => {
 				{
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
+				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
 				},
 				{
 					provide: ToolFeatures,
@@ -68,6 +73,7 @@ describe('recursive board copy visitor', () => {
 
 		service = module.get(BoardDoCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		copyHelperService = module.get(CopyHelperService);
 
 		await setupEntities();
 	});
@@ -92,6 +98,7 @@ describe('recursive board copy visitor', () => {
 		describe('when copying empty column board', () => {
 			const setup = () => {
 				const original = columnBoardFactory.build();
+				copyHelperService.deriveStatusFromElements.mockReturnValueOnce(CopyStatusEnum.SUCCESS);
 
 				return { original, ...setupfileCopyService() };
 			};
