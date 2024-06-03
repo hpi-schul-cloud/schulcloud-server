@@ -19,6 +19,7 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(CommonCartridgeApiModule, nestExpressAdapter);
 
+	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 	await nestApp.init();
 
