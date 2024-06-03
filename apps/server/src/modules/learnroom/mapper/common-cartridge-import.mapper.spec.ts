@@ -78,6 +78,21 @@ describe('CommonCartridgeImportMapper', () => {
 				});
 			});
 		});
+
+		describe('when organization is provided and withTitle is false', () => {
+			const setup = () => setupOrganization();
+
+			it('should set the title to an empty string', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization, false);
+
+				expect(result).toEqual<CardInitProps>({
+					title: '',
+					height: 150,
+				});
+			});
+		});
 	});
 
 	describe('mapResourceTypeToContentElementType', () => {

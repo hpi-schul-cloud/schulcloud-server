@@ -17,9 +17,9 @@ export class CommonCartridgeImportMapper {
 		};
 	}
 
-	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps): CardInitProps {
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps, withTitle = true): CardInitProps {
 		return {
-			title: organization.title,
+			title: withTitle ? organization.title : '',
 			height: 150,
 		};
 	}
