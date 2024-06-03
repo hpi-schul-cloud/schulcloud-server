@@ -13,7 +13,7 @@ metadata:
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
-  replicas: {{ BOARD_COLLABORATION_SERVER_REPLICAS|default("1", true) }}
+  replicas: {{ BOARD_COLLABORATION_SERVER_REPLICAS|default("3", true) }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

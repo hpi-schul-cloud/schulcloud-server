@@ -1,8 +1,3 @@
-import { ICurrentUser } from '@modules/authentication';
-import { Socket as IoSocket } from 'socket.io';
-
-export type Socket = IoSocket & { handshake: { user?: ICurrentUser } };
-
 export enum ErrorType {
 	NOT_CREATED = 'notCreated',
 	NOT_LOADED = 'notLoaded',

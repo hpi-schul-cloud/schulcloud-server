@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
+	cleanupCollections,
 	schoolSystemOptionsEntityFactory,
 	systemEntityFactory,
 	TestApiClient,
@@ -12,6 +13,7 @@ import {
 } from '@shared/testing';
 import { schoolEntityFactory } from '@shared/testing/factory/school-entity.factory';
 import { SchoolSystemOptionsEntity } from '../../entity';
+import { ProvisioningOptionsInterface } from '../../interface';
 import { SchulConneXProvisioningOptionsResponse } from '../dto';
 
 const baseRouteName = '/schools';
@@ -36,6 +38,10 @@ describe('School (API)', () => {
 		await app.close();
 	});
 
+	afterEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	describe('[GET] /schools/:schoolId/systems/:systemId/provisioning-options', () => {
 		describe('when an admin requests the configured options for a system at their school', () => {
 			const setup = async () => {
@@ -52,6 +58,7 @@ describe('School (API)', () => {
 						groupProvisioningClassesEnabled: true,
 						groupProvisioningCoursesEnabled: true,
 						groupProvisioningOtherEnabled: true,
+						schoolExternalToolProvisioningEnabled: true,
 					},
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
@@ -78,6 +85,7 @@ describe('School (API)', () => {
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,
 					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 			});
 		});
@@ -126,7 +134,69 @@ describe('School (API)', () => {
 	});
 
 	describe('[POST] /schools/:schoolId/systems/:systemId/provisioning-options', () => {
-		describe('when an admin requests the configured options for a system at their school', () => {
+		describe('when an admin creates new school system options', () => {
+			const setup = async () => {
+				const system: SystemEntity = systemEntityFactory.buildWithId({
+					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+				});
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([school, adminAccount, adminUser, system]);
+				em.clear();
+
+				const adminClient = await testApiClient.login(adminAccount);
+
+				return {
+					adminClient,
+					school,
+					system,
+				};
+			};
+
+			it('should create the entity', async () => {
+				const { adminClient, school, system } = await setup();
+
+				await adminClient.post(`/${school.id}/systems/${system.id}/provisioning-options`, {
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningOtherEnabled: true,
+					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
+				});
+
+				const entities = await em.find(SchoolSystemOptionsEntity, {});
+				expect(entities).toHaveLength(1);
+				expect(entities[0].provisioningOptions).toEqual<ProvisioningOptionsInterface>({
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningOtherEnabled: true,
+					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
+				});
+			});
+
+			it('should return the options', async () => {
+				const { adminClient, school, system } = await setup();
+
+				const response = await adminClient.post(`/${school.id}/systems/${system.id}/provisioning-options`, {
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningOtherEnabled: true,
+					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
+				});
+
+				expect(response.status).toEqual(HttpStatus.CREATED);
+				expect(response.body).toEqual<SchulConneXProvisioningOptionsResponse>({
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningOtherEnabled: true,
+					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
+				});
+			});
+		});
+
+		describe('when an admin updates the school system options', () => {
 			const setup = async () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -141,6 +211,7 @@ describe('School (API)', () => {
 						groupProvisioningClassesEnabled: false,
 						groupProvisioningCoursesEnabled: false,
 						groupProvisioningOtherEnabled: false,
+						schoolExternalToolProvisioningEnabled: false,
 					},
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
@@ -158,24 +229,23 @@ describe('School (API)', () => {
 				};
 			};
 
-			it('should create the entity', async () => {
+			it('should update the entity', async () => {
 				const { adminClient, school, system, schoolSystemOptions } = await setup();
 
 				await adminClient.post(`/${school.id}/systems/${system.id}/provisioning-options`, {
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,
 					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 
-				expect(await em.findOne(SchoolSystemOptionsEntity, { id: schoolSystemOptions.id })).toEqual(
-					expect.objectContaining({
-						provisioningOptions: {
-							groupProvisioningClassesEnabled: true,
-							groupProvisioningOtherEnabled: true,
-							groupProvisioningCoursesEnabled: true,
-						},
-					})
-				);
+				const entity = await em.findOne(SchoolSystemOptionsEntity, { id: schoolSystemOptions.id });
+				expect(entity?.provisioningOptions).toEqual<ProvisioningOptionsInterface>({
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningOtherEnabled: true,
+					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
+				});
 			});
 
 			it('should return the options', async () => {
@@ -185,6 +255,7 @@ describe('School (API)', () => {
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,
 					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
@@ -192,6 +263,7 @@ describe('School (API)', () => {
 					groupProvisioningClassesEnabled: true,
 					groupProvisioningOtherEnabled: true,
 					groupProvisioningCoursesEnabled: true,
+					schoolExternalToolProvisioningEnabled: true,
 				});
 			});
 		});
