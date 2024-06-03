@@ -3,12 +3,6 @@ import { IsBoolean, IsDate, IsEnum, IsIn, IsInt, IsMongoId, IsOptional, Max, Min
 import { SortableField } from '../type/sortable-field';
 
 export class UserListQuery {
-	@IsMongoId()
-	public schoolId!: EntityId;
-
-	@IsMongoId()
-	public roleId!: EntityId;
-
 	@IsInt()
 	@Min(5)
 	@Max(100)

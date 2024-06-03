@@ -27,8 +27,8 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.schoolId;
 	}
 
-	get userIds(): EntityId[] | undefined {
-		return this.props.userIds;
+	get userIds(): EntityId[] {
+		return this.props.userIds || [];
 	}
 
 	get teacherIds(): EntityId[] {
@@ -73,5 +73,11 @@ export class Class extends DomainObject<ClassProps> {
 
 	public removeUser(userId: string) {
 		this.props.userIds = this.props.userIds?.filter((userId1) => userId1 !== userId);
+	}
+
+	public isClassOfUser(userId: string): boolean {
+		const result = this.userIds.includes(userId);
+
+		return result;
 	}
 }

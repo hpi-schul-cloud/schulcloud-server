@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { Class } from './class';
+import { Class } from '@src/modules/class/domain';
 
 export interface UserProps extends AuthorizableObject {
 	firstName: string;

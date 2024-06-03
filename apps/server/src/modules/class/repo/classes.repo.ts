@@ -10,8 +10,12 @@ import { ClassMapper } from './mapper';
 export class ClassesRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findAllBySchoolId(schoolId: EntityId): Promise<Class[]> {
-		const classes: ClassEntity[] = await this.em.find(ClassEntity, { schoolId: new ObjectId(schoolId) });
+	async findAllBySchoolId(schoolId: EntityId, sortOrder?: number): Promise<Class[]> {
+		const classes: ClassEntity[] = await this.em.find(
+			ClassEntity,
+			{ schoolId: new ObjectId(schoolId) },
+			{ orderBy: { gradeLevel: sortOrder, name: sortOrder } }
+		);
 
 		const mapped: Class[] = ClassMapper.mapToDOs(classes);
 
@@ -26,6 +30,18 @@ export class ClassesRepo {
 		const mapped: Class[] = ClassMapper.mapToDOs(classes);
 
 		return mapped;
+	}
+
+	public async getClassesByIds(classIds: EntityId[], sortOrder?: number): Promise<Class[]> {
+		const classes = await this.em.find(
+			ClassEntity,
+			{ id: classIds },
+			{ orderBy: { gradeLevel: sortOrder, name: sortOrder } }
+		);
+
+		const classDos = ClassMapper.mapToDOs(classes);
+
+		return classDos;
 	}
 
 	async updateMany(classes: Class[]): Promise<void> {
