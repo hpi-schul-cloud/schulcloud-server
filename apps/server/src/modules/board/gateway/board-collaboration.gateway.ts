@@ -28,7 +28,6 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import { BoardObjectType, ErrorType } from './types';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -59,11 +58,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('delete-board-success', data);
 		} catch (err) {
-			socket.emit('delete-board-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			socket.emit('delete-board-failure', data);
 		}
 	}
 
@@ -77,11 +72,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('update-board-title-success', data);
 		} catch (err) {
-			socket.emit('update-board-title-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('update-board-title-failure', data);
 		}
 	}
 
@@ -95,11 +86,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('update-card-title-success', data);
 		} catch (err) {
-			socket.emit('update-card-title-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('update-card-title-failure', data);
 		}
 	}
 
@@ -113,11 +100,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('update-card-height-success', data);
 		} catch (err) {
-			socket.emit('update-card-height-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('update-card-height-failure', data);
 		}
 	}
 
@@ -131,11 +114,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('delete-card-success', data);
 		} catch (err) {
-			socket.emit('delete-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			socket.emit('delete-card-failure', data);
 		}
 	}
 
@@ -153,11 +132,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('create-card-success', responsePayload);
 		} catch (err) {
-			socket.emit('create-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_CREATED,
-				requestPayload: data,
-			});
+			socket.emit('create-card-failure', data);
 		}
 	}
 
@@ -180,11 +155,7 @@ export class BoardCollaborationGateway {
 			// of createColumn and move the card into that column
 			return responsePayload;
 		} catch (err) {
-			socket.emit('create-column-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_CREATED,
-				requestPayload: data,
-			});
+			socket.emit('create-column-failure', data);
 			return {};
 		}
 	}
@@ -201,11 +172,7 @@ export class BoardCollaborationGateway {
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 			await emitter.emitToClient('fetch-board-success', responsePayload);
 		} catch (err) {
-			socket.emit('fetch-board-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_LOADED,
-				requestPayload: data,
-			});
+			socket.emit('fetch-board-failure', data);
 		}
 	}
 
@@ -220,11 +187,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('move-card-success', data);
 		} catch (err) {
-			socket.emit('move-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('move-card-failure', data);
 		}
 	}
 
@@ -239,11 +202,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('move-column-success', data);
 		} catch (err) {
-			socket.emit('move-column-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('move-column-failure', data);
 		}
 	}
 
@@ -258,11 +217,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('update-column-title-success', data);
 		} catch (err) {
-			socket.emit('update-column-title-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('update-column-title-failure', data);
 		}
 	}
 
@@ -277,11 +232,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('update-board-visibility-success', data);
 		} catch (err) {
-			socket.emit('update-board-visibility-failure', {
-				boardObjectType: BoardObjectType.BOARD,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('update-board-visibility-failure', data);
 		}
 	}
 
@@ -296,11 +247,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('delete-column-success', data);
 		} catch (err) {
-			socket.emit('delete-column-failure', {
-				boardObjectType: BoardObjectType.BOARD_COLUMN,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			socket.emit('delete-column-failure', data);
 		}
 	}
 
@@ -316,11 +263,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClient('fetch-card-success', { cards: cardResponses, isOwnAction: false });
 		} catch (err) {
-			socket.emit('fetch-card-failure', {
-				boardObjectType: BoardObjectType.BOARD_CARD,
-				errorType: ErrorType.NOT_LOADED,
-				requestPayload: data,
-			});
+			socket.emit('fetch-card-failure', data);
 		}
 	}
 
@@ -339,11 +282,7 @@ export class BoardCollaborationGateway {
 			};
 			await emitter.emitToClientAndRoom('create-element-success', responsePayload);
 		} catch (err) {
-			socket.emit('create-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_CREATED,
-				requestPayload: data,
-			});
+			socket.emit('create-element-failure', data);
 		}
 	}
 
@@ -358,11 +297,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('update-element-success', data);
 		} catch (err) {
-			socket.emit('update-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('update-element-failure', data);
 		}
 	}
 
@@ -377,11 +312,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('delete-element-success', data);
 		} catch (err) {
-			socket.emit('delete-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_DELETED,
-				requestPayload: data,
-			});
+			socket.emit('delete-element-failure', data);
 		}
 	}
 
@@ -396,11 +327,7 @@ export class BoardCollaborationGateway {
 
 			await emitter.emitToClientAndRoom('move-element-success', data);
 		} catch (err) {
-			socket.emit('move-element-failure', {
-				boardObjectType: BoardObjectType.BOARD_ELEMENT,
-				errorType: ErrorType.NOT_UPDATED,
-				requestPayload: data,
-			});
+			socket.emit('move-element-failure', data);
 		}
 	}
 
