@@ -7,20 +7,15 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
-import { BoardDoAuthorizableService, ContentElementService } from '@modules/board';
+import { BoardNodeAuthorizableService, BoardNodeAuthorizable, BoardNodeService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BoardDoAuthorizable, ExternalToolElement } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import {
-	boardDoAuthorizableFactory,
-	courseFactory,
-	externalToolElementFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+
+import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
@@ -33,8 +28,8 @@ describe('ToolPermissionHelper', () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let courseService: DeepMocked<CourseService>;
-	let contentElementService: DeepMocked<ContentElementService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -50,12 +45,12 @@ describe('ToolPermissionHelper', () => {
 					useValue: createMock<CourseService>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 			],
 		}).compile();
@@ -63,8 +58,8 @@ describe('ToolPermissionHelper', () => {
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseService);
-		contentElementService = module.get(ContentElementService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodeService = module.get(BoardNodeService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 	});
 
 	afterAll(async () => {
@@ -113,19 +108,19 @@ describe('ToolPermissionHelper', () => {
 		describe('when a context external tool for context "board element" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const externalToolElement: ExternalToolElement = externalToolElementFactory.build();
+				const externalToolElement = externalToolElementFactory.build();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					contextRef: new ContextRef({
 						id: externalToolElement.id,
 						type: ToolContextType.BOARD_ELEMENT,
 					}),
 				});
-				const board: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+				const board: BoardNodeAuthorizable = boardNodeAuthorizableFactory.build();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				contentElementService.findById.mockResolvedValueOnce(externalToolElement);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(board);
+				boardNodeService.findById.mockResolvedValueOnce(externalToolElement);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(board);
 
 				return {
 					user,
@@ -149,7 +144,7 @@ describe('ToolPermissionHelper', () => {
 		describe('when a context external tool for context "media board" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const board: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+				const board: BoardNodeAuthorizable = boardNodeAuthorizableFactory.build();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					contextRef: new ContextRef({
 						id: board.id,
@@ -159,7 +154,7 @@ describe('ToolPermissionHelper', () => {
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoAuthorizableService.findById.mockResolvedValueOnce(board);
+				boardNodeAuthorizableService.findById.mockResolvedValueOnce(board);
 
 				return {
 					user,
@@ -280,18 +275,18 @@ describe('ToolPermissionHelper', () => {
 		describe('when a school external tool for context "board element" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const externalToolElement: ExternalToolElement = externalToolElementFactory.build();
+				const externalToolElement = externalToolElementFactory.build();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextRef = new ContextRef({
 					id: externalToolElement.id,
 					type: ToolContextType.BOARD_ELEMENT,
 				});
-				const board: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+				const board: BoardNodeAuthorizable = boardNodeAuthorizableFactory.build();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				contentElementService.findById.mockResolvedValueOnce(externalToolElement);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(board);
+				boardNodeService.findById.mockResolvedValueOnce(externalToolElement);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(board);
 
 				return {
 					user,
@@ -322,7 +317,7 @@ describe('ToolPermissionHelper', () => {
 		describe('when a school external tool for context "media board" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const board: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
+				const board: BoardNodeAuthorizable = boardNodeAuthorizableFactory.build();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextRef = new ContextRef({
 					id: board.id,
@@ -331,7 +326,7 @@ describe('ToolPermissionHelper', () => {
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				boardDoAuthorizableService.findById.mockResolvedValueOnce(board);
+				boardNodeAuthorizableService.findById.mockResolvedValueOnce(board);
 
 				return {
 					user,
