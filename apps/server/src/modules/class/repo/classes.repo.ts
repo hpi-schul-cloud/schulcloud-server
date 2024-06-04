@@ -38,13 +38,19 @@ export class ClassesRepo {
 	// ..but school+year sound like a good combined key for the performance
 	// schoolId: EntityId, // schoolYear?: EntityId,
 	// gradeLevel enum 1 bis 13
-	public async getClassesByIds(classIds: EntityId[], sortOrder = 1): Promise<Class[]> {
-		const uniqueClassIds = [...new Set(classIds)];
+	public async getClassesByIdsSchoolAndSchoolYear(
+		classIds: EntityId[],
+		schoolId: EntityId,
+		schoolYear?: EntityId,
+		sortOrder?: number
+	): Promise<Class[]> {
+		const classIdsArray = Array.isArray(classIds) ? classIds : [classIds];
+		const uniqueClassIds = [...new Set(classIdsArray)];
 		const objectIds = uniqueClassIds.map((id: EntityId) => new ObjectId(id));
 
 		const classEntities = await this.em.find(
 			ClassEntity,
-			{ _id: { $in: objectIds } },
+			{ _id: { $in: objectIds }, schoolId: new ObjectId(schoolId), year: new ObjectId(schoolYear) },
 			{ orderBy: { gradeLevel: sortOrder, name: sortOrder } }
 		);
 
