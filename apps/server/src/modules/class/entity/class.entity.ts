@@ -21,6 +21,7 @@ export interface ClassEntityProps {
 
 @Entity({ tableName: 'classes' })
 @Index({ properties: ['year', 'ldapDN'] })
+@Index({ properties: ['_id', 'year', 'schoolId'] })
 export class ClassEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
@@ -41,6 +42,7 @@ export class ClassEntity extends BaseEntityWithTimestamps {
 	invitationLink?: string;
 
 	@Property({ nullable: true })
+	@Index()
 	year?: ObjectId;
 
 	@Property({ nullable: true })
