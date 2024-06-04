@@ -1184,9 +1184,7 @@ describe('[ImportUserModule]', () => {
 
 					await uc.cancelMigration(user.id);
 
-					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
-						Permission.IMPORT_USER_MIGRATE,
-					]);
+					expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_MIGRATE]);
 				});
 
 				it('should check if feature is enabled', async () => {
