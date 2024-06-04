@@ -87,7 +87,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		describe('when migration is not activated', () => {
 			const setup = async () => {
-				const { account } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				const { account } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
 				userImportFeatures.userMigrationEnabled = false;
@@ -111,11 +111,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		describe('when users school has no external id', () => {
 			const setup = async () => {
-				const { account, school, system } = await authenticatedUser(
-					[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
-					[],
-					false
-				);
+				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE], [], false);
 				const loggedInClient = await testApiClient.login(account);
 				userImportFeatures.userMigrationSystemId = system.id;
 
@@ -140,7 +136,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		describe('when users were populated successful', () => {
 			const setup = async () => {
-				const { account, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+				const { account, school, system } = await authenticatedUser([Permission.IMPORT_USER_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
 
 				userImportFeatures.userMigrationEnabled = true;

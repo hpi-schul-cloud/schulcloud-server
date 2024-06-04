@@ -1,22 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
-import { FileDO } from '@src/infra/rabbitmq';
-import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
+	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletedEvent,
 } from '@modules/deletion';
-import { FilesStorageProducer } from './files-storage.producer';
-import { FilesStorageClientMapper } from '../mapper';
-import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { Injectable } from '@nestjs/common';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@src/core/logger';
+import { FileDO } from '@src/infra/rabbitmq';
 import { CopyFileDto, FileDto } from '../dto';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { FilesStorageClientMapper } from '../mapper';
+import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -24,11 +25,13 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 	constructor(
 		private logger: LegacyLogger,
 		private readonly fileStorageMQProducer: FilesStorageProducer,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		try {
 			const dataDeleted = await this.deleteUserData(targetRefId);
