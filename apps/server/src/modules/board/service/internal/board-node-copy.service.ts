@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
@@ -35,7 +35,8 @@ export interface CopyContext {
 export class BoardNodeCopyService {
 	constructor(
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copy(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus> {
@@ -95,6 +96,7 @@ export class BoardNodeCopyService {
 
 	async copyColumnBoard(original: ColumnBoard, context: CopyContext): Promise<CopyStatus> {
 		const childrenResults = await this.copyChildrenOf(original, context);
+		const childrenCopyStatus = this.copyHelperService.deriveStatusFromElements(childrenResults);
 
 		const copy = new ColumnBoard({
 			...original.getProps(),
@@ -104,7 +106,7 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.COLUMNBOARD,
-			status: CopyStatusEnum.SUCCESS,
+			status: childrenCopyStatus,
 			elements: childrenResults,
 		};
 
