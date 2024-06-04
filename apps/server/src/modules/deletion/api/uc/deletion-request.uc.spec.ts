@@ -1,20 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
-import { ObjectId } from 'bson';
-import { EventBus } from '@nestjs/cqrs';
-import { LegacyLogger } from '@src/core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ConfigModule } from '@nestjs/config';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
 import { createConfigModuleOptions } from '@src/config';
+import { LegacyLogger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
 import { UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionRequestService, DeletionLogService } from '../../domain/service';
-import { deletionRequestFactory, deletionLogFactory, deletionTestConfig } from '../../domain/testing';
+import { DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { deletionLogFactory, deletionRequestFactory, deletionTestConfig } from '../../domain/testing';
 import { DomainName, OperationType, StatusModel } from '../../domain/types';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps } from '../controller/dto';
-import { DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from '../controller/dto/builder';
+import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
 
 describe(DeletionRequestUc.name, () => {
@@ -25,6 +26,8 @@ describe(DeletionRequestUc.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			imports: [ConfigModule.forRoot(createConfigModuleOptions(deletionTestConfig))],
 			providers: [
@@ -47,6 +50,10 @@ describe(DeletionRequestUc.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
@@ -54,7 +61,6 @@ describe(DeletionRequestUc.name, () => {
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
 		eventBus = module.get(EventBus);
-		await setupEntities();
 	});
 
 	beforeEach(() => {
