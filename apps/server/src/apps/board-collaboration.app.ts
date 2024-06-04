@@ -8,20 +8,25 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { DB_URL } from '@src/config';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { MongoIoAdapter } from '@src/infra/socketio';
 import { BoardCollaborationModule } from '@src/modules/board/board-collaboration.module';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import express from 'express';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from '@src/apps/helpers/prometheus-metrics';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { AppStartLoggable } from './helpers/app-start-loggable';
 
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestApp = await NestFactory.create(BoardCollaborationModule);
-
-	// WinstonLogger
+	const nestExpress = express();
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(BoardCollaborationModule, nestExpressAdapter);
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
-
-	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
 	const mongoIoAdapter = new MongoIoAdapter(nestApp);
@@ -33,19 +38,35 @@ async function bootstrap() {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
+	const logger = await nestApp.resolve(Logger);
 
 	await nestApp.init();
 
-	const port = 4450;
-	const basePath = '/board-collaboration';
+	// mount instances
+	const rootExpress = express();
 
-	nestApp.setGlobalPrefix(basePath);
-	await nestApp.listen(port);
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+	const port = 4450;
+	const basePath = '/board-collaboration'; // '/api/v3'; // '/board-collaboration';
+
+	// exposed alias mounts
+	rootExpress.use(basePath, nestExpress);
+
+	rootExpress.listen(port, () => {
+		logger.info(
+			new AppStartLoggable({
+				appName: 'BoardCollaboration server app',
+				port,
+			})
+		);
+
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
+	});
 
 	console.log('##########################################');
-	console.log(`### Start Board Collaboration Server   ###`);
-	console.log(`### Port:      ${port}                     ###`);
-	console.log(`### Base path: ${basePath}             ###`);
+	console.log(`### Start Board Collaboration Server`);
+	console.log(`### Port:      ${port}`);
+	console.log(`### Base path: ${basePath}`);
 	console.log('##########################################');
 }
 void bootstrap();
