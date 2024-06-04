@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardExternalReferenceType } from '../../domain';
-import { BoardContextResponse } from '../dto/board/board-context.reponse';
 
 const baseRouteName = '/boards';
 

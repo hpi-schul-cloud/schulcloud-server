@@ -246,8 +246,7 @@ describe(MediaAvailableLineUc.name, () => {
 					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
-					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-					const mediaBoard: MediaBoard = mediaBoardFactory.build(); // .addChild(mediaExternalToolElement).build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
 					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
 						.withElement(mediaAvailableLineElement)
@@ -314,8 +313,7 @@ describe(MediaAvailableLineUc.name, () => {
 					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
-					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-					const mediaBoard: MediaBoard = mediaBoardFactory.build(); // .addChild(mediaExternalToolElement).build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
 					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
 						.withElement(mediaAvailableLineElement)
@@ -387,8 +385,7 @@ describe(MediaAvailableLineUc.name, () => {
 					configService.get.mockReturnValue(true);
 
 					const user: User = userFactory.build();
-					const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build();
-					const mediaBoard: MediaBoard = mediaBoardFactory.build(); // .addChild(mediaExternalToolElement).build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory.build();
 					const externalTool1: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
 					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });

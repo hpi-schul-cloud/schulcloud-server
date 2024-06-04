@@ -2,33 +2,13 @@ import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementType } from '@modules/board/domain';
 import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
-import {
-	CommonCartridgeImportResourceProps,
-	CommonCartridgeOrganizationProps,
-	CommonCartridgeResourceTypeV1P1,
-} from '@src/modules/common-cartridge';
+import { CommonCartridgeImportResourceProps, CommonCartridgeResourceTypeV1P1 } from '@src/modules/common-cartridge';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 describe('CommonCartridgeImportMapper', () => {
 	let moduleRef: TestingModule;
 	let sut: CommonCartridgeImportMapper;
-
-	const setupOrganization = () => {
-		const organization: CommonCartridgeOrganizationProps = {
-			path: faker.string.uuid(),
-			pathDepth: faker.number.int({ min: 0, max: 3 }),
-			identifier: faker.string.uuid(),
-			identifierRef: faker.string.uuid(),
-			title: faker.lorem.words(3),
-			isResource: true,
-			isInlined: false,
-			resourcePath: faker.system.filePath(),
-			resourceType: faker.string.alpha(10),
-		};
-
-		return { organization };
-	};
 
 	// AI next 18 lines
 	beforeAll(async () => {

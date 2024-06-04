@@ -201,7 +201,7 @@ describe(ElementUc.name, () => {
 			};
 
 			it('should throw', async () => {
-				const { submissionContainer, submissionItem, user } = setup();
+				const { submissionContainer, user } = setup();
 
 				await expect(uc.createSubmissionItem(user.id, submissionContainer.id, true)).rejects.toThrowError(
 					'User is not allowed to have multiple submission-items per submission-container-element'
