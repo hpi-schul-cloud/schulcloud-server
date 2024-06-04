@@ -98,7 +98,7 @@ describe(UserImportFetchUc.name, () => {
 				await uc.populateImportUsers(user.id);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
-					Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+					Permission.IMPORT_USER_MIGRATE,
 				]);
 			});
 
