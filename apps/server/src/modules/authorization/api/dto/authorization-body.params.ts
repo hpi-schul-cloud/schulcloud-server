@@ -1,5 +1,6 @@
 import { Permission } from '@shared/domain/interface';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsMongoId, ValidateNested } from 'class-validator';
 import { Action, AuthorizableReferenceType, AuthorizationContext } from '../../domain';
 
@@ -8,6 +9,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@ApiProperty({
 		description: 'Define for which action the operation should be performend.',
 		enum: Action,
+		enumName: 'Action',
 		example: Action.read,
 	})
 	action!: Action;
@@ -16,6 +18,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Permission, { each: true })
 	@ApiProperty({
 		enum: Permission,
+		enumName: 'Permission',
 		isArray: true,
 		description: 'User permissions that are needed to execute the operation.',
 		example: Permission.USER_UPDATE,
@@ -24,7 +27,8 @@ class AuthorizationContextParams implements AuthorizationContext {
 }
 
 export class AuthorizationBodyParams {
-	@ValidateNested({ each: true })
+	@ValidateNested()
+	@Type(() => AuthorizationContextParams)
 	@ApiProperty({
 		type: AuthorizationContextParams,
 	})
