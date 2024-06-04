@@ -10,9 +10,9 @@ import { BoardNodePermissionService, BoardNodeAuthorizableService, BoardNodeServ
 import { BoardNodeFactory } from '../domain';
 
 import {
+	boardNodeAuthorizableFactory,
 	richTextElementFactory,
 	drawingElementFactory,
-	fileElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '../testing';
@@ -69,7 +69,7 @@ describe(ElementUc.name, () => {
 	});
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('updateElement', () => {
@@ -185,65 +185,23 @@ describe(ElementUc.name, () => {
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, drawingElement, Action.read);
 		});
 	});
-	/**
-	 * TODO fix tests - submission items feature is not fully implemented yet
-	 */
-	/*
+
 	describe('createSubmissionItem', () => {
-		describe('with non SubmissionContainerElement parent', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const fileElement = fileElementFactory.build();
-
-				boardNodeService.findContentElementById.mockResolvedValueOnce(fileElement);
-
-				return { fileElement, user };
-			};
-
-			it('should throw', async () => {
-				const { fileElement, user } = setup();
-
-				await expect(uc.createSubmissionItem(user.id, fileElement.id, true)).rejects.toThrowError(
-					'Cannot create submission-item for non submission-container-element'
-				);
-			});
-		});
-
-		describe('with non SubmissionContainerElement containing non SubmissionItem children', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const fileElement = fileElementFactory.build();
-
-				const submissionContainer = submissionContainerElementFactory.build({ children: [fileElement] });
-
-				boardNodeService.findContentElementById.mockResolvedValueOnce(submissionContainer);
-
-				return { submissionContainer, fileElement, user };
-			};
-
-			it('should throw', async () => {
-				const { submissionContainer, user } = setup();
-
-				await expect(uc.createSubmissionItem(user.id, submissionContainer.id, true)).rejects.toThrowError(
-					'Children of submission-container-element must be of type submission-item'
-				);
-			});
-		});
-
 		describe('with user already has a submission-item in the submission-container-element set', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 
 				const submissionItem = submissionItemFactory.build({ userId: user.id });
 				const submissionContainer = submissionContainerElementFactory.build({ children: [submissionItem] });
 
-				boardNodeService.findContentElementById.mockResolvedValueOnce(submissionContainer);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionContainer);
+				boardPermissionService.isUserBoardEditor.mockReturnValueOnce(false);
 
 				return { submissionContainer, submissionItem, user };
 			};
 
 			it('should throw', async () => {
-				const { submissionContainer, user } = setup();
+				const { submissionContainer, submissionItem, user } = setup();
 
 				await expect(uc.createSubmissionItem(user.id, submissionContainer.id, true)).rejects.toThrowError(
 					'User is not allowed to have multiple submission-items per submission-container-element'
@@ -271,16 +229,18 @@ describe(ElementUc.name, () => {
 		describe('with user being board reader', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const submissionContainer = submissionContainerElementFactory.build();
-				boardNodeService.findContentElementById.mockResolvedValueOnce(submissionContainer);
-				boardPermissionService.isUserBoardEditor.mockReturnValueOnce(false);
-
 				const submissionItem = submissionItemFactory.build();
+				const submissionContainer = submissionContainerElementFactory.build();
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(submissionContainer);
+				boardPermissionService.isUserBoardEditor.mockReturnValueOnce(false);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
+				boardNodeFactory.buildSubmissionItem.mockReturnValueOnce(submissionItem);
 
 				return { user, submissionContainer, submissionItem };
 			};
 
-			it('should call Board Permission Service to check user *read* permission', async () => {
+			it('should call Board Permission Service to check user *read* permission on submission container', async () => {
 				const { user, submissionContainer } = setup();
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
@@ -290,7 +250,6 @@ describe(ElementUc.name, () => {
 
 			it('should call BoardNodeAuthorizableService to get board authorizable', async () => {
 				const { user, submissionContainer } = setup();
-				boardPermissionService.checkPermission.mockResolvedValueOnce();
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
@@ -299,33 +258,26 @@ describe(ElementUc.name, () => {
 
 			it('should call Board Permission Service to check user *editor* permission', async () => {
 				const { user, submissionContainer } = setup();
-				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
+				// boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
 				expect(boardPermissionService.isUserBoardEditor).toHaveBeenCalledWith(user.id, expect.anything());
 			});
 
-			it('should call service to create submission item', async () => {
-				const { user, submissionContainer } = setup();
-
-				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
-				boardPermissionService.isUserBoardEditor.mockReturnValueOnce(false);
+			it('should create submission item', async () => {
+				const { user, submissionContainer, submissionItem } = setup();
 
 				await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
-				expect(submissionItemService.create).toHaveBeenCalledWith(user.id, submissionContainer, { completed: true });
+				expect(boardNodeFactory.buildSubmissionItem).toHaveBeenCalledWith({ completed: true, userId: user.id });
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(submissionContainer, submissionItem);
 			});
 
 			it('should return the created submission item', async () => {
-				const user = userFactory.build();
-				const submissionContainer = submissionContainerElementFactory.build();
-				const submissionItem = submissionItemFactory.build();
+				const { user, submissionContainer, submissionItem } = setup();
 
-				boardNodeService.findContentElementById.mockResolvedValueOnce(submissionContainer);
-				boardPermissionService.checkPermission.mockResolvedValueOnce();
-				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizableFactory.build());
-				submissionItemService.create.mockResolvedValueOnce(submissionItem);
+				boardNodeFactory.buildSubmissionItem.mockReturnValueOnce(submissionItem);
 
 				const result = await uc.createSubmissionItem(user.id, submissionContainer.id, true);
 
@@ -333,5 +285,4 @@ describe(ElementUc.name, () => {
 			});
 		});
 	});
- */
 });
