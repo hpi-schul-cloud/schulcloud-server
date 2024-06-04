@@ -490,6 +490,53 @@ describe(ExternalToolService.name, () => {
 		});
 	});
 
+	describe('findExternalToolByMedium', () => {
+		describe('when medium is set', () => {
+			it('should call the externalToolRepo', async () => {
+				const mediumId = 'mediumId';
+				const mediaSourceId = 'mediaSourceId';
+
+				await service.findExternalToolByMedium(mediumId, mediaSourceId);
+
+				expect(externalToolRepo.findByMedium).toHaveBeenCalledWith(mediumId, mediaSourceId);
+			});
+		});
+
+		describe('when tool was found', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({
+					medium: {
+						mediumId: 'mediumId',
+						mediaSourceId: 'mediaSourceId',
+					},
+				});
+				externalToolRepo.findByMedium.mockResolvedValue(externalTool);
+			};
+
+			it('should return externalTool', async () => {
+				setup();
+
+				const result: ExternalTool | null = await service.findExternalToolByMedium('mediumId', 'mediaSourceId');
+
+				expect(result).toBeInstanceOf(ExternalTool);
+			});
+		});
+
+		describe('when tool was not found', () => {
+			const setup = () => {
+				externalToolRepo.findByMedium.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result: ExternalTool | null = await service.findExternalToolByMedium('mediumId');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
+
 	describe('updateExternalTool', () => {
 		describe('when external tool with oauthConfig is given', () => {
 			const setup = () => {

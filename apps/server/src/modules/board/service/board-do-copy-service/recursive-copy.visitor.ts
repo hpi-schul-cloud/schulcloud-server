@@ -1,6 +1,6 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { IToolFeatures } from '@modules/tool/tool-config';
@@ -33,10 +33,11 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	constructor(
 		private readonly fileCopyService: SchoolSpecificFileCopyService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly toolFeatures: IToolFeatures
+		private readonly toolFeatures: IToolFeatures,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
-	async copy(original: AnyBoardDo): Promise<CopyStatus> {
+	public async copy(original: AnyBoardDo): Promise<CopyStatus> {
 		await original.acceptAsync(this);
 
 		const result = this.resultMap.get(original.id);
@@ -47,7 +48,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return result;
 	}
 
-	async visitColumnBoardAsync(original: ColumnBoard): Promise<void> {
+	public async visitColumnBoardAsync(original: ColumnBoard): Promise<void> {
 		await this.visitChildrenOf(original);
 
 		const copy = new ColumnBoard({
@@ -61,16 +62,19 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			layout: original.layout,
 		});
 
+		const copyStatusOfChildren = this.getCopyStatusesForChildrenOf(original);
+		const status = this.copyHelperService.deriveStatusFromElements(copyStatusOfChildren);
+
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.COLUMNBOARD,
-			status: CopyStatusEnum.SUCCESS,
-			elements: this.getCopyStatusesForChildrenOf(original),
+			status,
+			elements: copyStatusOfChildren,
 		});
 		this.copyMap.set(original.id, copy);
 	}
 
-	async visitColumnAsync(original: Column): Promise<void> {
+	public async visitColumnAsync(original: Column): Promise<void> {
 		await this.visitChildrenOf(original);
 		const copy = new Column({
 			id: new ObjectId().toHexString(),
@@ -88,7 +92,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 	}
 
-	async visitCardAsync(original: Card): Promise<void> {
+	public async visitCardAsync(original: Card): Promise<void> {
 		await this.visitChildrenOf(original);
 		const copy = new Card({
 			id: new ObjectId().toHexString(),
@@ -107,7 +111,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 	}
 
-	async visitFileElementAsync(original: FileElement): Promise<void> {
+	public async visitFileElementAsync(original: FileElement): Promise<void> {
 		const copy = new FileElement({
 			id: new ObjectId().toHexString(),
 			caption: original.caption,
@@ -137,7 +141,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 	}
 
-	async visitDrawingElementAsync(original: DrawingElement): Promise<void> {
+	public async visitDrawingElementAsync(original: DrawingElement): Promise<void> {
 		const copy = new DrawingElement({
 			id: new ObjectId().toHexString(),
 			description: original.description,
@@ -155,7 +159,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitLinkElementAsync(original: LinkElement): Promise<void> {
+	public async visitLinkElementAsync(original: LinkElement): Promise<void> {
 		const copy = new LinkElement({
 			id: new ObjectId().toHexString(),
 			url: original.url,
@@ -202,7 +206,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitRichTextElementAsync(original: RichTextElement): Promise<void> {
+	public async visitRichTextElementAsync(original: RichTextElement): Promise<void> {
 		const copy = new RichTextElement({
 			id: new ObjectId().toHexString(),
 			text: original.text,
@@ -221,7 +225,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitSubmissionContainerElementAsync(original: SubmissionContainerElement): Promise<void> {
+	public async visitSubmissionContainerElementAsync(original: SubmissionContainerElement): Promise<void> {
 		await this.visitChildrenOf(original);
 		const copy = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
@@ -239,7 +243,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.copyMap.set(original.id, copy);
 	}
 
-	async visitSubmissionItemAsync(original: SubmissionItem): Promise<void> {
+	public async visitSubmissionItemAsync(original: SubmissionItem): Promise<void> {
 		this.resultMap.set(original.id, {
 			type: CopyElementType.SUBMISSION_ITEM,
 			status: CopyStatusEnum.NOT_DOING,
@@ -248,7 +252,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+	public async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
 		const boardElementCopy: ExternalToolElement = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
@@ -287,7 +291,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitCollaborativeTextEditorElementAsync(original: CollaborativeTextEditorElement): Promise<void> {
+	public async visitCollaborativeTextEditorElementAsync(original: CollaborativeTextEditorElement): Promise<void> {
 		const now = new Date();
 		const copy = new CollaborativeTextEditorElement({
 			id: new ObjectId().toHexString(),
@@ -298,14 +302,14 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 		});
 		this.copyMap.set(original.id, copy);
 
 		return Promise.resolve();
 	}
 
-	async visitMediaBoardAsync(original: MediaBoard): Promise<void> {
+	public async visitMediaBoardAsync(original: MediaBoard): Promise<void> {
 		await this.visitChildrenOf(original);
 
 		this.resultMap.set(original.id, {
@@ -315,7 +319,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		});
 	}
 
-	async visitMediaLineAsync(original: MediaLine): Promise<void> {
+	public async visitMediaLineAsync(original: MediaLine): Promise<void> {
 		await this.visitChildrenOf(original);
 
 		this.resultMap.set(original.id, {
@@ -325,7 +329,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		});
 	}
 
-	visitMediaExternalToolElementAsync(original: MediaExternalToolElement): Promise<void> {
+	public visitMediaExternalToolElementAsync(original: MediaExternalToolElement): Promise<void> {
 		this.resultMap.set(original.id, {
 			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
 			status: CopyStatusEnum.NOT_DOING,
@@ -334,11 +338,11 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	async visitChildrenOf(boardDo: AnyBoardDo): Promise<PromiseSettledResult<void>[]> {
+	private async visitChildrenOf(boardDo: AnyBoardDo): Promise<PromiseSettledResult<void>[]> {
 		return Promise.allSettled(boardDo.children.map((child) => child.acceptAsync(this)));
 	}
 
-	getCopyStatusesForChildrenOf(original: AnyBoardDo) {
+	private getCopyStatusesForChildrenOf(original: AnyBoardDo) {
 		const childstatusses: CopyStatus[] = [];
 
 		original.children.forEach((child) => {
@@ -351,7 +355,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return childstatusses;
 	}
 
-	getCopiesForChildrenOf(original: AnyBoardDo) {
+	private getCopiesForChildrenOf(original: AnyBoardDo) {
 		const copies: AnyBoardDo[] = [];
 		original.children.forEach((child) => {
 			const childCopy = this.copyMap.get(child.id);

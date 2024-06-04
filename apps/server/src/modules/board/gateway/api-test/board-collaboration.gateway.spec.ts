@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
+import { MongoIoAdapter } from '@infra/socketio';
 import { BoardExternalReferenceType, CardProps, ContentElementType } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
@@ -17,10 +18,8 @@ import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-ap
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestingModule } from '../../board-collaboration.testing.module';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
-import { BoardObjectType, ErrorType } from '../types';
 
 describe(BoardCollaborationGateway.name, () => {
-	let ws: BoardCollaborationGateway;
 	let app: INestApplication;
 	let ioClient: Socket;
 	let em: EntityManager;
@@ -30,10 +29,14 @@ describe(BoardCollaborationGateway.name, () => {
 			imports: [BoardCollaborationTestingModule],
 		}).compile();
 		app = testingModule.createNestApplication();
-		await app.init();
 
 		em = app.get(EntityManager);
-		ws = app.get(BoardCollaborationGateway);
+		const mongoUrl = em.config.getClientUrl();
+
+		const mongoIoAdapter = new MongoIoAdapter(app);
+		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		app.useWebSocketAdapter(mongoIoAdapter);
+		await app.init();
 
 		await app.listen(0);
 	});
@@ -69,11 +72,6 @@ describe(BoardCollaborationGateway.name, () => {
 		return { user, columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
 	};
 
-	it('should be defined', async () => {
-		await setup();
-		expect(ws).toBeDefined();
-	});
-
 	describe('validation errors', () => {
 		it('should answer with failure', async () => {
 			await setup();
@@ -108,11 +106,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('create-card-request', { columnId });
 				const failure = await waitForEvent(ioClient, 'create-card-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_CARD,
-					errorType: ErrorType.NOT_CREATED,
-					requestPayload: { columnId },
-				});
+				expect(failure).toEqual({ columnId });
 			});
 		});
 	});
@@ -138,11 +132,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('fetch-board-request', { boardId });
 				const failure = await waitForEvent(ioClient, 'fetch-board-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD,
-					errorType: ErrorType.NOT_LOADED,
-					requestPayload: { boardId },
-				});
+				expect(failure).toEqual({ boardId });
 			});
 		});
 	});
@@ -207,11 +197,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('move-card-request', moveCardProps);
 				const failure = await waitForEvent(ioClient, 'move-card-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_CARD,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: moveCardProps,
-				});
+				expect(failure).toEqual(moveCardProps);
 			});
 		});
 	});
@@ -236,11 +222,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('update-column-title-request', updateColumnProps);
 				const failure = await waitForEvent(ioClient, 'update-column-title-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_COLUMN,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: updateColumnProps,
-				});
+				expect(failure).toEqual(updateColumnProps);
 			});
 		});
 	});
@@ -261,16 +243,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = new ObjectId().toHexString();
+				const payload = { boardId: new ObjectId().toHexString() };
 
-				ioClient.emit('delete-board-request', { boardId });
+				ioClient.emit('delete-board-request', payload);
 				const failure = await waitForEvent(ioClient, 'delete-board-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD,
-					errorType: ErrorType.NOT_DELETED,
-					requestPayload: { boardId },
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -291,17 +269,13 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const updateTitleProps = { boardId: new ObjectId().toHexString(), newTitle: 'new title' };
+				const payload = { boardId: new ObjectId().toHexString(), newTitle: 'new title' };
 
-				ioClient.emit('update-board-title-request', updateTitleProps);
+				ioClient.emit('update-board-title-request', payload);
 				const failure = await waitForEvent(ioClient, 'update-board-title-failure');
 
 				expect(failure).toBeDefined();
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: updateTitleProps,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -322,16 +296,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when board does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const boardId = new ObjectId().toHexString();
+				const payload = { boardId: new ObjectId().toHexString() };
 
-				ioClient.emit('create-column-request', { boardId });
+				ioClient.emit('create-column-request', payload);
 				const failure = await waitForEvent(ioClient, 'create-column-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_COLUMN,
-					errorType: ErrorType.NOT_CREATED,
-					requestPayload: { boardId },
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -357,11 +327,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
 				const failure = await waitForEvent(ioClient, 'update-board-visibility-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: { boardId, isVisible: false },
-				});
+				expect(failure).toEqual({ boardId, isVisible: false });
 			});
 		});
 	});
@@ -387,11 +353,7 @@ describe(BoardCollaborationGateway.name, () => {
 				ioClient.emit('delete-column-request', { columnId });
 				const failure = await waitForEvent(ioClient, 'delete-column-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_COLUMN,
-					errorType: ErrorType.NOT_DELETED,
-					requestPayload: { columnId },
-				});
+				expect(failure).toEqual({ columnId });
 			});
 		});
 	});
@@ -401,7 +363,7 @@ describe(BoardCollaborationGateway.name, () => {
 			it('should answer with success', async () => {
 				const { columnBoardNode, columnNode } = await setup();
 
-				const moveColumnProps = {
+				const payload = {
 					targetBoardId: columnBoardNode.id,
 					columnMove: {
 						addedIndex: 1,
@@ -410,10 +372,10 @@ describe(BoardCollaborationGateway.name, () => {
 					},
 				};
 
-				ioClient.emit('move-column-request', moveColumnProps);
+				ioClient.emit('move-column-request', payload);
 				const success = await waitForEvent(ioClient, 'move-column-success');
 
-				expect(success).toEqual(expect.objectContaining(moveColumnProps));
+				expect(success).toEqual(expect.objectContaining(payload));
 			});
 		});
 
@@ -421,7 +383,7 @@ describe(BoardCollaborationGateway.name, () => {
 			it('should answer with failure', async () => {
 				const { columnBoardNode } = await setup();
 
-				const moveColumnProps = {
+				const payload = {
 					targetBoardId: columnBoardNode.id,
 					columnMove: {
 						addedIndex: 1,
@@ -430,14 +392,10 @@ describe(BoardCollaborationGateway.name, () => {
 					},
 				};
 
-				ioClient.emit('move-column-request', moveColumnProps);
+				ioClient.emit('move-column-request', payload);
 				const failure = await waitForEvent(ioClient, 'move-column-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_COLUMN,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: moveColumnProps,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -458,16 +416,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const updateCardTitleProps = { cardId: new ObjectId().toHexString(), newTitle: 'new title' };
+				const payload = { cardId: new ObjectId().toHexString(), newTitle: 'new title' };
 
-				ioClient.emit('update-card-title-request', updateCardTitleProps);
+				ioClient.emit('update-card-title-request', payload);
 				const failure = await waitForEvent(ioClient, 'update-card-title-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_CARD,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: updateCardTitleProps,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -489,16 +443,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const updateCardHeightProps = { cardId: new ObjectId().toHexString(), newHeight: 200 };
+				const payload = { cardId: new ObjectId().toHexString(), newHeight: 200 };
 
-				ioClient.emit('update-card-height-request', updateCardHeightProps);
+				ioClient.emit('update-card-height-request', payload);
 				const failure = await waitForEvent(ioClient, 'update-card-height-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_CARD,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: updateCardHeightProps,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -519,16 +469,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const cardId = new ObjectId().toHexString();
+				const payload = { cardIds: [new ObjectId().toHexString()] };
 
-				ioClient.emit('fetch-card-request', { cardIds: [cardId] });
+				ioClient.emit('fetch-card-request', payload);
 				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_CARD,
-					errorType: ErrorType.NOT_LOADED,
-					requestPayload: { cardIds: [cardId] },
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -549,16 +495,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when card does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const cardId = new ObjectId().toHexString();
+				const payload = { cardId: new ObjectId().toHexString() };
 
-				ioClient.emit('delete-card-request', { cardId });
+				ioClient.emit('delete-card-request', payload);
 				const failure = await waitForEvent(ioClient, 'delete-card-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_CARD,
-					errorType: ErrorType.NOT_DELETED,
-					requestPayload: { cardId },
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -582,14 +524,12 @@ describe(BoardCollaborationGateway.name, () => {
 				await setup();
 				const cardId = new ObjectId().toHexString();
 
-				ioClient.emit('create-element-request', { cardId, type: ContentElementType.RICH_TEXT });
+				const payload = { cardId, type: ContentElementType.RICH_TEXT };
+
+				ioClient.emit('create-element-request', payload);
 				const failure = await waitForEvent(ioClient, 'create-element-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_ELEMENT,
-					errorType: ErrorType.NOT_CREATED,
-					requestPayload: { cardId, type: ContentElementType.RICH_TEXT },
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -611,16 +551,12 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
 				const { cardNodes } = await setup();
-				const deleteElementProps = { cardId: cardNodes[0].id, elementId: new ObjectId().toHexString() };
+				const payload = { cardId: cardNodes[0].id, elementId: new ObjectId().toHexString() };
 
-				ioClient.emit('delete-element-request', deleteElementProps);
+				ioClient.emit('delete-element-request', payload);
 				const failure = await waitForEvent(ioClient, 'delete-element-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_ELEMENT,
-					errorType: ErrorType.NOT_DELETED,
-					requestPayload: deleteElementProps,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -649,7 +585,7 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
 				await setup();
-				const updateElementProps = {
+				const payload = {
 					elementId: new ObjectId().toHexString(),
 					data: {
 						type: ContentElementType.RICH_TEXT,
@@ -657,14 +593,10 @@ describe(BoardCollaborationGateway.name, () => {
 					},
 				};
 
-				ioClient.emit('update-element-request', updateElementProps);
+				ioClient.emit('update-element-request', payload);
 				const failure = await waitForEvent(ioClient, 'update-element-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_ELEMENT,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: updateElementProps,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
@@ -673,28 +605,24 @@ describe(BoardCollaborationGateway.name, () => {
 		describe('when element exists', () => {
 			it('should answer with success', async () => {
 				const { cardNodes, elementNodes } = await setup();
-				const data = { elementId: elementNodes[0].id, toCardId: cardNodes[0].id, toPosition: 2 };
+				const payload = { elementId: elementNodes[0].id, toCardId: cardNodes[0].id, toPosition: 2 };
 
-				ioClient.emit('move-element-request', data);
+				ioClient.emit('move-element-request', payload);
 				const success = await waitForEvent(ioClient, 'move-element-success');
 
-				expect(success).toEqual(expect.objectContaining(data));
+				expect(success).toEqual(expect.objectContaining(payload));
 			});
 		});
 
 		describe('when element does not exist', () => {
 			it('should answer with failure', async () => {
 				const { cardNodes } = await setup();
-				const data = { elementId: new ObjectId().toHexString(), toCardId: cardNodes[0].id, toPosition: 2 };
+				const payload = { elementId: new ObjectId().toHexString(), toCardId: cardNodes[0].id, toPosition: 2 };
 
-				ioClient.emit('move-element-request', data);
+				ioClient.emit('move-element-request', payload);
 				const failure = await waitForEvent(ioClient, 'move-element-failure');
 
-				expect(failure).toEqual({
-					boardObjectType: BoardObjectType.BOARD_ELEMENT,
-					errorType: ErrorType.NOT_UPDATED,
-					requestPayload: data,
-				});
+				expect(failure).toEqual(payload);
 			});
 		});
 	});
