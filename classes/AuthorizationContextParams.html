@@ -199,13 +199,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(Action)<br />@ApiProperty({description: &#x27;Define for which action the operation should be performend.&#x27;, enum: Action, example: undefined})<br />
+                            @IsEnum(Action)<br />@ApiProperty({description: &#x27;Define for which action the operation should be performend.&#x27;, enum: Action, enumName: &#x27;Action&#x27;, example: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -237,13 +237,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsArray()<br />@IsEnum(Permission, {each: true})<br />@ApiProperty({enum: Permission, isArray: true, description: &#x27;User permissions that are needed to execute the operation.&#x27;, example: undefined})<br />
+                            @IsArray()<br />@IsEnum(Permission, {each: true})<br />@ApiProperty({enum: Permission, enumName: &#x27;Permission&#x27;, isArray: true, description: &#x27;User permissions that are needed to execute the operation.&#x27;, example: undefined})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -264,6 +264,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
 import { IsArray, IsEnum, IsMongoId, ValidateNested } from &#x27;class-validator&#x27;;
 import { Action, AuthorizableReferenceType, AuthorizationContext } from &#x27;../../domain&#x27;;
 
@@ -272,6 +273,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@ApiProperty({
 		description: &#x27;Define for which action the operation should be performend.&#x27;,
 		enum: Action,
+		enumName: &#x27;Action&#x27;,
 		example: Action.read,
 	})
 	action!: Action;
@@ -280,6 +282,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Permission, { each: true })
 	@ApiProperty({
 		enum: Permission,
+		enumName: &#x27;Permission&#x27;,
 		isArray: true,
 		description: &#x27;User permissions that are needed to execute the operation.&#x27;,
 		example: Permission.USER_UPDATE,
@@ -288,7 +291,8 @@ class AuthorizationContextParams implements AuthorizationContext {
 }
 
 export class AuthorizationBodyParams {
-	@ValidateNested({ each: true })
+	@ValidateNested()
+	@Type(() &#x3D;&gt; AuthorizationContextParams)
 	@ApiProperty({
 		type: AuthorizationContextParams,
 	})

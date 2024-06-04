@@ -142,6 +142,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#context" >context</a>
                             </li>
                             <li>
@@ -181,6 +182,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>context</b></span>
                         <a href="#context"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -197,13 +199,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ValidateNested({each: true})<br />@ApiProperty({type: AuthorizationContextParams})<br />
+                            @ValidateNested()<br />@Type(undefined)<br />@ApiProperty({type: AuthorizationContextParams})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -240,7 +242,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -277,7 +279,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:39</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/authorization/api/dto/authorization-body.params.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -298,6 +300,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
 import { IsArray, IsEnum, IsMongoId, ValidateNested } from &#x27;class-validator&#x27;;
 import { Action, AuthorizableReferenceType, AuthorizationContext } from &#x27;../../domain&#x27;;
 
@@ -306,6 +309,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@ApiProperty({
 		description: &#x27;Define for which action the operation should be performend.&#x27;,
 		enum: Action,
+		enumName: &#x27;Action&#x27;,
 		example: Action.read,
 	})
 	action!: Action;
@@ -314,6 +318,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 	@IsEnum(Permission, { each: true })
 	@ApiProperty({
 		enum: Permission,
+		enumName: &#x27;Permission&#x27;,
 		isArray: true,
 		description: &#x27;User permissions that are needed to execute the operation.&#x27;,
 		example: Permission.USER_UPDATE,
@@ -322,7 +327,8 @@ class AuthorizationContextParams implements AuthorizationContext {
 }
 
 export class AuthorizationBodyParams {
-	@ValidateNested({ each: true })
+	@ValidateNested()
+	@Type(() &#x3D;&gt; AuthorizationContextParams)
 	@ApiProperty({
 		type: AuthorizationContextParams,
 	})

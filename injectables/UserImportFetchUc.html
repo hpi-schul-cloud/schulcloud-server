@@ -413,7 +413,7 @@ export class UserImportFetchUc {
 		this.checkMigrationEnabled(currentUserId);
 
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(currentUserId);
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
 
 		const system: SystemEntity &#x3D; await this.userImportService.getMigrationSystem();
 		const fetchedData: ImportUser[] &#x3D; await this.schulconnexFetchImportUsersService.getData(user.school, system);
