@@ -25,10 +25,15 @@ export class UserListService {
 		if (!query.classIds) {
 			throw new Error('The query must contain classIds for this method.');
 		}
-
+		const { currentYear } = school.getProps();
 		// If the results should not be sorted by class, the order of the classes is irrelevant. We just set it to ascending.
 		const sortOrder = query.sortBy === SortableField.class ? query.sortOrder : 1;
-		const classes = await this.classService.getClassesByIds(query.classIds, sortOrder);
+		const classes = await this.classService.getClassesByIdsSchoolAndSchoolYear(
+			query.classIds,
+			school.id,
+			currentYear?.id,
+			sortOrder
+		);
 		const userIds = this.extractUserIdsFromClasses(classes, role);
 		const totalNumberOfUsers = userIds.length;
 
