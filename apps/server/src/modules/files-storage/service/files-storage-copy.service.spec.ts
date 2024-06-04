@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
@@ -100,7 +100,10 @@ describe('FilesStorageService copy methods', () => {
 				const { fileRecords: targetFileRecords, params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
+				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([
+					sourceFileRecords,
+					sourceFileRecords.length,
+				]);
 				spy = jest.spyOn(service, 'copy');
 				spy.mockResolvedValueOnce(targetFileRecords);
 
@@ -112,7 +115,7 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
 
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(
+				expect(fileRecordRepo.findByStorageLocationIdAndParentId).toHaveBeenNthCalledWith(
 					1,
 					sourceParams.schoolId,
 					sourceParams.parentId
@@ -143,7 +146,7 @@ describe('FilesStorageService copy methods', () => {
 				const { params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([[], 0]);
+				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([[], 0]);
 
 				return { sourceParams, copyFilesOfParentParams, fileRecords, userId };
 			};
@@ -170,7 +173,10 @@ describe('FilesStorageService copy methods', () => {
 				const copyFilesOfParentParams = { target: params };
 				const error = new Error('test');
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
+				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([
+					sourceFileRecords,
+					sourceFileRecords.length,
+				]);
 				spy = jest.spyOn(service, 'copy');
 				spy.mockRejectedValueOnce(error);
 

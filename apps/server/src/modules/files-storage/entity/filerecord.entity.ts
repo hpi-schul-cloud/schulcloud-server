@@ -2,6 +2,7 @@ import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import path from 'path';
@@ -25,6 +26,11 @@ export enum FileRecordParentType {
 	'Submission' = 'submissions',
 	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
+}
+
+export enum StorageLocation {
+	SCHOOL = 'school',
+	INSTANCE = 'instance',
 }
 
 export enum PreviewStatus {
@@ -78,14 +84,16 @@ export interface FileRecordProperties {
 	parentType: FileRecordParentType;
 	parentId: EntityId;
 	creatorId?: EntityId;
-	schoolId: EntityId;
+	storageLocation: StorageLocation;
+	storageLocationId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
 	isUploading?: boolean;
 }
 
 interface ParentInfo {
-	schoolId: EntityId;
+	storageLocationId: EntityId;
+	storageLocation: StorageLocation;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }
@@ -98,7 +106,7 @@ interface ParentInfo {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: 'filerecords' })
-@Index({ properties: ['_schoolId', '_parentId'], options: { background: true } })
+@Index({ properties: ['_storageLocationId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
 export class FileRecord extends BaseEntityWithTimestamps {
@@ -145,11 +153,18 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this._creatorId = userId !== undefined ? new ObjectId(userId) : undefined;
 	}
 
-	@Property({ fieldName: 'school' })
-	_schoolId: ObjectId;
+	@Property()
+	_storageLocationId: ObjectId;
 
-	get schoolId(): EntityId {
-		return this._schoolId.toHexString();
+	get storageLocationId(): EntityId {
+		return this._storageLocationId.toHexString();
+	}
+
+	@ApiProperty()
+	_storageLocation: StorageLocation;
+
+	get storageLocation(): StorageLocation {
+		return this._storageLocation;
 	}
 
 	@Property({ fieldName: 'isCopyFrom', nullable: true })
@@ -172,7 +187,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		if (props.creatorId !== undefined) {
 			this._creatorId = new ObjectId(props.creatorId);
 		}
-		this._schoolId = new ObjectId(props.schoolId);
+		this._storageLocationId = new ObjectId(props.storageLocationId);
+		this._storageLocation = props.storageLocation;
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
 		}
@@ -193,7 +209,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
 		const { size, name, mimeType, id } = this;
-		const { parentType, parentId, schoolId } = targetParentInfo;
+		const { parentType, parentId, storageLocation, storageLocationId } = targetParentInfo;
 
 		const fileRecordCopy = new FileRecord({
 			size,
@@ -202,7 +218,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			parentType,
 			parentId,
 			creatorId: userId,
-			schoolId,
+			storageLocationId,
+			storageLocation,
 			isCopyFrom: id,
 		});
 
@@ -276,13 +293,17 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getParentInfo(): ParentInfo {
-		const { parentId, parentType, schoolId } = this;
+		const { parentId, parentType, storageLocation, storageLocationId } = this;
 
-		return { parentId, parentType, schoolId };
+		return { parentId, parentType, storageLocation, storageLocationId };
 	}
 
-	public getSchoolId(): EntityId {
-		return this.schoolId;
+	public getStorageLocationId(): EntityId {
+		return this.storageLocationId;
+	}
+
+	public getStorageLocation(): StorageLocation {
+		return this.storageLocation;
 	}
 
 	public getPreviewStatus(): PreviewStatus {

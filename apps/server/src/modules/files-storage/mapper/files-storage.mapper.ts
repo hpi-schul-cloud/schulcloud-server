@@ -39,7 +39,8 @@ export class FilesStorageMapper {
 
 	static mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
 		const fileRecordParams = plainToClass(FileRecordParams, {
-			schoolId: fileRecord.schoolId,
+			storageLocationId: fileRecord.storageLocationId,
+			storageLocation: fileRecord.storageLocation,
 			parentId: fileRecord.parentId,
 			parentType: fileRecord.parentType,
 		});
