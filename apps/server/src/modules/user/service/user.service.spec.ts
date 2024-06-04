@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
@@ -45,6 +45,8 @@ describe('UserService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
@@ -90,6 +92,10 @@ describe('UserService', () => {
 					provide: CalendarService,
 					useValue: createMock<CalendarService>(),
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -102,8 +108,6 @@ describe('UserService', () => {
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 		calendarService = module.get(CalendarService);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

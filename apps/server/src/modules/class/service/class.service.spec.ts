@@ -1,19 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { InternalServerErrorException } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { classEntityFactory } from '../entity/testing';
@@ -28,6 +29,8 @@ describe(ClassService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				ClassService,
@@ -45,14 +48,16 @@ describe(ClassService.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(ClassService);
 		classesRepo = module.get(ClassesRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {
