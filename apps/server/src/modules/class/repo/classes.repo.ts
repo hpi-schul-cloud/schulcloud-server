@@ -32,12 +32,19 @@ export class ClassesRepo {
 		return classes;
 	}
 
-	public async getClassesByIds(classIds: EntityId[], sortOrder?: number): Promise<Class[]> {
+	// TODO: add SortOrder enum with default order
+	// classes has an index at schoolId, to use them will increase performance
+	// schoolYear class.year is missed in request as option  ..but no index is set for this key, only a kombined key that not work for this query
+	// ..but school+year sound like a good combined key for the performance
+	// schoolId: EntityId, // schoolYear?: EntityId,
+	// gradeLevel enum 1 bis 13
+	public async getClassesByIds(classIds: EntityId[], sortOrder = 1): Promise<Class[]> {
 		const uniqueClassIds = [...new Set(classIds)];
+		const objectIds = uniqueClassIds.map((id: EntityId) => new ObjectId(id));
 
 		const classEntities = await this.em.find(
 			ClassEntity,
-			{ id: { $in: uniqueClassIds } },
+			{ _id: { $in: objectIds } },
 			{ orderBy: { gradeLevel: sortOrder, name: sortOrder } }
 		);
 
