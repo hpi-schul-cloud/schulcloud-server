@@ -10,41 +10,43 @@ import { ClassMapper } from './mapper';
 export class ClassesRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findAllBySchoolId(schoolId: EntityId, sortOrder?: number): Promise<Class[]> {
-		const classes: ClassEntity[] = await this.em.find(
+	public async findAllBySchoolId(schoolId: EntityId, sortOrder?: number): Promise<Class[]> {
+		const classEntities = await this.em.find(
 			ClassEntity,
 			{ schoolId: new ObjectId(schoolId) },
 			{ orderBy: { gradeLevel: sortOrder, name: sortOrder } }
 		);
 
-		const mapped: Class[] = ClassMapper.mapToDOs(classes);
+		const classes = ClassMapper.mapToDOs(classEntities);
 
-		return mapped;
+		return classes;
 	}
 
-	async findAllByUserId(userId: EntityId): Promise<Class[]> {
-		const classes: ClassEntity[] = await this.em.find(ClassEntity, {
+	public async findAllByUserId(userId: EntityId): Promise<Class[]> {
+		const classEntities = await this.em.find(ClassEntity, {
 			$or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }],
 		});
 
-		const mapped: Class[] = ClassMapper.mapToDOs(classes);
+		const classes = ClassMapper.mapToDOs(classEntities);
 
-		return mapped;
+		return classes;
 	}
 
 	public async getClassesByIds(classIds: EntityId[], sortOrder?: number): Promise<Class[]> {
-		const classes = await this.em.find(
+		const uniqueClassIds = [...new Set(classIds)];
+
+		const classEntities = await this.em.find(
 			ClassEntity,
-			{ id: classIds },
+			{ id: { $in: uniqueClassIds } },
 			{ orderBy: { gradeLevel: sortOrder, name: sortOrder } }
 		);
 
-		const classDos = ClassMapper.mapToDOs(classes);
+		const classes = ClassMapper.mapToDOs(classEntities);
 
-		return classDos;
+		return classes;
 	}
 
-	async updateMany(classes: Class[]): Promise<void> {
+	public async updateMany(classes: Class[]): Promise<void> {
 		const classMap: Map<string, Class> = new Map<string, Class>(
 			classes.map((clazz: Class): [string, Class] => [clazz.id, clazz])
 		);
