@@ -22,12 +22,8 @@ export class MetricsService {
 		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
-	public incrementNumberOfUsersOnServerCounter(): void {
-		this.numberOfUsersOnServerCounter.inc();
-	}
-
-	public decrementNumberOfUsersOnServerCounter(): void {
-		this.numberOfUsersOnServerCounter.dec();
+	public setNumberOfUsers(value: number): void {
+		this.numberOfUsersOnServerCounter.set(value);
 	}
 
 	public setNumberOfBoardRooms(value: number): void {

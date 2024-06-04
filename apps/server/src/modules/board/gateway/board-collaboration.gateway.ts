@@ -202,9 +202,9 @@ export class BoardCollaborationGateway {
 			await emitter.emitToClient('fetch-board-success', responsePayload);
 
 			const roomCount = Object.keys(this.getActiveBoardRooms()).length;
-			console.log('rooms', this.getActiveBoardRooms());
-			console.log('roomCount', this.getActiveBoardRooms());
-			console.log('active users', this.getActiveUsers());
+			const userCount = Object.keys(this.getActiveUsers()).length;
+			console.log('users:', userCount, 'rooms:', roomCount);
+			this.metricsService.setNumberOfUsers(userCount);
 			this.metricsService.setNumberOfBoardRooms(roomCount);
 		} catch (err) {
 			socket.emit('fetch-board-failure', data);
