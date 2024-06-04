@@ -1,3 +1,4 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Account, AccountService } from '@modules/account';
 // invalid import
 import { OauthCurrentUser } from '@modules/authentication/interface';
@@ -47,11 +48,13 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(UserService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

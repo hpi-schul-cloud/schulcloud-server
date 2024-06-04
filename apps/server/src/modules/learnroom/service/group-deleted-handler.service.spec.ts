@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupDeletedEvent } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
-import { groupFactory } from '@shared/testing';
+import { groupFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { Course } from '../domain';
 import { courseFactory } from '../testing';
@@ -26,6 +27,10 @@ describe(GroupDeletedHandlerService.name, () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
 				},
 			],
 		}).compile();

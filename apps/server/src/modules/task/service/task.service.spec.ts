@@ -1,19 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '@shared/repo';
 import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
 import { ObjectId } from 'bson';
-import {
-	DomainOperationReportBuilder,
-	OperationType,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DataDeletedEvent,
-} from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -26,6 +27,8 @@ describe('TaskService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				TaskService,
@@ -51,6 +54,10 @@ describe('TaskService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
@@ -59,8 +66,6 @@ describe('TaskService', () => {
 		submissionService = module.get(SubmissionService);
 		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

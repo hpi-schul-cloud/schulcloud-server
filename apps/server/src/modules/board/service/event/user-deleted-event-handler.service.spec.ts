@@ -1,9 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { mediaBoardFactory } from '@shared/testing';
+import { mediaBoardFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
 	DataDeletedEvent,
@@ -38,6 +39,10 @@ describe(UserDeletedEventHandlerService.name, () => {
 				{
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
+				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
 				},
 			],
 		}).compile();
