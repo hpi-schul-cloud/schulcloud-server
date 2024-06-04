@@ -322,3 +322,10 @@
       template: board-collaboration-ingress.yml.j2
       apply: yes
       state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
+
+  - name: BoardCollaborationServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: '{{ NAMESPACE }}'
+      template: board-collaboration-svc-monitor.yml.j2
+      state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
