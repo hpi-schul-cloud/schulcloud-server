@@ -1,11 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import { classEntityFactory } from '../entity/testing/factory/class.entity.factory';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';
@@ -60,7 +60,7 @@ describe(ClassesRepo.name, () => {
 			it('should find classes with particular userId', async () => {
 				const { school } = await setup();
 
-				const result: Class[] = await repo.findAllBySchoolId(school.id);
+				const result = await repo.findAllBySchoolId(school.id);
 
 				expect(result.length).toEqual(3);
 			});
@@ -107,6 +107,72 @@ describe(ClassesRepo.name, () => {
 				expect(result[1].id).toEqual(class2.id);
 			});
 		});
+	});
+
+	describe.only('getClassesByIds', () => {
+		describe('when multiple matching classes on same school exists', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const classesGrade5 = classEntityFactory.buildList(5, { schoolId: school.id, gradeLevel: 5 });
+				const classesGrade8 = classEntityFactory.buildList(5, { schoolId: school.id, gradeLevel: 8 });
+				const otherClasses = classEntityFactory.buildList(5, { schoolId: school.id });
+
+				await em.persistAndFlush([...classesGrade5, ...classesGrade8, ...otherClasses]);
+				em.clear();
+
+				// orderBy sort it by gradeLevel AND name
+				const classes5SortByName = classesGrade5.sort((a, b) => a.name.localeCompare(b.name));
+				const classes8SortByName = classesGrade8.sort((a, b) => a.name.localeCompare(b.name));
+				const classIds5 = classes5SortByName.map((classEntity) => classEntity.id);
+				const classIds8 = classes8SortByName.map((classEntity) => classEntity.id);
+
+				return { classIds: [...classIds5, ...classIds8], classes5SortByName, classes8SortByName };
+			};
+
+			it('should be find all requested classes', async () => {
+				const { classIds } = await setup();
+
+				const result = await repo.getClassesByIds(classIds);
+
+				expect(result.length).toEqual(classIds.length);
+			});
+
+			it('Default orderBy should be 1 and sort it by gradeLevel and name', async () => {
+				const { classIds, classes5SortByName, classes8SortByName } = await setup();
+
+				const result = await repo.getClassesByIds(classIds);
+
+				expect(result[0].name).toEqual(classes5SortByName[0].name);
+				expect(result[4].name).toEqual(classes5SortByName[4].name);
+				expect(result[5].name).toEqual(classes8SortByName[0].name);
+				expect(result[9].name).toEqual(classes8SortByName[4].name);
+			});
+
+			it('Should work for orderBy 1 and sort it by gradeLevel and name', async () => {
+				const { classIds, classes5SortByName, classes8SortByName } = await setup();
+
+				const result = await repo.getClassesByIds(classIds, 1);
+
+				expect(result[0].name).toEqual(classes5SortByName[0].name);
+				expect(result[4].name).toEqual(classes5SortByName[4].name);
+				expect(result[5].name).toEqual(classes8SortByName[0].name);
+				expect(result[9].name).toEqual(classes8SortByName[4].name);
+			});
+
+			it('Should work for orderBy -1 and sort it by gradeLevel and name', async () => {
+				const { classIds, classes5SortByName, classes8SortByName } = await setup();
+
+				const result = await repo.getClassesByIds(classIds, -1);
+
+				expect(result[0].name).toEqual(classes8SortByName[4].name);
+				expect(result[4].name).toEqual(classes8SortByName[0].name);
+				expect(result[5].name).toEqual(classes5SortByName[4].name);
+				expect(result[9].name).toEqual(classes5SortByName[0].name);
+			});
+		});
+
+		// same school?
+		// year?
 	});
 
 	describe('updateMany', () => {
