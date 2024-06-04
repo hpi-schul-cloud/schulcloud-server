@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardInitProps, ColumnInitProps, ContentElementType } from '@shared/domain/domainobject';
+import { ContentElementType } from '@modules/board/domain';
 import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
 import {
 	CommonCartridgeImportResourceProps,
