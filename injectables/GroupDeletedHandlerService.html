@@ -136,6 +136,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -163,12 +164,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseDoService.html" target="_self">CourseDoService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(courseService: <a href="../injectables/CourseDoService.html" target="_self">CourseDoService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/service/group-deleted-handler.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/service/group-deleted-handler.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -209,6 +210,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -229,6 +242,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -243,11 +257,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/group-deleted-handler.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/group-deleted-handler.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -316,8 +337,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/group-deleted-handler.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/group-deleted-handler.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -369,7 +390,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Group, GroupDeletedEvent } from &#x27;@modules/group&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import { Group, GroupDeletedEvent } from &#x27;@modules/group&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
@@ -379,8 +401,13 @@ import { CourseDoService } from &#x27;./course-do.service&#x27;;
 @Injectable()
 @EventsHandler(GroupDeletedEvent)
 export class GroupDeletedHandlerService implements IEventHandler&lt;GroupDeletedEvent&gt; {
-	constructor(private readonly courseService: CourseDoService, private readonly logger: Logger) {}
+	constructor(
+		private readonly courseService: CourseDoService,
+		private readonly logger: Logger,
+		private readonly orm: MikroORM
+	) {}
 
+	@UseRequestContext()
 	public async handle(event: GroupDeletedEvent): Promise&lt;void&gt; {
 		await this.removeCourseSyncReference(event.target);
 	}

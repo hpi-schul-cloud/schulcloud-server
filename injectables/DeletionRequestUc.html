@@ -175,6 +175,7 @@
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
                             </li>
@@ -196,12 +197,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(deletionRequestService: <a href="../injectables/DeletionRequestService.html" target="_self">DeletionRequestService</a>, deletionLogService: <a href="../injectables/DeletionLogService.html" target="_self">DeletionLogService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, eventBus: EventBus, configService: <a href="../interfaces/DeletionConfig.html" target="_self">ConfigService&lt;DeletionConfig | &gt;</a>)</code>
+<code>constructor(deletionRequestService: <a href="../injectables/DeletionRequestService.html" target="_self">DeletionRequestService</a>, deletionLogService: <a href="../injectables/DeletionLogService.html" target="_self">DeletionLogService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, eventBus: EventBus, orm: MikroORM, configService: <a href="../interfaces/DeletionConfig.html" target="_self">ConfigService&lt;DeletionConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -267,6 +268,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>configService</td>
                                                   
                                                         <td>
@@ -314,8 +327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -383,8 +396,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -452,8 +465,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="133"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:133</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -522,8 +535,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:142</a></div>
                         </td>
                     </tr>
 
@@ -591,8 +604,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -660,8 +673,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -713,6 +726,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
                         <a href="#handle"><span class="icon ion-ios-link"></span></a>
@@ -726,11 +740,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -800,7 +821,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -813,18 +834,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { DomainDeletionReportBuilder } from &#x27;../../domain/builder&#x27;;
 import { DeletionLog, DeletionRequest } from &#x27;../../domain/do&#x27;;
 import { DataDeletedEvent, UserDeletedEvent } from &#x27;../../domain/event&#x27;;
 import { DeletionConfig, DomainDeletionReport } from &#x27;../../domain/interface&#x27;;
-import { DeletionRequestService, DeletionLogService } from &#x27;../../domain/service&#x27;;
+import { DeletionLogService, DeletionRequestService } from &#x27;../../domain/service&#x27;;
 import { DeletionRequestLogResponseBuilder } from &#x27;../builder&#x27;;
-import { DeletionRequestBodyProps, DeletionRequestResponse, DeletionRequestLogResponse } from &#x27;../controller/dto&#x27;;
+import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from &#x27;../controller/dto&#x27;;
 import { DeletionTargetRefBuilder } from &#x27;../controller/dto/builder&#x27;;
 
 @Injectable()
@@ -837,6 +859,7 @@ export class DeletionRequestUc implements IEventHandler&lt;DataDeletedEvent&gt; 
 		private readonly deletionLogService: DeletionLogService,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM,
 		private readonly configService: ConfigService&lt;DeletionConfig, true&gt;
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -860,6 +883,7 @@ export class DeletionRequestUc implements IEventHandler&lt;DataDeletedEvent&gt; 
 		];
 	}
 
+	@UseRequestContext()
 	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
 		await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
 

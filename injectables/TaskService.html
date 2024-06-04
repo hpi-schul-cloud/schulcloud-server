@@ -167,6 +167,7 @@
                                 <a href="#getTasksId" >getTasksId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -199,12 +200,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
+<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:27</a></div>
                             </td>
                         </tr>
 
@@ -281,6 +282,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -317,8 +330,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -387,8 +400,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -457,8 +470,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -527,8 +540,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -596,8 +609,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -665,8 +678,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -770,8 +783,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:203</a></div>
                         </td>
                     </tr>
 
@@ -823,6 +836,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -837,11 +851,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -909,8 +930,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -979,8 +1000,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="161"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:161</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="164"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:164</a></div>
                         </td>
                     </tr>
 
@@ -1032,27 +1053,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReport,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from &#x27;@modules/deletion&#x27;;
+import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
 import { Task } from &#x27;@shared/domain/entity&#x27;;
 import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
 import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { TaskRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { IEventHandler, EventBus, EventsHandler } from &#x27;@nestjs/cqrs&#x27;;
-import {
-	UserDeletedEvent,
-	DeletionService,
-	DataDeletedEvent,
-	DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	DomainOperationReport,
-	DataDeletionDomainOperationLoggable,
-	StatusModel,
-} from &#x27;@modules/deletion&#x27;;
 import { SubmissionService } from &#x27;./submission.service&#x27;;
 
 @Injectable()
@@ -1063,11 +1085,13 @@ export class TaskService implements DeletionService, IEventHandler&lt;UserDelete
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(TaskService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

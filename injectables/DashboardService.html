@@ -141,6 +141,7 @@
                                 <a href="#deleteUserData" >deleteUserData</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -163,12 +164,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dashboardRepo: <a href="../interfaces/IDashboardRepo.html" target="_self">IDashboardRepo</a>, dashboardElementRepo: <a href="../injectables/DashboardElementRepo.html" target="_self">DashboardElementRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
+<code>constructor(dashboardRepo: <a href="../interfaces/IDashboardRepo.html" target="_self">IDashboardRepo</a>, dashboardElementRepo: <a href="../injectables/DashboardElementRepo.html" target="_self">DashboardElementRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/learnroom/service/dashboard.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/learnroom/service/dashboard.service.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -233,6 +234,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -270,8 +283,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/dashboard.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/dashboard.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -323,6 +336,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -337,11 +351,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/dashboard.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/dashboard.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -392,23 +413,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { IDashboardRepo, DashboardElementRepo } from &#x27;@shared/repo&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
-	DomainDeletionReport,
 	DataDeletionDomainOperationLoggable,
-	DomainName,
+	DeletionService,
+	DomainDeletionReport,
 	DomainDeletionReportBuilder,
+	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
+	UserDeletedEvent,
 } from &#x27;@modules/deletion&#x27;;
+import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DashboardElementRepo, IDashboardRepo } from &#x27;@shared/repo&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -417,11 +439,13 @@ export class DashboardService implements DeletionService, IEventHandler&lt;UserD
 		@Inject(&#x27;DASHBOARD_REPO&#x27;) private readonly dashboardRepo: IDashboardRepo,
 		private readonly dashboardElementRepo: DashboardElementRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(DashboardService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

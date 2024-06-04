@@ -156,6 +156,7 @@
                                 <a href="#getFileRecordsId" >getFileRecordsId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -182,12 +183,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, fileStorageMQProducer: <a href="../injectables/FilesStorageProducer.html" target="_self">FilesStorageProducer</a>, eventBus: EventBus)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, fileStorageMQProducer: <a href="../injectables/FilesStorageProducer.html" target="_self">FilesStorageProducer</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -240,6 +241,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -276,8 +289,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -345,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -414,8 +427,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -483,8 +496,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +565,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -605,6 +618,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -619,11 +633,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -690,8 +711,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -743,25 +764,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { FileDO } from &#x27;@src/infra/rabbitmq&#x27;;
-import { IEventHandler, EventBus, EventsHandler } from &#x27;@nestjs/cqrs&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
+	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletedEvent,
 } from &#x27;@modules/deletion&#x27;;
-import { FilesStorageProducer } from &#x27;./files-storage.producer&#x27;;
-import { FilesStorageClientMapper } from &#x27;../mapper&#x27;;
-import { CopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { FileDO } from &#x27;@src/infra/rabbitmq&#x27;;
 import { CopyFileDto, FileDto } from &#x27;../dto&#x27;;
+import { CopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
+import { FilesStorageClientMapper } from &#x27;../mapper&#x27;;
+import { FilesStorageProducer } from &#x27;./files-storage.producer&#x27;;
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -769,11 +791,13 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 	constructor(
 		private logger: LegacyLogger,
 		private readonly fileStorageMQProducer: FilesStorageProducer,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		try {
 			const dataDeleted &#x3D; await this.deleteUserData(targetRefId);

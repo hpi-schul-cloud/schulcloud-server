@@ -155,6 +155,7 @@
                                 <a href="#getClassesId" >getClassesId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -177,12 +178,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(classesRepo: <a href="../injectables/ClassesRepo.html" target="_self">ClassesRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
+<code>constructor(classesRepo: <a href="../injectables/ClassesRepo.html" target="_self">ClassesRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -235,6 +236,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -272,8 +285,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +355,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -412,8 +425,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -481,8 +494,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="97"
-                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:97</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -534,6 +547,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -548,11 +562,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/class/service/class.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -603,13 +624,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
-import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import {
-	UserDeletedEvent,
 	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
@@ -617,8 +635,12 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	DataDeletionDomainOperationLoggable,
+	UserDeletedEvent,
 } from &#x27;@modules/deletion&#x27;;
+import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import { Class } from &#x27;../domain&#x27;;
 import { ClassesRepo } from &#x27;../repo&#x27;;
 
@@ -628,11 +650,13 @@ export class ClassService implements DeletionService, IEventHandler&lt;UserDelet
 	constructor(
 		private readonly classesRepo: ClassesRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(ClassService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

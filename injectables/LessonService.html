@@ -161,6 +161,7 @@
                                 <a href="#getLessonsId" >getLessonsId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -183,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
+<code>constructor(lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -253,6 +254,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -289,8 +302,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -359,8 +372,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -428,8 +441,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -497,8 +510,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -578,8 +591,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -647,8 +660,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -700,6 +713,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -714,11 +728,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -769,25 +790,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ComponentProperties, LessonEntity } from &#x27;@shared/domain/entity&#x27;;
-import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
-import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
-import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
-	DomainDeletionReport,
 	DataDeletionDomainOperationLoggable,
-	DomainName,
+	DeletionService,
+	DomainDeletionReport,
 	DomainDeletionReportBuilder,
+	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
+	UserDeletedEvent,
 } from &#x27;@modules/deletion&#x27;;
+import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { ComponentProperties, LessonEntity } from &#x27;@shared/domain/entity&#x27;;
+import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
 import { LessonRepo } from &#x27;../repository&#x27;;
 
 @Injectable()
@@ -797,11 +819,13 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(LessonService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

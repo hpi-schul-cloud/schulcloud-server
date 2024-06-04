@@ -215,6 +215,7 @@
                                 <a href="#findMultipleByUserId" >findMultipleByUserId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -301,12 +302,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/AccountConfig.html" target="_self">ConfigService&lt;AccountConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, eventBus: EventBus)</code>
+<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/AccountConfig.html" target="_self">ConfigService&lt;AccountConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:54</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:55</a></div>
                             </td>
                         </tr>
 
@@ -419,6 +420,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -456,8 +469,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="435"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:435</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="438"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:438</a></div>
                         </td>
                     </tr>
 
@@ -550,8 +563,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="147"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:147</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="149"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:149</a></div>
                         </td>
                     </tr>
 
@@ -637,7 +650,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:383</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:386</a></code>
 </div>
                         </td>
                     </tr>
@@ -713,7 +726,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:392</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:395</a></code>
 </div>
                         </td>
                     </tr>
@@ -783,8 +796,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="404"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:404</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="407"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:407</a></div>
                         </td>
                     </tr>
 
@@ -853,8 +866,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="424"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:424</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="427"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:427</a></div>
                         </td>
                     </tr>
 
@@ -936,7 +949,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:246</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:249</a></code>
 </div>
                         </td>
                     </tr>
@@ -1011,7 +1024,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:254</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:257</a></code>
 </div>
                         </td>
                     </tr>
@@ -1086,7 +1099,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:258</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:261</a></code>
 </div>
                         </td>
                     </tr>
@@ -1155,8 +1168,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="441"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:441</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="444"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:444</a></div>
                         </td>
                     </tr>
 
@@ -1242,7 +1255,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:262</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:265</a></code>
 </div>
                         </td>
                     </tr>
@@ -1334,7 +1347,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:420</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:423</a></code>
 </div>
                         </td>
                     </tr>
@@ -1428,7 +1441,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:250</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:253</a></code>
 </div>
                         </td>
                     </tr>
@@ -1481,6 +1494,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -1495,11 +1509,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="241"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:241</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="244"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:244</a></div>
                         </td>
                     </tr>
 
@@ -1567,8 +1588,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="198"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:198</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:200</a></div>
                         </td>
                     </tr>
 
@@ -1666,7 +1687,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:274</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:277</a></code>
 </div>
                         </td>
                     </tr>
@@ -1735,8 +1756,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="341"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:341</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="344"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:344</a></div>
                         </td>
                     </tr>
 
@@ -1810,7 +1831,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:270</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:273</a></code>
 </div>
                         </td>
                     </tr>
@@ -1885,7 +1906,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:266</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:269</a></code>
 </div>
                         </td>
                     </tr>
@@ -1979,8 +2000,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="157"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:157</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="159"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:159</a></div>
                         </td>
                     </tr>
 
@@ -2072,8 +2093,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -2159,7 +2180,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:357</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:360</a></code>
 </div>
                         </td>
                     </tr>
@@ -2241,8 +2262,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -2340,7 +2361,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:368</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:371</a></code>
 </div>
                         </td>
                     </tr>
@@ -2422,8 +2443,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="116"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:116</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -2533,7 +2554,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:346</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:349</a></code>
 </div>
                         </td>
                     </tr>
@@ -2614,8 +2635,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -2695,8 +2716,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="298"
-                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:298</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="301"
+                                    class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:301</a></div>
                         </td>
                     </tr>
 
@@ -2770,7 +2791,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:379</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:382</a></code>
 </div>
                         </td>
                     </tr>
@@ -2856,7 +2877,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:54</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/modules/account/domain/services/account.service.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -2869,7 +2890,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import {
 	DataDeletedEvent,
 	DeletionService,
@@ -2889,8 +2911,9 @@ import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { UserRepo } from &#x27;@shared/repo/user/user.repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { isEmail, isNotEmpty } from &#x27;class-validator&#x27;;
-import { AccountConfig } from &#x27;../../account-config&#x27;;
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from &#x27;..&#x27;;
+import { AccountConfig } from &#x27;../../account-config&#x27;;
+import { AccountRepo } from &#x27;../../repo/micro-orm/account.repo&#x27;;
 import { AccountEntity } from &#x27;../entity/account.entity&#x27;;
 import {
 	DeletedAccountLoggable,
@@ -2909,7 +2932,6 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from &#x27;../error&#x27;;
-import { AccountRepo } from &#x27;../../repo/micro-orm/account.repo&#x27;;
 import { AccountServiceDb } from &#x27;./account-db.service&#x27;;
 import { AccountServiceIdm } from &#x27;./account-idm.service&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
@@ -2932,7 +2954,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly logger: Logger,
 		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -3109,6 +3132,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

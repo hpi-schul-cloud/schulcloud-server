@@ -166,6 +166,7 @@
                                 <a href="#getCoursesId" >getCoursesId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#handle" >handle</a>
@@ -188,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(repo: <a href="../injectables/CourseRepo.html" target="_self">LegacyCourseRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
+<code>constructor(repo: <a href="../injectables/CourseRepo.html" target="_self">LegacyCourseRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -246,6 +247,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>orm</td>
+                                                  
+                                                        <td>
+                                                                    <code>MikroORM</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -282,8 +295,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -352,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -421,8 +434,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -491,8 +504,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -560,8 +573,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -629,8 +642,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -710,8 +723,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -763,6 +776,7 @@
                 <td class="col-md-4">
                     <a name="handle"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>handle</b></span>
@@ -777,11 +791,18 @@
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@UseRequestContext()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -832,7 +853,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
+import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
@@ -857,11 +879,13 @@ export class CourseService implements DeletionService, IEventHandler&lt;UserDele
 	constructor(
 		private readonly repo: LegacyCourseRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(CourseService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
 		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
