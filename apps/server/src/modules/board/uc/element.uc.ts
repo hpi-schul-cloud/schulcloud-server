@@ -49,7 +49,6 @@ export class ElementUc {
 		await this.boardPermissionService.checkPermission(userId, element, Action.read);
 	}
 
-	/* istanbul ignore next */
 	async createSubmissionItem(
 		userId: EntityId,
 		contentElementId: EntityId,
@@ -59,12 +58,6 @@ export class ElementUc {
 			SubmissionContainerElement,
 			contentElementId
 		);
-
-		if (!submissionContainerElement.children.every((child) => isSubmissionItem(child))) {
-			throw new UnprocessableEntityException(
-				'Children of submission-container-element must be of type submission-item'
-			);
-		}
 
 		const userSubmissionExists = submissionContainerElement.children
 			.filter(isSubmissionItem)
