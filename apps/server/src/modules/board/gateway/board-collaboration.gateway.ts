@@ -248,7 +248,7 @@ export class BoardCollaborationGateway {
 	@SubscribeMessage('fetch-card-request')
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
-		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card-request' });
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
