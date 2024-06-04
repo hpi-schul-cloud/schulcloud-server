@@ -4,13 +4,13 @@ import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
+import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
-import { DomainErrorHandler } from '@src/core';
 import {
 	CopyFileParams,
 	CopyFileResponse,
@@ -23,6 +23,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../controller/dto';
+import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -30,7 +31,6 @@ import { GetFileResponse } from '../interface';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
 
 @Injectable()
 export class FilesStorageUC {
@@ -47,6 +47,7 @@ export class FilesStorageUC {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
+	// TODO: N21-1967 adjust for fileStorageLocation
 	private async checkPermission(
 		userId: EntityId,
 		parentType: FileRecordParentType,

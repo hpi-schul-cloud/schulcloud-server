@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { PreviewProducer } from '@infra/preview-generator';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PreviewProducer } from '@infra/preview-generator';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
@@ -20,17 +20,18 @@ import { PreviewService } from './preview.service';
 
 const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const parentStorageLocationId = new ObjectId().toHexString();
 	const fileRecord = fileRecordFactory.buildWithId({
 		parentId,
-		schoolId: parentSchoolId,
+		storageLocationId: parentStorageLocationId,
 		name: 'text.png',
 		mimeType,
 	});
 	fileRecord.securityCheck.status = scanStatus ?? ScanStatus.VERIFIED;
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocationId: parentStorageLocationId,
+		storageLocation: StorageLocation.SCHOOL,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -90,9 +91,9 @@ describe('PreviewService', () => {
 	});
 
 	describe('download is called', () => {
-		describe('WHEN preview is possbile', () => {
+		describe('WHEN preview is possible', () => {
 			describe('WHEN forceUpdate is true', () => {
-				describe('WHEN first get of preview file is successfull', () => {
+				describe('WHEN first get of preview file is successfully', () => {
 					const setup = () => {
 						const bytesRange = 'bytes=0-100';
 						const mimeType = 'image/png';
@@ -111,8 +112,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 						return {
 							bytesRange,
@@ -174,8 +175,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 						return {
 							bytesRange,
@@ -245,8 +246,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 						return {
 							bytesRange,
@@ -287,8 +288,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 						return {
 							bytesRange,
@@ -346,8 +347,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 						return {
 							bytesRange,
@@ -417,8 +418,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getSchoolId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
+						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 						return {
 							bytesRange,
@@ -556,7 +557,7 @@ describe('PreviewService', () => {
 					...defaultPreviewParams,
 				};
 				const format = previewParams.outputFormat.split('/')[1];
-				const directoryPath = createPreviewDirectoryPath(fileRecord.schoolId, fileRecord.id);
+				const directoryPath = createPreviewDirectoryPath(fileRecord.getStorageLocationId(), fileRecord.id);
 
 				return {
 					fileRecord,

@@ -3,13 +3,17 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller';
 import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { FileRecordParentType } from '../../entity';
+import { FileRecordParentType, StorageLocation } from '../../entity';
 import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
 
 export class FileRecordParams {
 	@ApiProperty()
 	@IsMongoId()
-	schoolId!: EntityId;
+	storageLocationId!: EntityId;
+
+	@ApiProperty()
+	@IsEnum(StorageLocation)
+	storageLocation!: StorageLocation;
 
 	@ApiProperty()
 	@IsMongoId()

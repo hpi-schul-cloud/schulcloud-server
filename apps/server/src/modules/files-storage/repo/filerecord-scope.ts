@@ -16,8 +16,8 @@ export class FileRecordScope extends Scope<FileRecord> {
 		return this;
 	}
 
-	bySchoolId(schoolId: EntityId): FileRecordScope {
-		this.addQuery({ _schoolId: new ObjectId(schoolId) });
+	byStorageLocationId(storageLocationId: EntityId): FileRecordScope {
+		this.addQuery({ _storageLocationId: new ObjectId(storageLocationId) });
 
 		return this;
 	}

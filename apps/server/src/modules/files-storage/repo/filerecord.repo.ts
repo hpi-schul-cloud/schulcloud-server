@@ -32,23 +32,26 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return result;
 	}
 
-	async findBySchoolIdAndParentId(
+	async findByStorageLocationIdAndParentId(
 		schoolId: EntityId,
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
-		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byMarkedForDelete(false);
+		const scope = new FileRecordScope().byStorageLocationId(schoolId).byParentId(parentId).byMarkedForDelete(false);
 		const result = await this.findAndCount(scope, options);
 
 		return result;
 	}
 
-	async findBySchoolIdAndParentIdAndMarkedForDelete(
-		schoolId: EntityId,
+	async findByStorageLocationIdAndParentIdAndMarkedForDelete(
+		storageLocationId: EntityId,
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
-		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byMarkedForDelete(true);
+		const scope = new FileRecordScope()
+			.byStorageLocationId(storageLocationId)
+			.byParentId(parentId)
+			.byMarkedForDelete(true);
 		const result = await this.findAndCount(scope, options);
 
 		return result;
