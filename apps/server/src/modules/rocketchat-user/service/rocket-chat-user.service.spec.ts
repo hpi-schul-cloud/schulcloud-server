@@ -1,24 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
-import { RocketChatError, RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import {
+	DataDeletedEvent,
+	DeletionErrorLoggableException,
+	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DomainDeletionReport,
-	DataDeletedEvent,
-	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { RocketChatUserService } from './rocket-chat-user.service';
-import { RocketChatUserRepo } from '../repo';
-import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
+import { RocketChatError, RocketChatService } from '@modules/rocketchat/rocket-chat.service';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { RocketChatUser } from '../domain';
+import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
+import { RocketChatUserRepo } from '../repo';
+import { RocketChatUserService } from './rocket-chat-user.service';
 
 describe(RocketChatUserService.name, () => {
 	let module: TestingModule;
@@ -28,6 +29,8 @@ describe(RocketChatUserService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				RocketChatUserService,
@@ -49,6 +52,10 @@ describe(RocketChatUserService.name, () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
@@ -56,8 +63,6 @@ describe(RocketChatUserService.name, () => {
 		rocketChatUserRepo = module.get(RocketChatUserRepo);
 		rocketChatService = module.get(RocketChatService);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {

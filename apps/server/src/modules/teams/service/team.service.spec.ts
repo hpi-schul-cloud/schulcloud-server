@@ -1,18 +1,19 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TeamsRepo } from '@shared/repo';
-import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs/dist';
-import { ObjectId } from 'bson';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { EventBus } from '@nestjs/cqrs/dist';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TeamsRepo } from '@shared/repo';
+import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -23,6 +24,8 @@ describe('TeamService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				TeamService,
@@ -40,14 +43,16 @@ describe('TeamService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(TeamService);
 		teamsRepo = module.get(TeamsRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {
