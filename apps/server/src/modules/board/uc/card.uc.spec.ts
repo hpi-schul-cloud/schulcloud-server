@@ -81,11 +81,12 @@ describe(CardUc.name, () => {
 						rootNode: columnBoardFactory.build(),
 					})
 				);
+				authorizationService.hasPermission.mockReturnValue(true);
 
 				return { user, cards, cardIds };
 			};
 
-			it('should call the service', async () => {
+			it('should call boardNodeService service to find cards', async () => {
 				const { user, cardIds } = setup();
 
 				await uc.findCards(user.id, cardIds);
@@ -93,7 +94,32 @@ describe(CardUc.name, () => {
 				expect(boardNodeService.findByClassAndIds).toHaveBeenCalledWith(Card, cardIds);
 			});
 
-			it.todo('should call the service to filter by authorization');
+			it('should call the service to get the user with permissions', async () => {
+				const { user, cards, cardIds } = setup();
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
+
+				await uc.findCards(user.id, cardIds);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should call the service to filter by authorization', async () => {
+				const { user, cards, cardIds } = setup();
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
+
+				await uc.findCards(user.id, cardIds);
+
+				expect(boardNodeAuthorizableService.getBoardAuthorizable).toHaveBeenCalledTimes(3);
+			});
+
+			it('should call the service to check the user permission', async () => {
+				const { user, cards, cardIds } = setup();
+				boardNodeService.findByClassAndIds.mockResolvedValueOnce(cards);
+
+				await uc.findCards(user.id, cardIds);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledTimes(3);
+			});
 
 			it('should return the card objects', async () => {
 				const { user, cards, cardIds } = setup();
