@@ -26,6 +26,7 @@ export enum FileRecordParentType {
 	'Submission' = 'submissions',
 	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
+	'ExternalTool' = 'externaltools',
 }
 
 export enum StorageLocation {
