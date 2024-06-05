@@ -146,7 +146,7 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnServiceMock.create).toHaveBeenCalledTimes(4);
+				expect(columnServiceMock.create).toHaveBeenCalledTimes(6);
 			});
 
 			it('should create cards', async () => {

@@ -95,6 +95,25 @@ describe('CommonCartridgeImportMapper', () => {
 		});
 	});
 
+	// AI next 17 lines
+	describe('mapOrganizationToTextElement', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to text element', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToTextElement(organization);
+
+				expect(result).toBeInstanceOf(RichTextContentBody);
+				expect(result).toEqual<RichTextContentBody>({
+					text: `<b>${organization.title}</b>`,
+					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
+				});
+			});
+		});
+	});
+
 	describe('mapResourceTypeToContentElementType', () => {
 		describe('when resourceType is provided', () => {
 			it('should return undefined', () => {

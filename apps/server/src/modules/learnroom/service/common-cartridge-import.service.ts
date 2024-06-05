@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, BoardLayout, Column, ColumnBoard } from '@shared/domain/domainobject';
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	Card,
+	Column,
+	ColumnBoard,
+	ContentElementType,
+} from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import {
@@ -87,7 +94,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
-		await this.createCard(parser, column, columnProps, false);
+		await this.createCardWithElement(parser, column, columnProps, false);
 	}
 
 	private async createColumn(
@@ -98,16 +105,23 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
 		const cards = organizations.filter(
-			(organization) =>
-				organization.pathDepth >= 2 && organization.path.startsWith(columnProps.path) && organization.isResource
+			(organization) => organization.pathDepth === 2 && organization.path.startsWith(columnProps.path)
 		);
 
-		for await (const card of cards) {
-			await this.createCard(parser, column, card, true);
+		const cardsWithResource = cards.filter((card) => card.isResource);
+
+		for await (const card of cardsWithResource) {
+			await this.createCardWithElement(parser, column, card, true);
+		}
+
+		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+
+		for await (const card of cardsWithoutResource) {
+			await this.createCard(parser, column, card, organizations);
 		}
 	}
 
-	private async createCard(
+	private async createCardWithElement(
 		parser: CommonCartridgeFileParser,
 		column: Column,
 		cardProps: CommonCartridgeOrganizationProps,
@@ -124,6 +138,46 @@ export class CommonCartridgeImportService {
 		if (resource && contentElementType) {
 			const contentElement = await this.contentElementService.create(card, contentElementType);
 			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
+
+			await this.contentElementService.update(contentElement, contentElementBody);
+		}
+	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: Column,
+		cardProps: CommonCartridgeOrganizationProps,
+		organizations: CommonCartridgeOrganizationProps[]
+	) {
+		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps, true));
+
+		const cardElements = organizations.filter(
+			(organization) => organization.pathDepth >= 3 && organization.path.startsWith(cardProps.path)
+		);
+
+		for await (const cardElement of cardElements) {
+			await this.createCardElement(parser, card, cardElement);
+		}
+	}
+
+	private async createCardElement(
+		parser: CommonCartridgeFileParser,
+		card: Card,
+		cardElementProps: CommonCartridgeOrganizationProps
+	) {
+		if (cardElementProps.isResource) {
+			const resource = parser.getResource(cardElementProps);
+			const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+
+			if (resource && contentElementType) {
+				const contentElement = await this.contentElementService.create(card, contentElementType);
+				const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
+
+				await this.contentElementService.update(contentElement, contentElementBody);
+			}
+		} else {
+			const contentElement = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+			const contentElementBody = this.mapper.mapOrganizationToTextElement(cardElementProps);
 
 			await this.contentElementService.update(contentElement, contentElementBody);
 		}

@@ -24,6 +24,14 @@ export class CommonCartridgeImportMapper {
 		};
 	}
 
+	public mapOrganizationToTextElement(organization: CommonCartridgeOrganizationProps): AnyElementContentBody {
+		const body = new RichTextContentBody();
+		body.text = `<b>${organization.title}</b>`;
+		body.inputFormat = InputFormat.RICH_TEXT_CK5_SIMPLE;
+
+		return body;
+	}
+
 	public mapResourceTypeToContentElementType(
 		resourceType: CommonCartridgeResourceTypeV1P1 | undefined
 	): ContentElementType | undefined {
