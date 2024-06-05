@@ -21,6 +21,7 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from './domain/rules';
+import { ExternalToolRule } from './domain/rules/external-tool.rule';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 
 @Module({
@@ -49,6 +50,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		LegacySchoolRule,
 		SystemRule,
 		SchoolSystemOptionsRule,
+		ExternalToolRule,
 	],
 	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
 })

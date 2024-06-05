@@ -20,6 +20,7 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from '../rules';
+import { ExternalToolRule } from '../rules/external-tool.rule';
 import type { AuthorizationContext, Rule } from '../type';
 
 @Injectable()
@@ -42,7 +43,8 @@ export class RuleManager {
 		private readonly taskRule: TaskRule,
 		private readonly teamRule: TeamRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly userRule: UserRule
+		private readonly userRule: UserRule,
+		private readonly externalToolRule: ExternalToolRule
 	) {
 		this.rules = [
 			this.boardDoRule,
@@ -61,6 +63,7 @@ export class RuleManager {
 			this.teamRule,
 			this.userLoginMigrationRule,
 			this.userRule,
+			this.externalToolRule,
 		];
 	}
 

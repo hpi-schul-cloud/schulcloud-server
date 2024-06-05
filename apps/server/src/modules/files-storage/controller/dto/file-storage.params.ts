@@ -11,7 +11,7 @@ export class FileRecordParams {
 	@IsMongoId()
 	storageLocationId!: EntityId;
 
-	@ApiProperty()
+	@ApiProperty({ enum: StorageLocation, enumName: 'StorageLocation' })
 	@IsEnum(StorageLocation)
 	storageLocation!: StorageLocation;
 
@@ -50,10 +50,6 @@ export class DownloadFileParams {
 	@ApiProperty()
 	@IsMongoId()
 	fileRecordId!: EntityId;
-
-	@ApiProperty()
-	@IsString()
-	fileName!: string;
 }
 
 export class ScanResultParams implements ScanResult {

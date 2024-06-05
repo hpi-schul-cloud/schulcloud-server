@@ -349,7 +349,6 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should return elements of requested scope', async () => {
 				const otherFileRecords = fileRecordFactory.buildList(3, {
-					schoolId: new ObjectId().toHexString(),
 					parentType: FileRecordParentType.School,
 				});
 

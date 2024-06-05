@@ -91,7 +91,6 @@ export class FilesStorageController {
 		return response;
 	}
 
-	// TODO: N21-1967 create copy without filename
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
 	@ApiResponse({ status: 200, type: StreamableFile })
 	@ApiResponse({ status: 206, type: StreamableFile })
@@ -101,7 +100,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
-	@Get('/download/:fileRecordId/:fileName')
+	@Get('/download/:fileRecordId')
 	async download(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -127,7 +126,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
 	@ApiHeader({ name: 'If-None-Match', required: false })
-	@Get('/preview/:fileRecordId/:fileName')
+	@Get('/preview/:fileRecordId')
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,

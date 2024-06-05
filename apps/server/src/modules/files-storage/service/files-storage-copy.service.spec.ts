@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus, StorageLocation } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createCopyFiles } from '../helper';
 import { CopyFileResponseBuilder } from '../mapper';
@@ -16,16 +16,17 @@ import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -117,7 +118,8 @@ describe('FilesStorageService copy methods', () => {
 
 				expect(fileRecordRepo.findByStorageLocationIdAndParentId).toHaveBeenNthCalledWith(
 					1,
-					sourceParams.schoolId,
+					sourceParams.storageLocation,
+					sourceParams.storageLocationId,
 					sourceParams.parentId
 				);
 			});

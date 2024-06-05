@@ -17,7 +17,7 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecord, FileRecordParentType } from '../../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordListResponse, ScanResultParams } from '../dto';
 
@@ -96,7 +96,8 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid token', async () => {
 			const fileRecord = fileRecordFactory.build({
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
@@ -112,7 +113,8 @@ describe(`${baseRouteName} (api)`, () => {
 	describe(`with valid request data`, () => {
 		it('should return right type of data', async () => {
 			const fileRecord = fileRecordFactory.build({
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});

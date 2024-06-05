@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo';
-import { FileRecord } from '../entity';
+import { FileRecord, StorageLocation } from '../entity';
 import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()
@@ -33,23 +33,29 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 	}
 
 	async findByStorageLocationIdAndParentId(
-		schoolId: EntityId,
+		storageLocation: StorageLocation,
+		storageLocationId: EntityId,
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
-		const scope = new FileRecordScope().byStorageLocationId(schoolId).byParentId(parentId).byMarkedForDelete(false);
+		const scope = new FileRecordScope()
+			.byStorageType(storageLocation)
+			.byStorageLocationId(storageLocationId)
+			.byParentId(parentId)
+			.byMarkedForDelete(false);
 		const result = await this.findAndCount(scope, options);
 
 		return result;
 	}
 
 	async findByStorageLocationIdAndParentIdAndMarkedForDelete(
+		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
-		// TODO: N21-1967 also storageType
 		const scope = new FileRecordScope()
+			.byStorageType(storageLocation)
 			.byStorageLocationId(storageLocationId)
 			.byParentId(parentId)
 			.byMarkedForDelete(true);

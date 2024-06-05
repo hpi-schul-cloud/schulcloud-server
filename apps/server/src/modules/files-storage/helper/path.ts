@@ -13,14 +13,14 @@ export function createPath(storageLocationId: EntityId, fileRecordId: EntityId):
 	return path;
 }
 
-export function createPreviewDirectoryPath(schoolId: EntityId, sourceFileRecordId: EntityId): string {
-	const path = ['previews', schoolId, sourceFileRecordId].join('/');
+export function createPreviewDirectoryPath(storageLocationId: EntityId, sourceFileRecordId: EntityId): string {
+	const path = ['previews', storageLocationId, sourceFileRecordId].join('/');
 
 	return path;
 }
 
-export function createPreviewFilePath(schoolId: EntityId, hash: string, sourceFileRecordId: EntityId): string {
-	const folderPath = createPreviewDirectoryPath(schoolId, sourceFileRecordId);
+export function createPreviewFilePath(storageLocationId: EntityId, hash: string, sourceFileRecordId: EntityId): string {
+	const folderPath = createPreviewDirectoryPath(storageLocationId, sourceFileRecordId);
 	const filePath = [folderPath, hash].join('/');
 
 	return filePath;

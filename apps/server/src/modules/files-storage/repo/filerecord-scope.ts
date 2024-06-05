@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
-import { FileRecord } from '../entity';
+import { FileRecord, StorageLocation } from '../entity';
 
 export class FileRecordScope extends Scope<FileRecord> {
 	byParentId(parentId: EntityId): FileRecordScope {
@@ -12,6 +12,12 @@ export class FileRecordScope extends Scope<FileRecord> {
 
 	byFileRecordId(fileRecordId: EntityId): FileRecordScope {
 		this.addQuery({ id: fileRecordId });
+
+		return this;
+	}
+
+	byStorageType(storageLocation: StorageLocation): FileRecordScope {
+		this.addQuery({ _storageLocation: storageLocation });
 
 		return this;
 	}

@@ -19,7 +19,7 @@ import {
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import request from 'supertest';
-import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { FileRecordParentType, PreviewStatus, StorageLocation } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
@@ -172,7 +172,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return right type of data', async () => {
 			const fileRecords = fileRecordFactory.buildList(1, {
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
@@ -202,12 +203,14 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return elements of requested scope', async () => {
 			const fileRecords = fileRecordFactory.buildList(3, {
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
 			const otherFileRecords = fileRecordFactory.buildList(3, {
-				schoolId: validId,
+				storageLocation: StorageLocation.SCHOOL,
+				storageLocationId: validId,
 				parentType: FileRecordParentType.School,
 			});
 

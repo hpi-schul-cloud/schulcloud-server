@@ -1,5 +1,5 @@
 import { EntityManager, RequestContext } from '@mikro-orm/core';
-import { AuthorizationContext } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -54,7 +54,8 @@ export class FilesStorageUC {
 		parentId: EntityId,
 		context: AuthorizationContext
 	) {
-		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		const allowedType: AuthorizableReferenceType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+
 		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 

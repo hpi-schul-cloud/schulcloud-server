@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FileRecordRepo } from './filerecord.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);
@@ -192,9 +192,14 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const pagination = { limit: 1 };
-			const [fileRecords, count] = await repo.findByStorageLocationIdAndParentId(storageLocationId1, parentId1, {
-				pagination,
-			});
+			const [fileRecords, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1,
+				{
+					pagination,
+				}
+			);
 
 			expect(count).toEqual(3);
 			expect(fileRecords.length).toEqual(1);
@@ -205,9 +210,14 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const pagination = { skip: 1 };
-			const [fileRecords, count] = await repo.findByStorageLocationIdAndParentId(storageLocationId1, parentId1, {
-				pagination,
-			});
+			const [fileRecords, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1,
+				{
+					pagination,
+				}
+			);
 
 			expect(count).toEqual(3);
 			expect(fileRecords.length).toEqual(2);
@@ -224,7 +234,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findByStorageLocationIdAndParentId(storageLocationId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -242,7 +256,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findByStorageLocationIdAndParentId(storageLocationId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -263,7 +281,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecordsExpired]);
 			em.clear();
 
-			const [results, count] = await repo.findByStorageLocationIdAndParentId(storageLocationId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -299,6 +321,7 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const [results, count] = await repo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+				StorageLocation.SCHOOL,
 				storageLocationId1,
 				parentId1
 			);
@@ -321,6 +344,7 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const [results, count] = await repo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+				StorageLocation.SCHOOL,
 				storageLocationId1,
 				parentId1
 			);
@@ -345,6 +369,7 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const [results, count] = await repo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+				StorageLocation.SCHOOL,
 				storageLocationId1,
 				parentId1
 			);

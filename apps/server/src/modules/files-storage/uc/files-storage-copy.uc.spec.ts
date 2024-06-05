@@ -11,10 +11,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 import { DomainErrorHandler } from '@src/core';
-import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { LegacyLogger } from '@src/core/logger';
+import { CopyFilesOfParentParams, FileRecordParams } from '../controller/dto';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -22,16 +22,17 @@ import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};
@@ -39,9 +40,10 @@ const buildFileRecordsWithParams = () => {
 	return { params, fileRecords, userId };
 };
 
-const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
+const createRequestParams = (storageLocationId: EntityId, userId: EntityId): FileRecordParams => {
 	return {
-		schoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};
@@ -55,13 +57,14 @@ const createParams = () => {
 	return { userId, schoolId, requestParams };
 };
 
-const createTargetParams = () => {
+const createTargetParams = (): CopyFilesOfParentParams => {
 	const targetParentId: EntityId = new ObjectId().toHexString();
-	const schoolId: EntityId = new ObjectId().toHexString();
+	const storageLocationId: EntityId = new ObjectId().toHexString();
 
 	return {
 		target: {
-			schoolId,
+			storageLocation: StorageLocation.SCHOOL,
+			storageLocationId,
 			parentId: targetParentId,
 			parentType: FileRecordParentType.Task,
 		},

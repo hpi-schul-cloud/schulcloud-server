@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { getPaths, unmarkForDelete } from '../helper';
 import { FileRecordRepo } from '../repo';
@@ -18,13 +18,18 @@ const buildFileRecordsWithParams = () => {
 	const parentSchoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text.txt' }),
+		fileRecordFactory
+			.markedForDelete()
+			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-two.txt' }),
+		fileRecordFactory
+			.markedForDelete()
+			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId: parentSchoolId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -110,7 +115,8 @@ describe('FilesStorageService restore methods', () => {
 				await service.restoreFilesOfParent(params);
 
 				expect(fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
-					params.schoolId,
+					params.storageLocation,
+					params.storageLocationId,
 					params.parentId
 				);
 			});

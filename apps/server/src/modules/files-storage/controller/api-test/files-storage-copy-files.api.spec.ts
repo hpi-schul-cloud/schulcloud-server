@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -22,7 +22,7 @@ import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { FileRecordParentType } from '../../entity';
+import { FileRecordParentType, StorageLocation } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { CopyFileParams, CopyFilesOfParentParams, FileRecordListResponse, FileRecordResponse } from '../dto';
@@ -143,7 +143,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 				copyFilesParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -186,7 +187,8 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return status 400 for invalid parentType', async () => {
 				copyFilesParams = {
 					target: {
-						schoolId: 'invalidObjectId',
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: 'invalidObjectId',
 						parentId: 'invalidObjectId',
 						parentType: FileRecordParentType.Task,
 					},
@@ -215,7 +217,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 				copyFilesParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -270,7 +273,8 @@ describe(`${baseRouteName} (api)`, () => {
 				validId = user.school.id;
 				copyFileParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -311,7 +315,8 @@ describe(`${baseRouteName} (api)`, () => {
 				validId = user.school.id;
 				copyFileParams = {
 					target: {
-						schoolId: validId,
+						storageLocation: StorageLocation.SCHOOL,
+						storageLocationId: validId,
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Course,
 					},
@@ -341,7 +346,6 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should return elements not equal of requested scope', async () => {
 				const otherFileRecords = fileRecordFactory.buildList(3, {
-					schoolId: new ObjectId().toHexString(),
 					parentType: FileRecordParentType.School,
 				});
 

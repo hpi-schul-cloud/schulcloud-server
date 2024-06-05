@@ -106,8 +106,7 @@ interface ParentInfo {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: 'filerecords' })
-// TODO: N21-1967 also storageType for index?
-@Index({ properties: ['_storageLocationId', '_parentId'], options: { background: true } })
+@Index({ properties: ['_storageLocation', '_storageLocationId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
 export class FileRecord extends BaseEntityWithTimestamps {

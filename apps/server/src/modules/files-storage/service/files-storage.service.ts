@@ -352,6 +352,7 @@ export class FilesStorageService {
 
 	public async restoreFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+			params.storageLocation,
 			params.storageLocationId,
 			params.parentId
 		);
@@ -378,6 +379,7 @@ export class FilesStorageService {
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<CopyFileResponse[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentId(
+			params.storageLocation,
 			params.storageLocationId,
 			params.parentId
 		);
