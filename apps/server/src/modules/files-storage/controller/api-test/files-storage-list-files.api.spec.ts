@@ -97,18 +97,18 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid schoolId', async () => {
-			const response = await api.get(`/123/users/${validId}`);
+			const response = await api.get(`/school/123/users/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
-					errors: ['schoolId must be a mongodb id'],
-					field: ['schoolId'],
+					errors: ['storageLocationId must be a mongodb id'],
+					field: ['storageLocationId'],
 				},
 			]);
 			expect(response.status).toEqual(400);
 		});
 
 		it('should return status 400 for invalid parentId', async () => {
-			const response = await api.get(`/${validId}/users/123`);
+			const response = await api.get(`/school/${validId}/users/123`);
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['parentId must be a mongodb id'],
@@ -119,7 +119,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid parentType', async () => {
-			const response = await api.get(`/${validId}/cookies/${validId}`);
+			const response = await api.get(`/school/${validId}/cookies/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: [`parentType must be one of the following values: ${availableParentTypes}`],
@@ -147,13 +147,13 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 200 for successful request', async () => {
-			const response = await api.get(`/${validId}/schools/${validId}`);
+			const response = await api.get(`/school/${validId}/schools/${validId}`);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should return a paginated result as default', async () => {
-			const { result } = await api.get(`/${validId}/schools/${validId}`);
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`);
 
 			expect(result).toEqual({
 				total: 0,
@@ -164,7 +164,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should pass the pagination qurey params', async () => {
-			const { result } = await api.get(`/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
 
 			expect(result.limit).toEqual(100);
 			expect(result.skip).toEqual(100);
@@ -181,7 +181,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush(fileRecords);
 			em.clear();
 
-			const { result } = await api.get(`/${validId}/schools/${validId}`);
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`);
 
 			expect(Array.isArray(result.data)).toBe(true);
 			expect(result.data[0]).toBeDefined();
@@ -217,7 +217,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush([...otherFileRecords, ...fileRecords]);
 			em.clear();
 
-			const { result } = await api.get(`/${validId}/schools/${validId}`);
+			const { result } = await api.get(`/school/${validId}/schools/${validId}`);
 
 			const resultData: FileRecordResponse[] = result.data;
 			const ids: EntityId[] = resultData.map((o) => o.id);

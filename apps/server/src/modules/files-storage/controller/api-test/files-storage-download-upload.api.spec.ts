@@ -21,7 +21,6 @@ import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord } from '../../entity';
-import { ErrorType } from '../../error';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { TestHelper } from '../../helper/test-helper';
@@ -162,19 +161,19 @@ describe('files-storage controller (API)', () => {
 	describe('upload action', () => {
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.postUploadFile(`/file/upload/123/users/${validId}`);
+				const response = await api.postUploadFile(`/file/upload/school/123/users/${validId}`);
 
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['schoolId must be a mongodb id'],
-						field: ['schoolId'],
+						errors: ['storageLocationId must be a mongodb id'],
+						field: ['storageLocationId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.postUploadFile(`/file/upload/${validId}/users/123`);
+				const response = await api.postUploadFile(`/file/upload/school/${validId}/users/123`);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -186,7 +185,7 @@ describe('files-storage controller (API)', () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.postUploadFile(`/file/upload/${validId}/cookies/${validId}`);
+				const response = await api.postUploadFile(`/file/upload/school/${validId}/cookies/${validId}`);
 
 				expect(response.status).toEqual(400);
 			});
@@ -194,13 +193,13 @@ describe('files-storage controller (API)', () => {
 
 		describe(`with valid request data`, () => {
 			it('should return status 201 for successful upload', async () => {
-				const response = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const response = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return the new created file record', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 
 				expect(result).toStrictEqual(
 					expect.objectContaining({
@@ -217,9 +216,9 @@ describe('files-storage controller (API)', () => {
 			});
 
 			it('should set iterator number to file name if file already exist', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 
 				expect(result.name).toEqual('test (1).txt');
 			});
@@ -233,19 +232,19 @@ describe('files-storage controller (API)', () => {
 		};
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.postUploadFromUrl(`/file/upload-from-url/123/users/${validId}`, body);
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/school/123/users/${validId}`, body);
 
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['schoolId must be a mongodb id'],
-						field: ['schoolId'],
+						errors: ['storageLocationId must be a mongodb id'],
+						field: ['storageLocationId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/users/123`, body);
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/school/${validId}/users/123`, body);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -257,7 +256,10 @@ describe('files-storage controller (API)', () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/cookies/${validId}`, body);
+				const response = await api.postUploadFromUrl(
+					`/file/upload-from-url/school/${validId}/cookies/${validId}`,
+					body
+				);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -269,7 +271,7 @@ describe('files-storage controller (API)', () => {
 			});
 
 			it('should return status 400 for empty url and fileName', async () => {
-				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, {});
+				const response = await api.postUploadFromUrl(`/file/upload-from-url/school/${validId}/schools/${validId}`, {});
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -291,22 +293,28 @@ describe('files-storage controller (API)', () => {
 					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
-					const uploadResponse = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+					const uploadResponse = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 					const { result } = uploadResponse;
 					body = {
-						url: `http://localhost:${appPort}/file/download/${result.id}/${result.name}`,
+						url: `http://localhost:${appPort}/file/download/${result.id}`,
 						fileName: 'test.txt',
 					};
 				});
 
 				it('should return status 201 for successful upload', async () => {
-					const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+					const response = await api.postUploadFromUrl(
+						`/file/upload-from-url/school/${validId}/schools/${validId}`,
+						body
+					);
 
 					expect(response.status).toEqual(201);
 				});
 
 				it('should return the new created file record', async () => {
-					const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+					const { result } = await api.postUploadFromUrl(
+						`/file/upload-from-url/school/${validId}/schools/${validId}`,
+						body
+					);
 					expect(result).toStrictEqual(
 						expect.objectContaining({
 							id: expect.any(String),
@@ -328,18 +336,21 @@ describe('files-storage controller (API)', () => {
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse1).mockResolvedValueOnce(expectedResponse2);
 
-					const uploadResponse = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+					const uploadResponse = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 					const { result } = uploadResponse;
 					body = {
-						url: `http://localhost:${appPort}/file/download/${result.id}/${result.name}`,
+						url: `http://localhost:${appPort}/file/download/${result.id}`,
 						fileName: 'test.txt',
 					};
 
-					await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+					await api.postUploadFromUrl(`/file/upload-from-url/school/${validId}/schools/${validId}`, body);
 				});
 
 				it('should set iterator number to file name if file already exist', async () => {
-					const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
+					const { result } = await api.postUploadFromUrl(
+						`/file/upload-from-url/school/${validId}/schools/${validId}`,
+						body
+					);
 
 					expect(result.name).toEqual('test (2).txt');
 				});
@@ -350,7 +361,7 @@ describe('files-storage controller (API)', () => {
 	describe('download action', () => {
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid recordId', async () => {
-				const response = await api.getDownloadFile('/file/download/123/text.txt');
+				const response = await api.getDownloadFile('/file/download/123');
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -361,16 +372,8 @@ describe('files-storage controller (API)', () => {
 				expect(response.status).toEqual(400);
 			});
 
-			it('should return status 404 for wrong filename', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-				const response = await api.getDownloadFile(`/file/download/${result.id}/wrong-name.txt`);
-
-				expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
-				expect(response.status).toEqual(404);
-			});
-
 			it('should return status 404 for file not found', async () => {
-				const response = await api.getDownloadFile(`/file/download/${validId}/wrong-name.txt`);
+				const response = await api.getDownloadFile(`/file/download/${validId}`);
 
 				expect(response.status).toEqual(404);
 			});
@@ -379,7 +382,9 @@ describe('files-storage controller (API)', () => {
 		describe(`with valid request data`, () => {
 			describe('when mimetype is not application/pdf', () => {
 				const setup = async () => {
-					const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+					const { result: uploadedFile } = await api.postUploadFile(
+						`/file/upload/school/${validId}/schools/${validId}`
+					);
 					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'image/webp' });
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
@@ -390,7 +395,7 @@ describe('files-storage controller (API)', () => {
 				it('should return status 200 for successful download', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}`);
 
 					expect(response.status).toEqual(200);
 				});
@@ -398,10 +403,7 @@ describe('files-storage controller (API)', () => {
 				it('should return status 206 and required headers for the successful partial file stream download', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFileBytesRange(
-						`/file/download/${uploadedFile.id}/${uploadedFile.name}`,
-						'bytes=0-'
-					);
+					const response = await api.getDownloadFileBytesRange(`/file/download/${uploadedFile.id}`, 'bytes=0-');
 
 					expect(response.status).toEqual(206);
 
@@ -412,7 +414,7 @@ describe('files-storage controller (API)', () => {
 				it('should set content-disposition header to attachment', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}`);
 
 					expect(response.headers['content-disposition']).toMatch('attachment');
 				});
@@ -420,7 +422,9 @@ describe('files-storage controller (API)', () => {
 
 			describe('when mimetype is application/pdf', () => {
 				const setup = async () => {
-					const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+					const { result: uploadedFile } = await api.postUploadFile(
+						`/file/upload/school/${validId}/schools/${validId}`
+					);
 					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'application/pdf' });
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
@@ -431,7 +435,7 @@ describe('files-storage controller (API)', () => {
 				it('should set content-disposition to inline', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}`);
 
 					expect(response.headers['content-disposition']).toMatch('inline');
 				});
@@ -453,7 +457,7 @@ describe('files-storage controller (API)', () => {
 				const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 				const newRecord = await em.findOneOrFail(FileRecord, result.id);
 
 				return { newRecord };

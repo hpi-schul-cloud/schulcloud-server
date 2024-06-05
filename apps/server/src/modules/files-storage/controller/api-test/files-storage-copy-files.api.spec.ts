@@ -152,18 +152,18 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.copy(`/123/users/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/123/users/${validId}`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['schoolId must be a mongodb id'],
-						field: ['schoolId'],
+						errors: ['storageLocationId must be a mongodb id'],
+						field: ['storageLocationId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.copy(`/${validId}/users/123`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/users/123`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
@@ -174,7 +174,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.copy(`/${validId}/cookies/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/cookies/${validId}`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
@@ -193,7 +193,7 @@ describe(`${baseRouteName} (api)`, () => {
 						parentType: FileRecordParentType.Task,
 					},
 				};
-				const response = await api.copy(`/${validId}/users/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/users/${validId}`, copyFilesParams);
 				expect(response.status).toEqual(400);
 			});
 		});
@@ -228,16 +228,16 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				const response = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
+				const response = await api.copy(`/school/${validId}/schools/${validId}`, copyFilesParams);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
-				const { result } = await api.copy(`/${validId}/schools/${validId}`, copyFilesParams);
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				const { result } = await api.copy(`/school/${validId}/schools/${validId}`, copyFilesParams);
 
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
@@ -323,7 +323,10 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const { result } = await api.postUploadFile(`/file/upload/${school.id}/schools/${school.id}`, 'test1.txt');
+				const { result } = await api.postUploadFile(
+					`/file/upload/school/${school.id}/schools/${school.id}`,
+					'test1.txt'
+				);
 
 				fileRecordId = result.id;
 			});

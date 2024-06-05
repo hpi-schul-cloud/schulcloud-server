@@ -47,7 +47,6 @@ export class FilesStorageUC {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
-	// TODO: N21-1967 adjust for fileStorageLocation
 	private async checkPermission(
 		userId: EntityId,
 		parentType: FileRecordParentType,

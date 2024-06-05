@@ -162,18 +162,18 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.restore(`/123/users/${validId}`);
+				const response = await api.restore(`/school/123/users/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['schoolId must be a mongodb id'],
-						field: ['schoolId'],
+						errors: ['storageLocationId must be a mongodb id'],
+						field: ['storageLocationId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.restore(`/${validId}/users/123`);
+				const response = await api.restore(`/school/${validId}/users/123`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
@@ -184,7 +184,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.restore(`/${validId}/cookies/${validId}`);
+				const response = await api.restore(`/school/${validId}/cookies/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
@@ -216,19 +216,19 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 200 for successful request', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
-				await api.delete(`/${validId}/schools/${validId}`);
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				await api.delete(`/school/${validId}/schools/${validId}`);
 
-				const response = await api.restore(`/${validId}/schools/${validId}`);
+				const response = await api.restore(`/school/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt');
-				await api.delete(`/${validId}/schools/${validId}`);
+				await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				await api.delete(`/school/${validId}/schools/${validId}`);
 
-				const { result } = await api.restore(`/${validId}/schools/${validId}`);
+				const { result } = await api.restore(`/school/${validId}/schools/${validId}`);
 
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
@@ -251,18 +251,18 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return elements of requested scope', async () => {
 				const otherParentId = new ObjectId().toHexString();
 				const uploadResponse = await Promise.all([
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${validId}`, 'test3.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other2.txt'),
-					api.postUploadFile(`/file/upload/${validId}/schools/${otherParentId}`, 'other3.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
+					api.postUploadFile(`/file/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
 				]);
 
 				const fileRecords = uploadResponse.map(({ result }) => result);
-				await api.delete(`/${validId}/schools/${validId}`);
+				await api.delete(`/school/${validId}/schools/${validId}`);
 
-				const { result } = await api.restore(`/${validId}/schools/${validId}`);
+				const { result } = await api.restore(`/school/${validId}/schools/${validId}`);
 
 				const resultData: FileRecordResponse[] = result.data;
 				const ids: EntityId[] = resultData.map((o) => o.id);
@@ -313,7 +313,10 @@ describe(`${baseRouteName} (api)`, () => {
 
 				currentUser = mapUserToCurrentUser(user);
 
-				const { result } = await api.postUploadFile(`/file/upload/${school.id}/schools/${school.id}`, 'test1.txt');
+				const { result } = await api.postUploadFile(
+					`/file/upload/school/${school.id}/schools/${school.id}`,
+					'test1.txt'
+				);
 
 				fileRecordId = result.id;
 
