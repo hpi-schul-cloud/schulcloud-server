@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
@@ -22,6 +22,7 @@ import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 describe(BoardCollaborationGateway.name, () => {
 	let app: INestApplication;
 	let ioClient: Socket;
+	let unauthorizedIoClient: Socket;
 	let em: EntityManager;
 
 	beforeAll(async () => {
@@ -43,17 +44,20 @@ describe(BoardCollaborationGateway.name, () => {
 
 	afterAll(async () => {
 		ioClient.disconnect();
+		unauthorizedIoClient.disconnect();
 		await app.close();
 	});
 
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.buildWithId();
+		const unauthorizedUser = userFactory.buildWithId();
 
 		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
+		await em.persistAndFlush([user, unauthorizedUser, course]);
 
 		ioClient = await getSocketApiClient(app, user);
+		unauthorizedIoClient = await getSocketApiClient(app, unauthorizedUser);
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -69,7 +73,7 @@ describe(BoardCollaborationGateway.name, () => {
 
 		em.clear();
 
-		return { user, columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
+		return { columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
 	};
 
 	describe('validation errors', () => {
@@ -98,15 +102,14 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when column does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const columnId = new ObjectId().toHexString();
+				const { columnNode } = await setup();
 
-				ioClient.emit('create-card-request', { columnId });
-				const failure = await waitForEvent(ioClient, 'create-card-failure');
+				unauthorizedIoClient.emit('create-card-request', { columnId: columnNode.id });
+				const failure = await waitForEvent(unauthorizedIoClient, 'create-card-failure');
 
-				expect(failure).toEqual({ columnId });
+				expect(failure).toEqual({ columnId: columnNode.id });
 			});
 		});
 	});
@@ -124,13 +127,13 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when board does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const boardId = new ObjectId().toHexString();
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
 
-				ioClient.emit('fetch-board-request', { boardId });
-				const failure = await waitForEvent(ioClient, 'fetch-board-failure');
+				unauthorizedIoClient.emit('fetch-board-request', { boardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'fetch-board-failure');
 
 				expect(failure).toEqual({ boardId });
 			});
@@ -180,22 +183,22 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when trying to move a non existing card', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				const { columnNode } = await setup();
+				const { columnNode, cardNodes } = await setup();
 
 				const moveCardProps = {
-					cardId: new ObjectId().toHexString(),
+					cardId: cardNodes[0].id,
 					oldIndex: 0,
 					newIndex: 1,
 					fromColumnId: columnNode.id,
 					fromColumnIndex: 0,
-					toColumnId: columnNode.id,
 					toColumnIndex: 0,
+					toColumnId: columnNode.id,
 				};
 
-				ioClient.emit('move-card-request', moveCardProps);
-				const failure = await waitForEvent(ioClient, 'move-card-failure');
+				unauthorizedIoClient.emit('move-card-request', moveCardProps);
+				const failure = await waitForEvent(unauthorizedIoClient, 'move-card-failure');
 
 				expect(failure).toEqual(moveCardProps);
 			});
@@ -214,13 +217,13 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when column does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const updateColumnProps = { columnId: new ObjectId().toHexString(), newTitle: 'new title' };
+				const { columnNode } = await setup();
+				const updateColumnProps = { columnId: columnNode.id, newTitle: 'new title' };
 
-				ioClient.emit('update-column-title-request', updateColumnProps);
-				const failure = await waitForEvent(ioClient, 'update-column-title-failure');
+				unauthorizedIoClient.emit('update-column-title-request', updateColumnProps);
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-column-title-failure');
 
 				expect(failure).toEqual(updateColumnProps);
 			});
@@ -240,15 +243,15 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when board does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const payload = { boardId: new ObjectId().toHexString() };
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
 
-				ioClient.emit('delete-board-request', payload);
-				const failure = await waitForEvent(ioClient, 'delete-board-failure');
+				unauthorizedIoClient.emit('delete-board-request', { boardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'delete-board-failure');
 
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ boardId });
 			});
 		});
 	});
@@ -266,16 +269,16 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when board does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const payload = { boardId: new ObjectId().toHexString(), newTitle: 'new title' };
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
 
-				ioClient.emit('update-board-title-request', payload);
-				const failure = await waitForEvent(ioClient, 'update-board-title-failure');
+				unauthorizedIoClient.emit('update-board-title-request', { boardId, newTitle: 'new title' });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-board-title-failure');
 
 				expect(failure).toBeDefined();
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ boardId, newTitle: 'new title' });
 			});
 		});
 	});
@@ -293,15 +296,15 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when board does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const payload = { boardId: new ObjectId().toHexString() };
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
 
-				ioClient.emit('create-column-request', payload);
-				const failure = await waitForEvent(ioClient, 'create-column-failure');
+				unauthorizedIoClient.emit('create-column-request', { boardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'create-column-failure');
 
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ boardId });
 			});
 		});
 	});
@@ -319,13 +322,13 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when board does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const boardId = new ObjectId().toHexString();
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
 
-				ioClient.emit('update-board-visibility-request', { boardId, isVisible: false });
-				const failure = await waitForEvent(ioClient, 'update-board-visibility-failure');
+				unauthorizedIoClient.emit('update-board-visibility-request', { boardId, isVisible: false });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-board-visibility-failure');
 
 				expect(failure).toEqual({ boardId, isVisible: false });
 			});
@@ -345,13 +348,13 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when column does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const columnId = new ObjectId().toHexString();
+				const { columnNode } = await setup();
+				const columnId = columnNode.id;
 
-				ioClient.emit('delete-column-request', { columnId });
-				const failure = await waitForEvent(ioClient, 'delete-column-failure');
+				unauthorizedIoClient.emit('delete-column-request', { columnId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'delete-column-failure');
 
 				expect(failure).toEqual({ columnId });
 			});
@@ -379,21 +382,21 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when column does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				const { columnBoardNode } = await setup();
+				const { columnBoardNode, columnNode } = await setup();
 
 				const payload = {
 					targetBoardId: columnBoardNode.id,
 					columnMove: {
 						addedIndex: 1,
 						removedIndex: 0,
-						columnId: new ObjectId().toHexString(),
+						columnId: columnNode.id,
 					},
 				};
 
-				ioClient.emit('move-column-request', payload);
-				const failure = await waitForEvent(ioClient, 'move-column-failure');
+				unauthorizedIoClient.emit('move-column-request', payload);
+				const failure = await waitForEvent(unauthorizedIoClient, 'move-column-failure');
 
 				expect(failure).toEqual(payload);
 			});
@@ -413,13 +416,13 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when card does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const payload = { cardId: new ObjectId().toHexString(), newTitle: 'new title' };
+				const { cardNodes } = await setup();
+				const payload = { cardId: cardNodes[0].id, newTitle: 'new title' };
 
-				ioClient.emit('update-card-title-request', payload);
-				const failure = await waitForEvent(ioClient, 'update-card-title-failure');
+				unauthorizedIoClient.emit('update-card-title-request', payload);
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-card-title-failure');
 
 				expect(failure).toEqual(payload);
 			});
@@ -440,15 +443,16 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when card does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const payload = { cardId: new ObjectId().toHexString(), newHeight: 200 };
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+				const newHeight = 200;
 
-				ioClient.emit('update-card-height-request', payload);
-				const failure = await waitForEvent(ioClient, 'update-card-height-failure');
+				unauthorizedIoClient.emit('update-card-height-request', { cardId, newHeight });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-card-height-failure');
 
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ cardId, newHeight });
 			});
 		});
 	});
@@ -466,15 +470,18 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when card does not exist', () => {
-			it('should answer with failure', async () => {
-				await setup();
-				const payload = { cardIds: [new ObjectId().toHexString()] };
+		describe('when user is not authorized', () => {
+			it('should not return any cards', async () => {
+				const { cardNodes } = await setup();
+				const cardIds = cardNodes.map((card) => card.id);
 
-				ioClient.emit('fetch-card-request', payload);
-				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
+				unauthorizedIoClient.emit('fetch-card-request', { cardIds });
 
-				expect(failure).toEqual(payload);
+				const success = (await waitForEvent(unauthorizedIoClient, 'fetch-card-success')) as {
+					cards: { title: string }[];
+				};
+
+				expect(success.cards.length).toEqual(0);
 			});
 		});
 	});
@@ -492,15 +499,15 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when card does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const payload = { cardId: new ObjectId().toHexString() };
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
 
-				ioClient.emit('delete-card-request', payload);
-				const failure = await waitForEvent(ioClient, 'delete-card-failure');
+				unauthorizedIoClient.emit('delete-card-request', { cardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'delete-card-failure');
 
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ cardId });
 			});
 		});
 	});
@@ -519,17 +526,15 @@ describe(BoardCollaborationGateway.name, () => {
 			expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'newElement']));
 		});
 
-		describe('when card does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
-				const cardId = new ObjectId().toHexString();
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[1].id;
 
-				const payload = { cardId, type: ContentElementType.RICH_TEXT };
+				unauthorizedIoClient.emit('create-element-request', { cardId, type: ContentElementType.RICH_TEXT });
+				const failure = await waitForEvent(unauthorizedIoClient, 'create-element-failure');
 
-				ioClient.emit('create-element-request', payload);
-				const failure = await waitForEvent(ioClient, 'create-element-failure');
-
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ cardId, type: ContentElementType.RICH_TEXT });
 			});
 		});
 	});
@@ -548,15 +553,16 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when element does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				const { cardNodes } = await setup();
-				const payload = { cardId: cardNodes[0].id, elementId: new ObjectId().toHexString() };
+				const { cardNodes, elementNodes } = await setup();
+				const cardId = cardNodes[0].id;
+				const elementId = elementNodes[0].id;
 
-				ioClient.emit('delete-element-request', payload);
-				const failure = await waitForEvent(ioClient, 'delete-element-failure');
+				unauthorizedIoClient.emit('delete-element-request', { cardId, elementId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'delete-element-failure');
 
-				expect(failure).toEqual(payload);
+				expect(failure).toEqual({ cardId, elementId });
 			});
 		});
 	});
@@ -582,19 +588,21 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when element does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				await setup();
+				const { elementNodes } = await setup();
+				const elementId = elementNodes[0].id;
+
 				const payload = {
-					elementId: new ObjectId().toHexString(),
+					elementId,
 					data: {
 						type: ContentElementType.RICH_TEXT,
 						content: { text: 'some new text', inputFormat: InputFormat.PLAIN_TEXT },
 					},
 				};
 
-				ioClient.emit('update-element-request', payload);
-				const failure = await waitForEvent(ioClient, 'update-element-failure');
+				unauthorizedIoClient.emit('update-element-request', payload);
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-element-failure');
 
 				expect(failure).toEqual(payload);
 			});
@@ -614,13 +622,13 @@ describe(BoardCollaborationGateway.name, () => {
 			});
 		});
 
-		describe('when element does not exist', () => {
+		describe('when user is not authorized', () => {
 			it('should answer with failure', async () => {
-				const { cardNodes } = await setup();
-				const payload = { elementId: new ObjectId().toHexString(), toCardId: cardNodes[0].id, toPosition: 2 };
+				const { cardNodes, elementNodes } = await setup();
+				const payload = { elementId: elementNodes[0].id, toCardId: cardNodes[0].id, toPosition: 2 };
 
-				ioClient.emit('move-element-request', payload);
-				const failure = await waitForEvent(ioClient, 'move-element-failure');
+				unauthorizedIoClient.emit('move-element-request', payload);
+				const failure = await waitForEvent(unauthorizedIoClient, 'move-element-failure');
 
 				expect(failure).toEqual(payload);
 			});
