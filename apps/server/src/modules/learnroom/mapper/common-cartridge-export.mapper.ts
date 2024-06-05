@@ -141,10 +141,10 @@ export class CommonCartridgeExportMapper {
 	}
 
 	private getTextTitle(text: string): string {
-		const title = text
-			.slice(0, 50)
-			.replace(/<[^>]*>?/gm, '')
-			.concat('...');
+		let title = text.slice(0, 50).replace(/<[^>]*>?/gm, '');
+		if (text.length > 50) {
+			title = title.concat('...');
+		}
 		return title;
 	}
 }
