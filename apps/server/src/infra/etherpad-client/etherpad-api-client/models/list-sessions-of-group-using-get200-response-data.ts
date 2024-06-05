@@ -13,36 +13,21 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetSessionInfoUsingGET200ResponseDataInfo } from './get-session-info-using-get200-response-data-info';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface ListSessionsOfGroupUsingGET200ResponseData
  */
-export interface SessionInfo {
+export interface ListSessionsOfGroupUsingGET200ResponseData {
     /**
      * 
-     * @type {string}
-     * @memberof SessionInfo
+     * @type {Array<GetSessionInfoUsingGET200ResponseDataInfo>}
+     * @memberof ListSessionsOfGroupUsingGET200ResponseData
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SessionInfo
-     */
-    'validUntil'?: number;
+    'sessions'?: Array<GetSessionInfoUsingGET200ResponseDataInfo>;
 }
 

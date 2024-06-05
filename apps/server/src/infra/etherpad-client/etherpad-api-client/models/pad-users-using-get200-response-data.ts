@@ -13,36 +13,21 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetAuthorNameUsingGET200ResponseDataInfo } from './get-author-name-using-get200-response-data-info';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface PadUsersUsingGET200ResponseData
  */
-export interface SessionInfo {
+export interface PadUsersUsingGET200ResponseData {
     /**
      * 
-     * @type {string}
-     * @memberof SessionInfo
+     * @type {Array<GetAuthorNameUsingGET200ResponseDataInfo>}
+     * @memberof PadUsersUsingGET200ResponseData
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SessionInfo
-     */
-    'validUntil'?: number;
+    'padUsers'?: Array<GetAuthorNameUsingGET200ResponseDataInfo>;
 }
 

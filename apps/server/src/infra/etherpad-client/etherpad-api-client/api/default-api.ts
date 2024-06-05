@@ -13,21 +13,22 @@
  */
 
 
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
-import { Configuration } from '../configuration';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { InlineResponse2001 } from '../models';
+import type { CreateGroupUsingGET400Response } from '../models';
 // @ts-ignore
-import { InlineResponse400 } from '../models';
+import type { CreateGroupUsingGET401Response } from '../models';
 // @ts-ignore
-import { InlineResponse401 } from '../models';
+import type { CreateGroupUsingGET500Response } from '../models';
 // @ts-ignore
-import { InlineResponse500 } from '../models';
+import type { DeleteGroupUsingGET200Response } from '../models';
 /**
  * DefaultApi - axios parameter creator
  * @export
@@ -42,7 +43,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendTextUsingGET: async (padID?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        appendTextUsingGET: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/appendText`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -72,7 +73,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -89,7 +90,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendTextUsingPOST: async (padID?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        appendTextUsingPOST: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/appendText`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -119,7 +120,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -136,7 +137,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadUsingGET: async (sourceID?: string, destinationID?: string, force?: string, options: any = {}): Promise<RequestArgs> => {
+        copyPadUsingGET: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/copyPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -166,7 +167,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -183,7 +184,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, options: any = {}): Promise<RequestArgs> => {
+        copyPadUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/copyPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -213,7 +214,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -231,7 +232,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadWithoutHistoryUsingGET: async (sourceID?: string, destinationID?: string, force?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        copyPadWithoutHistoryUsingGET: async (sourceID?: string, destinationID?: string, force?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/copyPadWithoutHistory`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -265,7 +266,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -283,7 +284,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadWithoutHistoryUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        copyPadWithoutHistoryUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/copyPadWithoutHistory`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -317,7 +318,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -332,7 +333,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAttributePoolUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getAttributePoolUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getAttributePool`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -354,7 +355,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -369,7 +370,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAttributePoolUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getAttributePoolUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getAttributePool`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -391,7 +392,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -406,7 +407,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPadIDUsingGET: async (roID?: string, options: any = {}): Promise<RequestArgs> => {
+        getPadIDUsingGET: async (roID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getPadID`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -428,7 +429,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -443,7 +444,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPadIDUsingPOST: async (roID?: string, options: any = {}): Promise<RequestArgs> => {
+        getPadIDUsingPOST: async (roID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getPadID`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -465,7 +466,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -481,7 +482,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionChangesetUsingGET: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        getRevisionChangesetUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getRevisionChangeset`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -507,7 +508,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -523,7 +524,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionChangesetUsingPOST: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        getRevisionChangesetUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getRevisionChangeset`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -549,7 +550,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -564,7 +565,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSavedRevisionsCountUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getSavedRevisionsCountUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getSavedRevisionsCount`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -586,7 +587,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -601,7 +602,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSavedRevisionsCountUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getSavedRevisionsCountUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getSavedRevisionsCount`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -623,7 +624,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -637,7 +638,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatsUsingGET: async (options: any = {}): Promise<RequestArgs> => {
+        getStatsUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getStats`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -655,7 +656,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -669,7 +670,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatsUsingPOST: async (options: any = {}): Promise<RequestArgs> => {
+        getStatsUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getStats`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -687,7 +688,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -702,7 +703,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSavedRevisionsUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        listSavedRevisionsUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listSavedRevisions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -724,7 +725,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -739,7 +740,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSavedRevisionsUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        listSavedRevisionsUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listSavedRevisions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -761,7 +762,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -778,7 +779,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        movePadUsingGET: async (sourceID?: string, destinationID?: string, force?: string, options: any = {}): Promise<RequestArgs> => {
+        movePadUsingGET: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/movePad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -808,7 +809,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -825,7 +826,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        movePadUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, options: any = {}): Promise<RequestArgs> => {
+        movePadUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/movePad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -855,7 +856,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -872,7 +873,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        restoreRevisionUsingGET: async (padID?: string, rev?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        restoreRevisionUsingGET: async (padID?: string, rev?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/restoreRevision`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -902,7 +903,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -919,7 +920,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        restoreRevisionUsingPOST: async (padID?: string, rev?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        restoreRevisionUsingPOST: async (padID?: string, rev?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/restoreRevision`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -949,7 +950,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -965,7 +966,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        saveRevisionUsingGET: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        saveRevisionUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/saveRevision`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -991,7 +992,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1007,7 +1008,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        saveRevisionUsingPOST: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        saveRevisionUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/saveRevision`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1033,7 +1034,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1060,9 +1061,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.appendTextUsingGET(padID, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.appendTextUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1072,9 +1075,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.appendTextUsingPOST(padID, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.appendTextUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1084,9 +1089,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadUsingGET(sourceID, destinationID, force, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1096,9 +1103,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadUsingPOST(sourceID, destinationID, force, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1109,9 +1118,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadWithoutHistoryUsingGET(sourceID, destinationID, force, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadWithoutHistoryUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1122,9 +1133,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadWithoutHistoryUsingPOST(sourceID, destinationID, force, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadWithoutHistoryUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1132,9 +1145,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAttributePoolUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getAttributePoolUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAttributePoolUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getAttributePoolUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1142,9 +1157,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAttributePoolUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getAttributePoolUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAttributePoolUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getAttributePoolUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1152,9 +1169,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPadIDUsingGET(roID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getPadIDUsingGET(roID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPadIDUsingGET(roID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getPadIDUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1162,9 +1181,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPadIDUsingPOST(roID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getPadIDUsingPOST(roID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPadIDUsingPOST(roID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getPadIDUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1173,9 +1194,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionChangesetUsingGET(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getRevisionChangesetUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1184,9 +1207,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionChangesetUsingPOST(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getRevisionChangesetUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1194,9 +1219,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSavedRevisionsCountUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getSavedRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getSavedRevisionsCountUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getSavedRevisionsCountUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1204,27 +1231,33 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSavedRevisionsCountUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getSavedRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getSavedRevisionsCountUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getSavedRevisionsCountUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getStatsUsingGET(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getStatsUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getStatsUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getStatsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getStatsUsingPOST(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async getStatsUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getStatsUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getStatsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1232,9 +1265,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSavedRevisionsUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async listSavedRevisionsUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSavedRevisionsUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.listSavedRevisionsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1242,9 +1277,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSavedRevisionsUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async listSavedRevisionsUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSavedRevisionsUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.listSavedRevisionsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1254,9 +1291,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.movePadUsingGET(sourceID, destinationID, force, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.movePadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1266,9 +1305,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.movePadUsingPOST(sourceID, destinationID, force, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.movePadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1278,9 +1319,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.restoreRevisionUsingGET(padID, rev, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.restoreRevisionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1290,9 +1333,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.restoreRevisionUsingPOST(padID, rev, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.restoreRevisionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1301,9 +1346,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async saveRevisionUsingGET(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async saveRevisionUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.saveRevisionUsingGET(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.saveRevisionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1312,9 +1359,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async saveRevisionUsingPOST(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async saveRevisionUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.saveRevisionUsingPOST(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.saveRevisionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -1334,7 +1383,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.appendTextUsingGET(padID, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1345,7 +1394,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.appendTextUsingPOST(padID, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1356,7 +1405,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.copyPadUsingGET(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1367,7 +1416,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.copyPadUsingPOST(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1379,7 +1428,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.copyPadWithoutHistoryUsingGET(sourceID, destinationID, force, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1391,7 +1440,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.copyPadWithoutHistoryUsingPOST(sourceID, destinationID, force, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1400,7 +1449,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAttributePoolUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getAttributePoolUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getAttributePoolUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1409,7 +1458,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAttributePoolUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getAttributePoolUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getAttributePoolUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1418,7 +1467,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPadIDUsingGET(roID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getPadIDUsingGET(roID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getPadIDUsingGET(roID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1427,7 +1476,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPadIDUsingPOST(roID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getPadIDUsingPOST(roID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getPadIDUsingPOST(roID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1437,7 +1486,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getRevisionChangesetUsingGET(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1447,7 +1496,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getRevisionChangesetUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1456,7 +1505,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSavedRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getSavedRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getSavedRevisionsCountUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1465,7 +1514,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSavedRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        getSavedRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getSavedRevisionsCountUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1473,7 +1522,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatsUsingGET(options?: any): AxiosPromise<InlineResponse2001> {
+        getStatsUsingGET(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getStatsUsingGET(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1481,7 +1530,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getStatsUsingPOST(options?: any): AxiosPromise<InlineResponse2001> {
+        getStatsUsingPOST(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.getStatsUsingPOST(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1490,7 +1539,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSavedRevisionsUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        listSavedRevisionsUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.listSavedRevisionsUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1499,7 +1548,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSavedRevisionsUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        listSavedRevisionsUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.listSavedRevisionsUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1510,7 +1559,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.movePadUsingGET(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1521,7 +1570,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.movePadUsingPOST(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1532,7 +1581,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.restoreRevisionUsingGET(padID, rev, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1543,7 +1592,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.restoreRevisionUsingPOST(padID, rev, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1553,7 +1602,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        saveRevisionUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        saveRevisionUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.saveRevisionUsingGET(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1563,7 +1612,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        saveRevisionUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        saveRevisionUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.saveRevisionUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
         },
     };
@@ -1584,7 +1633,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1595,7 +1644,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1606,7 +1655,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1617,19 +1666,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001>;
-
-    /**
-     * 
-     * @param {string} [sourceID] 
-     * @param {string} [destinationID] 
-     * @param {string} [force] 
-     * @param {string} [authorId] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApiInterface
-     */
-    copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1641,7 +1678,19 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1650,7 +1699,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getAttributePoolUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getAttributePoolUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1659,7 +1708,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getAttributePoolUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getAttributePoolUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1668,7 +1717,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getPadIDUsingGET(roID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getPadIDUsingGET(roID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1677,7 +1726,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getPadIDUsingPOST(roID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getPadIDUsingPOST(roID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1687,7 +1736,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1697,7 +1746,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1706,7 +1755,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getSavedRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getSavedRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1715,7 +1764,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getSavedRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getSavedRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1723,7 +1772,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getStatsUsingGET(options?: any): AxiosPromise<InlineResponse2001>;
+    getStatsUsingGET(options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1731,16 +1780,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getStatsUsingPOST(options?: any): AxiosPromise<InlineResponse2001>;
-
-    /**
-     * 
-     * @param {string} [padID] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApiInterface
-     */
-    listSavedRevisionsUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    getStatsUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1749,7 +1789,16 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    listSavedRevisionsUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    listSavedRevisionsUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    listSavedRevisionsUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1760,7 +1809,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1771,7 +1820,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1782,7 +1831,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1793,7 +1842,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1803,7 +1852,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    saveRevisionUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    saveRevisionUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -1813,7 +1862,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    saveRevisionUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    saveRevisionUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
 }
 
@@ -1833,7 +1882,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any) {
+    public appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).appendTextUsingGET(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1846,7 +1895,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any) {
+    public appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).appendTextUsingPOST(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1859,7 +1908,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any) {
+    public copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).copyPadUsingGET(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1872,7 +1921,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any) {
+    public copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).copyPadUsingPOST(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1886,7 +1935,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any) {
+    public copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).copyPadWithoutHistoryUsingGET(sourceID, destinationID, force, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1900,7 +1949,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any) {
+    public copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).copyPadWithoutHistoryUsingPOST(sourceID, destinationID, force, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1911,7 +1960,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getAttributePoolUsingGET(padID?: string, options?: any) {
+    public getAttributePoolUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getAttributePoolUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1922,7 +1971,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getAttributePoolUsingPOST(padID?: string, options?: any) {
+    public getAttributePoolUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getAttributePoolUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1933,7 +1982,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getPadIDUsingGET(roID?: string, options?: any) {
+    public getPadIDUsingGET(roID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getPadIDUsingGET(roID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1944,7 +1993,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getPadIDUsingPOST(roID?: string, options?: any) {
+    public getPadIDUsingPOST(roID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getPadIDUsingPOST(roID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1956,7 +2005,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: any) {
+    public getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getRevisionChangesetUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1968,7 +2017,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: any) {
+    public getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getRevisionChangesetUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1979,7 +2028,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getSavedRevisionsCountUsingGET(padID?: string, options?: any) {
+    public getSavedRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getSavedRevisionsCountUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1990,7 +2039,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getSavedRevisionsCountUsingPOST(padID?: string, options?: any) {
+    public getSavedRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getSavedRevisionsCountUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2000,7 +2049,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getStatsUsingGET(options?: any) {
+    public getStatsUsingGET(options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getStatsUsingGET(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2010,7 +2059,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getStatsUsingPOST(options?: any) {
+    public getStatsUsingPOST(options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getStatsUsingPOST(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2021,7 +2070,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public listSavedRevisionsUsingGET(padID?: string, options?: any) {
+    public listSavedRevisionsUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).listSavedRevisionsUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2032,7 +2081,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public listSavedRevisionsUsingPOST(padID?: string, options?: any) {
+    public listSavedRevisionsUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).listSavedRevisionsUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2045,7 +2094,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any) {
+    public movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).movePadUsingGET(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2058,7 +2107,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any) {
+    public movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).movePadUsingPOST(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2071,7 +2120,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: any) {
+    public restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).restoreRevisionUsingGET(padID, rev, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2084,7 +2133,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: any) {
+    public restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).restoreRevisionUsingPOST(padID, rev, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2096,7 +2145,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public saveRevisionUsingGET(padID?: string, rev?: string, options?: any) {
+    public saveRevisionUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).saveRevisionUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2108,7 +2157,8 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public saveRevisionUsingPOST(padID?: string, rev?: string, options?: any) {
+    public saveRevisionUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).saveRevisionUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 }
+

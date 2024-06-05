@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { ListAllGroupsUsingGET200ResponseData } from './list-all-groups-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface ListAllGroupsUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface ListAllGroupsUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof ListAllGroupsUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListAllGroupsUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {ListAllGroupsUsingGET200ResponseData}
+     * @memberof ListAllGroupsUsingGET200Response
+     */
+    'data'?: ListAllGroupsUsingGET200ResponseData;
 }
 
