@@ -1,27 +1,28 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { v4 as uuidv4 } from 'uuid';
-import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain/types';
-import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
-import { IFindOptions } from '@shared/domain/interface';
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
-	DomainDeletionReport,
 	DataDeletionDomainOperationLoggable,
-	DomainName,
+	DeletionService,
+	DomainDeletionReport,
 	DomainDeletionReportBuilder,
+	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
+	UserDeletedEvent,
 } from '@modules/deletion';
-import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
+import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -30,11 +31,13 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(PseudonymService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

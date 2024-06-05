@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	DataDeletedEvent,
@@ -19,15 +20,15 @@ import { Logger } from '@src/core/logger';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
+import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountEntityToDoMapper } from '../../repo/micro-orm/mapper';
+import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountEntity } from '../entity/account.entity';
+import { IdmCallbackLoggableException } from '../error';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { IdmCallbackLoggableException } from '../error';
-import { accountDoFactory, accountFactory } from '../../testing';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -40,6 +41,7 @@ describe('AccountService', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let accountRepo: DeepMocked<AccountRepo>;
 	let eventBus: DeepMocked<EventBus>;
+	let orm: MikroORM;
 
 	const newAccountService = () =>
 		new AccountService(
@@ -50,7 +52,8 @@ describe('AccountService', () => {
 			logger,
 			userRepo,
 			accountRepo,
-			eventBus
+			eventBus,
+			orm
 		);
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -62,6 +65,8 @@ describe('AccountService', () => {
 	});
 
 	beforeAll(async () => {
+		orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				AccountService,
@@ -101,6 +106,10 @@ describe('AccountService', () => {
 						publish: jest.fn(),
 					},
 				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 		accountServiceDb = module.get(AccountServiceDb);
@@ -112,8 +121,6 @@ describe('AccountService', () => {
 		userRepo = module.get(UserRepo);
 		accountRepo = module.get(AccountRepo);
 		eventBus = module.get(EventBus);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {

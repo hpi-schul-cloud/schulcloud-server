@@ -1,6 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { MikroORM } from '@mikro-orm/core';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
@@ -8,15 +18,6 @@ import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import { EventBus } from '@nestjs/cqrs';
-import {
-	DomainOperationReportBuilder,
-	OperationType,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DataDeletedEvent,
-} from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
@@ -27,7 +28,7 @@ describe('Submission Service', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		const orm = await setupEntities();
 
 		module = await Test.createTestingModule({
 			imports: [],
@@ -50,6 +51,10 @@ describe('Submission Service', () => {
 					useValue: {
 						publish: jest.fn(),
 					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
 				},
 			],
 		}).compile();

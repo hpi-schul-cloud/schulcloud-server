@@ -1,21 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
-import { RocketChatService } from '@modules/rocketchat';
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	UserDeletedEvent,
-	DeletionService,
 	DataDeletedEvent,
-	DomainDeletionReport,
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
 	StatusModel,
+	UserDeletedEvent,
 } from '@modules/deletion';
+import { RocketChatService } from '@modules/rocketchat';
+import { Injectable } from '@nestjs/common';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
 import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
@@ -26,11 +27,13 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 		private readonly rocketChatUserRepo: RocketChatUserRepo,
 		private readonly rocketChatService: RocketChatService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(RocketChatUserService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

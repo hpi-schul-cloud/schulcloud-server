@@ -1,15 +1,16 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { ConfigService } from '@nestjs/config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
 import { DeletionConfig, DomainDeletionReport } from '../../domain/interface';
-import { DeletionRequestService, DeletionLogService } from '../../domain/service';
+import { DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
-import { DeletionRequestBodyProps, DeletionRequestResponse, DeletionRequestLogResponse } from '../controller/dto';
+import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
 
 @Injectable()
@@ -22,6 +23,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		private readonly deletionLogService: DeletionLogService,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM,
 		private readonly configService: ConfigService<DeletionConfig, true>
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -45,6 +47,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		];
 	}
 
+	@UseRequestContext()
 	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
 		await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
 

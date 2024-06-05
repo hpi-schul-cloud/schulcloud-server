@@ -1,21 +1,22 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { TeamEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import {
-	UserDeletedEvent,
-	DeletionService,
-	DataDeletedEvent,
-	DomainDeletionReport,
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
-	DataDeletionDomainOperationLoggable,
-	StatusModel,
-} from '@modules/deletion';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -23,11 +24,13 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 	constructor(
 		private readonly teamsRepo: TeamsRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(TeamService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

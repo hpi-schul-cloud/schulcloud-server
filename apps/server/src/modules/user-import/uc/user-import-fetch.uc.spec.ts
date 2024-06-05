@@ -97,9 +97,7 @@ describe(UserImportFetchUc.name, () => {
 
 				await uc.populateImportUsers(user.id);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
-					Permission.SCHOOL_IMPORT_USERS_MIGRATE,
-				]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.IMPORT_USER_MIGRATE]);
 			});
 
 			it('should filter migrated users', async () => {

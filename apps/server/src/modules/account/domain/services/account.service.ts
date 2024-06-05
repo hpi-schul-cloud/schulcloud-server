@@ -1,3 +1,4 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	DataDeletedEvent,
@@ -18,8 +19,9 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { Logger } from '@src/core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { AccountConfig } from '../../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
+import { AccountConfig } from '../../account-config';
+import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountEntity } from '../entity/account.entity';
 import {
 	DeletedAccountLoggable,
@@ -38,7 +40,6 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from '../error';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -61,7 +62,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly logger: Logger,
 		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -238,6 +240,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
