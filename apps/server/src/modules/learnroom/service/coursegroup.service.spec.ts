@@ -1,18 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CourseGroupRepo, UserRepo } from '@shared/repo';
-import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
-import { ObjectId } from 'bson';
+import { MikroORM } from '@mikro-orm/core';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CourseGroupRepo, UserRepo } from '@shared/repo';
+import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { CourseGroupService } from './coursegroup.service';
 
 describe('CourseGroupService', () => {
@@ -23,7 +24,7 @@ describe('CourseGroupService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		const orm = await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupService,
@@ -44,6 +45,10 @@ describe('CourseGroupService', () => {
 					useValue: {
 						publish: jest.fn(),
 					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
 				},
 			],
 		}).compile();

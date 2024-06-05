@@ -87,7 +87,6 @@
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "onlyusedintests:thisistheadminapitokeninthetestconfig,someotherkey",
 		"MODIFICATION_THRESHOLD_MS": 60000,
-		"MAX_AMOUNT_OF_DELETIONREQUESTS_DO_CONCURENTLY": 10,
 		"DELETION_DELAY_MILLISECONDS": 10000
 	},
 	"EXIT_ON_ERROR": false,

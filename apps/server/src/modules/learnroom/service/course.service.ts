@@ -1,3 +1,4 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -23,11 +24,13 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 	constructor(
 		private readonly repo: LegacyCourseRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus
+		private readonly eventBus: EventBus,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(CourseService.name);
 	}
 
+	@UseRequestContext()
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));

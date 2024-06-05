@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { MikroORM } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -15,6 +16,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
+import { setupEntities } from '@shared/testing';
 import { ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
@@ -51,6 +53,10 @@ describe('PseudonymService', () => {
 					useValue: {
 						publish: jest.fn(),
 					},
+				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
 				},
 			],
 		}).compile();
