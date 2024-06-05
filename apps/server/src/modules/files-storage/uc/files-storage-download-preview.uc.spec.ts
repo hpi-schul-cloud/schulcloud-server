@@ -10,7 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { SingleFileParams } from '../controller/dto';
+import { DownloadFileParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { TestHelper } from '../helper/test-helper';
@@ -114,7 +114,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN preview is returned and user is authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams: DownloadFileParams = { ...params };
 				const singleFileParams = FilesStorageMapper.mapToSingleFileParams(fileDownloadParams);
 
 				const previewParams = getPreviewParams();
@@ -167,8 +167,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFileRecord throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const { params, userId } = buildFileRecordWithParams();
+				const fileDownloadParams: DownloadFileParams = { ...params };
 
 				const previewParams = getPreviewParams();
 
@@ -188,7 +188,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams: DownloadFileParams = { ...params };
 
 				const previewParams = getPreviewParams();
 
@@ -210,7 +210,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN getPreview throws error', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams: DownloadFileParams = { ...params };
 
 				const previewParams = getPreviewParams();
 

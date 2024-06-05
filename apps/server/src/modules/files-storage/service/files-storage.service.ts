@@ -1,13 +1,6 @@
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
-import {
-	BadRequestException,
-	ConflictException,
-	Inject,
-	Injectable,
-	NotAcceptableException,
-	NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
@@ -16,7 +9,6 @@ import { PassThrough, Readable } from 'stream';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
-	DownloadFileParams,
 	FileRecordParams,
 	RenameFileParams,
 	ScanResultParams,
@@ -259,14 +251,6 @@ export class FilesStorageService {
 		await this.fileRecordRepo.save(fileRecord);
 	}
 
-	// download
-	public checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
-		if (!fileRecord.hasName(params.fileName)) {
-			this.logger.debug(`could not find file with id: ${fileRecord.id} by filename`);
-			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
-		}
-	}
-
 	private checkScanStatus(fileRecord: FileRecord): void | NotAcceptableException {
 		if (fileRecord.isBlocked()) {
 			this.logger.warn(`file is blocked with id: ${fileRecord.id}`);
@@ -282,12 +266,7 @@ export class FilesStorageService {
 		return response;
 	}
 
-	public async download(
-		fileRecord: FileRecord,
-		params: DownloadFileParams,
-		bytesRange?: string
-	): Promise<GetFileResponse> {
-		this.checkFileName(fileRecord, params);
+	public async download(fileRecord: FileRecord, bytesRange?: string): Promise<GetFileResponse> {
 		this.checkScanStatus(fileRecord);
 
 		const response = await this.downloadFile(fileRecord, bytesRange);

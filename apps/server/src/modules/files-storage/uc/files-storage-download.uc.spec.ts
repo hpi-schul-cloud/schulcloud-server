@@ -10,7 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { SingleFileParams } from '../controller/dto';
+import { DownloadFileParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { GetFileResponse } from '../interface';
@@ -104,7 +104,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN file is found, user is authorized and file is successfully downloaded', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams: DownloadFileParams = { ...params };
 
 				const fileResponse = createMock<GetFileResponse>();
 
@@ -144,7 +144,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.download(userId, fileDownloadParams);
 
-				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams, undefined);
+				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, undefined);
 			});
 
 			it('should return correct result', async () => {
@@ -158,8 +158,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFile throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const { params, userId } = buildFileRecordWithParams();
+				const fileDownloadParams: DownloadFileParams = { ...params };
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
@@ -177,7 +177,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams: DownloadFileParams = { ...params };
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
