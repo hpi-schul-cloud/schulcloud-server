@@ -16,6 +16,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '../testing';
+import { RichTextContentBody } from '../controller/dto';
 
 describe(ElementUc.name, () => {
 	let module: TestingModule;
@@ -77,7 +78,10 @@ describe(ElementUc.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
-				const content = { text: 'this has been updated', inputFormat: InputFormat.RICH_TEXT_CK5 };
+
+				const content: RichTextContentBody = { text: 'this has been updated', inputFormat: InputFormat.RICH_TEXT_CK5 };
+
+				boardNodeService.findContentElementById.mockResolvedValueOnce(element);
 
 				return { element, user, content };
 			};
@@ -92,14 +96,13 @@ describe(ElementUc.name, () => {
 
 			it('should call the Board Permission Service to check the user permission', async () => {
 				const { user, element, content } = setup();
-				boardNodeService.findContentElementById.mockResolvedValueOnce(element);
 
 				await uc.updateElement(user.id, element.id, content);
 
 				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, element, Action.write);
 			});
 
-			it('should call the service', async () => {
+			it('should call the boardNodeService service to update content', async () => {
 				const { element, user, content } = setup();
 
 				await uc.updateElement(user.id, element.id, content);
@@ -109,7 +112,6 @@ describe(ElementUc.name, () => {
 
 			it('should return the updated element', async () => {
 				const { element, user, content } = setup();
-				boardNodeService.findContentElementById.mockResolvedValueOnce(element);
 
 				const updatedElement = element;
 				updatedElement.text = content.text;
