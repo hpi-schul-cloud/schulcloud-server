@@ -119,7 +119,8 @@
 		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
-		"schoolImport": "node ./scripts/schoolImport.js"
+		"schoolImport": "node ./scripts/schoolImport.js",
+		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization' -c 'openapitools.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.100.0",
@@ -155,6 +156,7 @@
 		"@nestjs/platform-ws": "^10.3.0",
 		"@nestjs/swagger": "^7.1.10",
 		"@nestjs/websockets": "^10.3.7",
+		"@openapitools/openapi-generator-cli": "^2.13.4",
 		"@socket.io/mongo-adapter": "^0.3.2",
 		"@types/gm": "^1.25.1",
 		"@types/ldapjs": "^2.2.5",

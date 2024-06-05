@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+	"spaces": 2,
+	"generator-cli": {
+		"version": "7.6.0",
+		"additionalProperties": {
+			"apiPackage": "api",
+			"enumNameSuffix": "",
+			"enumPropertyNaming": "UPPERCASE",
+			"modelPackage": "models",
+			"supportsES6": true,
+			"withInterfaces": true,
+			"withSeparateModelsAndApi": true
+		}
+	}
+}
