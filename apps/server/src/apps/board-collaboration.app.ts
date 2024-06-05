@@ -18,7 +18,6 @@ import {
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from '@src/apps/helpers/prometheus-metrics';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { AppStartLoggable } from './helpers/app-start-loggable';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -31,7 +30,6 @@ async function bootstrap() {
 
 	const mongoIoAdapter = new MongoIoAdapter(nestApp);
 	await mongoIoAdapter.connectToMongoDb(DB_URL);
-
 	nestApp.useWebSocketAdapter(mongoIoAdapter);
 
 	const options: SwaggerDocumentOptions = {
@@ -42,24 +40,12 @@ async function bootstrap() {
 
 	await nestApp.init();
 
-	// mount instances
-	const rootExpress = express();
-
-	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestExpress);
 	const port = 4450;
 	const basePath = '/board-collaboration'; // '/api/v3'; // '/board-collaboration';
 
-	// exposed alias mounts
-	rootExpress.use(basePath, nestExpress);
-
-	rootExpress.listen(port, () => {
-		logger.info(
-			new AppStartLoggable({
-				appName: 'BoardCollaboration server app',
-				port,
-			})
-		);
-
+	nestApp.setGlobalPrefix(basePath);
+	await nestApp.listen(port, () => {
 		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
 
