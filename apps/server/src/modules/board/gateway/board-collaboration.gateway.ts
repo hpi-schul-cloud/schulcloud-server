@@ -4,7 +4,6 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { RoleName } from '@shared/domain/interface';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import { UserUc } from '@src/modules/user/uc';
 import { Server } from 'socket.io';
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
@@ -49,7 +48,6 @@ export class BoardCollaborationGateway {
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
-		private readonly userUc: UserUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -59,10 +57,9 @@ export class BoardCollaborationGateway {
 		return user;
 	}
 
-	private async hasUserEditRights(socket: Socket) {
-		const { userId } = this.getCurrentUser(socket);
-		const [user] = await this.userUc.me(userId);
-		const isTeacher = user.getRoles().find((role) => role.name === RoleName.TEACHER);
+	private hasUserEditRights(socket: Socket) {
+		const { user } = socket.handshake;
+		const isTeacher = user ? user.roles.find((role) => role === RoleName.TEACHER) : false;
 		return isTeacher;
 	}
 
@@ -79,12 +76,12 @@ export class BoardCollaborationGateway {
 		this.metricsService.setNumberOfBoardRooms(roomCount);
 	}
 
-	public async handleConnection(socket: Socket): Promise<void> {
+	public handleConnection(socket: Socket): void {
 		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
 		this.updateRoomsAndUsersMetrics();
-		const hasEditRights = await this.hasUserEditRights(socket);
+		const hasEditRights = this.hasUserEditRights(socket);
 		if (hasEditRights) {
 			this.metricsService.incrementNumberOfEditors();
 		} else {
@@ -92,12 +89,12 @@ export class BoardCollaborationGateway {
 		}
 	}
 
-	public async handleDisconnect(socket: Socket): Promise<void> {
+	public handleDisconnect(socket: Socket): void {
 		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
 		this.updateRoomsAndUsersMetrics();
-		const hasEditRights = await this.hasUserEditRights(socket);
+		const hasEditRights = this.hasUserEditRights(socket);
 		if (hasEditRights) {
 			this.metricsService.decrementNumberOfEditors();
 		} else {
