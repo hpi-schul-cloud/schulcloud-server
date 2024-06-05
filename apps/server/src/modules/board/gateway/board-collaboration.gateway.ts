@@ -2,7 +2,9 @@ import { WsValidationPipe, Socket } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
+import { RoleName } from '@shared/domain/interface';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
+import { UserUc } from '@src/modules/user/uc';
 import { Server } from 'socket.io';
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
@@ -47,6 +49,7 @@ export class BoardCollaborationGateway {
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
+		private readonly userUc: UserUc,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -54,6 +57,13 @@ export class BoardCollaborationGateway {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
+	}
+
+	private async hasUserEditRights(socket: Socket) {
+		const { userId } = this.getCurrentUser(socket);
+		const [user] = await this.userUc.me(userId);
+		const isTeacher = user.getRoles().find((role) => role.name === RoleName.TEACHER);
+		return isTeacher;
 	}
 
 	private updateRoomsAndUsersMetrics() {
@@ -69,29 +79,30 @@ export class BoardCollaborationGateway {
 		this.metricsService.setNumberOfBoardRooms(roomCount);
 	}
 
-	public handleConnection(socket: Socket): void {
+	public async handleConnection(socket: Socket): Promise<void> {
 		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
 		this.updateRoomsAndUsersMetrics();
-		// this.logger.log(`Client connected: ${socket.id}`);
-		// if (userRole === "teacher") {
-		// 	this.metricsService.incrementNumberOfEditors();
-		// } else {
-		// 	this.metricsService.incrementNumberOfViewers();
-		// }
+		const hasEditRights = await this.hasUserEditRights(socket);
+		if (hasEditRights) {
+			this.metricsService.incrementNumberOfEditors();
+		} else {
+			this.metricsService.incrementNumberOfViewers();
+		}
 	}
 
-	public handleDisconnect(socket: Socket): void {
+	public async handleDisconnect(socket: Socket): Promise<void> {
 		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
 		this.updateRoomsAndUsersMetrics();
-		// if (userRole === "teacher") {
-		// 	this.metricsService.decrementNumberOfEditors();
-		// } else {
-		// 	this.metricsService.decrementNumberOfViewers();
-		// }
+		const hasEditRights = await this.hasUserEditRights(socket);
+		if (hasEditRights) {
+			this.metricsService.decrementNumberOfEditors();
+		} else {
+			this.metricsService.decrementNumberOfViewers();
+		}
 	}
 
 	@SubscribeMessage('delete-board-request')
