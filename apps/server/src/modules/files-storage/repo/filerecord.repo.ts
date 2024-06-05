@@ -48,6 +48,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
+		// TODO: N21-1967 also storageType
 		const scope = new FileRecordScope()
 			.byStorageLocationId(storageLocationId)
 			.byParentId(parentId)
