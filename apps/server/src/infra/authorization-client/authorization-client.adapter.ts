@@ -12,9 +12,9 @@ export class AuthorizationClientAdapter {
 	constructor(private readonly authorizationApi: AuthorizationApi) {}
 
 	public async checkPermissionByReferences(
-		context: AuthorizationContextParams,
 		referenceType: AuthorizationBodyParamsReferenceType,
-		referenceId: string
+		referenceId: string,
+		context: AuthorizationContextParams
 	): Promise<AuthorizedReponse> {
 		const params: AuthorizationBodyParams = {
 			context,
