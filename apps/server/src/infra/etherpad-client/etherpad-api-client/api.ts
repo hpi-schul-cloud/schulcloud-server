@@ -13,10 +13,8642 @@
  */
 
 
+import type { Configuration } from './configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
+// Some imports not used depending on template conditions
+// @ts-ignore
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
+import type { RequestArgs } from './base';
+// @ts-ignore
+import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
-export * from './api/author-api';
-export * from './api/default-api';
-export * from './api/group-api';
-export * from './api/pad-api';
-export * from './api/session-api';
+/**
+ * 
+ * @export
+ * @interface CreateAuthorUsingGET200Response
+ */
+export interface CreateAuthorUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateAuthorUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateAuthorUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {CreateAuthorUsingGET200ResponseData}
+     * @memberof CreateAuthorUsingGET200Response
+     */
+    'data'?: CreateAuthorUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface CreateAuthorUsingGET200ResponseData
+ */
+export interface CreateAuthorUsingGET200ResponseData {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateAuthorUsingGET200ResponseData
+     */
+    'authorID'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateDiffHTMLUsingGET200Response
+ */
+export interface CreateDiffHTMLUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateDiffHTMLUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateDiffHTMLUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CreateDiffHTMLUsingGET200Response
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface CreateGroupUsingGET200Response
+ */
+export interface CreateGroupUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateGroupUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateGroupUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {CreateGroupUsingGET200ResponseData}
+     * @memberof CreateGroupUsingGET200Response
+     */
+    'data'?: CreateGroupUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface CreateGroupUsingGET200ResponseData
+ */
+export interface CreateGroupUsingGET200ResponseData {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateGroupUsingGET200ResponseData
+     */
+    'groupID'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateGroupUsingGET400Response
+ */
+export interface CreateGroupUsingGET400Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateGroupUsingGET400Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateGroupUsingGET400Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CreateGroupUsingGET400Response
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface CreateGroupUsingGET401Response
+ */
+export interface CreateGroupUsingGET401Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateGroupUsingGET401Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateGroupUsingGET401Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CreateGroupUsingGET401Response
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface CreateGroupUsingGET500Response
+ */
+export interface CreateGroupUsingGET500Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateGroupUsingGET500Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateGroupUsingGET500Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CreateGroupUsingGET500Response
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface CreateSessionUsingGET200Response
+ */
+export interface CreateSessionUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateSessionUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateSessionUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {CreateSessionUsingGET200ResponseData}
+     * @memberof CreateSessionUsingGET200Response
+     */
+    'data'?: CreateSessionUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface CreateSessionUsingGET200ResponseData
+ */
+export interface CreateSessionUsingGET200ResponseData {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateSessionUsingGET200ResponseData
+     */
+    'sessionID'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface DeleteGroupUsingGET200Response
+ */
+export interface DeleteGroupUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof DeleteGroupUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeleteGroupUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof DeleteGroupUsingGET200Response
+     */
+    'data'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface GetAuthorNameUsingGET200Response
+ */
+export interface GetAuthorNameUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetAuthorNameUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetAuthorNameUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetAuthorNameUsingGET200ResponseData}
+     * @memberof GetAuthorNameUsingGET200Response
+     */
+    'data'?: GetAuthorNameUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetAuthorNameUsingGET200ResponseData
+ */
+export interface GetAuthorNameUsingGET200ResponseData {
+    /**
+     * 
+     * @type {GetAuthorNameUsingGET200ResponseDataInfo}
+     * @memberof GetAuthorNameUsingGET200ResponseData
+     */
+    'info'?: GetAuthorNameUsingGET200ResponseDataInfo;
+}
+/**
+ * 
+ * @export
+ * @interface GetAuthorNameUsingGET200ResponseDataInfo
+ */
+export interface GetAuthorNameUsingGET200ResponseDataInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetAuthorNameUsingGET200ResponseDataInfo
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetAuthorNameUsingGET200ResponseDataInfo
+     */
+    'colorId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetAuthorNameUsingGET200ResponseDataInfo
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof GetAuthorNameUsingGET200ResponseDataInfo
+     */
+    'timestamp'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface GetChatHeadUsingGET200Response
+ */
+export interface GetChatHeadUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetChatHeadUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetChatHeadUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetChatHeadUsingGET200ResponseData}
+     * @memberof GetChatHeadUsingGET200Response
+     */
+    'data'?: GetChatHeadUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetChatHeadUsingGET200ResponseData
+ */
+export interface GetChatHeadUsingGET200ResponseData {
+    /**
+     * 
+     * @type {GetChatHistoryUsingGET200ResponseDataMessagesInner}
+     * @memberof GetChatHeadUsingGET200ResponseData
+     */
+    'chatHead'?: GetChatHistoryUsingGET200ResponseDataMessagesInner;
+}
+/**
+ * 
+ * @export
+ * @interface GetChatHistoryUsingGET200Response
+ */
+export interface GetChatHistoryUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetChatHistoryUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetChatHistoryUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetChatHistoryUsingGET200ResponseData}
+     * @memberof GetChatHistoryUsingGET200Response
+     */
+    'data'?: GetChatHistoryUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetChatHistoryUsingGET200ResponseData
+ */
+export interface GetChatHistoryUsingGET200ResponseData {
+    /**
+     * 
+     * @type {Array<GetChatHistoryUsingGET200ResponseDataMessagesInner>}
+     * @memberof GetChatHistoryUsingGET200ResponseData
+     */
+    'messages'?: Array<GetChatHistoryUsingGET200ResponseDataMessagesInner>;
+}
+/**
+ * 
+ * @export
+ * @interface GetChatHistoryUsingGET200ResponseDataMessagesInner
+ */
+export interface GetChatHistoryUsingGET200ResponseDataMessagesInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
+     */
+    'text'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
+     */
+    'userId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
+     */
+    'userName'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
+     */
+    'time'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface GetHTMLUsingGET200Response
+ */
+export interface GetHTMLUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetHTMLUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetHTMLUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetHTMLUsingGET200ResponseData}
+     * @memberof GetHTMLUsingGET200Response
+     */
+    'data'?: GetHTMLUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetHTMLUsingGET200ResponseData
+ */
+export interface GetHTMLUsingGET200ResponseData {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetHTMLUsingGET200ResponseData
+     */
+    'html'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface GetLastEditedUsingGET200Response
+ */
+export interface GetLastEditedUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetLastEditedUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetLastEditedUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetLastEditedUsingGET200ResponseData}
+     * @memberof GetLastEditedUsingGET200Response
+     */
+    'data'?: GetLastEditedUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetLastEditedUsingGET200ResponseData
+ */
+export interface GetLastEditedUsingGET200ResponseData {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetLastEditedUsingGET200ResponseData
+     */
+    'lastEdited'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface GetPublicStatusUsingGET200Response
+ */
+export interface GetPublicStatusUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetPublicStatusUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetPublicStatusUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetPublicStatusUsingGET200ResponseData}
+     * @memberof GetPublicStatusUsingGET200Response
+     */
+    'data'?: GetPublicStatusUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetPublicStatusUsingGET200ResponseData
+ */
+export interface GetPublicStatusUsingGET200ResponseData {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof GetPublicStatusUsingGET200ResponseData
+     */
+    'publicStatus'?: boolean;
+}
+/**
+ * 
+ * @export
+ * @interface GetReadOnlyIDUsingGET200Response
+ */
+export interface GetReadOnlyIDUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetReadOnlyIDUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetReadOnlyIDUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetReadOnlyIDUsingGET200ResponseData}
+     * @memberof GetReadOnlyIDUsingGET200Response
+     */
+    'data'?: GetReadOnlyIDUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetReadOnlyIDUsingGET200ResponseData
+ */
+export interface GetReadOnlyIDUsingGET200ResponseData {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetReadOnlyIDUsingGET200ResponseData
+     */
+    'readOnlyID'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface GetRevisionsCountUsingGET200Response
+ */
+export interface GetRevisionsCountUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetRevisionsCountUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetRevisionsCountUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetRevisionsCountUsingGET200ResponseData}
+     * @memberof GetRevisionsCountUsingGET200Response
+     */
+    'data'?: GetRevisionsCountUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetRevisionsCountUsingGET200ResponseData
+ */
+export interface GetRevisionsCountUsingGET200ResponseData {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetRevisionsCountUsingGET200ResponseData
+     */
+    'revisions'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface GetSessionInfoUsingGET200Response
+ */
+export interface GetSessionInfoUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetSessionInfoUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetSessionInfoUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetSessionInfoUsingGET200ResponseData}
+     * @memberof GetSessionInfoUsingGET200Response
+     */
+    'data'?: GetSessionInfoUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetSessionInfoUsingGET200ResponseData
+ */
+export interface GetSessionInfoUsingGET200ResponseData {
+    /**
+     * 
+     * @type {GetSessionInfoUsingGET200ResponseDataInfo}
+     * @memberof GetSessionInfoUsingGET200ResponseData
+     */
+    'info'?: GetSessionInfoUsingGET200ResponseDataInfo;
+}
+/**
+ * 
+ * @export
+ * @interface GetSessionInfoUsingGET200ResponseDataInfo
+ */
+export interface GetSessionInfoUsingGET200ResponseDataInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
+     */
+    'authorID'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
+     */
+    'groupID'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
+     */
+    'validUntil'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface GetTextUsingGET200Response
+ */
+export interface GetTextUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof GetTextUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetTextUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetTextUsingGET200ResponseData}
+     * @memberof GetTextUsingGET200Response
+     */
+    'data'?: GetTextUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface GetTextUsingGET200ResponseData
+ */
+export interface GetTextUsingGET200ResponseData {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetTextUsingGET200ResponseData
+     */
+    'text'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface ListAllGroupsUsingGET200Response
+ */
+export interface ListAllGroupsUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof ListAllGroupsUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListAllGroupsUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {ListAllGroupsUsingGET200ResponseData}
+     * @memberof ListAllGroupsUsingGET200Response
+     */
+    'data'?: ListAllGroupsUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface ListAllGroupsUsingGET200ResponseData
+ */
+export interface ListAllGroupsUsingGET200ResponseData {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ListAllGroupsUsingGET200ResponseData
+     */
+    'groupIDs'?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface ListAuthorsOfPadUsingGET200Response
+ */
+export interface ListAuthorsOfPadUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof ListAuthorsOfPadUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListAuthorsOfPadUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {ListAuthorsOfPadUsingGET200ResponseData}
+     * @memberof ListAuthorsOfPadUsingGET200Response
+     */
+    'data'?: ListAuthorsOfPadUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface ListAuthorsOfPadUsingGET200ResponseData
+ */
+export interface ListAuthorsOfPadUsingGET200ResponseData {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ListAuthorsOfPadUsingGET200ResponseData
+     */
+    'authorIDs'?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface ListPadsUsingGET200Response
+ */
+export interface ListPadsUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof ListPadsUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListPadsUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {ListPadsUsingGET200ResponseData}
+     * @memberof ListPadsUsingGET200Response
+     */
+    'data'?: ListPadsUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface ListPadsUsingGET200ResponseData
+ */
+export interface ListPadsUsingGET200ResponseData {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ListPadsUsingGET200ResponseData
+     */
+    'padIDs'?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface ListSessionsOfGroupUsingGET200Response
+ */
+export interface ListSessionsOfGroupUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof ListSessionsOfGroupUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListSessionsOfGroupUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {ListSessionsOfGroupUsingGET200ResponseData}
+     * @memberof ListSessionsOfGroupUsingGET200Response
+     */
+    'data'?: ListSessionsOfGroupUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface ListSessionsOfGroupUsingGET200ResponseData
+ */
+export interface ListSessionsOfGroupUsingGET200ResponseData {
+    /**
+     * 
+     * @type {Array<GetSessionInfoUsingGET200ResponseDataInfo>}
+     * @memberof ListSessionsOfGroupUsingGET200ResponseData
+     */
+    'sessions'?: Array<GetSessionInfoUsingGET200ResponseDataInfo>;
+}
+/**
+ * 
+ * @export
+ * @interface Message
+ */
+export interface Message {
+    /**
+     * 
+     * @type {string}
+     * @memberof Message
+     */
+    'text'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Message
+     */
+    'userId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Message
+     */
+    'userName'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Message
+     */
+    'time'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface PadUsersCountUsingGET200Response
+ */
+export interface PadUsersCountUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof PadUsersCountUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PadUsersCountUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {PadUsersCountUsingGET200ResponseData}
+     * @memberof PadUsersCountUsingGET200Response
+     */
+    'data'?: PadUsersCountUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface PadUsersCountUsingGET200ResponseData
+ */
+export interface PadUsersCountUsingGET200ResponseData {
+    /**
+     * 
+     * @type {number}
+     * @memberof PadUsersCountUsingGET200ResponseData
+     */
+    'padUsersCount'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface PadUsersUsingGET200Response
+ */
+export interface PadUsersUsingGET200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof PadUsersUsingGET200Response
+     */
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PadUsersUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {PadUsersUsingGET200ResponseData}
+     * @memberof PadUsersUsingGET200Response
+     */
+    'data'?: PadUsersUsingGET200ResponseData;
+}
+/**
+ * 
+ * @export
+ * @interface PadUsersUsingGET200ResponseData
+ */
+export interface PadUsersUsingGET200ResponseData {
+    /**
+     * 
+     * @type {Array<GetAuthorNameUsingGET200ResponseDataInfo>}
+     * @memberof PadUsersUsingGET200ResponseData
+     */
+    'padUsers'?: Array<GetAuthorNameUsingGET200ResponseDataInfo>;
+}
+/**
+ * 
+ * @export
+ * @interface SessionInfo
+ */
+export interface SessionInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof SessionInfo
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SessionInfo
+     */
+    'authorID'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SessionInfo
+     */
+    'groupID'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof SessionInfo
+     */
+    'validUntil'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface UserInfo
+ */
+export interface UserInfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof UserInfo
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserInfo
+     */
+    'colorId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserInfo
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserInfo
+     */
+    'timestamp'?: number;
+}
+
+/**
+ * AuthorApi - axios parameter creator
+ * @export
+ */
+export const AuthorApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingGET: async (authorMapper?: string, name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createAuthorIfNotExistsFor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorMapper !== undefined) {
+                localVarQueryParameter['authorMapper'] = authorMapper;
+            }
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingPOST: async (authorMapper?: string, name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createAuthorIfNotExistsFor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorMapper !== undefined) {
+                localVarQueryParameter['authorMapper'] = authorMapper;
+            }
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingGET: async (name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createAuthor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingPOST: async (name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createAuthor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingGET: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getAuthorName`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingPOST: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getAuthorName`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingGET: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listPadsOfAuthor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingPOST: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listPadsOfAuthor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingGET: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listSessionsOfAuthor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingPOST: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listSessionsOfAuthor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AuthorApi - functional programming interface
+ * @export
+ */
+export const AuthorApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AuthorApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorIfNotExistsForUsingGET(authorMapper, name, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorIfNotExistsForUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorIfNotExistsForUsingPOST(authorMapper, name, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorIfNotExistsForUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorUsingGET(name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorUsingGET(name, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAuthorUsingPOST(name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorUsingPOST(name, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAuthorNameUsingGET(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetAuthorNameUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthorNameUsingGET(authorID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.getAuthorNameUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAuthorNameUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetAuthorNameUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthorNameUsingPOST(authorID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.getAuthorNameUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPadsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsOfAuthorUsingGET(authorID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listPadsOfAuthorUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPadsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsOfAuthorUsingPOST(authorID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listPadsOfAuthorUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfAuthorUsingGET(authorID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listSessionsOfAuthorUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfAuthorUsingPOST(authorID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listSessionsOfAuthorUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AuthorApi - factory interface
+ * @export
+ */
+export const AuthorApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AuthorApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
+            return localVarFp.createAuthorIfNotExistsForUsingGET(authorMapper, name, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application author ids to Etherpad author ids
+         * @param {string} [authorMapper] 
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
+            return localVarFp.createAuthorIfNotExistsForUsingPOST(authorMapper, name, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingGET(name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
+            return localVarFp.createAuthorUsingGET(name, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new author
+         * @param {string} [name] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAuthorUsingPOST(name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
+            return localVarFp.createAuthorUsingPOST(name, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingGET(authorID?: string, options?: any): AxiosPromise<GetAuthorNameUsingGET200Response> {
+            return localVarFp.getAuthorNameUsingGET(authorID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Returns the Author Name of the author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthorNameUsingPOST(authorID?: string, options?: any): AxiosPromise<GetAuthorNameUsingGET200Response> {
+            return localVarFp.getAuthorNameUsingPOST(authorID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
+            return localVarFp.listPadsOfAuthorUsingGET(authorID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns an array of all pads this author contributed to
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
+            return localVarFp.listPadsOfAuthorUsingPOST(authorID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
+            return localVarFp.listSessionsOfAuthorUsingGET(authorID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns all sessions of an author
+         * @param {string} [authorID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
+            return localVarFp.listSessionsOfAuthorUsingPOST(authorID, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AuthorApi - object-oriented interface
+ * @export
+ * @class AuthorApi
+ * @extends {BaseAPI}
+ */
+export class AuthorApi extends BaseAPI {
+    /**
+     * 
+     * @summary this functions helps you to map your application author ids to Etherpad author ids
+     * @param {string} [authorMapper] 
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).createAuthorIfNotExistsForUsingGET(authorMapper, name, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary this functions helps you to map your application author ids to Etherpad author ids
+     * @param {string} [authorMapper] 
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).createAuthorIfNotExistsForUsingPOST(authorMapper, name, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new author
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorUsingGET(name?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).createAuthorUsingGET(name, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new author
+     * @param {string} [name] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public createAuthorUsingPOST(name?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).createAuthorUsingPOST(name, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Returns the Author Name of the author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public getAuthorNameUsingGET(authorID?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).getAuthorNameUsingGET(authorID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Returns the Author Name of the author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public getAuthorNameUsingPOST(authorID?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).getAuthorNameUsingPOST(authorID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns an array of all pads this author contributed to
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listPadsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).listPadsOfAuthorUsingGET(authorID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns an array of all pads this author contributed to
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listPadsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).listPadsOfAuthorUsingPOST(authorID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns all sessions of an author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listSessionsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).listSessionsOfAuthorUsingGET(authorID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns all sessions of an author
+     * @param {string} [authorID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorApi
+     */
+    public listSessionsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig) {
+        return AuthorApiFp(this.configuration).listSessionsOfAuthorUsingPOST(authorID, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * DefaultApi - axios parameter creator
+ * @export
+ */
+export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendTextUsingGET: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/appendText`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendTextUsingPOST: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/appendText`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadUsingGET: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/copyPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sourceID !== undefined) {
+                localVarQueryParameter['sourceID'] = sourceID;
+            }
+
+            if (destinationID !== undefined) {
+                localVarQueryParameter['destinationID'] = destinationID;
+            }
+
+            if (force !== undefined) {
+                localVarQueryParameter['force'] = force;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/copyPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sourceID !== undefined) {
+                localVarQueryParameter['sourceID'] = sourceID;
+            }
+
+            if (destinationID !== undefined) {
+                localVarQueryParameter['destinationID'] = destinationID;
+            }
+
+            if (force !== undefined) {
+                localVarQueryParameter['force'] = force;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadWithoutHistoryUsingGET: async (sourceID?: string, destinationID?: string, force?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/copyPadWithoutHistory`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sourceID !== undefined) {
+                localVarQueryParameter['sourceID'] = sourceID;
+            }
+
+            if (destinationID !== undefined) {
+                localVarQueryParameter['destinationID'] = destinationID;
+            }
+
+            if (force !== undefined) {
+                localVarQueryParameter['force'] = force;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadWithoutHistoryUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/copyPadWithoutHistory`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sourceID !== undefined) {
+                localVarQueryParameter['sourceID'] = sourceID;
+            }
+
+            if (destinationID !== undefined) {
+                localVarQueryParameter['destinationID'] = destinationID;
+            }
+
+            if (force !== undefined) {
+                localVarQueryParameter['force'] = force;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAttributePoolUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getAttributePool`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAttributePoolUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getAttributePool`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [roID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPadIDUsingGET: async (roID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getPadID`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (roID !== undefined) {
+                localVarQueryParameter['roID'] = roID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [roID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPadIDUsingPOST: async (roID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getPadID`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (roID !== undefined) {
+                localVarQueryParameter['roID'] = roID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionChangesetUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getRevisionChangeset`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionChangesetUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getRevisionChangeset`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSavedRevisionsCountUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getSavedRevisionsCount`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSavedRevisionsCountUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getSavedRevisionsCount`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatsUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getStats`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatsUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getStats`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSavedRevisionsUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listSavedRevisions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSavedRevisionsUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listSavedRevisions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        movePadUsingGET: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/movePad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sourceID !== undefined) {
+                localVarQueryParameter['sourceID'] = sourceID;
+            }
+
+            if (destinationID !== undefined) {
+                localVarQueryParameter['destinationID'] = destinationID;
+            }
+
+            if (force !== undefined) {
+                localVarQueryParameter['force'] = force;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        movePadUsingPOST: async (sourceID?: string, destinationID?: string, force?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/movePad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sourceID !== undefined) {
+                localVarQueryParameter['sourceID'] = sourceID;
+            }
+
+            if (destinationID !== undefined) {
+                localVarQueryParameter['destinationID'] = destinationID;
+            }
+
+            if (force !== undefined) {
+                localVarQueryParameter['force'] = force;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        restoreRevisionUsingGET: async (padID?: string, rev?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/restoreRevision`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        restoreRevisionUsingPOST: async (padID?: string, rev?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/restoreRevision`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveRevisionUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/saveRevision`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveRevisionUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/saveRevision`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * DefaultApi - functional programming interface
+ * @export
+ */
+export const DefaultApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.appendTextUsingGET(padID, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.appendTextUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.appendTextUsingPOST(padID, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.appendTextUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadUsingGET(sourceID, destinationID, force, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadUsingPOST(sourceID, destinationID, force, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadWithoutHistoryUsingGET(sourceID, destinationID, force, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadWithoutHistoryUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.copyPadWithoutHistoryUsingPOST(sourceID, destinationID, force, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.copyPadWithoutHistoryUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAttributePoolUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAttributePoolUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getAttributePoolUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAttributePoolUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAttributePoolUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getAttributePoolUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [roID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPadIDUsingGET(roID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPadIDUsingGET(roID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getPadIDUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [roID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPadIDUsingPOST(roID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPadIDUsingPOST(roID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getPadIDUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionChangesetUsingGET(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getRevisionChangesetUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionChangesetUsingPOST(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getRevisionChangesetUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSavedRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSavedRevisionsCountUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getSavedRevisionsCountUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSavedRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSavedRevisionsCountUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getSavedRevisionsCountUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStatsUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatsUsingGET(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getStatsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStatsUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStatsUsingPOST(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.getStatsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSavedRevisionsUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSavedRevisionsUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.listSavedRevisionsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSavedRevisionsUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSavedRevisionsUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.listSavedRevisionsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.movePadUsingGET(sourceID, destinationID, force, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.movePadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.movePadUsingPOST(sourceID, destinationID, force, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.movePadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.restoreRevisionUsingGET(padID, rev, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.restoreRevisionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.restoreRevisionUsingPOST(padID, rev, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.restoreRevisionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async saveRevisionUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.saveRevisionUsingGET(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.saveRevisionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async saveRevisionUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.saveRevisionUsingPOST(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.saveRevisionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * DefaultApi - factory interface
+ * @export
+ */
+export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = DefaultApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.appendTextUsingGET(padID, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.appendTextUsingPOST(padID, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.copyPadUsingGET(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.copyPadUsingPOST(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.copyPadWithoutHistoryUsingGET(sourceID, destinationID, force, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.copyPadWithoutHistoryUsingPOST(sourceID, destinationID, force, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAttributePoolUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getAttributePoolUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAttributePoolUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getAttributePoolUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [roID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPadIDUsingGET(roID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getPadIDUsingGET(roID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [roID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPadIDUsingPOST(roID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getPadIDUsingPOST(roID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getRevisionChangesetUsingGET(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getRevisionChangesetUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSavedRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getSavedRevisionsCountUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSavedRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getSavedRevisionsCountUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatsUsingGET(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getStatsUsingGET(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStatsUsingPOST(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.getStatsUsingPOST(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSavedRevisionsUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.listSavedRevisionsUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSavedRevisionsUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.listSavedRevisionsUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.movePadUsingGET(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [sourceID] 
+         * @param {string} [destinationID] 
+         * @param {string} [force] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.movePadUsingPOST(sourceID, destinationID, force, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.restoreRevisionUsingGET(padID, rev, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.restoreRevisionUsingPOST(padID, rev, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveRevisionUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.saveRevisionUsingGET(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveRevisionUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.saveRevisionUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * DefaultApi - object-oriented interface
+ * @export
+ * @class DefaultApi
+ * @extends {BaseAPI}
+ */
+export class DefaultApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public appendTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).appendTextUsingGET(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public appendTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).appendTextUsingPOST(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public copyPadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).copyPadUsingGET(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public copyPadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).copyPadUsingPOST(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public copyPadWithoutHistoryUsingGET(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).copyPadWithoutHistoryUsingGET(sourceID, destinationID, force, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public copyPadWithoutHistoryUsingPOST(sourceID?: string, destinationID?: string, force?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).copyPadWithoutHistoryUsingPOST(sourceID, destinationID, force, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getAttributePoolUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getAttributePoolUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getAttributePoolUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getAttributePoolUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [roID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPadIDUsingGET(roID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPadIDUsingGET(roID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [roID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPadIDUsingPOST(roID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPadIDUsingPOST(roID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getRevisionChangesetUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getRevisionChangesetUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getRevisionChangesetUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getRevisionChangesetUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getSavedRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getSavedRevisionsCountUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getSavedRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getSavedRevisionsCountUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getStatsUsingGET(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStatsUsingGET(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getStatsUsingPOST(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getStatsUsingPOST(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public listSavedRevisionsUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).listSavedRevisionsUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public listSavedRevisionsUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).listSavedRevisionsUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public movePadUsingGET(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).movePadUsingGET(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [sourceID] 
+     * @param {string} [destinationID] 
+     * @param {string} [force] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public movePadUsingPOST(sourceID?: string, destinationID?: string, force?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).movePadUsingPOST(sourceID, destinationID, force, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public restoreRevisionUsingGET(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).restoreRevisionUsingGET(padID, rev, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public restoreRevisionUsingPOST(padID?: string, rev?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).restoreRevisionUsingPOST(padID, rev, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public saveRevisionUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).saveRevisionUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public saveRevisionUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).saveRevisionUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * GroupApi - axios parameter creator
+ * @export
+ */
+export const GroupApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application group ids to Etherpad group ids
+         * @param {string} [groupMapper] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupIfNotExistsForUsingGET: async (groupMapper?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createGroupIfNotExistsFor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupMapper !== undefined) {
+                localVarQueryParameter['groupMapper'] = groupMapper;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application group ids to Etherpad group ids
+         * @param {string} [groupMapper] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupIfNotExistsForUsingPOST: async (groupMapper?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createGroupIfNotExistsFor`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupMapper !== undefined) {
+                localVarQueryParameter['groupMapper'] = groupMapper;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new pad in this group
+         * @param {string} [groupID] 
+         * @param {string} [padName] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupPadUsingGET: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createGroupPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+            if (padName !== undefined) {
+                localVarQueryParameter['padName'] = padName;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new pad in this group
+         * @param {string} [groupID] 
+         * @param {string} [padName] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupPadUsingPOST: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createGroupPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+            if (padName !== undefined) {
+                localVarQueryParameter['padName'] = padName;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new group
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createGroup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new group
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createGroup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteGroupUsingGET: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/deleteGroup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteGroupUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/deleteGroup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllGroupsUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listAllGroups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllGroupsUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listAllGroups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns all pads of this group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsUsingGET: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listPads`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns all pads of this group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listPads`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfGroupUsingGET: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listSessionsOfGroup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfGroupUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listSessionsOfGroup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * GroupApi - functional programming interface
+ * @export
+ */
+export const GroupApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = GroupApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application group ids to Etherpad group ids
+         * @param {string} [groupMapper] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupIfNotExistsForUsingGET(groupMapper, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupIfNotExistsForUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application group ids to Etherpad group ids
+         * @param {string} [groupMapper] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupIfNotExistsForUsingPOST(groupMapper, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupIfNotExistsForUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new pad in this group
+         * @param {string} [groupID] 
+         * @param {string} [padName] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupPadUsingGET(groupID, padName, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new pad in this group
+         * @param {string} [groupID] 
+         * @param {string} [padName] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupPadUsingPOST(groupID, padName, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new group
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createGroupUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupUsingGET(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new group
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createGroupUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupUsingPOST(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary deletes a group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteGroupUsingGET(groupID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.deleteGroupUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary deletes a group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteGroupUsingPOST(groupID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.deleteGroupUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAllGroupsUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAllGroupsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAllGroupsUsingGET(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listAllGroupsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAllGroupsUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAllGroupsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAllGroupsUsingPOST(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listAllGroupsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns all pads of this group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsUsingGET(groupID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listPadsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns all pads of this group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsUsingPOST(groupID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listPadsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfGroupUsingGET(groupID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listSessionsOfGroupUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfGroupUsingPOST(groupID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listSessionsOfGroupUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * GroupApi - factory interface
+ * @export
+ */
+export const GroupApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = GroupApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary this functions helps you to map your application group ids to Etherpad group ids
+         * @param {string} [groupMapper] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
+            return localVarFp.createGroupIfNotExistsForUsingGET(groupMapper, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary this functions helps you to map your application group ids to Etherpad group ids
+         * @param {string} [groupMapper] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
+            return localVarFp.createGroupIfNotExistsForUsingPOST(groupMapper, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new pad in this group
+         * @param {string} [groupID] 
+         * @param {string} [padName] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.createGroupPadUsingGET(groupID, padName, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new pad in this group
+         * @param {string} [groupID] 
+         * @param {string} [padName] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.createGroupPadUsingPOST(groupID, padName, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new group
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupUsingGET(options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
+            return localVarFp.createGroupUsingGET(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new group
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createGroupUsingPOST(options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
+            return localVarFp.createGroupUsingPOST(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.deleteGroupUsingGET(groupID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.deleteGroupUsingPOST(groupID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllGroupsUsingGET(options?: any): AxiosPromise<ListAllGroupsUsingGET200Response> {
+            return localVarFp.listAllGroupsUsingGET(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllGroupsUsingPOST(options?: any): AxiosPromise<ListAllGroupsUsingGET200Response> {
+            return localVarFp.listAllGroupsUsingPOST(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns all pads of this group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsUsingGET(groupID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
+            return localVarFp.listPadsUsingGET(groupID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns all pads of this group
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
+            return localVarFp.listPadsUsingPOST(groupID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
+            return localVarFp.listSessionsOfGroupUsingGET(groupID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [groupID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
+            return localVarFp.listSessionsOfGroupUsingPOST(groupID, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * GroupApi - object-oriented interface
+ * @export
+ * @class GroupApi
+ * @extends {BaseAPI}
+ */
+export class GroupApi extends BaseAPI {
+    /**
+     * 
+     * @summary this functions helps you to map your application group ids to Etherpad group ids
+     * @param {string} [groupMapper] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).createGroupIfNotExistsForUsingGET(groupMapper, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary this functions helps you to map your application group ids to Etherpad group ids
+     * @param {string} [groupMapper] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).createGroupIfNotExistsForUsingPOST(groupMapper, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new pad in this group
+     * @param {string} [groupID] 
+     * @param {string} [padName] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).createGroupPadUsingGET(groupID, padName, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new pad in this group
+     * @param {string} [groupID] 
+     * @param {string} [padName] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).createGroupPadUsingPOST(groupID, padName, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new group
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public createGroupUsingGET(options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).createGroupUsingGET(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new group
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public createGroupUsingPOST(options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).createGroupUsingPOST(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a group
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).deleteGroupUsingGET(groupID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a group
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).deleteGroupUsingPOST(groupID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public listAllGroupsUsingGET(options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).listAllGroupsUsingGET(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public listAllGroupsUsingPOST(options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).listAllGroupsUsingPOST(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns all pads of this group
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).listPadsUsingGET(groupID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns all pads of this group
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).listPadsUsingPOST(groupID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).listSessionsOfGroupUsingGET(groupID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApi
+     */
+    public listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).listSessionsOfGroupUsingPOST(groupID, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * PadApi - axios parameter creator
+ * @export
+ */
+export const PadApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorID] 
+         * @param {string} [time] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendChatMessageUsingGET: async (padID?: string, text?: string, authorID?: string, time?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/appendChatMessage`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+            if (time !== undefined) {
+                localVarQueryParameter['time'] = time;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorID] 
+         * @param {string} [time] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendChatMessageUsingPOST: async (padID?: string, text?: string, authorID?: string, time?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/appendChatMessage`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+            if (time !== undefined) {
+                localVarQueryParameter['time'] = time;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns ok when the current api token is valid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkTokenUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/checkToken`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns ok when the current api token is valid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkTokenUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/checkToken`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [padID] 
+         * @param {string} [startRev] 
+         * @param {string} [endRev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDiffHTMLUsingGET: async (padID?: string, startRev?: string, endRev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createDiffHTML`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (startRev !== undefined) {
+                localVarQueryParameter['startRev'] = startRev;
+            }
+
+            if (endRev !== undefined) {
+                localVarQueryParameter['endRev'] = endRev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [padID] 
+         * @param {string} [startRev] 
+         * @param {string} [endRev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDiffHTMLUsingPOST: async (padID?: string, startRev?: string, endRev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createDiffHTML`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (startRev !== undefined) {
+                localVarQueryParameter['startRev'] = startRev;
+            }
+
+            if (endRev !== undefined) {
+                localVarQueryParameter['endRev'] = endRev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPadUsingGET: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPadUsingPOST: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePadUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/deletePad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/deletePad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHeadUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getChatHead`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHeadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getChatHead`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHistoryUsingGET: async (padID?: string, start?: string, end?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getChatHistory`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (start !== undefined) {
+                localVarQueryParameter['start'] = start;
+            }
+
+            if (end !== undefined) {
+                localVarQueryParameter['end'] = end;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHistoryUsingPOST: async (padID?: string, start?: string, end?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getChatHistory`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (start !== undefined) {
+                localVarQueryParameter['start'] = start;
+            }
+
+            if (end !== undefined) {
+                localVarQueryParameter['end'] = end;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the text of a pad formatted as HTML
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getHTMLUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getHTML`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the text of a pad formatted as HTML
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getHTMLUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getHTML`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the timestamp of the last revision of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLastEditedUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getLastEdited`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the timestamp of the last revision of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLastEditedUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getLastEdited`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary return true of false
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPublicStatusUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getPublicStatus`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary return true of false
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPublicStatusUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getPublicStatus`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the read only link of a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReadOnlyIDUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getReadOnlyID`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the read only link of a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReadOnlyIDUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getReadOnlyID`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the number of revisions of this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionsCountUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getRevisionsCount`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the number of revisions of this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionsCountUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getRevisionsCount`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTextUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getText`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTextUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getText`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (rev !== undefined) {
+                localVarQueryParameter['rev'] = rev;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary list all the pads
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllPadsUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listAllPads`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary list all the pads
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllPadsUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listAllPads`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns an array of authors who contributed to this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAuthorsOfPadUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listAuthorsOfPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns an array of authors who contributed to this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAuthorsOfPadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/listAuthorsOfPad`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the number of user that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersCountUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/padUsersCount`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the number of user that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersCountUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/padUsersCount`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the list of users that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/padUsers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns the list of users that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/padUsers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sends a custom message of type msg to the pad
+         * @param {string} [padID] 
+         * @param {string} [msg] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendClientsMessageUsingGET: async (padID?: string, msg?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/sendClientsMessage`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (msg !== undefined) {
+                localVarQueryParameter['msg'] = msg;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sends a custom message of type msg to the pad
+         * @param {string} [padID] 
+         * @param {string} [msg] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendClientsMessageUsingPOST: async (padID?: string, msg?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/sendClientsMessage`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (msg !== undefined) {
+                localVarQueryParameter['msg'] = msg;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sets the text of a pad with HTML
+         * @param {string} [padID] 
+         * @param {string} [html] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setHTMLUsingGET: async (padID?: string, html?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/setHTML`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (html !== undefined) {
+                localVarQueryParameter['html'] = html;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sets the text of a pad with HTML
+         * @param {string} [padID] 
+         * @param {string} [html] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setHTMLUsingPOST: async (padID?: string, html?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/setHTML`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (html !== undefined) {
+                localVarQueryParameter['html'] = html;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sets a boolean for the public status of a pad
+         * @param {string} [padID] 
+         * @param {string} [publicStatus] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setPublicStatusUsingGET: async (padID?: string, publicStatus?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/setPublicStatus`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (publicStatus !== undefined) {
+                localVarQueryParameter['publicStatus'] = publicStatus;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sets a boolean for the public status of a pad
+         * @param {string} [padID] 
+         * @param {string} [publicStatus] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setPublicStatusUsingPOST: async (padID?: string, publicStatus?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/setPublicStatus`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (publicStatus !== undefined) {
+                localVarQueryParameter['publicStatus'] = publicStatus;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sets the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setTextUsingGET: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/setText`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary sets the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setTextUsingPOST: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/setText`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
+            }
+
+            if (authorId !== undefined) {
+                localVarQueryParameter['authorId'] = authorId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PadApi - functional programming interface
+ * @export
+ */
+export const PadApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PadApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorID] 
+         * @param {string} [time] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.appendChatMessageUsingGET(padID, text, authorID, time, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.appendChatMessageUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorID] 
+         * @param {string} [time] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.appendChatMessageUsingPOST(padID, text, authorID, time, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.appendChatMessageUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns ok when the current api token is valid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkTokenUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkTokenUsingGET(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.checkTokenUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns ok when the current api token is valid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkTokenUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkTokenUsingPOST(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.checkTokenUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [padID] 
+         * @param {string} [startRev] 
+         * @param {string} [endRev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateDiffHTMLUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDiffHTMLUsingGET(padID, startRev, endRev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createDiffHTMLUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [padID] 
+         * @param {string} [startRev] 
+         * @param {string} [endRev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateDiffHTMLUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDiffHTMLUsingPOST(padID, startRev, endRev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createDiffHTMLUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPadUsingGET(padID, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPadUsingPOST(padID, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary deletes a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePadUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePadUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.deletePadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary deletes a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePadUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.deletePadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getChatHeadUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHeadUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHeadUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHeadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHeadUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHeadUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHeadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHistoryUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHistoryUsingGET(padID, start, end, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHistoryUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHistoryUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHistoryUsingPOST(padID, start, end, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHistoryUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the text of a pad formatted as HTML
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getHTMLUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetHTMLUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getHTMLUsingGET(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getHTMLUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the text of a pad formatted as HTML
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getHTMLUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetHTMLUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getHTMLUsingPOST(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getHTMLUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the timestamp of the last revision of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLastEditedUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetLastEditedUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLastEditedUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getLastEditedUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the timestamp of the last revision of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLastEditedUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetLastEditedUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLastEditedUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getLastEditedUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary return true of false
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPublicStatusUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPublicStatusUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPublicStatusUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getPublicStatusUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary return true of false
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPublicStatusUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPublicStatusUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPublicStatusUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getPublicStatusUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the read only link of a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getReadOnlyIDUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetReadOnlyIDUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getReadOnlyIDUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getReadOnlyIDUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the read only link of a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getReadOnlyIDUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetReadOnlyIDUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getReadOnlyIDUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getReadOnlyIDUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the number of revisions of this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetRevisionsCountUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionsCountUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getRevisionsCountUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the number of revisions of this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetRevisionsCountUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionsCountUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getRevisionsCountUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getTextUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetTextUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTextUsingGET(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getTextUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getTextUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetTextUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTextUsingPOST(padID, rev, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getTextUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary list all the pads
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAllPadsUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAllPadsUsingGET(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAllPadsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary list all the pads
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAllPadsUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAllPadsUsingPOST(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAllPadsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns an array of authors who contributed to this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAuthorsOfPadUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAuthorsOfPadUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAuthorsOfPadUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAuthorsOfPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns an array of authors who contributed to this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAuthorsOfPadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAuthorsOfPadUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAuthorsOfPadUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAuthorsOfPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the number of user that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async padUsersCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersCountUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersCountUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersCountUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the number of user that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async padUsersCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersCountUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersCountUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersCountUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the list of users that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async padUsersUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersUsingGET(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns the list of users that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async padUsersUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersUsingPOST(padID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sends a custom message of type msg to the pad
+         * @param {string} [padID] 
+         * @param {string} [msg] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async sendClientsMessageUsingGET(padID?: string, msg?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.sendClientsMessageUsingGET(padID, msg, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.sendClientsMessageUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sends a custom message of type msg to the pad
+         * @param {string} [padID] 
+         * @param {string} [msg] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.sendClientsMessageUsingPOST(padID, msg, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.sendClientsMessageUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sets the text of a pad with HTML
+         * @param {string} [padID] 
+         * @param {string} [html] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setHTMLUsingGET(padID, html, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setHTMLUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sets the text of a pad with HTML
+         * @param {string} [padID] 
+         * @param {string} [html] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setHTMLUsingPOST(padID, html, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setHTMLUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sets a boolean for the public status of a pad
+         * @param {string} [padID] 
+         * @param {string} [publicStatus] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setPublicStatusUsingGET(padID, publicStatus, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setPublicStatusUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sets a boolean for the public status of a pad
+         * @param {string} [padID] 
+         * @param {string} [publicStatus] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setPublicStatusUsingPOST(padID, publicStatus, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setPublicStatusUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sets the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setTextUsingGET(padID, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setTextUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary sets the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setTextUsingPOST(padID, text, authorId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setTextUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * PadApi - factory interface
+ * @export
+ */
+export const PadApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PadApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorID] 
+         * @param {string} [time] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.appendChatMessageUsingGET(padID, text, authorID, time, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorID] 
+         * @param {string} [time] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.appendChatMessageUsingPOST(padID, text, authorID, time, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns ok when the current api token is valid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkTokenUsingGET(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.checkTokenUsingGET(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns ok when the current api token is valid
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkTokenUsingPOST(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.checkTokenUsingPOST(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [padID] 
+         * @param {string} [startRev] 
+         * @param {string} [endRev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<CreateDiffHTMLUsingGET200Response> {
+            return localVarFp.createDiffHTMLUsingGET(padID, startRev, endRev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 
+         * @param {string} [padID] 
+         * @param {string} [startRev] 
+         * @param {string} [endRev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<CreateDiffHTMLUsingGET200Response> {
+            return localVarFp.createDiffHTMLUsingPOST(padID, startRev, endRev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.createPadUsingGET(padID, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.createPadUsingPOST(padID, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePadUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.deletePadUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePadUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.deletePadUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHeadUsingGET(padID?: string, options?: any): AxiosPromise<GetChatHeadUsingGET200Response> {
+            return localVarFp.getChatHeadUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHeadUsingPOST(padID?: string, options?: any): AxiosPromise<GetChatHeadUsingGET200Response> {
+            return localVarFp.getChatHeadUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<GetChatHistoryUsingGET200Response> {
+            return localVarFp.getChatHistoryUsingGET(padID, start, end, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<GetChatHistoryUsingGET200Response> {
+            return localVarFp.getChatHistoryUsingPOST(padID, start, end, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the text of a pad formatted as HTML
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getHTMLUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<GetHTMLUsingGET200Response> {
+            return localVarFp.getHTMLUsingGET(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the text of a pad formatted as HTML
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getHTMLUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<GetHTMLUsingGET200Response> {
+            return localVarFp.getHTMLUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the timestamp of the last revision of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLastEditedUsingGET(padID?: string, options?: any): AxiosPromise<GetLastEditedUsingGET200Response> {
+            return localVarFp.getLastEditedUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the timestamp of the last revision of the pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLastEditedUsingPOST(padID?: string, options?: any): AxiosPromise<GetLastEditedUsingGET200Response> {
+            return localVarFp.getLastEditedUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary return true of false
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPublicStatusUsingGET(padID?: string, options?: any): AxiosPromise<GetPublicStatusUsingGET200Response> {
+            return localVarFp.getPublicStatusUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary return true of false
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPublicStatusUsingPOST(padID?: string, options?: any): AxiosPromise<GetPublicStatusUsingGET200Response> {
+            return localVarFp.getPublicStatusUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the read only link of a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReadOnlyIDUsingGET(padID?: string, options?: any): AxiosPromise<GetReadOnlyIDUsingGET200Response> {
+            return localVarFp.getReadOnlyIDUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the read only link of a pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getReadOnlyIDUsingPOST(padID?: string, options?: any): AxiosPromise<GetReadOnlyIDUsingGET200Response> {
+            return localVarFp.getReadOnlyIDUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the number of revisions of this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<GetRevisionsCountUsingGET200Response> {
+            return localVarFp.getRevisionsCountUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the number of revisions of this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<GetRevisionsCountUsingGET200Response> {
+            return localVarFp.getRevisionsCountUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTextUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<GetTextUsingGET200Response> {
+            return localVarFp.getTextUsingGET(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [rev] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTextUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<GetTextUsingGET200Response> {
+            return localVarFp.getTextUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary list all the pads
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllPadsUsingGET(options?: any): AxiosPromise<ListPadsUsingGET200Response> {
+            return localVarFp.listAllPadsUsingGET(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary list all the pads
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAllPadsUsingPOST(options?: any): AxiosPromise<ListPadsUsingGET200Response> {
+            return localVarFp.listAllPadsUsingPOST(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns an array of authors who contributed to this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAuthorsOfPadUsingGET(padID?: string, options?: any): AxiosPromise<ListAuthorsOfPadUsingGET200Response> {
+            return localVarFp.listAuthorsOfPadUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns an array of authors who contributed to this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAuthorsOfPadUsingPOST(padID?: string, options?: any): AxiosPromise<ListAuthorsOfPadUsingGET200Response> {
+            return localVarFp.listAuthorsOfPadUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the number of user that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersCountUsingGET(padID?: string, options?: any): AxiosPromise<PadUsersCountUsingGET200Response> {
+            return localVarFp.padUsersCountUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the number of user that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersCountUsingPOST(padID?: string, options?: any): AxiosPromise<PadUsersCountUsingGET200Response> {
+            return localVarFp.padUsersCountUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the list of users that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersUsingGET(padID?: string, options?: any): AxiosPromise<PadUsersUsingGET200Response> {
+            return localVarFp.padUsersUsingGET(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns the list of users that are currently editing this pad
+         * @param {string} [padID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        padUsersUsingPOST(padID?: string, options?: any): AxiosPromise<PadUsersUsingGET200Response> {
+            return localVarFp.padUsersUsingPOST(padID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sends a custom message of type msg to the pad
+         * @param {string} [padID] 
+         * @param {string} [msg] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendClientsMessageUsingGET(padID?: string, msg?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.sendClientsMessageUsingGET(padID, msg, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sends a custom message of type msg to the pad
+         * @param {string} [padID] 
+         * @param {string} [msg] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.sendClientsMessageUsingPOST(padID, msg, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sets the text of a pad with HTML
+         * @param {string} [padID] 
+         * @param {string} [html] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.setHTMLUsingGET(padID, html, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sets the text of a pad with HTML
+         * @param {string} [padID] 
+         * @param {string} [html] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.setHTMLUsingPOST(padID, html, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sets a boolean for the public status of a pad
+         * @param {string} [padID] 
+         * @param {string} [publicStatus] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.setPublicStatusUsingGET(padID, publicStatus, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sets a boolean for the public status of a pad
+         * @param {string} [padID] 
+         * @param {string} [publicStatus] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.setPublicStatusUsingPOST(padID, publicStatus, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sets the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.setTextUsingGET(padID, text, authorId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary sets the text of a pad
+         * @param {string} [padID] 
+         * @param {string} [text] 
+         * @param {string} [authorId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.setTextUsingPOST(padID, text, authorId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PadApi - object-oriented interface
+ * @export
+ * @class PadApi
+ * @extends {BaseAPI}
+ */
+export class PadApi extends BaseAPI {
+    /**
+     * 
+     * @summary appends a chat message
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorID] 
+     * @param {string} [time] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).appendChatMessageUsingGET(padID, text, authorID, time, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary appends a chat message
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorID] 
+     * @param {string} [time] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).appendChatMessageUsingPOST(padID, text, authorID, time, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns ok when the current api token is valid
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public checkTokenUsingGET(options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).checkTokenUsingGET(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns ok when the current api token is valid
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public checkTokenUsingPOST(options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).checkTokenUsingPOST(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {string} [padID] 
+     * @param {string} [startRev] 
+     * @param {string} [endRev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).createDiffHTMLUsingGET(padID, startRev, endRev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 
+     * @param {string} [padID] 
+     * @param {string} [startRev] 
+     * @param {string} [endRev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).createDiffHTMLUsingPOST(padID, startRev, endRev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).createPadUsingGET(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).createPadUsingPOST(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public deletePadUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).deletePadUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public deletePadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).deletePadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the chatHead (chat-message) of the pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getChatHeadUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getChatHeadUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the chatHead (chat-message) of the pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getChatHeadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the chat history
+     * @param {string} [padID] 
+     * @param {string} [start] 
+     * @param {string} [end] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getChatHistoryUsingGET(padID, start, end, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the chat history
+     * @param {string} [padID] 
+     * @param {string} [start] 
+     * @param {string} [end] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getChatHistoryUsingPOST(padID, start, end, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the text of a pad formatted as HTML
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getHTMLUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getHTMLUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the text of a pad formatted as HTML
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getHTMLUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getHTMLUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the timestamp of the last revision of the pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getLastEditedUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getLastEditedUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the timestamp of the last revision of the pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getLastEditedUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getLastEditedUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary return true of false
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getPublicStatusUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getPublicStatusUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary return true of false
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getPublicStatusUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getPublicStatusUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the read only link of a pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getReadOnlyIDUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getReadOnlyIDUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the read only link of a pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getReadOnlyIDUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getReadOnlyIDUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the number of revisions of this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getRevisionsCountUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the number of revisions of this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getRevisionsCountUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the text of a pad
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getTextUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getTextUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the text of a pad
+     * @param {string} [padID] 
+     * @param {string} [rev] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public getTextUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).getTextUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary list all the pads
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public listAllPadsUsingGET(options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).listAllPadsUsingGET(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary list all the pads
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public listAllPadsUsingPOST(options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).listAllPadsUsingPOST(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns an array of authors who contributed to this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public listAuthorsOfPadUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).listAuthorsOfPadUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns an array of authors who contributed to this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public listAuthorsOfPadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).listAuthorsOfPadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the number of user that are currently editing this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public padUsersCountUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).padUsersCountUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the number of user that are currently editing this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public padUsersCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).padUsersCountUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the list of users that are currently editing this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public padUsersUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).padUsersUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns the list of users that are currently editing this pad
+     * @param {string} [padID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public padUsersUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).padUsersUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sends a custom message of type msg to the pad
+     * @param {string} [padID] 
+     * @param {string} [msg] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public sendClientsMessageUsingGET(padID?: string, msg?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).sendClientsMessageUsingGET(padID, msg, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sends a custom message of type msg to the pad
+     * @param {string} [padID] 
+     * @param {string} [msg] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).sendClientsMessageUsingPOST(padID, msg, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sets the text of a pad with HTML
+     * @param {string} [padID] 
+     * @param {string} [html] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).setHTMLUsingGET(padID, html, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sets the text of a pad with HTML
+     * @param {string} [padID] 
+     * @param {string} [html] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).setHTMLUsingPOST(padID, html, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sets a boolean for the public status of a pad
+     * @param {string} [padID] 
+     * @param {string} [publicStatus] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).setPublicStatusUsingGET(padID, publicStatus, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sets a boolean for the public status of a pad
+     * @param {string} [padID] 
+     * @param {string} [publicStatus] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).setPublicStatusUsingPOST(padID, publicStatus, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sets the text of a pad
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).setTextUsingGET(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary sets the text of a pad
+     * @param {string} [padID] 
+     * @param {string} [text] 
+     * @param {string} [authorId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PadApi
+     */
+    public setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
+        return PadApiFp(this.configuration).setTextUsingPOST(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * SessionApi - axios parameter creator
+ * @export
+ */
+export const SessionApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingGET: async (groupID?: string, authorID?: string, validUntil?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createSession`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+            if (validUntil !== undefined) {
+                localVarQueryParameter['validUntil'] = validUntil;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingPOST: async (groupID?: string, authorID?: string, validUntil?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/createSession`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (groupID !== undefined) {
+                localVarQueryParameter['groupID'] = groupID;
+            }
+
+            if (authorID !== undefined) {
+                localVarQueryParameter['authorID'] = authorID;
+            }
+
+            if (validUntil !== undefined) {
+                localVarQueryParameter['validUntil'] = validUntil;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingGET: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/deleteSession`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sessionID !== undefined) {
+                localVarQueryParameter['sessionID'] = sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingPOST: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/deleteSession`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sessionID !== undefined) {
+                localVarQueryParameter['sessionID'] = sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingGET: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getSessionInfo`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sessionID !== undefined) {
+                localVarQueryParameter['sessionID'] = sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingPOST: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getSessionInfo`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication ApiKey required
+            await setApiKeyToObject(localVarQueryParameter, "apikey", configuration)
+
+            if (sessionID !== undefined) {
+                localVarQueryParameter['sessionID'] = sessionID;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * SessionApi - functional programming interface
+ * @export
+ */
+export const SessionApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = SessionApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateSessionUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSessionUsingGET(groupID, authorID, validUntil, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.createSessionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateSessionUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSessionUsingPOST(groupID, authorID, validUntil, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.createSessionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSessionUsingGET(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSessionUsingGET(sessionID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.deleteSessionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSessionUsingPOST(sessionID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.deleteSessionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSessionInfoUsingGET(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionInfoUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionInfoUsingGET(sessionID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.getSessionInfoUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionInfoUsingGET200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionInfoUsingPOST(sessionID, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.getSessionInfoUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * SessionApi - factory interface
+ * @export
+ */
+export const SessionApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = SessionApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<CreateSessionUsingGET200Response> {
+            return localVarFp.createSessionUsingGET(groupID, authorID, validUntil, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary creates a new session. validUntil is an unix timestamp in seconds
+         * @param {string} [groupID] 
+         * @param {string} [authorID] 
+         * @param {string} [validUntil] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<CreateSessionUsingGET200Response> {
+            return localVarFp.createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingGET(sessionID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.deleteSessionUsingGET(sessionID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary deletes a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteSessionUsingPOST(sessionID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
+            return localVarFp.deleteSessionUsingPOST(sessionID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingGET(sessionID?: string, options?: any): AxiosPromise<GetSessionInfoUsingGET200Response> {
+            return localVarFp.getSessionInfoUsingGET(sessionID, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary returns information about a session
+         * @param {string} [sessionID] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionInfoUsingPOST(sessionID?: string, options?: any): AxiosPromise<GetSessionInfoUsingGET200Response> {
+            return localVarFp.getSessionInfoUsingPOST(sessionID, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * SessionApi - object-oriented interface
+ * @export
+ * @class SessionApi
+ * @extends {BaseAPI}
+ */
+export class SessionApi extends BaseAPI {
+    /**
+     * 
+     * @summary creates a new session. validUntil is an unix timestamp in seconds
+     * @param {string} [groupID] 
+     * @param {string} [authorID] 
+     * @param {string} [validUntil] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig) {
+        return SessionApiFp(this.configuration).createSessionUsingGET(groupID, authorID, validUntil, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary creates a new session. validUntil is an unix timestamp in seconds
+     * @param {string} [groupID] 
+     * @param {string} [authorID] 
+     * @param {string} [validUntil] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig) {
+        return SessionApiFp(this.configuration).createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public deleteSessionUsingGET(sessionID?: string, options?: RawAxiosRequestConfig) {
+        return SessionApiFp(this.configuration).deleteSessionUsingGET(sessionID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary deletes a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig) {
+        return SessionApiFp(this.configuration).deleteSessionUsingPOST(sessionID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns information about a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public getSessionInfoUsingGET(sessionID?: string, options?: RawAxiosRequestConfig) {
+        return SessionApiFp(this.configuration).getSessionInfoUsingGET(sessionID, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary returns information about a session
+     * @param {string} [sessionID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SessionApi
+     */
+    public getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig) {
+        return SessionApiFp(this.configuration).getSessionInfoUsingPOST(sessionID, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
 
