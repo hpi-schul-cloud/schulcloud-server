@@ -4,14 +4,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import {
 	AuthorApi,
+	CreateAuthorUsingGET200Response,
+	CreateGroupUsingGET200Response,
+	CreateSessionUsingGET200Response,
+	DeleteGroupUsingGET200Response,
 	GroupApi,
-	InlineResponse200,
-	InlineResponse2001,
-	InlineResponse20013,
-	InlineResponse2002,
-	InlineResponse2003,
-	InlineResponse2004,
-	InlineResponse2006,
+	ListAuthorsOfPadUsingGET200Response,
+	ListPadsUsingGET200Response,
+	ListSessionsOfGroupUsingGET200Response,
 	PadApi,
 	SessionApi,
 } from './etherpad-api-client';
@@ -75,7 +75,7 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const userId = 'userId';
 				const username = 'username';
-				const response = createMock<AxiosResponse<InlineResponse2003>>({
+				const response = createMock<AxiosResponse<CreateAuthorUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { authorID: 'authorId' },
@@ -127,7 +127,7 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const userId = 'userId';
 				const username = 'username';
-				const response = createMock<AxiosResponse<InlineResponse2003>>({
+				const response = createMock<AxiosResponse<CreateAuthorUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -174,7 +174,7 @@ describe(EtherpadClientAdapter.name, () => {
 					const parentId = 'parentId';
 					const sessionCookieExpire = new Date();
 
-					const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+					const listSessionsResponse = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 						data: {
 							code: EtherpadResponseCode.OK,
 							data: {
@@ -228,14 +228,14 @@ describe(EtherpadClientAdapter.name, () => {
 					const authorId = 'authorId';
 					const parentId = 'parentId';
 					const sessionCookieExpire = new Date();
-					const response = createMock<AxiosResponse<InlineResponse2004>>({
+					const response = createMock<AxiosResponse<CreateSessionUsingGET200Response>>({
 						data: {
 							code: EtherpadResponseCode.OK,
 							data: { sessionID: 'sessionId' },
 						},
 					});
 
-					const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+					const listSessionsResponse = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 						data: {
 							code: EtherpadResponseCode.OK,
 							data: {
@@ -293,14 +293,14 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = 'authorId';
 				const parentId = 'parentId';
 				const sessionCookieExpire = new Date();
-				const response = createMock<AxiosResponse<InlineResponse2004>>({
+				const response = createMock<AxiosResponse<CreateSessionUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { sessionID: 'sessionId' },
 					},
 				});
 
-				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+				const listSessionsResponse = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {
@@ -341,14 +341,14 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = 'authorId';
 				const parentId = 'parentId';
 				const sessionCookieExpire = new Date();
-				const response = createMock<AxiosResponse<InlineResponse2004>>({
+				const response = createMock<AxiosResponse<CreateSessionUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { sessionID: 'sessionId' },
 					},
 				});
 
-				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+				const listSessionsResponse = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -399,7 +399,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = 'authorId';
 				const parentId = 'parentId';
 				const sessionCookieExpire = new Date();
-				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+				const listSessionsResponse = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -408,7 +408,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				authorApi.listSessionsOfAuthorUsingGET.mockResolvedValue(listSessionsResponse);
 
-				const response = createMock<AxiosResponse<InlineResponse2004>>({
+				const response = createMock<AxiosResponse<CreateSessionUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -442,7 +442,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const authorId = 'authorId';
 				const parentId = 'parentId';
 				const sessionCookieExpire = new Date();
-				const listSessionsResponse = createMock<AxiosResponse<InlineResponse2006>>({
+				const listSessionsResponse = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -476,7 +476,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when author has sessions', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse2006>>({
+				const response = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						// @ts-expect-error wrong type mapping
@@ -500,7 +500,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when author has no sessions', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse2006>>({
+				const response = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -536,10 +536,10 @@ describe(EtherpadClientAdapter.name, () => {
 			});
 		});
 
-		describe('when InlineResponse2006Data is not an object', () => {
+		describe('when ListSessionsOfGroupUsingGET200ResponseData is not an object', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse2006>>({
+				const response = createMock<AxiosResponse<ListSessionsOfGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						// @ts-expect-error wrong type mapping
@@ -565,7 +565,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when author has pads', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse2002>>({
+				const response = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padIDs: ['g.s8oes9dhwrvt0zif$test', 'g.s8oejklhwrvt0zif$foo'] },
@@ -588,7 +588,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when author has no pads', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse2002>>({
+				const response = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padIDs: [] },
@@ -624,10 +624,10 @@ describe(EtherpadClientAdapter.name, () => {
 			});
 		});
 
-		describe('when InlineResponse2002Data is not an object', () => {
+		describe('when ListPadsUsingGET200ResponseData is not an object', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse2002>>({
+				const response = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						// @ts-expect-error wrong type mapping
@@ -653,7 +653,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when pad has author', () => {
 			const setup = () => {
 				const padId = 'padId';
-				const response = createMock<AxiosResponse<InlineResponse20013>>({
+				const response = createMock<AxiosResponse<ListAuthorsOfPadUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { authorIDs: ['a.s8oes9dhwrvt0zif', 'a.akf8finncvomlqva'] },
@@ -676,7 +676,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when pad has no authors', () => {
 			const setup = () => {
 				const padId = 'padId';
-				const response = createMock<AxiosResponse<InlineResponse20013>>({
+				const response = createMock<AxiosResponse<ListAuthorsOfPadUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { authorIDs: [] },
@@ -712,10 +712,10 @@ describe(EtherpadClientAdapter.name, () => {
 			});
 		});
 
-		describe('when InlineResponse20013Data is not an object', () => {
+		describe('when ListAuthorsOfPadUsingGET200ResponseData is not an object', () => {
 			const setup = () => {
 				const authorId = 'authorId';
-				const response = createMock<AxiosResponse<InlineResponse20013>>({
+				const response = createMock<AxiosResponse<ListAuthorsOfPadUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						// @ts-expect-error wrong type mapping
@@ -741,7 +741,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when group does not exist', () => {
 			const setup = () => {
 				const parentId = 'parentId';
-				const response = createMock<AxiosResponse<InlineResponse200>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { groupID: 'groupId' },
@@ -772,7 +772,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when createGroupIfNotExistsForUsingGET response is empty', () => {
 			const setup = () => {
 				const parentId = 'parentId';
-				const response = createMock<AxiosResponse<InlineResponse200>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: { code: EtherpadResponseCode.OK },
 				});
 
@@ -809,14 +809,14 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const groupId = 'groupId';
 				const parentId = 'parentId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<DeleteGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padID: 'padId' },
 					},
 				});
 
-				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
+				const listPadsResponse = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padIDs: [] },
@@ -849,7 +849,7 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const groupId = 'groupId';
 				const parentId = 'parentId';
-				const response = createMock<AxiosResponse<InlineResponse2002>>({
+				const response = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padIDs: ['groupId$parentId'] },
@@ -881,13 +881,13 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const groupId = 'groupId';
 				const parentId = 'parentId';
-				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
+				const listPadsResponse = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padIDs: [] },
 					},
 				});
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -910,7 +910,7 @@ describe(EtherpadClientAdapter.name, () => {
 			const setup = () => {
 				const groupId = 'groupId';
 				const parentId = 'parentId';
-				const listPadsResponse = createMock<AxiosResponse<InlineResponse2002>>({
+				const listPadsResponse = createMock<AxiosResponse<ListPadsUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: { padIDs: [] },
@@ -956,7 +956,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when deleteGroupUsingPOST returns successfull', () => {
 			const setup = () => {
 				const groupId = 'groupId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						data: {},
@@ -980,7 +980,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when deleteGroupUsingPOST returns etherpad error code', () => {
 			const setup = () => {
 				const groupId = 'groupId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.BAD_REQUEST,
 						data: {},
@@ -1021,7 +1021,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when deleteSessionUsingPOST returns successfull', () => {
 			const setup = () => {
 				const sessionId = 'sessionId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						message: 'ok',
@@ -1046,7 +1046,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when deleteSessionUsingPOST returns etherpad error code', () => {
 			const setup = () => {
 				const sessionId = 'sessionId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.BAD_REQUEST,
 						data: {},
@@ -1087,7 +1087,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when deletePadUsingPOST returns successfull', () => {
 			const setup = () => {
 				const padId = 'padId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.OK,
 						message: 'ok',
@@ -1112,7 +1112,7 @@ describe(EtherpadClientAdapter.name, () => {
 		describe('when deleteSessionUsingPOST returns etherpad error code', () => {
 			const setup = () => {
 				const padId = 'padId';
-				const response = createMock<AxiosResponse<InlineResponse2001>>({
+				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
 						code: EtherpadResponseCode.BAD_REQUEST,
 						data: {},
@@ -1152,7 +1152,7 @@ describe(EtherpadClientAdapter.name, () => {
 	describe('handleEtherpadResponse', () => {
 		const setup = (code: number) => {
 			const parentId = 'parentId';
-			const response = createMock<AxiosResponse<InlineResponse200>>({
+			const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 				data: {
 					code,
 					data: { groupID: 'groupId' },

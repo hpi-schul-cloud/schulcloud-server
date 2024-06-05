@@ -3,13 +3,13 @@ import { TypeGuard } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import {
-	InlineResponse200,
-	InlineResponse2001,
-	InlineResponse20013,
-	InlineResponse2002,
-	InlineResponse2003,
-	InlineResponse2004,
-	InlineResponse2006,
+	CreateAuthorUsingGET200Response,
+	CreateGroupUsingGET200Response,
+	CreateSessionUsingGET200Response,
+	DeleteGroupUsingGET200Response,
+	ListAuthorsOfPadUsingGET200Response,
+	ListPadsUsingGET200Response,
+	ListSessionsOfGroupUsingGET200Response,
 } from './etherpad-api-client';
 import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import {
@@ -36,14 +36,17 @@ export class EtherpadClientAdapter {
 
 	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise<AuthorId> {
 		const response = await this.tryCreateAuthor(userId, username);
-		const user = this.handleEtherpadResponse<InlineResponse2003>(response, { userId });
+		const user = this.handleEtherpadResponse(response, { userId });
 
 		const authorId = EtherpadResponseMapper.mapToAuthorResponse(user);
 
 		return authorId;
 	}
 
-	private async tryCreateAuthor(userId: string, username?: string): Promise<AxiosResponse<InlineResponse2003>> {
+	private async tryCreateAuthor(
+		userId: string,
+		username?: string
+	): Promise<AxiosResponse<CreateAuthorUsingGET200Response>> {
 		try {
 			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
 
@@ -55,7 +58,7 @@ export class EtherpadClientAdapter {
 
 	public async listPadsOfAuthor(authorId: AuthorId): Promise<PadId[]> {
 		const response = await this.tryGetPadsOfAuthor(authorId);
-		const pads = this.handleEtherpadResponse<InlineResponse2002>(response, { authorId });
+		const pads = this.handleEtherpadResponse<ListPadsUsingGET200Response>(response, { authorId });
 
 		if (!TypeGuard.isObject(pads)) {
 			throw new InternalServerErrorException('Etherpad listPadsOfAuthor response is not an object');
@@ -66,7 +69,7 @@ export class EtherpadClientAdapter {
 		return padIds;
 	}
 
-	private async tryGetPadsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2002>> {
+	private async tryGetPadsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<ListPadsUsingGET200Response>> {
 		try {
 			const response = await this.authorApi.listPadsOfAuthorUsingGET(authorId);
 
@@ -90,7 +93,7 @@ export class EtherpadClientAdapter {
 		}
 
 		const response = await this.tryCreateSession(groupId, authorId, sessionCookieExpire);
-		const newSession = this.handleEtherpadResponse<InlineResponse2004>(response, { parentId });
+		const newSession = this.handleEtherpadResponse<CreateSessionUsingGET200Response>(response, { parentId });
 
 		const sessionId = EtherpadResponseMapper.mapToSessionResponse(newSession);
 
@@ -109,7 +112,7 @@ export class EtherpadClientAdapter {
 		groupId: string,
 		authorId: string,
 		sessionCookieExpire: Date
-	): Promise<AxiosResponse<InlineResponse2004>> {
+	): Promise<AxiosResponse<CreateSessionUsingGET200Response>> {
 		try {
 			const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000);
 			const response = await this.sessionApi.createSessionUsingGET(groupId, authorId, unixTimeInSeconds.toString());
@@ -122,7 +125,9 @@ export class EtherpadClientAdapter {
 
 	private async getSessionByGroupAndAuthor(groupId: GroupId, authorId: AuthorId): Promise<Session | undefined> {
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		const etherpadSessions = this.handleEtherpadResponse<ListSessionsOfGroupUsingGET200Response>(response, {
+			authorId,
+		});
 		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
 		const session = this.findSession(sessions, groupId, authorId);
@@ -142,7 +147,9 @@ export class EtherpadClientAdapter {
 
 	public async listSessionIdsOfAuthor(authorId: AuthorId): Promise<SessionId[]> {
 		const response = await this.tryListSessionsOfAuthor(authorId);
-		const etherpadSessions = this.handleEtherpadResponse<InlineResponse2006>(response, { authorId });
+		const etherpadSessions = this.handleEtherpadResponse<ListSessionsOfGroupUsingGET200Response>(response, {
+			authorId,
+		});
 		const sessions = EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions);
 
 		const sessionIds = sessions.map((session) => session.id);
@@ -150,7 +157,9 @@ export class EtherpadClientAdapter {
 		return sessionIds;
 	}
 
-	private async tryListSessionsOfAuthor(authorId: AuthorId): Promise<AxiosResponse<InlineResponse2006>> {
+	private async tryListSessionsOfAuthor(
+		authorId: AuthorId
+	): Promise<AxiosResponse<ListSessionsOfGroupUsingGET200Response>> {
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
 
@@ -162,14 +171,14 @@ export class EtherpadClientAdapter {
 
 	public async getOrCreateGroupId(parentId: EntityId): Promise<GroupId> {
 		const groupResponse = await this.tryGetOrCreateGroup(parentId);
-		const group = this.handleEtherpadResponse<InlineResponse200>(groupResponse, { parentId });
+		const group = this.handleEtherpadResponse<CreateGroupUsingGET200Response>(groupResponse, { parentId });
 
 		const groupId = EtherpadResponseMapper.mapToGroupResponse(group);
 
 		return groupId;
 	}
 
-	private async tryGetOrCreateGroup(parentId: string): Promise<AxiosResponse<InlineResponse200>> {
+	private async tryGetOrCreateGroup(parentId: string): Promise<AxiosResponse<CreateGroupUsingGET200Response>> {
 		try {
 			const response = await this.groupApi.createGroupIfNotExistsForUsingGET(parentId);
 
@@ -186,7 +195,7 @@ export class EtherpadClientAdapter {
 
 		if (!padId) {
 			const padResponse = await this.tryCreateEtherpad(groupId, parentId);
-			const pad = this.handleEtherpadResponse<InlineResponse2001>(padResponse, { parentId });
+			const pad = this.handleEtherpadResponse<DeleteGroupUsingGET200Response>(padResponse, { parentId });
 
 			padId = EtherpadResponseMapper.mapToPadResponse(pad);
 		}
@@ -194,7 +203,10 @@ export class EtherpadClientAdapter {
 		return padId;
 	}
 
-	private async tryCreateEtherpad(groupId: string, parentId: string): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryCreateEtherpad(
+		groupId: string,
+		parentId: string
+	): Promise<AxiosResponse<DeleteGroupUsingGET200Response>> {
 		try {
 			const response = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
 
@@ -206,14 +218,14 @@ export class EtherpadClientAdapter {
 
 	private async getPadId(groupId: GroupId, parentId: EntityId): Promise<PadId | undefined> {
 		const padsResponse = await this.tryListPads(groupId);
-		const pads = this.handleEtherpadResponse<InlineResponse2002>(padsResponse, { parentId });
+		const pads = this.handleEtherpadResponse<ListPadsUsingGET200Response>(padsResponse, { parentId });
 
 		const padId = pads?.padIDs?.find((id: string) => id.includes(`${groupId}$${parentId}`));
 
 		return padId;
 	}
 
-	private async tryListPads(groupId: string): Promise<AxiosResponse<InlineResponse2002>> {
+	private async tryListPads(groupId: string): Promise<AxiosResponse<ListPadsUsingGET200Response>> {
 		try {
 			const response = await this.groupApi.listPadsUsingGET(groupId);
 
@@ -225,10 +237,10 @@ export class EtherpadClientAdapter {
 
 	public async deleteGroup(groupId: GroupId): Promise<void> {
 		const response = await this.tryDeleteGroup(groupId);
-		this.handleEtherpadResponse<InlineResponse2001>(response, { groupId });
+		this.handleEtherpadResponse<DeleteGroupUsingGET200Response>(response, { groupId });
 	}
 
-	private async tryDeleteGroup(groupId: string): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryDeleteGroup(groupId: string): Promise<AxiosResponse<DeleteGroupUsingGET200Response>> {
 		try {
 			const response = await this.groupApi.deleteGroupUsingPOST(groupId);
 
@@ -240,7 +252,7 @@ export class EtherpadClientAdapter {
 
 	public async listAuthorsOfPad(padId: PadId): Promise<AuthorId[]> {
 		const response = await this.tryGetAuthorsOfPad(padId);
-		const authors = this.handleEtherpadResponse<InlineResponse20013>(response, { padId });
+		const authors = this.handleEtherpadResponse<ListAuthorsOfPadUsingGET200Response>(response, { padId });
 
 		if (!TypeGuard.isObject(authors)) {
 			throw new InternalServerErrorException('Etherpad listAuthorsOfPad response is not an object');
@@ -251,7 +263,7 @@ export class EtherpadClientAdapter {
 		return authorIds;
 	}
 
-	private async tryGetAuthorsOfPad(padId: PadId): Promise<AxiosResponse<InlineResponse20013>> {
+	private async tryGetAuthorsOfPad(padId: PadId): Promise<AxiosResponse<ListAuthorsOfPadUsingGET200Response>> {
 		try {
 			const response = await this.padApi.listAuthorsOfPadUsingGET(padId);
 
@@ -263,10 +275,10 @@ export class EtherpadClientAdapter {
 
 	public async deleteSession(sessionId: SessionId): Promise<void> {
 		const response = await this.tryDeleteSession(sessionId);
-		this.handleEtherpadResponse<InlineResponse2001>(response, { sessionId });
+		this.handleEtherpadResponse<DeleteGroupUsingGET200Response>(response, { sessionId });
 	}
 
-	private async tryDeleteSession(sessionId: SessionId): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryDeleteSession(sessionId: SessionId): Promise<AxiosResponse<DeleteGroupUsingGET200Response>> {
 		try {
 			const response = await this.sessionApi.deleteSessionUsingPOST(sessionId);
 
@@ -276,14 +288,14 @@ export class EtherpadClientAdapter {
 		}
 	}
 
-	public async deletePad(padId: EntityId): Promise<InlineResponse2001 | undefined> {
+	public async deletePad(padId: EntityId): Promise<DeleteGroupUsingGET200Response | undefined> {
 		const response = await this.tryDeletePad(padId);
-		const responseData = this.handleEtherpadResponse<InlineResponse2001>(response, { padId });
+		const responseData = this.handleEtherpadResponse<DeleteGroupUsingGET200Response>(response, { padId });
 
 		return responseData;
 	}
 
-	private async tryDeletePad(padId: PadId): Promise<AxiosResponse<InlineResponse2001>> {
+	private async tryDeletePad(padId: PadId): Promise<AxiosResponse<DeleteGroupUsingGET200Response>> {
 		try {
 			const response = await this.padApi.deletePadUsingPOST(padId);
 
