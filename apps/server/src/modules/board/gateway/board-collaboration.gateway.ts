@@ -217,6 +217,7 @@ export class BoardCollaborationGateway {
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 			await emitter.emitToClient('fetch-board-success', responsePayload);
+			this.updateRoomsAndUsersMetrics();
 		} catch (err) {
 			socket.emit('fetch-board-failure', data);
 		}
