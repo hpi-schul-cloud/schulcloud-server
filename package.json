@@ -120,7 +120,7 @@
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
-		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization' -c 'openapitools.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'"
+		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization-client/authorization-api-client' -c 'openapitools.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.100.0",
