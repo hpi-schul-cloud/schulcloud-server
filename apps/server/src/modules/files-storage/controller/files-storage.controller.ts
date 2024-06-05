@@ -91,6 +91,7 @@ export class FilesStorageController {
 		return response;
 	}
 
+	// TODO: N21-1967 create copy without filename
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
 	@ApiResponse({ status: 200, type: StreamableFile })
 	@ApiResponse({ status: 206, type: StreamableFile })

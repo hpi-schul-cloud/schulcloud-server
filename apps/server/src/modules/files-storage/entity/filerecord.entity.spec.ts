@@ -10,6 +10,7 @@ import {
 	FileRecordSecurityCheck,
 	PreviewStatus,
 	ScanStatus,
+	StorageLocation,
 } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
@@ -28,7 +29,8 @@ describe('FileRecord Entity', () => {
 				parentType: FileRecordParentType.Course,
 				parentId: new ObjectId().toHexString(),
 				creatorId: new ObjectId().toHexString(),
-				schoolId: new ObjectId().toHexString(),
+				storageLocationId: new ObjectId().toHexString(),
+				storageLocation: StorageLocation.SCHOOL,
 			};
 		});
 
@@ -50,13 +52,13 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.creatorId).toEqual(creatorId);
 		});
 
-		it('should provide school id', () => {
-			const schoolId = new ObjectId().toHexString();
+		it('should provide storageLocationId', () => {
+			const storageLocationId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
-				schoolId,
+				storageLocationId,
 			});
-			expect(fileRecord.schoolId).toEqual(schoolId);
+			expect(fileRecord.storageLocationId).toEqual(storageLocationId);
 		});
 
 		it('should provide isCopyFrom', () => {
@@ -218,21 +220,21 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('getSchoolId is called', () => {
-		describe('WHEN schoolId exists', () => {
+	describe('getStorageLocationId is called', () => {
+		describe('WHEN storageLocationId exists', () => {
 			const setup = () => {
-				const schoolId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ schoolId });
+				const storageLocationId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ storageLocationId });
 
-				return { fileRecord, schoolId };
+				return { fileRecord, storageLocationId };
 			};
 
-			it('should return the correct schoolId', () => {
-				const { fileRecord, schoolId } = setup();
+			it('should return the correct storageLocationId', () => {
+				const { fileRecord, storageLocationId } = setup();
 
-				const result = fileRecord.getSchoolId();
+				const result = fileRecord.getStorageLocationId();
 
-				expect(result).toEqual(schoolId);
+				expect(result).toEqual(storageLocationId);
 			});
 		});
 	});
@@ -260,18 +262,19 @@ describe('FileRecord Entity', () => {
 			const setup = () => {
 				const parentType = FileRecordParentType.School;
 				const parentId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ parentType, parentId, schoolId });
+				const storageLocationId = new ObjectId().toHexString();
+				const storageLocation = StorageLocation.INSTANCE;
+				const fileRecord = fileRecordFactory.build({ parentType, parentId, storageLocationId, storageLocation });
 
-				return { fileRecord, parentId, parentType, schoolId };
+				return { fileRecord, parentId, parentType, storageLocationId, storageLocation };
 			};
 
 			it('should return an object that include parentId and parentType', () => {
-				const { fileRecord, parentId, parentType, schoolId } = setup();
+				const { fileRecord, parentId, parentType, storageLocationId, storageLocation } = setup();
 
 				const result = fileRecord.getParentInfo();
 
-				expect(result).toEqual({ parentId, parentType, schoolId });
+				expect(result).toEqual({ parentId, parentType, storageLocationId, storageLocation });
 			});
 		});
 	});
@@ -471,9 +474,10 @@ describe('FileRecord Entity', () => {
 			const fileRecord = fileRecordFactory.buildWithId();
 			const userId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
+			const storageLocationId = new ObjectId().toHexString();
+			const storageLocation = StorageLocation.INSTANCE;
 			const parentType = FileRecordParentType.School;
-			const targetParentInfo = { parentId, schoolId, parentType };
+			const targetParentInfo = { parentId, parentType, storageLocationId, storageLocation };
 
 			return {
 				fileRecord,
@@ -528,7 +532,8 @@ describe('FileRecord Entity', () => {
 				expect(result.creatorId).toEqual(userId);
 				expect(result.parentType).toEqual(targetParentInfo.parentType);
 				expect(result.parentId).toEqual(targetParentInfo.parentId);
-				expect(result.schoolId).toEqual(targetParentInfo.schoolId);
+				expect(result.storageLocationId).toEqual(targetParentInfo.storageLocationId);
+				expect(result.storageLocation).toEqual(targetParentInfo.storageLocation);
 			});
 		});
 

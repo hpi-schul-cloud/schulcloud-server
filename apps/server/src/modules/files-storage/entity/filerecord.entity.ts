@@ -2,7 +2,6 @@ import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import path from 'path';
@@ -27,11 +26,6 @@ export enum FileRecordParentType {
 	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
 	'ExternalTool' = 'externaltools',
-}
-
-export enum StorageLocation {
-	SCHOOL = 'school',
-	INSTANCE = 'instance',
 }
 
 export enum StorageLocation {
@@ -159,14 +153,14 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this._creatorId = userId !== undefined ? new ObjectId(userId) : undefined;
 	}
 
-	@Property()
+	@Property({ fieldName: 'storageLocationId' })
 	_storageLocationId: ObjectId;
 
 	get storageLocationId(): EntityId {
 		return this._storageLocationId.toHexString();
 	}
 
-	@ApiProperty()
+	@Property({ fieldName: 'storageLocation' })
 	_storageLocation: StorageLocation;
 
 	get storageLocation(): StorageLocation {
