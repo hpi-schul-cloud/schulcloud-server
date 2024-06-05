@@ -120,7 +120,7 @@
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
-		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools.json'"
+		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.100.0",
