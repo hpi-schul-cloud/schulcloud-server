@@ -35,6 +35,7 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway {
+	// implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server?: Server;
 
@@ -55,26 +56,42 @@ export class BoardCollaborationGateway {
 		return user;
 	}
 
-	private getActiveBoardRooms() {
+	private updateRoomsAndUsersMetrics() {
 		if (!this.server) {
 			throw new Error('Server is not initialized');
 		}
 
-		const activeRooms = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) => key.startsWith('board_'));
-		return activeRooms;
+		const userCount = Array.from(this.server.of('/').adapter.sids.keys()).length;
+		const roomCount = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) =>
+			key.startsWith('board_')
+		).length;
+		this.metricsService.setNumberOfUsers(userCount);
+		this.metricsService.setNumberOfBoardRooms(roomCount);
 	}
 
-	private getActiveUsers() {
-		if (!this.server) {
+	public handleConnection(socket: Socket): void {
+		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
-
-		const activeRooms = Array.from(this.server.of('/').adapter.sids.keys());
-		return activeRooms;
+		this.updateRoomsAndUsersMetrics();
+		// this.logger.log(`Client connected: ${socket.id}`);
+		// if (userRole === "teacher") {
+		// 	this.metricsService.incrementNumberOfEditors();
+		// } else {
+		// 	this.metricsService.incrementNumberOfViewers();
+		// }
 	}
 
-	public afterInit(): void {
-		// this.logger.log('Socket gateway initialized');
+	public handleDisconnect(socket: Socket): void {
+		if (!socket) {
+			throw new Error('Server is not initialized');
+		}
+		this.updateRoomsAndUsersMetrics();
+		// if (userRole === "teacher") {
+		// 	this.metricsService.decrementNumberOfEditors();
+		// } else {
+		// 	this.metricsService.decrementNumberOfViewers();
+		// }
 	}
 
 	@SubscribeMessage('delete-board-request')
@@ -200,12 +217,6 @@ export class BoardCollaborationGateway {
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 			await emitter.emitToClient('fetch-board-success', responsePayload);
-
-			const roomCount = Object.keys(this.getActiveBoardRooms()).length;
-			const userCount = Object.keys(this.getActiveUsers()).length;
-			console.log('users:', userCount, 'rooms:', roomCount);
-			this.metricsService.setNumberOfUsers(userCount);
-			this.metricsService.setNumberOfBoardRooms(roomCount);
 		} catch (err) {
 			socket.emit('fetch-board-failure', data);
 		}

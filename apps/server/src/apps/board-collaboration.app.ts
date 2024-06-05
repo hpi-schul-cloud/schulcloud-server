@@ -42,7 +42,7 @@ async function bootstrap() {
 
 	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestExpress);
 	const port = 4450;
-	const basePath = '/board-collaboration'; // '/api/v3'; // '/board-collaboration';
+	const basePath = '/board-collaboration';
 
 	nestApp.setGlobalPrefix(basePath);
 	await nestApp.listen(port, () => {
