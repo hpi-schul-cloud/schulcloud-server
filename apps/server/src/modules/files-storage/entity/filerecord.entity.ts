@@ -34,6 +34,11 @@ export enum StorageLocation {
 	INSTANCE = 'instance',
 }
 
+export enum StorageLocation {
+	SCHOOL = 'school',
+	INSTANCE = 'instance',
+}
+
 export enum PreviewStatus {
 	PREVIEW_POSSIBLE = 'preview_possible',
 	AWAITING_SCAN_STATUS = 'awaiting_scan_status',
