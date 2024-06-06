@@ -8492,6 +8492,30 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/CourseRepo.html" data-type="entity-link" >CourseRepo</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CreateAuthorUsingGET200Response.html" data-type="entity-link" >CreateAuthorUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateAuthorUsingGET200ResponseData.html" data-type="entity-link" >CreateAuthorUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateDiffHTMLUsingGET200Response.html" data-type="entity-link" >CreateDiffHTMLUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateGroupUsingGET200Response.html" data-type="entity-link" >CreateGroupUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateGroupUsingGET200ResponseData.html" data-type="entity-link" >CreateGroupUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateGroupUsingGET400Response.html" data-type="entity-link" >CreateGroupUsingGET400Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateGroupUsingGET401Response.html" data-type="entity-link" >CreateGroupUsingGET401Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateGroupUsingGET500Response.html" data-type="entity-link" >CreateGroupUsingGET500Response</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/CreateJwtParams.html" data-type="entity-link" >CreateJwtParams</a>
                             </li>
                             <li class="link">
@@ -8499,6 +8523,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/CreateNews.html" data-type="entity-link" >CreateNews</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateSessionUsingGET200Response.html" data-type="entity-link" >CreateSessionUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateSessionUsingGET200ResponseData.html" data-type="entity-link" >CreateSessionUsingGET200ResponseData</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/CustomLtiProperty.html" data-type="entity-link" >CustomLtiProperty</a>
@@ -8511,6 +8541,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/DefaultApiInterface.html" data-type="entity-link" >DefaultApiInterface</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/DeleteGroupUsingGET200Response.html" data-type="entity-link" >DeleteGroupUsingGET200Response</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/DeletionClientConfig.html" data-type="entity-link" >DeletionClientConfig</a>
@@ -8657,6 +8690,30 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/FileStorageConfig.html" data-type="entity-link" >FileStorageConfig</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/GetAuthorNameUsingGET200Response.html" data-type="entity-link" >GetAuthorNameUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetAuthorNameUsingGET200ResponseData.html" data-type="entity-link" >GetAuthorNameUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetAuthorNameUsingGET200ResponseDataInfo.html" data-type="entity-link" >GetAuthorNameUsingGET200ResponseDataInfo</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetChatHeadUsingGET200Response.html" data-type="entity-link" >GetChatHeadUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetChatHeadUsingGET200ResponseData.html" data-type="entity-link" >GetChatHeadUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetChatHistoryUsingGET200Response.html" data-type="entity-link" >GetChatHistoryUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetChatHistoryUsingGET200ResponseData.html" data-type="entity-link" >GetChatHistoryUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetChatHistoryUsingGET200ResponseDataMessagesInner.html" data-type="entity-link" >GetChatHistoryUsingGET200ResponseDataMessagesInner</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/GetFile.html" data-type="entity-link" >GetFile</a>
                             </li>
                             <li class="link">
@@ -8672,10 +8729,55 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/GetH5pFileResponse.html" data-type="entity-link" >GetH5pFileResponse</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/GetHTMLUsingGET200Response.html" data-type="entity-link" >GetHTMLUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetHTMLUsingGET200ResponseData.html" data-type="entity-link" >GetHTMLUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetLastEditedUsingGET200Response.html" data-type="entity-link" >GetLastEditedUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetLastEditedUsingGET200ResponseData.html" data-type="entity-link" >GetLastEditedUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/GetLibraryFile.html" data-type="entity-link" >GetLibraryFile</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/GetLibraryFile-1.html" data-type="entity-link" >GetLibraryFile</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetPublicStatusUsingGET200Response.html" data-type="entity-link" >GetPublicStatusUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetPublicStatusUsingGET200ResponseData.html" data-type="entity-link" >GetPublicStatusUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetReadOnlyIDUsingGET200Response.html" data-type="entity-link" >GetReadOnlyIDUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetReadOnlyIDUsingGET200ResponseData.html" data-type="entity-link" >GetReadOnlyIDUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetRevisionsCountUsingGET200Response.html" data-type="entity-link" >GetRevisionsCountUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetRevisionsCountUsingGET200ResponseData.html" data-type="entity-link" >GetRevisionsCountUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetSessionInfoUsingGET200Response.html" data-type="entity-link" >GetSessionInfoUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetSessionInfoUsingGET200ResponseData.html" data-type="entity-link" >GetSessionInfoUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetSessionInfoUsingGET200ResponseDataInfo.html" data-type="entity-link" >GetSessionInfoUsingGET200ResponseDataInfo</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetTextUsingGET200Response.html" data-type="entity-link" >GetTextUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/GetTextUsingGET200ResponseData.html" data-type="entity-link" >GetTextUsingGET200ResponseData</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/GlobalConstants.html" data-type="entity-link" >GlobalConstants</a>
@@ -8789,144 +8891,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/InlineAttachment.html" data-type="entity-link" >InlineAttachment</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/InlineResponse200.html" data-type="entity-link" >InlineResponse200</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2001.html" data-type="entity-link" >InlineResponse2001</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20010.html" data-type="entity-link" >InlineResponse20010</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20010Data.html" data-type="entity-link" >InlineResponse20010Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20011.html" data-type="entity-link" >InlineResponse20011</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20011Data.html" data-type="entity-link" >InlineResponse20011Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20012.html" data-type="entity-link" >InlineResponse20012</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20012Data.html" data-type="entity-link" >InlineResponse20012Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20013.html" data-type="entity-link" >InlineResponse20013</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20013Data.html" data-type="entity-link" >InlineResponse20013Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20014.html" data-type="entity-link" >InlineResponse20014</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20014Data.html" data-type="entity-link" >InlineResponse20014Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20015.html" data-type="entity-link" >InlineResponse20015</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20015Data.html" data-type="entity-link" >InlineResponse20015Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20015DataInfo.html" data-type="entity-link" >InlineResponse20015DataInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20016.html" data-type="entity-link" >InlineResponse20016</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20016Data.html" data-type="entity-link" >InlineResponse20016Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20017.html" data-type="entity-link" >InlineResponse20017</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20017Data.html" data-type="entity-link" >InlineResponse20017Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20018.html" data-type="entity-link" >InlineResponse20018</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20019.html" data-type="entity-link" >InlineResponse20019</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20019Data.html" data-type="entity-link" >InlineResponse20019Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20019DataMessages.html" data-type="entity-link" >InlineResponse20019DataMessages</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2002.html" data-type="entity-link" >InlineResponse2002</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20020.html" data-type="entity-link" >InlineResponse20020</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse20020Data.html" data-type="entity-link" >InlineResponse20020Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2002Data.html" data-type="entity-link" >InlineResponse2002Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2003.html" data-type="entity-link" >InlineResponse2003</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2003Data.html" data-type="entity-link" >InlineResponse2003Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2004.html" data-type="entity-link" >InlineResponse2004</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2004Data.html" data-type="entity-link" >InlineResponse2004Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2005.html" data-type="entity-link" >InlineResponse2005</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2005Data.html" data-type="entity-link" >InlineResponse2005Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2005DataInfo.html" data-type="entity-link" >InlineResponse2005DataInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2006.html" data-type="entity-link" >InlineResponse2006</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2006Data.html" data-type="entity-link" >InlineResponse2006Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2007.html" data-type="entity-link" >InlineResponse2007</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2007Data.html" data-type="entity-link" >InlineResponse2007Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2008.html" data-type="entity-link" >InlineResponse2008</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2008Data.html" data-type="entity-link" >InlineResponse2008Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2009.html" data-type="entity-link" >InlineResponse2009</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse2009Data.html" data-type="entity-link" >InlineResponse2009Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse200Data.html" data-type="entity-link" >InlineResponse200Data</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse400.html" data-type="entity-link" >InlineResponse400</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse401.html" data-type="entity-link" >InlineResponse401</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/InlineResponse500.html" data-type="entity-link" >InlineResponse500</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/InterceptorConfig.html" data-type="entity-link" >InterceptorConfig</a>
                             </li>
                             <li class="link">
@@ -8987,7 +8951,31 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/LinkElementProps.html" data-type="entity-link" >LinkElementProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/ListAllGroupsUsingGET200Response.html" data-type="entity-link" >ListAllGroupsUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListAllGroupsUsingGET200ResponseData.html" data-type="entity-link" >ListAllGroupsUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListAuthorsOfPadUsingGET200Response.html" data-type="entity-link" >ListAuthorsOfPadUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListAuthorsOfPadUsingGET200ResponseData.html" data-type="entity-link" >ListAuthorsOfPadUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ListFiles.html" data-type="entity-link" >ListFiles</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListPadsUsingGET200Response.html" data-type="entity-link" >ListPadsUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListPadsUsingGET200ResponseData.html" data-type="entity-link" >ListPadsUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListSessionsOfGroupUsingGET200Response.html" data-type="entity-link" >ListSessionsOfGroupUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ListSessionsOfGroupUsingGET200ResponseData.html" data-type="entity-link" >ListSessionsOfGroupUsingGET200ResponseData</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/Loggable.html" data-type="entity-link" >Loggable</a>
@@ -9096,6 +9084,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/PadApiInterface.html" data-type="entity-link" >PadApiInterface</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PadUsersCountUsingGET200Response.html" data-type="entity-link" >PadUsersCountUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PadUsersCountUsingGET200ResponseData.html" data-type="entity-link" >PadUsersCountUsingGET200ResponseData</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PadUsersUsingGET200Response.html" data-type="entity-link" >PadUsersUsingGET200Response</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/PadUsersUsingGET200ResponseData.html" data-type="entity-link" >PadUsersUsingGET200ResponseData</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/Pagination.html" data-type="entity-link" >Pagination</a>
@@ -9300,6 +9300,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ServerConfig.html" data-type="entity-link" >ServerConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ServerMap.html" data-type="entity-link" >ServerMap</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/Session.html" data-type="entity-link" >Session</a>

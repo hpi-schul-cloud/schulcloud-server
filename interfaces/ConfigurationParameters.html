@@ -196,6 +196,13 @@ Do not edit the class manually.</p>
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#serverIndex" 
+>
+                                            serverIndex
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#username" 
 >
                                             username
@@ -438,6 +445,44 @@ Do not edit the class manually.</p>
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="serverIndex"></a>
+                                        <span class="name "><b>serverIndex</b>
+                                            <a href="#serverIndex">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>serverIndex:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="username"></a>
                                         <span class="name "><b>username</b>
                                             <a href="#username">
@@ -483,6 +528,7 @@ Do not edit the class manually.</p>
     password?: string;
     accessToken?: string | Promise&lt;string&gt; | ((name?: string, scopes?: string[]) &#x3D;&gt; string) | ((name?: string, scopes?: string[]) &#x3D;&gt; Promise&lt;string&gt;);
     basePath?: string;
+    serverIndex?: number;
     baseOptions?: any;
     formDataCtor?: new () &#x3D;&gt; any;
 }
@@ -523,6 +569,13 @@ export class Configuration {
      */
     basePath?: string;
     /**
+     * override server index
+     *
+     * @type {number}
+     * @memberof Configuration
+     */
+    serverIndex?: number;
+    /**
      * base options for axios calls
      *
      * @type {any}
@@ -544,6 +597,7 @@ export class Configuration {
         this.password &#x3D; param.password;
         this.accessToken &#x3D; param.accessToken;
         this.basePath &#x3D; param.basePath;
+        this.serverIndex &#x3D; param.serverIndex;
         this.baseOptions &#x3D; param.baseOptions;
         this.formDataCtor &#x3D; param.formDataCtor;
     }

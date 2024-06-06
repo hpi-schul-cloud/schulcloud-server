@@ -256,15 +256,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createGroupIfNotExistsForUsingGET(groupMapper?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>createGroupIfNotExistsForUsingGET(groupMapper?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="910"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:910</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="951"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:951</a></div>
                         </td>
                     </tr>
 
@@ -302,7 +302,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -319,7 +319,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/InlineResponse200.html" target="_self" >AxiosPromise&lt;InlineResponse200&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;CreateGroupUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -342,15 +342,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createGroupIfNotExistsForUsingPOST(groupMapper?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>createGroupIfNotExistsForUsingPOST(groupMapper?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="920"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:920</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="961"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:961</a></div>
                         </td>
                     </tr>
 
@@ -388,7 +388,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -405,7 +405,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/InlineResponse200.html" target="_self" >AxiosPromise&lt;InlineResponse200&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;CreateGroupUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -428,407 +428,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createGroupPadUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, padName?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="933"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:933</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>groupID</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>padName</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>text</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>authorId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                                    <p>Override http request option.</p>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2001&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createGroupPadUsingPOST"></a>
-                    <span class="name">
-                        <span ><b>createGroupPadUsingPOST</b></span>
-                        <a href="#createGroupPadUsingPOST"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>createGroupPadUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, padName?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="946"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:946</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>groupID</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>padName</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>text</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>authorId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                                    <p>Override http request option.</p>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2001&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createGroupUsingGET"></a>
-                    <span class="name">
-                        <span ><b>createGroupUsingGET</b></span>
-                        <a href="#createGroupUsingGET"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>createGroupUsingGET(options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="955"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:955</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                                    <p>Override http request option.</p>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/InlineResponse200.html" target="_self" >AxiosPromise&lt;InlineResponse200&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createGroupUsingPOST"></a>
-                    <span class="name">
-                        <span ><b>createGroupUsingPOST</b></span>
-                        <a href="#createGroupUsingPOST"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>createGroupUsingPOST(options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="964"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:964</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>options</td>
-                                            <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                            <td>
-                                                    <p>Override http request option.</p>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/InlineResponse200.html" target="_self" >AxiosPromise&lt;InlineResponse200&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteGroupUsingGET"></a>
-                    <span class="name">
-                        <span ><b>deleteGroupUsingGET</b></span>
-                        <a href="#deleteGroupUsingGET"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>deleteGroupUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>createGroupPadUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, padName?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
@@ -872,9 +472,51 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                                <td>padName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>text</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>authorId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -891,7 +533,365 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2001&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createGroupPadUsingPOST"></a>
+                    <span class="name">
+                        <span ><b>createGroupPadUsingPOST</b></span>
+                        <a href="#createGroupPadUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createGroupPadUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, padName?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, authorId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="987"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:987</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>groupID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>padName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>text</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>authorId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>RawAxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createGroupUsingGET"></a>
+                    <span class="name">
+                        <span ><b>createGroupUsingGET</b></span>
+                        <a href="#createGroupUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createGroupUsingGET(options?: RawAxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="996"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:996</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>RawAxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;CreateGroupUsingGET200Response&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createGroupUsingPOST"></a>
+                    <span class="name">
+                        <span ><b>createGroupUsingPOST</b></span>
+                        <a href="#createGroupUsingPOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createGroupUsingPOST(options?: RawAxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="1005"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1005</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>RawAxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;CreateGroupUsingGET200Response&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteGroupUsingGET"></a>
+                    <span class="name">
+                        <span ><b>deleteGroupUsingGET</b></span>
+                        <a href="#deleteGroupUsingGET"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteGroupUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="1015"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1015</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>groupID</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>RawAxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -914,15 +914,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>deleteGroupUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>deleteGroupUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="984"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:984</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1025"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1025</a></div>
                         </td>
                     </tr>
 
@@ -960,7 +960,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -977,7 +977,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2001&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1000,15 +1000,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listAllGroupsUsingGET(options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>listAllGroupsUsingGET(options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="992"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:992</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1034"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1034</a></div>
                         </td>
                     </tr>
 
@@ -1032,7 +1032,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -1049,7 +1049,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse20017&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1072,15 +1072,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listAllGroupsUsingPOST(options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>listAllGroupsUsingPOST(options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="1000"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1000</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1043"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1043</a></div>
                         </td>
                     </tr>
 
@@ -1104,7 +1104,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -1121,7 +1121,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse20017&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1144,15 +1144,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listPadsUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>listPadsUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="1010"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1010</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1053"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1053</a></div>
                         </td>
                     </tr>
 
@@ -1190,7 +1190,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -1207,7 +1207,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2002&gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ListPadsUsingGET200Response.html" target="_self" >AxiosPromise&lt;ListPadsUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1230,15 +1230,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listPadsUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>listPadsUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="1020"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1020</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1063"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1063</a></div>
                         </td>
                     </tr>
 
@@ -1276,7 +1276,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -1293,7 +1293,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2002&gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/ListPadsUsingGET200Response.html" target="_self" >AxiosPromise&lt;ListPadsUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1316,15 +1316,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listSessionsOfGroupUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>listSessionsOfGroupUsingGET(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="1029"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1029</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1073"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1073</a></div>
                         </td>
                     </tr>
 
@@ -1362,7 +1362,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -1379,7 +1379,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2006&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1402,15 +1402,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>listSessionsOfGroupUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+<code>listSessionsOfGroupUsingPOST(groupID?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: RawAxiosRequestConfig)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="1038"
-                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1038</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="1083"
+                                    class="link-to-prism">apps/server/src/infra/etherpad-client/etherpad-api-client/api/group-api.ts:1083</a></div>
                         </td>
                     </tr>
 
@@ -1448,7 +1448,7 @@
                                         <tr>
                                                 <td>options</td>
                                             <td>
-                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                                        <code>RawAxiosRequestConfig</code>
                                             </td>
 
                                             <td>
@@ -1465,7 +1465,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>AxiosPromise&lt;InlineResponse2006&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/Group.html" target="_self" >AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1481,29 +1481,30 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import globalAxios, { AxiosPromise, AxiosInstance } from &#x27;axios&#x27;;
-import { Configuration } from &#x27;../configuration&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Configuration } from &#x27;../configuration&#x27;;
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from &#x27;axios&#x27;;
+import globalAxios from &#x27;axios&#x27;;
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from &#x27;../common&#x27;;
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from &#x27;../base&#x27;;
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from &#x27;../base&#x27;;
 // @ts-ignore
-import { InlineResponse200 } from &#x27;../models&#x27;;
+import type { CreateGroupUsingGET200Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse2001 } from &#x27;../models&#x27;;
+import type { CreateGroupUsingGET400Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse20017 } from &#x27;../models&#x27;;
+import type { CreateGroupUsingGET401Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse2002 } from &#x27;../models&#x27;;
+import type { CreateGroupUsingGET500Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse2006 } from &#x27;../models&#x27;;
+import type { DeleteGroupUsingGET200Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse400 } from &#x27;../models&#x27;;
+import type { ListAllGroupsUsingGET200Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse401 } from &#x27;../models&#x27;;
+import type { ListPadsUsingGET200Response } from &#x27;../models&#x27;;
 // @ts-ignore
-import { InlineResponse500 } from &#x27;../models&#x27;;
+import type { ListSessionsOfGroupUsingGET200Response } from &#x27;../models&#x27;;
 /**
  * GroupApi - axios parameter creator
  * @export
@@ -1517,7 +1518,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingGET: async (groupMapper?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        createGroupIfNotExistsForUsingGET: async (groupMapper?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/createGroupIfNotExistsFor&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1539,7 +1540,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1555,7 +1556,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingPOST: async (groupMapper?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        createGroupIfNotExistsForUsingPOST: async (groupMapper?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/createGroupIfNotExistsFor&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1577,7 +1578,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1596,7 +1597,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingGET: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        createGroupPadUsingGET: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/createGroupPad&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1630,7 +1631,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1649,7 +1650,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingPOST: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        createGroupPadUsingPOST: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/createGroupPad&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1683,7 +1684,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1698,7 +1699,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingGET: async (options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        createGroupUsingGET: async (options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/createGroup&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1716,7 +1717,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1731,7 +1732,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingPOST: async (options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        createGroupUsingPOST: async (options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/createGroup&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1749,7 +1750,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1765,7 +1766,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingGET: async (groupID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        deleteGroupUsingGET: async (groupID?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/deleteGroup&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1787,7 +1788,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1803,7 +1804,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingPOST: async (groupID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        deleteGroupUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/deleteGroup&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1825,7 +1826,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1836,10 +1837,11 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingGET: async (options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        listAllGroupsUsingGET: async (options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/listAllGroups&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1857,7 +1859,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1868,10 +1870,11 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingPOST: async (options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        listAllGroupsUsingPOST: async (options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/listAllGroups&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1889,7 +1892,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1905,7 +1908,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingGET: async (groupID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        listPadsUsingGET: async (groupID?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/listPads&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1927,7 +1930,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1943,7 +1946,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingPOST: async (groupID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        listPadsUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/listPads&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -1965,7 +1968,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1976,11 +1979,12 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingGET: async (groupID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        listSessionsOfGroupUsingGET: async (groupID?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/listSessionsOfGroup&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -2002,7 +2006,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2013,11 +2017,12 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingPOST: async (groupID?: string, options: any &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+        listSessionsOfGroupUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
             const localVarPath &#x3D; &#x60;/listSessionsOfGroup&#x60;;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
@@ -2039,7 +2044,7 @@ export const GroupApiAxiosParamCreator &#x3D; function (configuration?: Configur
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -2065,9 +2070,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse200&gt;&gt; {
+        async createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;CreateGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createGroupIfNotExistsForUsingGET(groupMapper, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.createGroupIfNotExistsForUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2076,9 +2083,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse200&gt;&gt; {
+        async createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;CreateGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createGroupIfNotExistsForUsingPOST(groupMapper, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.createGroupIfNotExistsForUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2090,9 +2099,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2001&gt;&gt; {
+        async createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createGroupPadUsingGET(groupID, padName, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.createGroupPadUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2104,9 +2115,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2001&gt;&gt; {
+        async createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createGroupPadUsingPOST(groupID, padName, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.createGroupPadUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2114,9 +2127,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupUsingGET(options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse200&gt;&gt; {
+        async createGroupUsingGET(options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;CreateGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createGroupUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.createGroupUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2124,9 +2139,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupUsingPOST(options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse200&gt;&gt; {
+        async createGroupUsingPOST(options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;CreateGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.createGroupUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.createGroupUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2135,9 +2152,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteGroupUsingGET(groupID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2001&gt;&gt; {
+        async deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.deleteGroupUsingGET(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.deleteGroupUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2146,27 +2165,35 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteGroupUsingPOST(groupID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2001&gt;&gt; {
+        async deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.deleteGroupUsingPOST(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.deleteGroupUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllGroupsUsingGET(options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse20017&gt;&gt; {
+        async listAllGroupsUsingGET(options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listAllGroupsUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.listAllGroupsUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllGroupsUsingPOST(options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse20017&gt;&gt; {
+        async listAllGroupsUsingPOST(options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listAllGroupsUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.listAllGroupsUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2175,9 +2202,11 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPadsUsingGET(groupID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2002&gt;&gt; {
+        async listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;ListPadsUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listPadsUsingGET(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.listPadsUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2186,29 +2215,37 @@ export const GroupApiFp &#x3D; function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPadsUsingPOST(groupID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2002&gt;&gt; {
+        async listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;ListPadsUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listPadsUsingPOST(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.listPadsUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSessionsOfGroupUsingGET(groupID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2006&gt;&gt; {
+        async listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listSessionsOfGroupUsingGET(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.listSessionsOfGroupUsingGET&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSessionsOfGroupUsingPOST(groupID?: string, options?: any): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;InlineResponse2006&gt;&gt; {
+        async listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt;&gt; {
             const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.listSessionsOfGroupUsingPOST(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;GroupApi.listSessionsOfGroupUsingPOST&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -2227,7 +2264,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise&lt;InlineResponse200&gt; {
+        createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise&lt;CreateGroupUsingGET200Response&gt; {
             return localVarFp.createGroupIfNotExistsForUsingGET(groupMapper, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2237,7 +2274,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise&lt;InlineResponse200&gt; {
+        createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise&lt;CreateGroupUsingGET200Response&gt; {
             return localVarFp.createGroupIfNotExistsForUsingPOST(groupMapper, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2250,7 +2287,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt; {
+        createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt; {
             return localVarFp.createGroupPadUsingGET(groupID, padName, text, authorId, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2263,7 +2300,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt; {
+        createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt; {
             return localVarFp.createGroupPadUsingPOST(groupID, padName, text, authorId, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2272,7 +2309,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingGET(options?: any): AxiosPromise&lt;InlineResponse200&gt; {
+        createGroupUsingGET(options?: any): AxiosPromise&lt;CreateGroupUsingGET200Response&gt; {
             return localVarFp.createGroupUsingGET(options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2281,7 +2318,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingPOST(options?: any): AxiosPromise&lt;InlineResponse200&gt; {
+        createGroupUsingPOST(options?: any): AxiosPromise&lt;CreateGroupUsingGET200Response&gt; {
             return localVarFp.createGroupUsingPOST(options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2291,7 +2328,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt; {
+        deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt; {
             return localVarFp.deleteGroupUsingGET(groupID, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2301,23 +2338,25 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt; {
+        deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt; {
             return localVarFp.deleteGroupUsingPOST(groupID, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingGET(options?: any): AxiosPromise&lt;InlineResponse20017&gt; {
+        listAllGroupsUsingGET(options?: any): AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt; {
             return localVarFp.listAllGroupsUsingGET(options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingPOST(options?: any): AxiosPromise&lt;InlineResponse20017&gt; {
+        listAllGroupsUsingPOST(options?: any): AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt; {
             return localVarFp.listAllGroupsUsingPOST(options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2327,7 +2366,7 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingGET(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt; {
+        listPadsUsingGET(groupID?: string, options?: any): AxiosPromise&lt;ListPadsUsingGET200Response&gt; {
             return localVarFp.listPadsUsingGET(groupID, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
@@ -2337,25 +2376,27 @@ export const GroupApiFactory &#x3D; function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt; {
+        listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;ListPadsUsingGET200Response&gt; {
             return localVarFp.listPadsUsingPOST(groupID, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt; {
+        listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt; {
             return localVarFp.listSessionsOfGroupUsingGET(groupID, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt; {
+        listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt; {
             return localVarFp.listSessionsOfGroupUsingPOST(groupID, options).then((request) &#x3D;&gt; request(axios, basePath));
         },
     };
@@ -2375,7 +2416,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise&lt;InlineResponse200&gt;;
+    createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;CreateGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2385,7 +2426,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise&lt;InlineResponse200&gt;;
+    createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;CreateGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2398,7 +2439,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt;;
+    createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2411,7 +2452,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt;;
+    createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2420,7 +2461,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupUsingGET(options?: any): AxiosPromise&lt;InlineResponse200&gt;;
+    createGroupUsingGET(options?: RawAxiosRequestConfig): AxiosPromise&lt;CreateGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2429,7 +2470,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupUsingPOST(options?: any): AxiosPromise&lt;InlineResponse200&gt;;
+    createGroupUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise&lt;CreateGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2439,7 +2480,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt;;
+    deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;;
 
     /**
      * 
@@ -2449,33 +2490,25 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2001&gt;;
+    deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;DeleteGroupUsingGET200Response&gt;;
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listAllGroupsUsingGET(options?: any): AxiosPromise&lt;InlineResponse20017&gt;;
+    listAllGroupsUsingGET(options?: RawAxiosRequestConfig): AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt;;
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listAllGroupsUsingPOST(options?: any): AxiosPromise&lt;InlineResponse20017&gt;;
-
-    /**
-     * 
-     * @summary returns all pads of this group
-     * @param {string} [groupID] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof GroupApiInterface
-     */
-    listPadsUsingGET(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt;;
+    listAllGroupsUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise&lt;ListAllGroupsUsingGET200Response&gt;;
 
     /**
      * 
@@ -2485,25 +2518,37 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2002&gt;;
+    listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;ListPadsUsingGET200Response&gt;;
 
     /**
      * 
+     * @summary returns all pads of this group
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt;;
+    listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;ListPadsUsingGET200Response&gt;;
 
     /**
      * 
+     * @summary 
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise&lt;InlineResponse2006&gt;;
+    listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt;;
+
+    /**
+     * 
+     * @summary 
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApiInterface
+     */
+    listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise&lt;ListSessionsOfGroupUsingGET200Response&gt;;
 
 }
 
@@ -2522,7 +2567,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any) {
+    public createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupIfNotExistsForUsingGET(groupMapper, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2534,7 +2579,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any) {
+    public createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupIfNotExistsForUsingPOST(groupMapper, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2549,7 +2594,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any) {
+    public createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupPadUsingGET(groupID, padName, text, authorId, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2564,7 +2609,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any) {
+    public createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupPadUsingPOST(groupID, padName, text, authorId, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2575,7 +2620,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupUsingGET(options?: any) {
+    public createGroupUsingGET(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupUsingGET(options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2586,7 +2631,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupUsingPOST(options?: any) {
+    public createGroupUsingPOST(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupUsingPOST(options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2598,7 +2643,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public deleteGroupUsingGET(groupID?: string, options?: any) {
+    public deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).deleteGroupUsingGET(groupID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2610,27 +2655,29 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public deleteGroupUsingPOST(groupID?: string, options?: any) {
+    public deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).deleteGroupUsingPOST(groupID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listAllGroupsUsingGET(options?: any) {
+    public listAllGroupsUsingGET(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listAllGroupsUsingGET(options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listAllGroupsUsingPOST(options?: any) {
+    public listAllGroupsUsingPOST(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listAllGroupsUsingPOST(options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2642,7 +2689,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listPadsUsingGET(groupID?: string, options?: any) {
+    public listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listPadsUsingGET(groupID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
@@ -2654,32 +2701,35 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listPadsUsingPOST(groupID?: string, options?: any) {
+    public listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listPadsUsingPOST(groupID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listSessionsOfGroupUsingGET(groupID?: string, options?: any) {
+    public listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listSessionsOfGroupUsingGET(groupID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listSessionsOfGroupUsingPOST(groupID?: string, options?: any) {
+    public listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listSessionsOfGroupUsingPOST(groupID, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
     }
 }
+
 </code></pre>
     </div>
 </div>
