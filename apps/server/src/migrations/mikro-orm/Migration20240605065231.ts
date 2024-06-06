@@ -1,7 +1,6 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from 'mongodb';
 
-// TODO: N21-1967 test it on dev
 export class Migration20240605065231 extends Migration {
 	async up(): Promise<void> {
 		const collection = this.getCollection('filerecords');

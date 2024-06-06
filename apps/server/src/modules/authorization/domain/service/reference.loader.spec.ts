@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
+import { ExternalToolAuthorizableService } from '@modules/tool/external-tool/service';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
@@ -33,6 +34,7 @@ describe('reference.loader', () => {
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
+	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -85,6 +87,10 @@ describe('reference.loader', () => {
 					provide: ContextExternalToolAuthorizableService,
 					useValue: createMock<ContextExternalToolAuthorizableService>(),
 				},
+				{
+					provide: ExternalToolAuthorizableService,
+					useValue: createMock<ExternalToolAuthorizableService>(),
+				},
 			],
 		}).compile();
 
@@ -100,6 +106,7 @@ describe('reference.loader', () => {
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
+		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
 	});
 
 	afterEach(() => {

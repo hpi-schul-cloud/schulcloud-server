@@ -8,7 +8,6 @@ import { ExternalTool } from '../domain';
 export class ExternalToolAuthorizableService implements AuthorizationLoaderService {
 	constructor(private readonly externalToolRepo: ExternalToolRepo) {}
 
-	// TODO: N21-1967 test
 	async findById(id: EntityId): Promise<ExternalTool> {
 		const externalTool: ExternalTool = await this.externalToolRepo.findById(id);
 
