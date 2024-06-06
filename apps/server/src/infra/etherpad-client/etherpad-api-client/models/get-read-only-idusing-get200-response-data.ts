@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetReadOnlyIDUsingGET200ResponseData
  */
-export interface SessionInfo {
+export interface GetReadOnlyIDUsingGET200ResponseData {
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetReadOnlyIDUsingGET200ResponseData
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SessionInfo
-     */
-    'validUntil'?: number;
+    'readOnlyID'?: string;
 }
 

@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetHTMLUsingGET200ResponseData } from './get-htmlusing-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetHTMLUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetHTMLUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetHTMLUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetHTMLUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetHTMLUsingGET200ResponseData}
+     * @memberof GetHTMLUsingGET200Response
+     */
+    'data'?: GetHTMLUsingGET200ResponseData;
 }
 

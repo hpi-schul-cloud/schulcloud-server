@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface ListAllGroupsUsingGET200ResponseData
  */
-export interface SessionInfo {
+export interface ListAllGroupsUsingGET200ResponseData {
     /**
      * 
-     * @type {string}
-     * @memberof SessionInfo
+     * @type {Array<string>}
+     * @memberof ListAllGroupsUsingGET200ResponseData
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SessionInfo
-     */
-    'validUntil'?: number;
+    'groupIDs'?: Array<string>;
 }
 

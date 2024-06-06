@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetPublicStatusUsingGET200ResponseData } from './get-public-status-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetPublicStatusUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetPublicStatusUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetPublicStatusUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetPublicStatusUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetPublicStatusUsingGET200ResponseData}
+     * @memberof GetPublicStatusUsingGET200Response
+     */
+    'data'?: GetPublicStatusUsingGET200ResponseData;
 }
 

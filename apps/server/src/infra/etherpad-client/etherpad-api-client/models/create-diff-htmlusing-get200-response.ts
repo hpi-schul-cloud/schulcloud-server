@@ -17,32 +17,26 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface CreateDiffHTMLUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface CreateDiffHTMLUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof CreateDiffHTMLUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateDiffHTMLUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CreateDiffHTMLUsingGET200Response
+     */
+    'data'?: object;
 }
 

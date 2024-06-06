@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetReadOnlyIDUsingGET200ResponseData } from './get-read-only-idusing-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetReadOnlyIDUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetReadOnlyIDUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetReadOnlyIDUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetReadOnlyIDUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetReadOnlyIDUsingGET200ResponseData}
+     * @memberof GetReadOnlyIDUsingGET200Response
+     */
+    'data'?: GetReadOnlyIDUsingGET200ResponseData;
 }
 
