@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Gauge, register } from 'prom-client';
 
+type ClientId = string;
+type Role = 'owner' | 'editor' | 'viewer';
+
 @Injectable()
 export class MetricsService {
+	private knownClientRoles: Map<ClientId, Role> = new Map();
+
 	private numberOfUsersOnServerCounter: Gauge<string>;
 
 	private numberOfBoardroomsOnServerCounter: Gauge<string>;
@@ -36,27 +41,34 @@ export class MetricsService {
 		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
+	public isClientRoleKnown(clientId: ClientId): boolean {
+		return this.knownClientRoles.has(clientId);
+	}
+
+	public trackClientRole(clientId: ClientId, role: Role): void {
+		this.knownClientRoles.set(clientId, role);
+		this.updateRoleCounts();
+	}
+
+	public untrackClient(clientId: ClientId): void {
+		this.knownClientRoles.delete(clientId);
+		this.updateRoleCounts();
+	}
+
+	private updateRoleCounts(): void {
+		this.numberOfEditorsOnServerCounter.set(this.countByRole('editor'));
+		this.numberOfViewersOnServerCounter.set(this.countByRole('viewer'));
+	}
+
+	private countByRole(role: Role) {
+		return Array.from(this.knownClientRoles.values()).filter((r) => r === role).length;
+	}
+
 	public setNumberOfUsers(value: number): void {
 		this.numberOfUsersOnServerCounter.set(value);
 	}
 
 	public setNumberOfBoardRooms(value: number): void {
 		this.numberOfBoardroomsOnServerCounter.set(value);
-	}
-
-	public incrementNumberOfEditors(): void {
-		this.numberOfEditorsOnServerCounter.inc();
-	}
-
-	public decrementNumberOfEditors(): void {
-		this.numberOfEditorsOnServerCounter.dec();
-	}
-
-	public incrementNumberOfViewers(): void {
-		this.numberOfViewersOnServerCounter.inc();
-	}
-
-	public decrementNumberOfViewers(): void {
-		this.numberOfViewersOnServerCounter.dec();
 	}
 }

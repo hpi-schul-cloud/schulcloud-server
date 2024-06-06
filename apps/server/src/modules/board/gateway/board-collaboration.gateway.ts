@@ -1,9 +1,18 @@
 import { WsValidationPipe, Socket } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
-import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
+import {
+	OnGatewayConnection,
+	OnGatewayDisconnect,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
+	WsException,
+} from '@nestjs/websockets';
 import { RoleName } from '@shared/domain/interface';
+import { UserDO } from '@shared/domain/domainobject';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
+import { UserService } from '@modules/user';
 import { Server } from 'socket.io';
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
@@ -35,8 +44,7 @@ import { UpdateContentElementMessageParams } from './dto/update-content-element.
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
 @UseGuards(WsJwtAuthGuard)
-export class BoardCollaborationGateway {
-	// implements OnGatewayConnection, OnGatewayDisconnect {
+export class BoardCollaborationGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server?: Server;
 
@@ -48,6 +56,7 @@ export class BoardCollaborationGateway {
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
+		private readonly userService: UserService,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
 
@@ -57,13 +66,17 @@ export class BoardCollaborationGateway {
 		return user;
 	}
 
-	private hasUserEditRights(socket: Socket) {
-		const { user } = socket.handshake;
-		const isTeacher = user ? user.roles.find((role) => role === RoleName.TEACHER) : false;
-		return isTeacher;
+	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
+		if (user.roles.find((r) => r.name === RoleName.TEACHER)) {
+			return 'editor';
+		}
+		if (user.roles.find((r) => r.name === RoleName.STUDENT)) {
+			return 'viewer';
+		}
+		return undefined;
 	}
 
-	private updateRoomsAndUsersMetrics() {
+	private async updateRoomsAndUsersMetrics(socket: Socket) {
 		if (!this.server) {
 			throw new Error('Server is not initialized');
 		}
@@ -74,32 +87,34 @@ export class BoardCollaborationGateway {
 		).length;
 		this.metricsService.setNumberOfUsers(userCount);
 		this.metricsService.setNumberOfBoardRooms(roomCount);
+		await this.updateUserRoleCounters(socket);
 	}
 
-	public handleConnection(socket: Socket): void {
+	private async updateUserRoleCounters(socket: Socket) {
+		const { user } = socket.handshake;
+		if (user) {
+			if (!this.metricsService.isClientRoleKnown(socket.id)) {
+				const userDo = await this.userService.findById(user.userId);
+				const role = this.mapRole(userDo);
+				if (role) {
+					this.metricsService.trackClientRole(socket.id, role);
+				}
+			}
+		}
+	}
+
+	public handleConnection(socket: Socket): Promise<void> {
 		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
-		this.updateRoomsAndUsersMetrics();
-		const hasEditRights = this.hasUserEditRights(socket);
-		if (hasEditRights) {
-			this.metricsService.incrementNumberOfEditors();
-		} else {
-			this.metricsService.incrementNumberOfViewers();
-		}
+		return this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	public handleDisconnect(socket: Socket): void {
 		if (!socket) {
 			throw new Error('Server is not initialized');
 		}
-		this.updateRoomsAndUsersMetrics();
-		const hasEditRights = this.hasUserEditRights(socket);
-		if (hasEditRights) {
-			this.metricsService.decrementNumberOfEditors();
-		} else {
-			this.metricsService.decrementNumberOfViewers();
-		}
+		this.metricsService.untrackClient(socket.id);
 	}
 
 	@SubscribeMessage('delete-board-request')
@@ -114,6 +129,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('delete-board-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-title-request')
@@ -128,6 +144,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('update-board-title-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-title-request')
@@ -142,6 +159,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('update-card-title-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-card-height-request')
@@ -156,6 +174,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('update-card-height-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-card-request')
@@ -170,6 +189,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('delete-card-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-card-request')
@@ -188,6 +208,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('create-card-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-column-request')
@@ -225,10 +246,10 @@ export class BoardCollaborationGateway {
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
 			await emitter.emitToClient('fetch-board-success', responsePayload);
-			this.updateRoomsAndUsersMetrics();
 		} catch (err) {
 			socket.emit('fetch-board-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-card-request')
@@ -244,6 +265,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('move-card-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-column-request')
@@ -259,6 +281,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('move-column-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-column-title-request')
@@ -274,6 +297,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('update-column-title-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
@@ -289,6 +313,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('update-board-visibility-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-column-request')
@@ -304,6 +329,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('delete-column-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('fetch-card-request')
@@ -320,6 +346,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('fetch-card-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('create-element-request')
@@ -339,6 +366,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('create-element-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('update-element-request')
@@ -354,6 +382,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('update-element-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('delete-element-request')
@@ -369,6 +398,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('delete-element-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	@SubscribeMessage('move-element-request')
@@ -384,6 +414,7 @@ export class BoardCollaborationGateway {
 		} catch (err) {
 			socket.emit('move-element-failure', data);
 		}
+		await this.updateRoomsAndUsersMetrics(socket);
 	}
 
 	private async buildBoardSocketEmitter(client: Socket, id: string) {
