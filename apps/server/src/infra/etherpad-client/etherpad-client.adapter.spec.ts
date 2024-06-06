@@ -968,7 +968,7 @@ describe(EtherpadClientAdapter.name, () => {
 				return groupId;
 			};
 
-			it('should call deletePadUsingGET with correct params', async () => {
+			it('should call deleteGroupUsingGET with correct params', async () => {
 				const groupId = setup();
 
 				await service.deleteGroup(groupId);
@@ -977,12 +977,12 @@ describe(EtherpadClientAdapter.name, () => {
 			});
 		});
 
-		describe('when deleteGroupUsingPOST returns etherpad error code', () => {
+		describe('when deleteGroupUsingPOST returns valid etherpad error', () => {
 			const setup = () => {
 				const groupId = 'groupId';
 				const response = createMock<AxiosResponse<CreateGroupUsingGET200Response>>({
 					data: {
-						code: EtherpadResponseCode.BAD_REQUEST,
+						code: EtherpadResponseCode.INTERNAL_ERROR,
 						data: {},
 					},
 				});
@@ -995,8 +995,31 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const groupId = setup();
 
-				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.BAD_REQUEST, { padId: groupId }, {});
+				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.INTERNAL_ERROR, { padId: groupId }, {});
 				await expect(service.deleteGroup(groupId)).rejects.toThrowError(exception);
+			});
+		});
+
+		describe('when deleteGroupUsingPOST returns invalid etherpad error', () => {
+			const setup = () => {
+				const groupId = 'groupId';
+				const response = createMock<AxiosResponse<DeleteGroupUsingGET200Response>>({
+					data: {
+						code: EtherpadResponseCode.BAD_REQUEST,
+						message: 'sessionID does not exist',
+						data: {},
+					},
+				});
+
+				groupApi.deleteGroupUsingPOST.mockResolvedValue(response);
+
+				return groupId;
+			};
+
+			it('should return successfull', async () => {
+				const groupId = setup();
+
+				await service.deleteGroup(groupId);
 			});
 		});
 
