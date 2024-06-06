@@ -484,6 +484,18 @@ describe(BoardCollaborationGateway.name, () => {
 				expect(success.cards.length).toEqual(0);
 			});
 		});
+
+		describe('when an error is thrown', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes, columnNode } = await setup();
+
+				// passing a column id instead of a card id to force an error
+				ioClient.emit('fetch-card-request', { cardIds: [cardNodes[0].id, columnNode.id] });
+				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
+
+				expect(failure).toBeDefined();
+			});
+		});
 	});
 
 	describe('delete card', () => {
