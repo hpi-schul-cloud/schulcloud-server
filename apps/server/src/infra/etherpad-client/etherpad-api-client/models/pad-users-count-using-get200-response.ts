@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { PadUsersCountUsingGET200ResponseData } from './pad-users-count-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface PadUsersCountUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface PadUsersCountUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof PadUsersCountUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PadUsersCountUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {PadUsersCountUsingGET200ResponseData}
+     * @memberof PadUsersCountUsingGET200Response
+     */
+    'data'?: PadUsersCountUsingGET200ResponseData;
 }
 

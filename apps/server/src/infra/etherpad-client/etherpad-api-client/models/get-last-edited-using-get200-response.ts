@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetLastEditedUsingGET200ResponseData } from './get-last-edited-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetLastEditedUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetLastEditedUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetLastEditedUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetLastEditedUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetLastEditedUsingGET200ResponseData}
+     * @memberof GetLastEditedUsingGET200Response
+     */
+    'data'?: GetLastEditedUsingGET200ResponseData;
 }
 

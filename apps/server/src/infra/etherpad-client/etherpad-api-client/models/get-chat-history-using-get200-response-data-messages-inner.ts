@@ -17,32 +17,32 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetChatHistoryUsingGET200ResponseDataMessagesInner
  */
-export interface SessionInfo {
+export interface GetChatHistoryUsingGET200ResponseDataMessagesInner {
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
      */
-    'id'?: string;
+    'text'?: string;
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
      */
-    'authorID'?: string;
+    'userId'?: string;
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
      */
-    'groupID'?: string;
+    'userName'?: string;
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetChatHistoryUsingGET200ResponseDataMessagesInner
      */
-    'validUntil'?: number;
+    'time'?: number;
 }
 

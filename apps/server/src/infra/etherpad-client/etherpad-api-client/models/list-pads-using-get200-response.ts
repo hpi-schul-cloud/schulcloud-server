@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { ListPadsUsingGET200ResponseData } from './list-pads-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface ListPadsUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface ListPadsUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof ListPadsUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListPadsUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {ListPadsUsingGET200ResponseData}
+     * @memberof ListPadsUsingGET200Response
+     */
+    'data'?: ListPadsUsingGET200ResponseData;
 }
 

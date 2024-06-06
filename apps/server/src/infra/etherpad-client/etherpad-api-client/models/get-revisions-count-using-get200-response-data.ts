@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetRevisionsCountUsingGET200ResponseData
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetRevisionsCountUsingGET200ResponseData {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetRevisionsCountUsingGET200ResponseData
      */
-    'validUntil'?: number;
+    'revisions'?: number;
 }
 

@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetPublicStatusUsingGET200ResponseData
  */
-export interface SessionInfo {
+export interface GetPublicStatusUsingGET200ResponseData {
     /**
      * 
-     * @type {string}
-     * @memberof SessionInfo
+     * @type {boolean}
+     * @memberof GetPublicStatusUsingGET200ResponseData
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SessionInfo
-     */
-    'validUntil'?: number;
+    'publicStatus'?: boolean;
 }
 
