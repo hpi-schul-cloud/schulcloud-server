@@ -176,7 +176,7 @@ export class TldrawWsService {
 		this.tldrawRedisService.handleMessage(channelId, update, doc);
 	};
 
-	public async setupWsConnection(ws: WebSocket, docName: string) {
+	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 
 		// get doc, initialize if it does not exist yet

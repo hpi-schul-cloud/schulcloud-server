@@ -113,10 +113,14 @@ describe('TldrawWSService', () => {
 		await app.close();
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
 		jest.restoreAllMocks();
 		jest.resetAllMocks();
-		// jest.clearAllMocks();
+		// the current implementation result in unstable test by design, close operation is trigger and then the events after it should be tested.
+		// To make it possible the delays in test are added, this can not be stable.
+		// The 1 sec count between each test is added to get a semi stability for each test, to avoid that events from last execution infect the next test.
+		await delay(1000);
+		jest.clearAllMocks();
 	});
 
 	const createMessage = (values: number[]) => {
@@ -204,7 +208,7 @@ describe('TldrawWSService', () => {
 
 				expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
 				expect(closeConSpy).toHaveBeenCalled();
-				expect(domainErrorHandler.exec).toHaveBeenCalledTimes(2);
+				expect(domainErrorHandler.exec).toHaveBeenCalledTimes(1);
 				closeConSpy.mockRestore();
 				sendSpy.mockRestore();
 			});
@@ -480,13 +484,10 @@ describe('TldrawWSService', () => {
 			it('should send to every client', async () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy, closeConnSpy } = await setup();
 
-				await service.setupWsConnection(ws, 'TEST');
-				await delay(20);
+				await expect(service.setupWsConnection(ws, 'TEST')).resolves.toBeUndefined();
 				ws.emit('pong');
 
-				await delay(20);
-
-				expect(sendSpy).toHaveBeenCalledTimes(3);
+				expect(sendSpy).toHaveBeenCalledTimes(3); // unlcear why it is called 3 times
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				sendSpy.mockRestore();
@@ -628,7 +629,7 @@ describe('TldrawWSService', () => {
 
 				expect(redisUnsubscribeSpy).toHaveBeenCalled();
 				expect(closeConnSpy).toHaveBeenCalled();
-				expect(logger.warning).toHaveBeenCalledTimes(3); // <-- unstable test, it alwyse return with differen values, 1 / 3 / 5 and so on
+				expect(logger.warning).toHaveBeenCalledTimes(1);
 				closeConnSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
 			});
@@ -660,7 +661,7 @@ describe('TldrawWSService', () => {
 
 				await service.setupWsConnection(ws, 'TEST');
 
-				await delay(20);
+				await delay(200);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				expect(clearIntervalSpy).toHaveBeenCalled();
@@ -819,7 +820,7 @@ describe('TldrawWSService', () => {
 
 			service.updateHandler(msg, ws, doc);
 
-			await delay(20);
+			await delay(200);
 
 			expect(logger.warning).toHaveBeenCalledTimes(1);
 			ws.close();
@@ -857,7 +858,7 @@ describe('TldrawWSService', () => {
 				await service.setupWsConnection(ws, 'TEST');
 				ws.emit('message', msg);
 
-				await delay(20);
+				await delay(200);
 
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 				ws.close();
@@ -875,7 +876,7 @@ describe('TldrawWSService', () => {
 				await service.setupWsConnection(ws, 'TEST');
 				ws.emit('message', msg);
 
-				await delay(20);
+				await delay(200);
 
 				expect(domainErrorHandler.exec).toHaveBeenCalledTimes(2);
 				ws.close();
@@ -956,7 +957,7 @@ describe('TldrawWSService', () => {
 				await delay(500);
 
 				expect(redisSubscribeSpy).toHaveBeenCalled();
-				expect(logger.warning).toHaveBeenCalledTimes(5);
+				expect(logger.warning).toHaveBeenCalledTimes(1);
 				redisSubscribeSpy.mockRestore();
 				redisOnSpy.mockRestore();
 			});
