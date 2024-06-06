@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface PadUsersCountUsingGET200ResponseData
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface PadUsersCountUsingGET200ResponseData {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof PadUsersCountUsingGET200ResponseData
      */
-    'validUntil'?: number;
+    'padUsersCount'?: number;
 }
 

@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetHTMLUsingGET200ResponseData
  */
-export interface SessionInfo {
+export interface GetHTMLUsingGET200ResponseData {
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetHTMLUsingGET200ResponseData
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof SessionInfo
-     */
-    'validUntil'?: number;
+    'html'?: string;
 }
 
