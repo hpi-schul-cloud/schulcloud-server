@@ -1,19 +1,21 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 import { CommonToolService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolService } from '../../external-tool/service';
+import { ExternalToolService } from '../../external-tool';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool';
 import {
 	ContextExternalTool,
 	ContextExternalToolLaunchable,
 	ContextRef,
 	RestrictedContextMismatchLoggableException,
 } from '../domain';
+import { ReplaceElementWithPlaceholderEvent } from '../domain/event/replace-element-with-placeholder.event';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
@@ -22,7 +24,8 @@ export class ContextExternalToolService {
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly commonToolService: CommonToolService
+		private readonly commonToolService: CommonToolService,
+		private readonly eventbus: EventBus
 	) {}
 
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
@@ -60,6 +63,9 @@ export class ContextExternalToolService {
 	}
 
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
+		const tool = await this.contextExternalToolRepo.findById(contextExternalTool.id);
+
+		this.eventbus.publish(new ReplaceElementWithPlaceholderEvent(tool));
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 
