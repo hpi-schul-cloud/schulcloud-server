@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InstanceConfigRepo } from '../repo';
 import { instanceConfigFactory } from '../testing';
-import { InstanceConfigService } from './inctance-config.service';
+import { InstanceConfigService } from './instance-config.service';
 
 describe(InstanceConfigService.name, () => {
 	let module: TestingModule;
