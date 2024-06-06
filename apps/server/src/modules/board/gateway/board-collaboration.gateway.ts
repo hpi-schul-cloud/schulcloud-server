@@ -51,111 +51,111 @@ export class BoardCollaborationGateway {
 	@SubscribeMessage('delete-board-request')
 	@UseRequestContext()
 	async deleteBoard(socket: Socket, data: DeleteBoardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'delete-board' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
-			const { userId } = this.getCurrentUser(socket);
 			await this.boardUc.deleteBoard(userId, data.boardId);
 
-			await emitter.emitToClientAndRoom('delete-board-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('delete-board-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('update-board-title-request')
 	@UseRequestContext()
 	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-title' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
-			const { userId } = this.getCurrentUser(socket);
 			await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 
-			await emitter.emitToClientAndRoom('update-board-title-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('update-board-title-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('update-card-title-request')
 	@UseRequestContext()
 	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-title' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
-			const { userId } = this.getCurrentUser(socket);
 			await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 
-			await emitter.emitToClientAndRoom('update-card-title-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('update-card-title-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('update-card-height-request')
 	@UseRequestContext()
 	async updateCardHeight(socket: Socket, data: UpdateCardHeightMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-height' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
-			const { userId } = this.getCurrentUser(socket);
 			await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 
-			await emitter.emitToClientAndRoom('update-card-height-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('update-card-height-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('delete-card-request')
 	@UseRequestContext()
 	async deleteCard(socket: Socket, data: DeleteCardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'delete-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
-			const { userId } = this.getCurrentUser(socket);
 			await this.cardUc.deleteCard(userId, data.cardId);
 
-			await emitter.emitToClientAndRoom('delete-card-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('delete-card-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('create-card-request')
 	@UseRequestContext()
 	async createCard(socket: Socket, data: CreateCardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'create-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.columnId);
-			const { userId } = this.getCurrentUser(socket);
 			const card = await this.columnUc.createCard(userId, data.columnId);
 			const responsePayload = {
 				...data,
 				newCard: card.getProps(),
 			};
 
-			await emitter.emitToClientAndRoom('create-card-success', responsePayload);
+			await emitter.emitToClientAndRoom(responsePayload);
 		} catch (err) {
-			socket.emit('create-card-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('create-column-request')
 	@UseRequestContext()
 	async createColumn(socket: Socket, data: CreateColumnMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'create-column' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
-			const { userId } = this.getCurrentUser(socket);
 			const column = await this.boardUc.createColumn(userId, data.boardId);
+
 			const newColumn = ColumnResponseMapper.mapToResponse(column);
 			const responsePayload = {
 				...data,
 				newColumn,
 			};
-
-			await emitter.emitToClientAndRoom('create-column-success', responsePayload);
+			await emitter.emitToClientAndRoom(responsePayload);
 
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
 			return responsePayload;
 		} catch (err) {
-			socket.emit('create-column-failure', data);
+			emitter.emitFailure(data);
 			return {};
 		}
 	}
@@ -163,186 +163,178 @@ export class BoardCollaborationGateway {
 	@SubscribeMessage('fetch-board-request')
 	@UseRequestContext()
 	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'fetch-board' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
-			const { userId } = this.getCurrentUser(socket);
-
 			const board = await this.boardUc.findBoard(userId, data.boardId);
 
 			const responsePayload = BoardResponseMapper.mapToResponse(board);
-			await emitter.emitToClient('fetch-board-success', responsePayload);
+			await emitter.emitToClient(responsePayload);
 		} catch (err) {
-			socket.emit('fetch-board-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('move-card-request')
 	@UseRequestContext()
 	async moveCard(socket: Socket, data: MoveCardMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'move-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 
-			await emitter.emitToClientAndRoom('move-card-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('move-card-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('move-column-request')
 	@UseRequestContext()
 	async moveColumn(socket: Socket, data: MoveColumnMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.targetBoardId, action: 'move-column' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.targetBoardId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.boardUc.moveColumn(userId, data.columnMove.columnId, data.targetBoardId, data.columnMove.addedIndex);
 
-			await emitter.emitToClientAndRoom('move-column-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('move-column-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('update-column-title-request')
 	@UseRequestContext()
 	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'update-column-title' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.columnId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 
-			await emitter.emitToClientAndRoom('update-column-title-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('update-column-title-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('update-board-visibility-request')
 	@UseRequestContext()
 	async updateBoardVisibility(socket: Socket, data: UpdateBoardVisibilityMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-visibility' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.boardId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 
-			await emitter.emitToClientAndRoom('update-board-visibility-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('update-board-visibility-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('delete-column-request')
 	@UseRequestContext()
 	async deleteColumn(socket: Socket, data: DeleteColumnMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'delete-column' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.columnId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.columnUc.deleteColumn(userId, data.columnId);
 
-			await emitter.emitToClientAndRoom('delete-column-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('delete-column-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('fetch-card-request')
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.cardIds[0]);
-			const { userId } = this.getCurrentUser(socket);
-
 			const cards = await this.cardUc.findCards(userId, data.cardIds);
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
-			await emitter.emitToClient('fetch-card-success', { cards: cardResponses, isOwnAction: false });
+			await emitter.emitToClient({ cards: cardResponses, isOwnAction: false });
 		} catch (err) {
-			socket.emit('fetch-card-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('create-element-request')
 	@UseRequestContext()
 	async createElement(socket: Socket, data: CreateContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'create-element' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.cardId);
-			const { userId } = this.getCurrentUser(socket);
-
 			const element = await this.cardUc.createElement(userId, data.cardId, data.type, data.toPosition);
 
 			const responsePayload = {
 				...data,
 				newElement: ContentElementResponseFactory.mapToResponse(element),
 			};
-			await emitter.emitToClientAndRoom('create-element-success', responsePayload);
+			await emitter.emitToClientAndRoom(responsePayload);
 		} catch (err) {
-			socket.emit('create-element-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('update-element-request')
 	@UseRequestContext()
 	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'update-element' });
+		const { userId } = this.getCurrentUser(socket);
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.elementId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 
-			await emitter.emitToClientAndRoom('update-element-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('update-element-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('delete-element-request')
 	@UseRequestContext()
 	async deleteElement(socket: Socket, data: DeleteContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'delete-element' });
+		const { userId } = this.getCurrentUser(socket);
+
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.elementId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.elementUc.deleteElement(userId, data.elementId);
-
-			await emitter.emitToClientAndRoom('delete-element-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('delete-element-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
 	@SubscribeMessage('move-element-request')
 	@UseRequestContext()
 	async moveElement(socket: Socket, data: MoveContentElementMessageParams) {
+		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'move-element' });
+		const { userId } = this.getCurrentUser(socket);
+
 		try {
-			const emitter = await this.buildBoardSocketEmitter(socket, data.elementId);
-			const { userId } = this.getCurrentUser(socket);
-
 			await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
-
-			await emitter.emitToClientAndRoom('move-element-success', data);
+			await emitter.emitToClientAndRoom(data);
 		} catch (err) {
-			socket.emit('move-element-failure', data);
+			emitter.emitFailure(data);
 		}
 	}
 
-	private async buildBoardSocketEmitter(client: Socket, id: string) {
+	private async buildBoardSocketEmitter({ socket, id, action }: { socket: Socket; id: string; action: string }) {
 		const rootId = await this.getRootIdForId(id);
 		const room = `board_${rootId}`;
 		return {
-			async emitToClient(event: string, data: object) {
-				await client.join(room);
-				client.emit(event, { ...data, isOwnAction: true });
+			async emitToClient(data: object) {
+				await socket.join(room);
+				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
-			async emitToClientAndRoom(event: string, data: object) {
-				await client.join(room);
-				client.to(room).emit(event, { ...data, isOwnAction: false });
-				client.emit(event, { ...data, isOwnAction: true });
+			async emitToClientAndRoom(data: object) {
+				await socket.join(room);
+				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
+				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
+			},
+			emitFailure(data: object) {
+				socket.emit(`${action}-failure`, data);
 			},
 		};
 	}
