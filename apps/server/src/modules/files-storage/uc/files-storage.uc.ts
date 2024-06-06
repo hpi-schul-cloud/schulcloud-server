@@ -1,6 +1,8 @@
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { InstanceConfigService } from '@modules/instance-config';
+import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -24,13 +26,12 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { GetFileResponse } from '../interface';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../mapper';
-import { FilesStorageService } from '../service/files-storage.service';
-import { PreviewService } from '../service/preview.service';
+import { FilesStorageService, PreviewService } from '../service';
 
 @Injectable()
 export class FilesStorageUC {
@@ -42,7 +43,9 @@ export class FilesStorageUC {
 		private readonly previewService: PreviewService,
 		// maybe better to pass the request context from controller and avoid em at this place
 		private readonly em: EntityManager,
-		private readonly domainErrorHandler: DomainErrorHandler
+		private readonly domainErrorHandler: DomainErrorHandler,
+		private readonly instanceConfigService: InstanceConfigService,
+		private readonly schoolService: SchoolService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -70,9 +73,21 @@ export class FilesStorageUC {
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
+		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
+
 		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
 		return fileRecord;
+	}
+
+	private async checkStorageLocation(storageLocation: StorageLocation, storageLocationId: EntityId): Promise<void> {
+		if (storageLocation === StorageLocation.INSTANCE) {
+			await this.instanceConfigService.findById(storageLocationId);
+		}
+
+		if (storageLocation === StorageLocation.SCHOOL) {
+			await this.schoolService.getSchoolById(storageLocationId);
+		}
 	}
 
 	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
@@ -107,6 +122,8 @@ export class FilesStorageUC {
 
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
+
+		await this.checkStorageLocation(params.storageLocation, params.storageLocationId);
 
 		const response = await this.getResponse(params);
 

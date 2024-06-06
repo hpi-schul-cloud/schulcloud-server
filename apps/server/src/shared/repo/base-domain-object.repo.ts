@@ -57,7 +57,7 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 		await this.em.remove(entities).flush();
 	}
 
-	async findById(id: EntityId): Promise<E> {
+	protected async findEntityById(id: EntityId): Promise<E> {
 		const entity: E = await this.em.findOneOrFail(this.entityName, { id } as FilterQuery<E>);
 
 		return entity;

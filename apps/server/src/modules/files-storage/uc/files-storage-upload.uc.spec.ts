@@ -16,6 +16,8 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
+import { InstanceConfigService } from '../../instance-config';
+import { SchoolService } from '../../school';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
@@ -39,7 +41,7 @@ const createAxiosErrorResponse = (): AxiosResponse => {
 	return errorResponse;
 };
 
-const buildFileRecordsWithParams = () => {
+const buildFileRecordsWithParams = (storageLocation: StorageLocation = StorageLocation.SCHOOL) => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
@@ -50,7 +52,7 @@ const buildFileRecordsWithParams = () => {
 	];
 
 	const params: FileRecordParams = {
-		storageLocation: StorageLocation.SCHOOL,
+		storageLocation,
 		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
@@ -78,6 +80,8 @@ describe('FilesStorageUC upload methods', () => {
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let httpService: DeepMocked<HttpService>;
+	let schoolService: DeepMocked<SchoolService>;
+	let instanceConfigService: DeepMocked<InstanceConfigService>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -121,6 +125,14 @@ describe('FilesStorageUC upload methods', () => {
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
 				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: InstanceConfigService,
+					useValue: createMock<InstanceConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -128,6 +140,8 @@ describe('FilesStorageUC upload methods', () => {
 		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
+		schoolService = module.get(SchoolService);
+		instanceConfigService = module.get(InstanceConfigService);
 	});
 
 	beforeEach(() => {
@@ -143,8 +157,8 @@ describe('FilesStorageUC upload methods', () => {
 	});
 
 	describe('uploadFromUrl is called', () => {
-		const createUploadFromUrlParams = () => {
-			const { params, userId, fileRecords } = buildFileRecordsWithParams();
+		const createUploadFromUrlParams = (storageLocation: StorageLocation = StorageLocation.SCHOOL) => {
+			const { params, userId, fileRecords } = buildFileRecordsWithParams(storageLocation);
 			const fileRecord = fileRecords[0];
 
 			const uploadFromUrlParams = {
@@ -266,7 +280,7 @@ describe('FilesStorageUC upload methods', () => {
 
 		describe('WHEN uploadFile throws error', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams();
+				const { userId, uploadFromUrlParams, response } = createUploadFromUrlParams(StorageLocation.SCHOOL);
 				const error = new Error('test');
 
 				httpService.get.mockReturnValueOnce(of(response));
@@ -276,6 +290,38 @@ describe('FilesStorageUC upload methods', () => {
 			};
 
 			it('should pass error', async () => {
+				const { uploadFromUrlParams, userId } = setup();
+
+				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
+			});
+		});
+
+		describe('WHEN the storage location is school and the storage location id is not valid', () => {
+			const setup = () => {
+				const { userId, uploadFromUrlParams } = createUploadFromUrlParams(StorageLocation.INSTANCE);
+
+				schoolService.getSchoolById.mockRejectedValueOnce(new Error());
+
+				return { uploadFromUrlParams, userId };
+			};
+
+			it('should throw an error', async () => {
+				const { uploadFromUrlParams, userId } = setup();
+
+				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
+			});
+		});
+
+		describe('WHEN the storage location is instance and the storage location id is not valid', () => {
+			const setup = () => {
+				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
+
+				instanceConfigService.findById.mockRejectedValueOnce(new Error());
+
+				return { uploadFromUrlParams, userId };
+			};
+
+			it('should throw an error', async () => {
 				const { uploadFromUrlParams, userId } = setup();
 
 				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
@@ -400,6 +446,40 @@ describe('FilesStorageUC upload methods', () => {
 				const { params, userId, request, error } = setup();
 
 				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(error);
+			});
+		});
+
+		describe('WHEN the storage location is school and the storage location id is not valid', () => {
+			const setup = () => {
+				const { params, userId } = buildFileRecordsWithParams(StorageLocation.SCHOOL);
+				const request = createRequest();
+
+				schoolService.getSchoolById.mockRejectedValueOnce(new Error());
+
+				return { params, userId, request };
+			};
+
+			it('should throw an error', async () => {
+				const { params, userId, request } = setup();
+
+				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrow();
+			});
+		});
+
+		describe('WHEN the storage location is instance and the storage location id is not valid', () => {
+			const setup = () => {
+				const { params, userId } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
+				const request = createRequest();
+
+				instanceConfigService.findById.mockRejectedValueOnce(new Error());
+
+				return { params, userId, request };
+			};
+
+			it('should throw an error', async () => {
+				const { params, userId, request } = setup();
+
+				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrow();
 			});
 		});
 	});
