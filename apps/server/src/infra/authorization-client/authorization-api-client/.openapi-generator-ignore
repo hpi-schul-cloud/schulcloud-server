@@ -21,3 +21,9 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+models/*
+!models/action.ts
+!models/authorization-body-params.ts
+!models/authorization-context-params.ts
+!models/authorized-reponse.ts
+!models/index.ts
