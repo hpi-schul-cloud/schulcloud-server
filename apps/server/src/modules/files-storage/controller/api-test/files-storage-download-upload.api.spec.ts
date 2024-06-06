@@ -7,14 +7,12 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	mapUserToCurrentUser,
-	roleFactory,
 	schoolEntityFactory,
-	userFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -145,12 +143,9 @@ describe('files-storage controller (API)', () => {
 		jest.resetAllMocks();
 		await cleanupCollections(em);
 		const school = schoolEntityFactory.build();
-		const roles = roleFactory.buildList(1, {
-			permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
-		});
-		const user = userFactory.build({ school, roles });
+		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-		await em.persistAndFlush([user, school]);
+		await em.persistAndFlush([user, school, account]);
 		em.clear();
 		validId = school.id;
 		currentUser = mapUserToCurrentUser(user);

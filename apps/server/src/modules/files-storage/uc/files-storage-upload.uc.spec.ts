@@ -3,12 +3,12 @@ import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { InstanceConfigService } from '@modules/instance-config';
+import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { AxiosHeadersKeyValue, axiosResponseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
@@ -16,15 +16,13 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
-import { InstanceConfigService } from '../../instance-config';
-import { SchoolService } from '../../school';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
-import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>
@@ -201,7 +199,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
-					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					FileStorageAuthorizationContext.create(uploadFromUrlParams.storageLocation)
 				);
 			});
 
@@ -370,7 +368,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					allowedType,
 					params.parentId,
-					FileStorageAuthorizationContext.create
+					FileStorageAuthorizationContext.create(params.storageLocation)
 				);
 			});
 

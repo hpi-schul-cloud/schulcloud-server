@@ -1,1 +1,1 @@
-export { InstanceConfigService } from './inctance-config.service';
+export { InstanceConfigService } from './instance-config.service';

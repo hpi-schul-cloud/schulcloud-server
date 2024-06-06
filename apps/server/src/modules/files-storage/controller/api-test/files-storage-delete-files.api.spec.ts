@@ -7,16 +7,14 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
 
 import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	fileRecordFactory,
 	mapUserToCurrentUser,
-	roleFactory,
 	schoolEntityFactory,
-	userFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
@@ -126,12 +124,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -178,12 +173,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -253,12 +245,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 			});
 
@@ -280,12 +269,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
-				const roles = roleFactory.buildList(1, {
-					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
-				});
-				const user = userFactory.build({ school, roles });
+				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);

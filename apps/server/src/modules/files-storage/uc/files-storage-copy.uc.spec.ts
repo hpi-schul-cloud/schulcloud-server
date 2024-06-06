@@ -3,12 +3,12 @@ import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { InstanceConfigService } from '@modules/instance-config';
+import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
@@ -18,6 +18,7 @@ import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -123,6 +124,14 @@ describe('FilesStorageUC', () => {
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
 				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: InstanceConfigService,
+					useValue: createMock<InstanceConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -165,7 +174,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					sourceParams.parentType,
 					sourceParams.parentId,
-					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					FileStorageAuthorizationContext.create(sourceParams.storageLocation)
 				);
 			});
 
@@ -179,7 +188,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					targetParams.target.parentType,
 					targetParams.target.parentId,
-					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					FileStorageAuthorizationContext.create(targetParams.target.storageLocation)
 				);
 			});
 
@@ -330,7 +339,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					FileStorageAuthorizationContext.create(fileRecord.storageLocation)
 				);
 			});
 
@@ -344,7 +353,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					copyFileParams.target.parentType,
 					copyFileParams.target.parentId,
-					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					FileStorageAuthorizationContext.create(copyFileParams.target.storageLocation)
 				);
 			});
 
