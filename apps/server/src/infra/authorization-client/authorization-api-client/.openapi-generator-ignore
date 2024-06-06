@@ -21,7 +21,11 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+# ignore all files in the "models" folder
 models/*
+
+# list of allowed files in the "models" folder
 !models/action.ts
 !models/authorization-body-params.ts
 !models/authorization-context-params.ts
