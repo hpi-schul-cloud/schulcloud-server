@@ -1,5 +1,6 @@
-import { ContextExternalTool } from '../../../tool/context-external-tool/domain';
+import { ContentElementType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 
 export interface ReplaceElementService {
-	replaceElement(tool: ContextExternalTool): Promise<void>;
+	replaceElement(contextExternalToolId: EntityId, type: ContentElementType, title: string): Promise<void>;
 }

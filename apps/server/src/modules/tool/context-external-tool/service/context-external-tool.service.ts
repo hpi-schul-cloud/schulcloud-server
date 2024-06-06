@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
@@ -63,10 +64,15 @@ export class ContextExternalToolService {
 	}
 
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
-		const tool = await this.contextExternalToolRepo.findById(contextExternalTool.id);
-
-		this.eventbus.publish(new ReplaceElementWithPlaceholderEvent(tool));
 		await this.contextExternalToolRepo.delete(contextExternalTool);
+
+		this.eventbus.publish(
+			new ReplaceElementWithPlaceholderEvent(
+				contextExternalTool.id,
+				ContentElementType.EXTERNAL_TOOL,
+				contextExternalTool.displayName
+			)
+		);
 	}
 
 	public async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {

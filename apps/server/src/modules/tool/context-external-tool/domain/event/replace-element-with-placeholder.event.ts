@@ -1,12 +1,16 @@
-import { ContextExternalTool } from '../context-external-tool.do';
+import { ContentElementType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 
 export class ReplaceElementWithPlaceholderEvent {
-	type: string;
+	type: ContentElementType;
 
 	title: string | undefined;
 
-	constructor(tool: ContextExternalTool) {
-		this.type = tool.contextRef.type;
-		this.title = tool.displayName;
+	contextExternalToolId: EntityId;
+
+	constructor(contextExternalToolId: EntityId, type: ContentElementType, title: string | undefined) {
+		this.type = type;
+		this.title = title;
+		this.contextExternalToolId = contextExternalToolId;
 	}
 }
