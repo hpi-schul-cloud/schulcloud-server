@@ -1,1 +1,1 @@
-export { InstanceConfig } from './entity/instance-config.entity';
+export { InstanceConfigEntity } from './entity/instance-config.entity';

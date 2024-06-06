@@ -9,7 +9,7 @@ export interface InstanceConfigEntityProps {
 }
 
 @Entity({ tableName: 'instance-configs' })
-export class InstanceConfig extends BaseEntityWithTimestamps {
+export class InstanceConfigEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 

@@ -1,6 +1,6 @@
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
-import { InstanceConfig } from '@modules/instance-config';
+import { InstanceConfigEntity } from '@modules/instance-config';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
@@ -125,5 +125,5 @@ export const ALL_ENTITIES = [
 	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
-	InstanceConfig,
+	InstanceConfigEntity,
 ];
