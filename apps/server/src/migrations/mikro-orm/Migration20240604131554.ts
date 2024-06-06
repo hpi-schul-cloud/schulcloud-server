@@ -35,4 +35,10 @@ export class Migration20240604131554 extends Migration {
 			console.info('Instance config was added for default');
 		}
 	}
+
+	async down(): Promise<void> {
+		await this.getCollection('instance-configs').drop();
+
+		console.info('Collection "instance-configs" was dropped');
+	}
 }

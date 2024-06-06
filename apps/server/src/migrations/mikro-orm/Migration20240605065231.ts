@@ -1,28 +1,23 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { ObjectId } from 'mongodb';
 
 export class Migration20240605065231 extends Migration {
 	async up(): Promise<void> {
-		const collection = this.getCollection('filerecords');
-		const cursor = collection.find({});
+		const filerecords = await this.driver.nativeUpdate(
+			'filerecords',
+			{},
+			{ $rename: { schoolId: 'storageLocationId' }, $set: { storageLocation: 'school' } }
+		);
 
-		for await (const doc of cursor) {
-			const { school } = doc;
-			if (school) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				const locationStorageId = new ObjectId(school);
-				const locationStorage = 'school';
+		console.info(`${filerecords.affectedRows} Filerecords were migrated to "storageLocationId" and "storageLocation"`);
+	}
 
-				await collection.updateOne(
-					{ _id: doc._id },
-					{
-						$set: { storageLocationId: locationStorageId, storageLocation: locationStorage },
-						$unset: { school: 1 },
-					}
-				);
-			}
-		}
+	async down(): Promise<void> {
+		const filerecords = await this.driver.nativeUpdate(
+			'filerecords',
+			{},
+			{ $rename: { storageLocationId: 'schoolId' }, $unset: { storageLocation: '' } }
+		);
 
-		console.info('Filerecords adapted for storage location');
+		console.info(`${filerecords.affectedRows} Filerecords were rolled back to use "schoolId"`);
 	}
 }
