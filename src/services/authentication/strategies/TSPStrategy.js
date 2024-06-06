@@ -176,7 +176,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 		// find account and generate JWT payload
 		const account = await app.service('nest-account-service').findByUserId(user._id.toString());
-		account._id = account.id;
+		account._id = new ObjectId(account.id);
 		const { entity } = this.configuration;
 		return {
 			authentication: { strategy: this.name },
