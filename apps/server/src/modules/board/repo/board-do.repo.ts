@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
+import { ExternalToolElement } from '@shared/domain/domainobject';
 import { BoardNode, ExternalToolElementNodeEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
@@ -24,6 +25,20 @@ export class BoardDoRepo {
 		const domainObject = new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
 
 		return domainObject;
+	}
+
+	public async findByContents(contextExternalId: EntityId): Promise<ExternalToolElement[]> {
+		const elements = await this.boardNodeRepo.findByContents(contextExternalId);
+		// do we need this? elements are always on depth level 3 and do not have children/descendents...
+		const childrenMap = await this.boardNodeRepo.findDescendantsOfMany(elements);
+
+		const domainObjects = elements.map((boardNode) => {
+			const children = childrenMap[boardNode.pathOfChildren];
+			const domainObject = new BoardDoBuilderImpl(children).buildDomainObject(boardNode);
+			return domainObject;
+		});
+
+		return domainObjects;
 	}
 
 	async findByClassAndId<S, T extends AnyBoardDo>(

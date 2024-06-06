@@ -6,8 +6,9 @@ import {
 	Card,
 	ContentElementFactory,
 	ContentElementType,
-	SubmissionItem,
+	ExternalToolElement,
 	isAnyContentElement,
+	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
@@ -31,6 +32,12 @@ export class ContentElementService {
 		}
 
 		return element;
+	}
+
+	public async findByContents(contextExternalId: EntityId): Promise<ExternalToolElement[]> {
+		const elements: ExternalToolElement[] = await this.boardDoRepo.findByContents(contextExternalId);
+		// validation?
+		return elements;
 	}
 
 	async findParentOfId(elementId: EntityId): Promise<AnyBoardDo> {

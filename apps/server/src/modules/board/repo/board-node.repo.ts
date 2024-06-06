@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { ExternalToolElement } from '@shared/domain/domainobject';
 import { BoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
@@ -15,6 +16,13 @@ export class BoardNodeRepo {
 
 		entity = await this.em.findOneOrFail(BoardNode, id);
 		return entity;
+	}
+
+	public async findByContents(contextExternalId: EntityId): Promise<ExternalToolElement[]> {
+		// this.em.getUnitOfWork()?
+
+		const entities = await this.em.find(BoardNode, { contextExternalTool: contextExternalId });
+		return entities;
 	}
 
 	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {

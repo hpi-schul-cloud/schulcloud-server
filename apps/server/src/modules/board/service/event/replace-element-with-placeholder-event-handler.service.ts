@@ -1,9 +1,10 @@
+import { ContentElementService } from '@modules/board';
+import { ReplaceElementWithPlaceholderEvent } from '@modules/tool/context-external-tool/domain/event';
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { ContentElementType } from '@shared/domain/domainobject';
+import { ContentElementType, ExternalToolElement } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { ReplaceElementWithPlaceholderEvent } from '@modules/tool/context-external-tool/domain/event';
 import { ReplaceElementService } from '../../domain/interface/replace-element-service';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class ReplaceElementWithPlaceholderEventHandlerService
 	implements ReplaceElementService, IEventHandler<ReplaceElementWithPlaceholderEvent>
 {
 	constructor(
-		// elementService
+		private readonly contentElementService: ContentElementService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus
 	) {
@@ -33,6 +34,9 @@ export class ReplaceElementWithPlaceholderEventHandlerService
 		title: string | undefined
 	): Promise<void> {
 		// get elements with contextexternaltool id
+		// should be AnyContentElementDo[] ?
+		// also use type?
+		const elements: ExternalToolElement[] = await this.contentElementService.findByContents(contextExternalToolId);
 		// replace them with placeholder element
 		// this.logger.info(
 		//	new DataDeletionDomainOperationLoggable('Deleting Context external tool', DomainName.BOARD, userId, StatusModel.PENDING)
