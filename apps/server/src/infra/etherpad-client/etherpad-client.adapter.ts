@@ -3,6 +3,8 @@ import { TypeGuard } from '@shared/common';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import {
+	AuthorApi,
+	GroupApi,
 	InlineResponse200,
 	InlineResponse2001,
 	InlineResponse20013,
@@ -10,8 +12,9 @@ import {
 	InlineResponse2003,
 	InlineResponse2004,
 	InlineResponse2006,
+	PadApi,
+	SessionApi,
 } from './etherpad-api-client';
-import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
 import {
 	AuthorId,
 	EtherpadErrorType,
@@ -23,6 +26,7 @@ import {
 	Session,
 	SessionId,
 } from './interface';
+import { EtherpadErrorLoggableException } from './loggable';
 import { EtherpadResponseMapper } from './mappers';
 
 @Injectable()
@@ -225,7 +229,29 @@ export class EtherpadClientAdapter {
 
 	public async deleteGroup(groupId: GroupId): Promise<void> {
 		const response = await this.tryDeleteGroup(groupId);
-		this.handleEtherpadResponse<InlineResponse2001>(response, { groupId });
+
+		try {
+			this.handleEtherpadResponse<InlineResponse2001>(response, { groupId });
+		} catch (error) {
+			this.throwIfValidError(error);
+		}
+	}
+
+	private throwIfValidError(error: unknown): void {
+		// If the session does not exist, we can ignore the error. See https://github.com/ether/etherpad-lite/issues/5798
+		if (this.isSessionDoesNotExistError(error)) {
+			return;
+		}
+
+		throw error;
+	}
+
+	private isSessionDoesNotExistError(error: unknown): boolean {
+		return !!(
+			error instanceof EtherpadErrorLoggableException &&
+			error.getLogMessage().type === EtherpadErrorType.BAD_REQUEST &&
+			error?.cause?.toString().includes('sessionID does not exist')
+		);
 	}
 
 	private async tryDeleteGroup(groupId: string): Promise<AxiosResponse<InlineResponse2001>> {
