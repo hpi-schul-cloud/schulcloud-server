@@ -1,4 +1,3 @@
-import { INestApplication } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { Test } from '@nestjs/testing';
@@ -7,8 +6,6 @@ import { createConfigModuleOptions } from '@src/config';
 import * as Yjs from 'yjs';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { HttpService } from '@nestjs/axios';
-import { WsAdapter } from '@nestjs/platform-ws';
-import { TldrawWs } from '../controller';
 import { TldrawWsService } from '../service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { MetricsService } from '../metrics';
@@ -39,19 +36,20 @@ jest.mock('y-protocols/sync', () => {
 });
 
 describe('TldrawRedisService', () => {
-	let app: INestApplication;
 	let service: TldrawRedisService;
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig))],
 			providers: [
-				TldrawWs,
-				TldrawWsService,
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
 				TldrawRedisService,
+				{
+					provide: TldrawWsService,
+					useValue: createMock<TldrawWsService>(),
+				},
 				{
 					provide: TldrawBoardRepo,
 					useValue: createMock<TldrawBoardRepo>(),
@@ -72,17 +70,9 @@ describe('TldrawRedisService', () => {
 		}).compile();
 
 		service = testingModule.get(TldrawRedisService);
-		app = testingModule.createNestApplication();
-		app.useWebSocketAdapter(new WsAdapter(app));
-		await app.init();
-	});
-
-	afterAll(async () => {
-		await app.close();
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.restoreAllMocks();
 	});
 
