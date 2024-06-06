@@ -71,7 +71,7 @@ const checkUniqueEmail = async (hook) => {
 
 	// get userId of user entry to edit
 	const editUserId = hook.id ? hook.id.toString() : undefined;
-	const unique = await hook.app.service('nest-account-validation-service').isUniqueEmailForUser(email, editUserId);
+	const unique = await hook.app.service('nest-account-service').isUniqueEmailForUser(email, editUserId);
 
 	if (unique) {
 		return hook;

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
@@ -15,7 +16,8 @@ export class AccountServiceDb {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<AccountConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>,
+		private readonly userRepo: UserRepo
 	) {}
 
 	async findById(id: EntityId): Promise<Account> {
@@ -141,5 +143,21 @@ export class AccountServiceDb {
 		});
 
 		return account;
+	}
+
+	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise<boolean> {
+		const foundUsers = await this.userRepo.findByEmail(email);
+		const [accounts] = await this.accountRepo.searchByUsernameExactMatch(email);
+		const filteredAccounts = accounts.filter((foundAccount) => foundAccount.systemId === systemId);
+
+		const multipleUsers = foundUsers.length > 1;
+		const multipleAccounts = filteredAccounts.length > 1;
+		// paranoid 'toString': legacy code may call userId or accountId as ObjectID
+		const oneUserWithoutGivenId = foundUsers.length === 1 && foundUsers[0].id.toString() !== userId?.toString();
+		const oneAccountWithoutGivenId =
+			filteredAccounts.length === 1 && filteredAccounts[0].id.toString() !== accountId?.toString();
+		const isUnique = !(multipleUsers || multipleAccounts || oneUserWithoutGivenId || oneAccountWithoutGivenId);
+
+		return isUnique;
 	}
 }

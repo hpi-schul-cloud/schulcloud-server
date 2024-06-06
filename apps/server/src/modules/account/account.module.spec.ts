@@ -4,7 +4,6 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { AccountModule } from './account.module';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
 import { AccountService } from './domain/services/account.service';
-import { AccountValidationService } from './domain/services/account.validation.service';
 
 describe('AccountModule', () => {
 	let module: TestingModule;
@@ -30,11 +29,6 @@ describe('AccountModule', () => {
 	it('should have the account service defined', () => {
 		const accountService = module.get(AccountService);
 		expect(accountService).toBeDefined();
-	});
-
-	it('should have the account validation service defined', () => {
-		const accountValidationService = module.get(AccountValidationService);
-		expect(accountValidationService).toBeDefined();
 	});
 
 	describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is enabled', () => {

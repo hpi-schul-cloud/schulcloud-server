@@ -6,16 +6,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { Account } from '../account';
 import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
+import { accountDoFactory } from '../../testing';
+import { Account } from '../account';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
-import { accountDoFactory } from '../../testing';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -56,6 +57,10 @@ describe('AccountDbService', () => {
 				{
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
+				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();

@@ -191,4 +191,10 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async isUniqueEmail(email: string, _userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise<boolean> {
+		const kc = await this.identityManager.findAccountsByUsername(email);
+		return kc.length > 0;
+	}
 }
