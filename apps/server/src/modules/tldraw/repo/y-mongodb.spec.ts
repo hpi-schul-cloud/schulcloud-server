@@ -7,16 +7,11 @@ import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
-import { HttpService } from '@nestjs/axios';
-import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
-import { TldrawWs } from '../controller';
-import { TldrawWsService } from '../service';
-import { MetricsService } from '../metrics';
-import { TldrawBoardRepo } from './tldraw-board.repo';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
+import { Version } from './key.factory';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -39,21 +34,11 @@ describe('YMongoDb', () => {
 				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [
-				TldrawWs,
-				TldrawWsService,
-				TldrawBoardRepo,
-				TldrawRepo,
 				YMongodb,
-				MetricsService,
-				TldrawRedisFactory,
-				TldrawRedisService,
+				TldrawRepo,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
@@ -168,20 +153,24 @@ describe('YMongoDb', () => {
 
 	describe('getAllDocumentNames', () => {
 		const setup = async () => {
-			const drawing1 = tldrawEntityFactory.build({ docName: 'test-name1', version: 'v1_sv' });
-			const drawing2 = tldrawEntityFactory.build({ docName: 'test-name2', version: 'v1_sv' });
-			const drawing3 = tldrawEntityFactory.build({ docName: 'test-name3', version: 'v1_sv' });
+			const drawing1 = tldrawEntityFactory.build({ docName: 'test-name1', version: Version.V1_SV });
+			const drawing2 = tldrawEntityFactory.build({ docName: 'test-name2', version: Version.V1_SV });
+			const drawing3 = tldrawEntityFactory.build({ docName: 'test-name3', version: Version.V1_SV });
 
 			await em.persistAndFlush([drawing1, drawing2, drawing3]);
 			em.clear();
+
+			return {
+				expectedDocNames: [drawing1.docName, drawing2.docName, drawing3.docName],
+			};
 		};
 
 		it('should return all document names', async () => {
-			await setup();
+			const { expectedDocNames } = await setup();
 
 			const docNames = await mdb.getAllDocumentNames();
 
-			expect(docNames).toEqual(['test-name1', 'test-name2', 'test-name3']);
+			expect(docNames).toEqual(expectedDocNames);
 		});
 	});
 
