@@ -6,7 +6,7 @@ export type CommonCartridgeFileParserOptions = {
 };
 
 export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
-	maxSearchDepth: 3,
+	maxSearchDepth: 5,
 	pathSeparator: '/',
 };
 
