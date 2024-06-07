@@ -92,12 +92,12 @@ export class ContentElementService {
 	async replaceElementWithPlaceholder(contextExternalToolId: EntityId) {
 		const externalToolElements: ExternalToolElementNodeEntity[] = await this.findElementsById(contextExternalToolId);
 
-		externalToolElements.forEach((element) => {
+		externalToolElements.forEach(async (element) => {
 			if (element.parentId) {
 				const boardNode = this.boardDoRepo.findById(element.parentId);
 
 				// TODO
-				this.create(element.ancestorIds, BoardNodeType.PLACEHOLDER);
+				await this.create(boardNode, BoardNodeType.PLACEHOLDER);
 				const placeholder = new PlaceholderElementNodeEntity({
 					title,
 					type,

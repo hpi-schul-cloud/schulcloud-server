@@ -1,3 +1,4 @@
+import { PlaceholderElement } from '@shared/domain/domainobject';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor-element.do';
@@ -33,6 +34,7 @@ export class Card extends BoardComposite<CardProps> {
 			domainObject instanceof RichTextElement ||
 			domainObject instanceof SubmissionContainerElement ||
 			domainObject instanceof ExternalToolElement ||
+			domainObject instanceof PlaceholderElement ||
 			domainObject instanceof CollaborativeTextEditorElement;
 		return allowed;
 	}
