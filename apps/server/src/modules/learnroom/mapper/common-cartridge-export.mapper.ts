@@ -146,12 +146,12 @@ export class CommonCartridgeExportMapper {
 			allowedTags: [],
 			allowedAttributes: {},
 		});
-		let title = cleanTitle.slice(0, 50);
+		const title = cleanTitle.slice(0, 50);
 		// .replace(/<[^>]*>?/gm, '')
 		// .replace(/<script/gi, '&lt;script');
-		if (text.length > 50) {
+		/* 		if (text.length > 50) {
 			title = title.concat('...');
-		}
+		} */
 		return title;
 	}
 }
