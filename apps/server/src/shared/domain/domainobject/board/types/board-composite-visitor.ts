@@ -7,6 +7,7 @@ import type { ExternalToolElement } from '../external-tool-element.do';
 import type { FileElement } from '../file-element.do';
 import type { LinkElement } from '../link-element.do';
 import type { MediaBoard, MediaExternalToolElement, MediaLine } from '../media-board';
+import type { PlaceholderElement } from '../placeholder-element.do';
 import type { RichTextElement } from '../rich-text-element.do';
 import type { SubmissionContainerElement } from '../submission-container-element.do';
 import type { SubmissionItem } from '../submission-item.do';
@@ -25,6 +26,7 @@ export interface ColumnBoardCompositeVisitor {
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 	visitSubmissionItem(submissionItem: SubmissionItem): void;
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void;
+	visitPlaceholderElement(placeholderElement: PlaceholderElement): void;
 	visitCollaborativeTextEditorElement(collaborativeTextEditorElement: CollaborativeTextEditorElement): void;
 }
 
@@ -39,6 +41,7 @@ export interface ColumnBoardCompositeVisitorAsync {
 	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void>;
 	visitSubmissionItemAsync(submissionItem: SubmissionItem): Promise<void>;
 	visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void>;
+	visitPlaceholderElementAsync(placeholderElement: PlaceholderElement): Promise<void>;
 	visitCollaborativeTextEditorElementAsync(
 		collaborativeTextEditorElement: CollaborativeTextEditorElement
 	): Promise<void>;

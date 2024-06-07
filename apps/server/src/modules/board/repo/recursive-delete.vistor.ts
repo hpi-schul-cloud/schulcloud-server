@@ -23,6 +23,7 @@ import type {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { PlaceholderElement } from '@shared/domain/domainobject/board/placeholder-element.do';
 import { BoardNode } from '@shared/domain/entity';
 
 @Injectable()
@@ -101,6 +102,12 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		this.deleteNode(externalToolElement);
 
 		await this.visitChildrenAsync(externalToolElement);
+	}
+
+	async visitPlaceholderElementAsync(placeholderElement: PlaceholderElement): Promise<void> {
+		this.deleteNode(placeholderElement);
+
+		await this.visitChildrenAsync(placeholderElement);
 	}
 
 	async visitCollaborativeTextEditorElementAsync(

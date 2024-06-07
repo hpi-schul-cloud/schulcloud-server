@@ -12,4 +12,5 @@ export * from './rich-text-element-node.entity';
 export * from './root-board-node.entity';
 export * from './submission-container-element-node.entity';
 export * from './submission-item-node.entity';
+export * from './placeholder-element-node.entity';
 export * from './types';

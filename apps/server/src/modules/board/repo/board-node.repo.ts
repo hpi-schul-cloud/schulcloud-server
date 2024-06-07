@@ -1,6 +1,6 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { ExternalToolElement } from '@shared/domain/domainobject';
+import { AnyContentElementDo, ContentElementType, ExternalToolElement } from '@shared/domain/domainobject';
 import { BoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
@@ -18,10 +18,10 @@ export class BoardNodeRepo {
 		return entity;
 	}
 
-	public async findByContents(contextExternalId: EntityId): Promise<ExternalToolElement[]> {
+	public async findByContent(content: ContentElementType): Promise<BoardNode[]> {
 		// this.em.getUnitOfWork()?
 
-		const entities = await this.em.find(BoardNode, { contextExternalTool: contextExternalId });
+		const entities: BoardNode[] = await this.em.find(BoardNode, { type: content });
 		return entities;
 	}
 

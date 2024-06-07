@@ -6,6 +6,7 @@ import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { LinkElement } from './link-element.do';
+import { PlaceholderElement } from './placeholder-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { AnyContentElementDo, ContentElementType } from './types';
@@ -36,6 +37,9 @@ export class ContentElementFactory {
 				break;
 			case ContentElementType.COLLABORATIVE_TEXT_EDITOR:
 				element = this.buildCollaborativeTextEditor();
+				break;
+			case ContentElementType.PLACEHOLDER:
+				element = this.buildPlaceholder();
 				break;
 			default:
 				break;
@@ -116,6 +120,19 @@ export class ContentElementFactory {
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
+	private buildPlaceholder() {
+		const element = new PlaceholderElement({
+			id: new ObjectId().toHexString(),
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			previousElementType: '',
+			previousElementDisplayName: '',
 		});
 
 		return element;

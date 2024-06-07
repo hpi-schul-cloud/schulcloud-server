@@ -14,4 +14,6 @@ export enum BoardNodeType {
 	MEDIA_BOARD = 'media-board',
 	MEDIA_LINE = 'media-line',
 	MEDIA_EXTERNAL_TOOL_ELEMENT = 'media-external-tool-element',
+
+	PLACEHOLDER = 'placeholder',
 }

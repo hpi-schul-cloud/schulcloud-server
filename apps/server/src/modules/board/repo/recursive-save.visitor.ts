@@ -19,6 +19,7 @@ import type {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
+import { PlaceholderElement } from '@shared/domain/domainobject/board/placeholder-element.do';
 import {
 	BoardNode,
 	CardNode,
@@ -36,6 +37,7 @@ import {
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain/entity';
+import { PlaceholderElementNodeEntity } from '@shared/domain/entity/boardnode/placeholder-element-node.entity';
 import { EntityId } from '@shared/domain/types';
 
 import { BoardNodeRepo } from './board-node.repo';
@@ -204,6 +206,19 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(externalToolElement, boardNode);
+	}
+
+	visitPlaceholderElement(placeholderElement: PlaceholderElement): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(placeholderElement.id);
+
+		const boardNode: PlaceholderElementNodeEntity = new PlaceholderElementNodeEntity({
+			id: placeholderElement.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(placeholderElement, boardNode);
 	}
 
 	visitCollaborativeTextEditorElement(collaborativeTextEditorElement: CollaborativeTextEditorElement): void {

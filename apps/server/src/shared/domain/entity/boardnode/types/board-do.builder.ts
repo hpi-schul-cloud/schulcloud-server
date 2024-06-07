@@ -13,6 +13,7 @@ import type {
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
+	PlaceholderElement,
 } from '../../../domainobject';
 import type { CardNode } from '../card-node.entity';
 import type { CollaborativeTextEditorElementNode } from '../collaborative-text-editor-element-node.entity';
@@ -23,6 +24,7 @@ import type { ExternalToolElementNodeEntity } from '../external-tool-element-nod
 import type { FileElementNode } from '../file-element-node.entity';
 import type { LinkElementNode } from '../link-element-node.entity';
 import type { MediaBoardNode, MediaExternalToolElementNode, MediaLineNode } from '../media-board';
+import type { PlaceholderElementNodeEntity } from '../placeholder-element-node.entity';
 import type { RichTextElementNode } from '../rich-text-element-node.entity';
 import type { SubmissionContainerElementNode } from '../submission-container-element-node.entity';
 import type { SubmissionItemNode } from '../submission-item-node.entity';
@@ -38,6 +40,7 @@ export interface BoardDoBuilder {
 	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
 	buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem;
 	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement;
+	buildPlaceholderElement(boardNode: PlaceholderElementNodeEntity): PlaceholderElement;
 	buildCollaborativeTextEditorElement(boardNode: CollaborativeTextEditorElementNode): CollaborativeTextEditorElement;
 
 	buildMediaBoard(boardNode: MediaBoardNode): MediaBoard;
