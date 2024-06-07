@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ErrorUtils } from '@src/core/error/utils';
+import { AxiosResponse } from 'axios';
 import {
 	Action,
 	AuthorizationApi,
 	AuthorizationBodyParamsReferenceType,
-	AuthorizationContextParams,
 	AuthorizedReponse,
 } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
@@ -38,47 +40,70 @@ describe(AuthorizationClientAdapter.name, () => {
 	});
 
 	describe('checkPermissionByReferences', () => {
-		it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
-			const referenceType: AuthorizationBodyParamsReferenceType = AuthorizationBodyParamsReferenceType.COURSES;
-			const referenceId = 'someReferenceId';
-			const context: AuthorizationContextParams = {
-				action: Action.READ,
-				requiredPermissions: [],
-			};
+		describe('when client returns response', () => {
+			it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions: [],
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
 
-			const expectedParams = {
-				context,
-				referenceType,
-				referenceId,
-			};
+				await service.checkPermissionByReferences(params);
 
-			await service.checkPermissionByReferences(referenceType, referenceId, context);
-
-			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
-				expectedParams
-			);
-		});
-
-		it('should return the response data', async () => {
-			const response: AuthorizedReponse = {
-				isAuthorized: true,
-				userId: 'userId',
-			};
-
-			(authorizationApi.authorizationReferenceControllerAuthorizeByReference as jest.Mock).mockResolvedValueOnce({
-				data: response,
+				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(params);
 			});
 
-			const result = await service.checkPermissionByReferences(
-				AuthorizationBodyParamsReferenceType.COURSES,
-				'someReferenceId',
-				{
-					action: Action.READ,
-					requiredPermissions: [],
-				}
-			);
+			it('should return the response data', async () => {
+				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+					data: {
+						isAuthorized: true,
+						userId: 'userId',
+					},
+				});
 
-			expect(result).toEqual(response);
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
+
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions: [],
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const result = await service.checkPermissionByReferences(params);
+
+				expect(result).toEqual(response.data);
+			});
+		});
+
+		describe('when client throws error', () => {
+			it('should throw error', async () => {
+				const error = new Error('testError');
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
+
+				const expectedError = new InternalServerErrorException(
+					'AuthorizationClientAdapter:checkPermissionByReferences',
+					ErrorUtils.createHttpExceptionOptions(error)
+				);
+
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions: [],
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
+			});
 		});
 	});
 });
