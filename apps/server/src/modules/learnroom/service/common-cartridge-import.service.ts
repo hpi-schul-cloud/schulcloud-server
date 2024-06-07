@@ -48,8 +48,8 @@ export class CommonCartridgeImportService {
 	private async createColumnBoard(
 		parser: CommonCartridgeFileParser,
 		course: Course,
-		boardProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		boardProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
 		const columnBoard = await this.columnBoardService.create(
 			{
@@ -66,8 +66,8 @@ export class CommonCartridgeImportService {
 	private async createColumns(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		boardProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		boardProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
 		const columnsWithResource = organizations.filter(
 			(organization) =>
@@ -91,7 +91,7 @@ export class CommonCartridgeImportService {
 	private async createColumnWithResource(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: CommonCartridgeOrganizationProps
+		columnProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
 		const column = await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
 		await this.createCardWithElement(parser, column, columnProps, false);
@@ -124,7 +124,7 @@ export class CommonCartridgeImportService {
 	private async createCardWithElement(
 		parser: CommonCartridgeFileParser,
 		column: Column,
-		cardProps: CommonCartridgeOrganizationProps,
+		cardProps: CommonCartridgeImportOrganizationProps,
 		withTitle = true
 	): Promise<void> {
 		const card = await this.cardService.create(
@@ -146,8 +146,8 @@ export class CommonCartridgeImportService {
 	private async createCard(
 		parser: CommonCartridgeFileParser,
 		column: Column,
-		cardProps: CommonCartridgeOrganizationProps,
-		organizations: CommonCartridgeOrganizationProps[]
+		cardProps: CommonCartridgeImportOrganizationProps,
+		organizations: CommonCartridgeImportOrganizationProps[]
 	) {
 		const card = await this.cardService.create(column, undefined, this.mapper.mapOrganizationToCard(cardProps, true));
 
@@ -163,7 +163,7 @@ export class CommonCartridgeImportService {
 	private async createCardElement(
 		parser: CommonCartridgeFileParser,
 		card: Card,
-		cardElementProps: CommonCartridgeOrganizationProps
+		cardElementProps: CommonCartridgeImportOrganizationProps
 	) {
 		if (cardElementProps.isResource) {
 			const resource = parser.getResource(cardElementProps);
