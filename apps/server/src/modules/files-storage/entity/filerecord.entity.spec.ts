@@ -239,6 +239,24 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
+	describe('getStorageLocation is called', () => {
+		describe('WHEN storageLocation exists', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build({ storageLocation: StorageLocation.INSTANCE });
+
+				return { fileRecord, storageLocation: StorageLocation.INSTANCE };
+			};
+
+			it('should return the correct storageLocationId', () => {
+				const { fileRecord, storageLocation } = setup();
+
+				const result = fileRecord.getStorageLocation();
+
+				expect(result).toEqual(storageLocation);
+			});
+		});
+	});
+
 	describe('getSecurityToken is called', () => {
 		describe('WHEN security token exists', () => {
 			const setup = () => {

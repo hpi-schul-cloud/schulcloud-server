@@ -303,7 +303,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getStorageLocation(): StorageLocation {
-		return this.storageLocation;
+		return this._storageLocation;
 	}
 
 	public getPreviewStatus(): PreviewStatus {
