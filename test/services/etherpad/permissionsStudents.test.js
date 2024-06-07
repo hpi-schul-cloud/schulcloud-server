@@ -40,7 +40,7 @@ describe('Etherpad Permission Check: Students', () => {
 				logger.warning('freeport:', err);
 			}
 
-			const ethPath = Configuration.get('ETHERPAD_API_PATH');
+			const ethPath = '/api';
 			const mockUrl = `http://localhost:${port}${ethPath}`;
 			Configuration.set('ETHERPAD_URI', mockUrl);
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
@@ -49,7 +49,7 @@ describe('Etherpad Permission Check: Students', () => {
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
+			const mock = MockServer(mockUrl, ethPath, done);
 			mockServer = mock.server;
 		});
 	});

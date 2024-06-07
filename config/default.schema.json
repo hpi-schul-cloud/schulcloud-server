@@ -788,11 +788,6 @@
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
 		},
-		"ETHERPAD_API_PATH": {
-			"type": "string",
-			"default": "/api/1",
-			"description": "The etherpad api path."
-		},
 		"ETHERPAD_URI": {
 			"type": "string",
 			"default": "https://dbildungscloud.de/etherpad/api/1",

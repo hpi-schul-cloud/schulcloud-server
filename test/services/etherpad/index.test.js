@@ -48,7 +48,7 @@ describe('Etherpad services', () => {
 				logger.warning('freeport:', err);
 			}
 
-			const API_PATH_CONFIG = Configuration.get('ETHERPAD_API_PATH');
+			const API_PATH_CONFIG = `/api`;
 			const mockUrl = `http://localhost:${port}${API_PATH_CONFIG}`;
 			Configuration.set('ETHERPAD_URI', mockUrl);
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
@@ -57,7 +57,7 @@ describe('Etherpad services', () => {
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
 
-			const mock = await MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'));
+			const mock = await MockServer(mockUrl, API_PATH_CONFIG);
 			mockServer = mock.server;
 		});
 	});
