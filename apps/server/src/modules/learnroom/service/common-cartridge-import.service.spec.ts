@@ -68,16 +68,17 @@ describe('CommonCartridgeImportService', () => {
 		expect(sut).toBeDefined();
 	});
 
+	const setupEnvironment = async (filePath: string) => {
+		const user = userFactory.buildWithId();
+		const buffer = await readFile(filePath);
+
+		return { user, buffer };
+	};
+
 	describe('importFile', () => {
 		describe('when the common cartridge is valid', () => {
-			const setup = async () => {
-				const user = userFactory.buildWithId();
-				const buffer = await readFile(
-					'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
-				);
-
-				return { user, buffer };
-			};
+			const setup = async () =>
+				setupEnvironment('./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc');
 
 			it('should create a course', async () => {
 				const { user, buffer } = await setup();
@@ -92,7 +93,7 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnBoardServiceMock.create).toHaveBeenCalledTimes(1);
+				expect(columnBoardServiceMock.create).toHaveBeenCalledTimes(14);
 			});
 
 			it('should create columns', async () => {
@@ -100,7 +101,52 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnServiceMock.create).toHaveBeenCalledTimes(14);
+				expect(columnServiceMock.create).toHaveBeenCalledTimes(103);
+			});
+
+			it('should create cards', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(cardServiceMock.create).toHaveBeenCalled();
+			});
+
+			it('should create elements', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(contentElementServiceMock.create).toHaveBeenCalled();
+			});
+		});
+
+		describe('when the common cartridge is a valid dbc course', () => {
+			const setup = async () =>
+				setupEnvironment('./apps/server/src/modules/common-cartridge/testing/assets/dbc_course.imscc');
+
+			it('should create a course', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(courseServiceMock.create).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create a column board', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(columnBoardServiceMock.create).toHaveBeenCalledTimes(3);
+			});
+
+			it('should create columns', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(columnServiceMock.create).toHaveBeenCalledTimes(6);
 			});
 
 			it('should create cards', async () => {

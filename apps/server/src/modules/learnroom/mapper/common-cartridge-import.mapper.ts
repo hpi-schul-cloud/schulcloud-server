@@ -17,11 +17,19 @@ export class CommonCartridgeImportMapper {
 		};
 	}
 
-	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps): CardInitProps {
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps, withTitle = true): CardInitProps {
 		return {
-			title: organization.title,
+			title: withTitle ? organization.title : '',
 			height: 150,
 		};
+	}
+
+	public mapOrganizationToTextElement(organization: CommonCartridgeOrganizationProps): AnyElementContentBody {
+		const body = new RichTextContentBody();
+		body.text = `<b>${organization.title}</b>`;
+		body.inputFormat = InputFormat.RICH_TEXT_CK5_SIMPLE;
+
+		return body;
 	}
 
 	public mapResourceTypeToContentElementType(
