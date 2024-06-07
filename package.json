@@ -157,7 +157,6 @@
 		"@nestjs/platform-ws": "^10.3.0",
 		"@nestjs/swagger": "^7.1.10",
 		"@nestjs/websockets": "^10.3.7",
-		"@openapitools/openapi-generator-cli": "^2.13.4",
 		"@socket.io/mongo-adapter": "^0.3.2",
 		"@types/gm": "^1.25.1",
 		"@types/ldapjs": "^2.2.5",
