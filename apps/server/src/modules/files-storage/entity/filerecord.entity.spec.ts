@@ -247,7 +247,7 @@ describe('FileRecord Entity', () => {
 				return { fileRecord, storageLocation: StorageLocation.INSTANCE };
 			};
 
-			it('should return the correct storageLocationId', () => {
+			it('should return the correct storageLocation', () => {
 				const { fileRecord, storageLocation } = setup();
 
 				const result = fileRecord.getStorageLocation();
