@@ -814,11 +814,6 @@
 				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
-		"ETHERPAD_OLD_PAD_DOMAIN": {
-			"type": "string",
-			"default": "etherpad.dbildungscloud.de",
-			"description": "The old etherpad domain."
-		},
 		"ETHERPAD_COOKIE_EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
