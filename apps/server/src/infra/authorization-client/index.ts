@@ -1,2 +1,2 @@
-export * from './authorization-client.adapter';
-export * from './authorization-client.module';
+export { AuthorizationClientAdapter } from './authorization-client.adapter';
+export { AuthorizationClientModule } from './authorization-client.module';
