@@ -142,16 +142,11 @@ export class CommonCartridgeExportMapper {
 	}
 
 	private getTextTitle(text: string): string {
-		const cleanTitle = sanitizeHtml(text, {
+		const title = sanitizeHtml(text, {
 			allowedTags: [],
 			allowedAttributes: {},
-		});
-		const title = cleanTitle.slice(0, 50);
-		// .replace(/<[^>]*>?/gm, '')
-		// .replace(/<script/gi, '&lt;script');
-		/* 		if (text.length > 50) {
-			title = title.concat('...');
-		} */
+		}).slice(0, 50);
+
 		return title;
 	}
 }
