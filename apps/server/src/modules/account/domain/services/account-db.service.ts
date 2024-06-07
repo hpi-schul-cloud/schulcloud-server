@@ -10,15 +10,18 @@ import { AccountConfig } from '../../account-config';
 import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { Account } from '../account';
 import { AccountSave } from '../account-save';
+import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
-export class AccountServiceDb {
+export class AccountServiceDb extends AbstractAccountService {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly userRepo: UserRepo
-	) {}
+	) {
+		super();
+	}
 
 	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
@@ -145,18 +148,9 @@ export class AccountServiceDb {
 		return account;
 	}
 
-	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise<boolean> {
+	public async isUniqueEmail(email: string): Promise<boolean> {
 		const foundUsers = await this.userRepo.findByEmail(email);
-		const [accounts] = await this.accountRepo.searchByUsernameExactMatch(email);
-		const filteredAccounts = accounts.filter((foundAccount) => foundAccount.systemId === systemId);
-
-		const multipleUsers = foundUsers.length > 1;
-		const multipleAccounts = filteredAccounts.length > 1;
-		// paranoid 'toString': legacy code may call userId or accountId as ObjectID
-		const oneUserWithoutGivenId = foundUsers.length === 1 && foundUsers[0].id.toString() !== userId?.toString();
-		const oneAccountWithoutGivenId =
-			filteredAccounts.length === 1 && filteredAccounts[0].id.toString() !== accountId?.toString();
-		const isUnique = !(multipleUsers || multipleAccounts || oneUserWithoutGivenId || oneAccountWithoutGivenId);
+		const isUnique = foundUsers.length === 0;
 
 		return isUnique;
 	}

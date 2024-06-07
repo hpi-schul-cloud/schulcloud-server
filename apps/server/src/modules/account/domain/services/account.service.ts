@@ -121,7 +121,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	): Promise<boolean> {
 		if (updateData.email && user.email !== updateData.email) {
 			const newMail = updateData.email.toLowerCase();
-			await this.checkUniqueEmail(account, user, newMail);
+			await this.checkUniqueEmail(newMail);
 			user.email = newMail;
 			accountSave.username = newMail;
 			return true;
@@ -166,7 +166,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		if (updateData.username !== undefined) {
 			const newMail = updateData.username.toLowerCase();
-			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			await this.checkUniqueEmail(newMail);
 			targetUser.email = newMail;
 			targetAccount.username = newMail;
 			updateUser = true;
@@ -322,7 +322,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		if (!(await this.isUniqueEmail(accountSave.username, accountSave.userId, accountSave.id, accountSave.systemId))) {
+		if (!(await this.isUniqueEmail(accountSave.username))) {
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
@@ -426,8 +426,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return null;
 	}
 
-	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
-		if (!(await this.isUniqueEmail(email, user.id, account.id, account.systemId))) {
+	private async checkUniqueEmail(email: string): Promise<void> {
+		if (!(await this.isUniqueEmail(email))) {
 			throw new ValidationError(`The email address is already in use!`);
 		}
 	}
@@ -438,26 +438,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return foundAccounts;
 	}
 
-	public async isUniqueEmail(
-		email: string,
-		userId?: string | undefined,
-		accountId?: string | undefined,
-		systemId?: string | undefined
-	): Promise<boolean> {
-		const isUniqueEmailByKc = await this.accountIdm.isUniqueEmail(email, userId, accountId, systemId);
-		const isUniqueEmailByDb = await this.accountDb.isUniqueEmail(email, userId, accountId, systemId);
-		const isUniqueEmail = isUniqueEmailByKc && isUniqueEmailByDb;
+	public async isUniqueEmail(email: string): Promise<boolean> {
+		const isUniqueEmail = await this.accountImpl.isUniqueEmail(email);
 
 		return isUniqueEmail;
-	}
-
-	public async isUniqueEmailForUser(email: string, userId: EntityId): Promise<boolean> {
-		const account = await this.accountRepo.findByUserId(userId);
-		return this.isUniqueEmail(email, userId, account?.id, account?.systemId?.toString());
-	}
-
-	public async isUniqueEmailForAccount(email: string, accountId: EntityId): Promise<boolean> {
-		const account = await this.accountRepo.findById(accountId);
-		return this.isUniqueEmail(email, account.userId?.toString(), account.id, account.systemId?.toString());
 	}
 }
