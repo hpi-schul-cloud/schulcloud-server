@@ -2,7 +2,7 @@ import { EntityData, EntityName, FilterQuery, Primary, RequiredEntityData, Utils
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { BaseEntity, baseEntityProperties } from '@shared/domain/entity';
+import { BaseEntity, baseEntityProperties } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepoInterface } from './base-domain-object.repo.interface';
 
