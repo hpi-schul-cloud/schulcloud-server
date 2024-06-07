@@ -115,12 +115,10 @@ describe('TldrawWSService', () => {
 
 	afterEach(async () => {
 		jest.restoreAllMocks();
-		jest.resetAllMocks();
 		// the current implementation result in unstable test by design, close operation is trigger and then the events after it should be tested.
 		// To make it possible the delays in test are added, this can not be stable.
 		// The 1 sec count between each test is added to get a semi stability for each test, to avoid that events from last execution infect the next test.
 		await delay(1000);
-		jest.clearAllMocks();
 	});
 
 	const createMessage = (values: number[]) => {

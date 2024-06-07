@@ -74,11 +74,10 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	afterAll(async () => {
 		await app.close();
-		jest.resetAllMocks();
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	describe('when tldraw connection is established', () => {
