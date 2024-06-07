@@ -1021,7 +1021,7 @@ export class CommonCartridgeOrganizationVisitor {
 	}
 
 	private visit(element: SearchElement, queue: SearchElement[]): void {
-		element.element.querySelectorAll(&#x27;item&#x27;).forEach((child) &#x3D;&gt; {
+		element.element.querySelectorAll(&#x27;:scope &gt; item&#x27;).forEach((child) &#x3D;&gt; {
 			queue.push({
 				depth: element.depth + 1,
 				path: &#x60;${element.path}${this.options.pathSeparator}${this.getElementIdentifier(child)}&#x60;,
