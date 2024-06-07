@@ -46,6 +46,7 @@ const params = {
 
 	config: args._[2] || args['--config'] || '',
 
+
 	filter: args._[3] || args['--filter'] || '',
 };
 

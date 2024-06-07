@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetChatHeadUsingGET200ResponseData } from './get-chat-head-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetChatHeadUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetChatHeadUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetChatHeadUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetChatHeadUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetChatHeadUsingGET200ResponseData}
+     * @memberof GetChatHeadUsingGET200Response
+     */
+    'data'?: GetChatHeadUsingGET200ResponseData;
 }
 

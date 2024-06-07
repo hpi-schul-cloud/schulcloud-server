@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetSessionInfoUsingGET200ResponseData } from './get-session-info-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetSessionInfoUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetSessionInfoUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetSessionInfoUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetSessionInfoUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetSessionInfoUsingGET200ResponseData}
+     * @memberof GetSessionInfoUsingGET200Response
+     */
+    'data'?: GetSessionInfoUsingGET200ResponseData;
 }
 

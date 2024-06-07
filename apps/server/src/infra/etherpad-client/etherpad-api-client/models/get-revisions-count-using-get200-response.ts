@@ -13,36 +13,33 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetRevisionsCountUsingGET200ResponseData } from './get-revisions-count-using-get200-response-data';
 
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetRevisionsCountUsingGET200Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface GetRevisionsCountUsingGET200Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetRevisionsCountUsingGET200Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof GetRevisionsCountUsingGET200Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {GetRevisionsCountUsingGET200ResponseData}
+     * @memberof GetRevisionsCountUsingGET200Response
+     */
+    'data'?: GetRevisionsCountUsingGET200ResponseData;
 }
 

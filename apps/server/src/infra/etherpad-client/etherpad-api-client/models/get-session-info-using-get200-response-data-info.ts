@@ -17,31 +17,31 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface GetSessionInfoUsingGET200ResponseDataInfo
  */
-export interface SessionInfo {
+export interface GetSessionInfoUsingGET200ResponseDataInfo {
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
      */
     'id'?: string;
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
      */
     'authorID'?: string;
     /**
      * 
      * @type {string}
-     * @memberof SessionInfo
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
      */
     'groupID'?: string;
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof GetSessionInfoUsingGET200ResponseDataInfo
      */
     'validUntil'?: number;
 }

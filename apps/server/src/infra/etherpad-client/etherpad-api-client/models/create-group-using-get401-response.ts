@@ -17,32 +17,26 @@
 /**
  * 
  * @export
- * @interface SessionInfo
+ * @interface CreateGroupUsingGET401Response
  */
-export interface SessionInfo {
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'authorID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SessionInfo
-     */
-    'groupID'?: string;
+export interface CreateGroupUsingGET401Response {
     /**
      * 
      * @type {number}
-     * @memberof SessionInfo
+     * @memberof CreateGroupUsingGET401Response
      */
-    'validUntil'?: number;
+    'code'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateGroupUsingGET401Response
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CreateGroupUsingGET401Response
+     */
+    'data'?: object;
 }
 

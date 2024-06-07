@@ -121,6 +121,7 @@
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
 		"generate-client:authorization": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/infra/authorization-client/authorization-api-client' -c 'openapitools-config.json' -f 'operationId:AuthorizationReferenceController_authorizeByReference'"
+		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.100.0",
@@ -271,6 +272,7 @@
 		"@nestjs/cli": "^10.1.17",
 		"@nestjs/schematics": "^10.0.2",
 		"@nestjs/testing": "^10.2.4",
+		"@openapitools/openapi-generator-cli": "^2.13.4",
 		"@types/adm-zip": "^0.5.0",
 		"@types/amqplib": "^0.8.2",
 		"@types/bcryptjs": "^2.4.2",
