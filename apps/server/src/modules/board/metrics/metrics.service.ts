@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
+import { UserService } from '@src/modules/user';
 import { Gauge, register } from 'prom-client';
 
 type ClientId = string;
@@ -16,7 +19,10 @@ export class MetricsService {
 
 	private numberOfViewersOnServerCounter: Gauge<string>;
 
-	constructor() {
+	private executionTimes: Map<string, Gauge<string>> = new Map();
+
+	// better percentile than avg
+	constructor(private readonly userService: UserService) {
 		this.numberOfUsersOnServerCounter = new Gauge({
 			name: 'sc_boards_users',
 			help: 'Number of active users per pod',
@@ -45,9 +51,28 @@ export class MetricsService {
 		return this.knownClientRoles.has(clientId);
 	}
 
-	public trackClientRole(clientId: ClientId, role: Role): void {
-		this.knownClientRoles.set(clientId, role);
-		this.updateRoleCounts();
+	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
+		if (user.roles.find((r) => r.name === RoleName.TEACHER)) {
+			return 'editor';
+		}
+		if (user.roles.find((r) => r.name === RoleName.STUDENT)) {
+			return 'viewer';
+		}
+		return undefined;
+	}
+
+	public async trackClientRole(clientId: ClientId, userId: string | undefined): Promise<void> {
+		if (userId) {
+			// extract => metricsService
+			if (!this.knownClientRoles.has(clientId)) {
+				const userDo = await this.userService.findById(userId);
+				const role = this.mapRole(userDo);
+				if (role) {
+					this.knownClientRoles.set(clientId, role);
+					this.updateRoleCounts();
+				}
+			}
+		}
 	}
 
 	public untrackClient(clientId: ClientId): void {
@@ -70,5 +95,19 @@ export class MetricsService {
 
 	public setNumberOfBoardRooms(value: number): void {
 		this.numberOfBoardroomsOnServerCounter.set(value);
+	}
+
+	public setExecutionTime(actionName: string, value: number): void {
+		let gauge = this.executionTimes.get(actionName);
+
+		if (!gauge) {
+			gauge = new Gauge({
+				name: `sc_boards_execution_time_${actionName}`,
+				help: '...',
+			});
+			this.executionTimes.set(actionName, gauge);
+			register.registerMetric(gauge);
+		}
+		gauge.set(value);
 	}
 }

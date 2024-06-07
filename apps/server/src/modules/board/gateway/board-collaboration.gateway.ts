@@ -9,10 +9,7 @@ import {
 	WebSocketServer,
 	WsException,
 } from '@nestjs/websockets';
-import { RoleName } from '@shared/domain/interface';
-import { UserDO } from '@shared/domain/domainobject';
 import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import { UserService } from '@modules/user';
 import { Server } from 'socket.io';
 import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
 import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
@@ -40,6 +37,7 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
+import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -56,24 +54,19 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
-		private readonly userService: UserService,
 		private readonly authorizableService: BoardDoAuthorizableService // to be removed
 	) {}
+
+	trackExecutionTime(methodName: string, executionTimeMs: number) {
+		if (this.metricsService) {
+			this.metricsService.setExecutionTime(methodName, executionTimeMs);
+		}
+	}
 
 	private getCurrentUser(socket: Socket) {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
 		return user;
-	}
-
-	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
-		if (user.roles.find((r) => r.name === RoleName.TEACHER)) {
-			return 'editor';
-		}
-		if (user.roles.find((r) => r.name === RoleName.STUDENT)) {
-			return 'viewer';
-		}
-		return undefined;
 	}
 
 	private async updateRoomsAndUsersMetrics(socket: Socket) {
@@ -87,20 +80,8 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		).length;
 		this.metricsService.setNumberOfUsers(userCount);
 		this.metricsService.setNumberOfBoardRooms(roomCount);
-		await this.updateUserRoleCounters(socket);
-	}
-
-	private async updateUserRoleCounters(socket: Socket) {
 		const { user } = socket.handshake;
-		if (user) {
-			if (!this.metricsService.isClientRoleKnown(socket.id)) {
-				const userDo = await this.userService.findById(user.userId);
-				const role = this.mapRole(userDo);
-				if (role) {
-					this.metricsService.trackClientRole(socket.id, role);
-				}
-			}
-		}
+		await this.metricsService.trackClientRole(socket.id, user?.userId);
 	}
 
 	public handleConnection(socket: Socket): Promise<void> {
@@ -133,6 +114,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('update-board-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateBoardTitle(socket: Socket, data: UpdateBoardTitleMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'update-board-title' });
@@ -148,6 +130,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('update-card-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateCardTitle(socket: Socket, data: UpdateCardTitleMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardId, action: 'update-card-title' });
@@ -193,6 +176,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('create-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async createCard(socket: Socket, data: CreateCardMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'create-card' });
@@ -236,6 +220,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('fetch-board-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchBoard(socket: Socket, data: FetchBoardMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.boardId, action: 'fetch-board' });
@@ -282,6 +267,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('update-column-title-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateColumnTitle(socket: Socket, data: UpdateColumnTitleMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.columnId, action: 'update-column-title' });
@@ -327,6 +313,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('fetch-card-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async fetchCards(socket: Socket, data: FetchCardsMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.cardIds[0], action: 'fetch-card' });
@@ -362,6 +349,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	}
 
 	@SubscribeMessage('update-element-request')
+	@TrackExecutionTime()
 	@UseRequestContext()
 	async updateElement(socket: Socket, data: UpdateContentElementMessageParams) {
 		const emitter = await this.buildBoardSocketEmitter({ socket, id: data.elementId, action: 'update-element' });
