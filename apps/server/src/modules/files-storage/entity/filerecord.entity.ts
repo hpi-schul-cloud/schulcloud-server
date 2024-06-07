@@ -299,7 +299,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getStorageLocationId(): EntityId {
-		return this.storageLocationId;
+		return this._storageLocationId.toHexString();
 	}
 
 	public getStorageLocation(): StorageLocation {
