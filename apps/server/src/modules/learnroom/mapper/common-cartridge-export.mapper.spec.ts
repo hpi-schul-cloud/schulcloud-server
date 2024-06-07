@@ -422,10 +422,7 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(resourceProps).toStrictEqual<CommonCartridgeResourceProps>({
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: expect.any(String),
-					title: richTextElement.text
-						.slice(0, 50)
-						.replace(/<[^>]*>?/gm, '')
-						.concat('...'),
+					title: richTextElement.text.slice(0, 50).replace(/<[^>]*>?/gm, ''),
 					html: `<p>${richTextElement.text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
