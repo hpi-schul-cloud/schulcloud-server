@@ -78,6 +78,40 @@ describe('CommonCartridgeImportMapper', () => {
 				});
 			});
 		});
+
+		describe('when organization is provided and withTitle is false', () => {
+			const setup = () => setupOrganization();
+
+			it('should set the title to an empty string', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization, false);
+
+				expect(result).toEqual<CardInitProps>({
+					title: '',
+					height: 150,
+				});
+			});
+		});
+	});
+
+	// AI next 17 lines
+	describe('mapOrganizationToTextElement', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to text element', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToTextElement(organization);
+
+				expect(result).toBeInstanceOf(RichTextContentBody);
+				expect(result).toEqual<RichTextContentBody>({
+					text: `<b>${organization.title}</b>`,
+					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
+				});
+			});
+		});
 	});
 
 	describe('mapResourceTypeToContentElementType', () => {
