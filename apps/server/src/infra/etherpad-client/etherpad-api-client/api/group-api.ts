@@ -13,29 +13,30 @@
  */
 
 
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
-import { Configuration } from '../configuration';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { InlineResponse200 } from '../models';
+import type { CreateGroupUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse2001 } from '../models';
+import type { CreateGroupUsingGET400Response } from '../models';
 // @ts-ignore
-import { InlineResponse20017 } from '../models';
+import type { CreateGroupUsingGET401Response } from '../models';
 // @ts-ignore
-import { InlineResponse2002 } from '../models';
+import type { CreateGroupUsingGET500Response } from '../models';
 // @ts-ignore
-import { InlineResponse2006 } from '../models';
+import type { DeleteGroupUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse400 } from '../models';
+import type { ListAllGroupsUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse401 } from '../models';
+import type { ListPadsUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse500 } from '../models';
+import type { ListSessionsOfGroupUsingGET200Response } from '../models';
 /**
  * GroupApi - axios parameter creator
  * @export
@@ -49,7 +50,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingGET: async (groupMapper?: string, options: any = {}): Promise<RequestArgs> => {
+        createGroupIfNotExistsForUsingGET: async (groupMapper?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createGroupIfNotExistsFor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -71,7 +72,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -87,7 +88,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingPOST: async (groupMapper?: string, options: any = {}): Promise<RequestArgs> => {
+        createGroupIfNotExistsForUsingPOST: async (groupMapper?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createGroupIfNotExistsFor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -109,7 +110,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -128,7 +129,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingGET: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        createGroupPadUsingGET: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createGroupPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -162,7 +163,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -181,7 +182,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingPOST: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        createGroupPadUsingPOST: async (groupID?: string, padName?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createGroupPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -215,7 +216,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -230,7 +231,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingGET: async (options: any = {}): Promise<RequestArgs> => {
+        createGroupUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createGroup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -248,7 +249,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -263,7 +264,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingPOST: async (options: any = {}): Promise<RequestArgs> => {
+        createGroupUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createGroup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -281,7 +282,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -297,7 +298,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingGET: async (groupID?: string, options: any = {}): Promise<RequestArgs> => {
+        deleteGroupUsingGET: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/deleteGroup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -319,7 +320,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -335,7 +336,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingPOST: async (groupID?: string, options: any = {}): Promise<RequestArgs> => {
+        deleteGroupUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/deleteGroup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -357,7 +358,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -368,10 +369,11 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingGET: async (options: any = {}): Promise<RequestArgs> => {
+        listAllGroupsUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listAllGroups`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -389,7 +391,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -400,10 +402,11 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingPOST: async (options: any = {}): Promise<RequestArgs> => {
+        listAllGroupsUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listAllGroups`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -421,7 +424,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -437,7 +440,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingGET: async (groupID?: string, options: any = {}): Promise<RequestArgs> => {
+        listPadsUsingGET: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listPads`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -459,7 +462,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -475,7 +478,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingPOST: async (groupID?: string, options: any = {}): Promise<RequestArgs> => {
+        listPadsUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listPads`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -497,7 +500,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -508,11 +511,12 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingGET: async (groupID?: string, options: any = {}): Promise<RequestArgs> => {
+        listSessionsOfGroupUsingGET: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listSessionsOfGroup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -534,7 +538,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -545,11 +549,12 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingPOST: async (groupID?: string, options: any = {}): Promise<RequestArgs> => {
+        listSessionsOfGroupUsingPOST: async (groupID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listSessionsOfGroup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -571,7 +576,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -597,9 +602,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200>> {
+        async createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupIfNotExistsForUsingGET(groupMapper, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupIfNotExistsForUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -608,9 +615,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200>> {
+        async createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupIfNotExistsForUsingPOST(groupMapper, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupIfNotExistsForUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -622,9 +631,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupPadUsingGET(groupID, padName, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -636,9 +647,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupPadUsingPOST(groupID, padName, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -646,9 +659,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupUsingGET(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200>> {
+        async createGroupUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -656,9 +671,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroupUsingPOST(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse200>> {
+        async createGroupUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroupUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.createGroupUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -667,9 +684,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteGroupUsingGET(groupID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteGroupUsingGET(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.deleteGroupUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -678,27 +697,35 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteGroupUsingPOST(groupID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteGroupUsingPOST(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.deleteGroupUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllGroupsUsingGET(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20017>> {
+        async listAllGroupsUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAllGroupsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAllGroupsUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listAllGroupsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllGroupsUsingPOST(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20017>> {
+        async listAllGroupsUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAllGroupsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAllGroupsUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listAllGroupsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -707,9 +734,11 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPadsUsingGET(groupID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2002>> {
+        async listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsUsingGET(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listPadsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -718,29 +747,37 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPadsUsingPOST(groupID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2002>> {
+        async listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsUsingPOST(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listPadsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSessionsOfGroupUsingGET(groupID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2006>> {
+        async listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfGroupUsingGET(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listSessionsOfGroupUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSessionsOfGroupUsingPOST(groupID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2006>> {
+        async listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfGroupUsingPOST(groupID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.listSessionsOfGroupUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -759,7 +796,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise<InlineResponse200> {
+        createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
             return localVarFp.createGroupIfNotExistsForUsingGET(groupMapper, options).then((request) => request(axios, basePath));
         },
         /**
@@ -769,7 +806,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise<InlineResponse200> {
+        createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
             return localVarFp.createGroupIfNotExistsForUsingPOST(groupMapper, options).then((request) => request(axios, basePath));
         },
         /**
@@ -782,7 +819,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.createGroupPadUsingGET(groupID, padName, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -795,7 +832,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.createGroupPadUsingPOST(groupID, padName, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -804,7 +841,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingGET(options?: any): AxiosPromise<InlineResponse200> {
+        createGroupUsingGET(options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
             return localVarFp.createGroupUsingGET(options).then((request) => request(axios, basePath));
         },
         /**
@@ -813,7 +850,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroupUsingPOST(options?: any): AxiosPromise<InlineResponse200> {
+        createGroupUsingPOST(options?: any): AxiosPromise<CreateGroupUsingGET200Response> {
             return localVarFp.createGroupUsingPOST(options).then((request) => request(axios, basePath));
         },
         /**
@@ -823,7 +860,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.deleteGroupUsingGET(groupID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -833,23 +870,25 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.deleteGroupUsingPOST(groupID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingGET(options?: any): AxiosPromise<InlineResponse20017> {
+        listAllGroupsUsingGET(options?: any): AxiosPromise<ListAllGroupsUsingGET200Response> {
             return localVarFp.listAllGroupsUsingGET(options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllGroupsUsingPOST(options?: any): AxiosPromise<InlineResponse20017> {
+        listAllGroupsUsingPOST(options?: any): AxiosPromise<ListAllGroupsUsingGET200Response> {
             return localVarFp.listAllGroupsUsingPOST(options).then((request) => request(axios, basePath));
         },
         /**
@@ -859,7 +898,7 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingGET(groupID?: string, options?: any): AxiosPromise<InlineResponse2002> {
+        listPadsUsingGET(groupID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
             return localVarFp.listPadsUsingGET(groupID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -869,25 +908,27 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise<InlineResponse2002> {
+        listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
             return localVarFp.listPadsUsingPOST(groupID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise<InlineResponse2006> {
+        listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
             return localVarFp.listSessionsOfGroupUsingGET(groupID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {string} [groupID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<InlineResponse2006> {
+        listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
             return localVarFp.listSessionsOfGroupUsingPOST(groupID, options).then((request) => request(axios, basePath));
         },
     };
@@ -907,7 +948,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any): AxiosPromise<InlineResponse200>;
+    createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateGroupUsingGET200Response>;
 
     /**
      * 
@@ -917,7 +958,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any): AxiosPromise<InlineResponse200>;
+    createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateGroupUsingGET200Response>;
 
     /**
      * 
@@ -930,7 +971,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -943,7 +984,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -952,7 +993,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupUsingGET(options?: any): AxiosPromise<InlineResponse200>;
+    createGroupUsingGET(options?: RawAxiosRequestConfig): AxiosPromise<CreateGroupUsingGET200Response>;
 
     /**
      * 
@@ -961,7 +1002,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    createGroupUsingPOST(options?: any): AxiosPromise<InlineResponse200>;
+    createGroupUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise<CreateGroupUsingGET200Response>;
 
     /**
      * 
@@ -971,7 +1012,7 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    deleteGroupUsingGET(groupID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -981,33 +1022,25 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    deleteGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listAllGroupsUsingGET(options?: any): AxiosPromise<InlineResponse20017>;
+    listAllGroupsUsingGET(options?: RawAxiosRequestConfig): AxiosPromise<ListAllGroupsUsingGET200Response>;
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listAllGroupsUsingPOST(options?: any): AxiosPromise<InlineResponse20017>;
-
-    /**
-     * 
-     * @summary returns all pads of this group
-     * @param {string} [groupID] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof GroupApiInterface
-     */
-    listPadsUsingGET(groupID?: string, options?: any): AxiosPromise<InlineResponse2002>;
+    listAllGroupsUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise<ListAllGroupsUsingGET200Response>;
 
     /**
      * 
@@ -1017,25 +1050,37 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listPadsUsingPOST(groupID?: string, options?: any): AxiosPromise<InlineResponse2002>;
+    listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListPadsUsingGET200Response>;
 
     /**
      * 
+     * @summary returns all pads of this group
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listSessionsOfGroupUsingGET(groupID?: string, options?: any): AxiosPromise<InlineResponse2006>;
+    listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListPadsUsingGET200Response>;
 
     /**
      * 
+     * @summary 
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApiInterface
      */
-    listSessionsOfGroupUsingPOST(groupID?: string, options?: any): AxiosPromise<InlineResponse2006>;
+    listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListSessionsOfGroupUsingGET200Response>;
+
+    /**
+     * 
+     * @summary 
+     * @param {string} [groupID] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GroupApiInterface
+     */
+    listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListSessionsOfGroupUsingGET200Response>;
 
 }
 
@@ -1054,7 +1099,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: any) {
+    public createGroupIfNotExistsForUsingGET(groupMapper?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupIfNotExistsForUsingGET(groupMapper, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1066,7 +1111,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: any) {
+    public createGroupIfNotExistsForUsingPOST(groupMapper?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupIfNotExistsForUsingPOST(groupMapper, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1081,7 +1126,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any) {
+    public createGroupPadUsingGET(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupPadUsingGET(groupID, padName, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1096,7 +1141,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: any) {
+    public createGroupPadUsingPOST(groupID?: string, padName?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupPadUsingPOST(groupID, padName, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1107,7 +1152,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupUsingGET(options?: any) {
+    public createGroupUsingGET(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupUsingGET(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1118,7 +1163,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public createGroupUsingPOST(options?: any) {
+    public createGroupUsingPOST(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).createGroupUsingPOST(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1130,7 +1175,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public deleteGroupUsingGET(groupID?: string, options?: any) {
+    public deleteGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).deleteGroupUsingGET(groupID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1142,27 +1187,29 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public deleteGroupUsingPOST(groupID?: string, options?: any) {
+    public deleteGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).deleteGroupUsingPOST(groupID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listAllGroupsUsingGET(options?: any) {
+    public listAllGroupsUsingGET(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listAllGroupsUsingGET(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listAllGroupsUsingPOST(options?: any) {
+    public listAllGroupsUsingPOST(options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listAllGroupsUsingPOST(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1174,7 +1221,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listPadsUsingGET(groupID?: string, options?: any) {
+    public listPadsUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listPadsUsingGET(groupID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -1186,29 +1233,32 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listPadsUsingPOST(groupID?: string, options?: any) {
+    public listPadsUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listPadsUsingPOST(groupID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listSessionsOfGroupUsingGET(groupID?: string, options?: any) {
+    public listSessionsOfGroupUsingGET(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listSessionsOfGroupUsingGET(groupID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {string} [groupID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GroupApi
      */
-    public listSessionsOfGroupUsingPOST(groupID?: string, options?: any) {
+    public listSessionsOfGroupUsingPOST(groupID?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).listSessionsOfGroupUsingPOST(groupID, options).then((request) => request(this.axios, this.basePath));
     }
 }
+

@@ -1,7 +1,11 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common';
 import { ErrorUtils } from '@src/core/error/utils';
-import { InlineResponse2003Data, InlineResponse2004Data, InlineResponse200Data } from '../etherpad-api-client';
+import {
+	CreateAuthorUsingGET200ResponseData,
+	CreateGroupUsingGET200ResponseData,
+	CreateSessionUsingGET200ResponseData,
+} from '../etherpad-api-client';
 import {
 	AuthorId,
 	EtherpadErrorType,
@@ -15,7 +19,7 @@ import {
 import { EtherpadErrorLoggableException } from '../loggable';
 
 export class EtherpadResponseMapper {
-	static mapToSessionResponse(session?: InlineResponse2004Data): SessionId {
+	static mapToSessionResponse(session?: CreateSessionUsingGET200ResponseData): SessionId {
 		if (!session?.sessionID) {
 			throw new Error('Session could not be created');
 		}
@@ -24,7 +28,7 @@ export class EtherpadResponseMapper {
 		return sessionId;
 	}
 
-	static mapToAuthorResponse(author?: InlineResponse2003Data): AuthorId {
+	static mapToAuthorResponse(author?: CreateAuthorUsingGET200ResponseData): AuthorId {
 		if (!author?.authorID) {
 			throw new Error('Author could not be created');
 		}
@@ -33,7 +37,7 @@ export class EtherpadResponseMapper {
 		return authorId;
 	}
 
-	static mapToGroupResponse(group?: InlineResponse200Data): GroupId {
+	static mapToGroupResponse(group?: CreateGroupUsingGET200ResponseData): GroupId {
 		if (!group?.groupID) {
 			throw new Error('Group could not be created');
 		}
@@ -43,7 +47,7 @@ export class EtherpadResponseMapper {
 	}
 
 	static mapToPadResponse(pad?: object): PadId {
-		// InlineResponse2001 has wrong type definition
+		// DeleteGroupUsingGET200Response has wrong type definition
 		if (pad && 'padID' in pad && pad.padID) {
 			const padId = pad.padID as string;
 

@@ -13,47 +13,48 @@
  */
 
 
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
-import { Configuration } from '../configuration';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { InlineResponse2001 } from '../models';
+import type { CreateDiffHTMLUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse20010 } from '../models';
+import type { CreateGroupUsingGET400Response } from '../models';
 // @ts-ignore
-import { InlineResponse20011 } from '../models';
+import type { CreateGroupUsingGET401Response } from '../models';
 // @ts-ignore
-import { InlineResponse20012 } from '../models';
+import type { CreateGroupUsingGET500Response } from '../models';
 // @ts-ignore
-import { InlineResponse20013 } from '../models';
+import type { DeleteGroupUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse20014 } from '../models';
+import type { GetChatHeadUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse20016 } from '../models';
+import type { GetChatHistoryUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse20018 } from '../models';
+import type { GetHTMLUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse20019 } from '../models';
+import type { GetLastEditedUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse2002 } from '../models';
+import type { GetPublicStatusUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse20020 } from '../models';
+import type { GetReadOnlyIDUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse2007 } from '../models';
+import type { GetRevisionsCountUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse2008 } from '../models';
+import type { GetTextUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse2009 } from '../models';
+import type { ListAuthorsOfPadUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse400 } from '../models';
+import type { ListPadsUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse401 } from '../models';
+import type { PadUsersCountUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse500 } from '../models';
+import type { PadUsersUsingGET200Response } from '../models';
 /**
  * PadApi - axios parameter creator
  * @export
@@ -70,7 +71,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendChatMessageUsingGET: async (padID?: string, text?: string, authorID?: string, time?: string, options: any = {}): Promise<RequestArgs> => {
+        appendChatMessageUsingGET: async (padID?: string, text?: string, authorID?: string, time?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/appendChatMessage`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -104,7 +105,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -123,7 +124,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendChatMessageUsingPOST: async (padID?: string, text?: string, authorID?: string, time?: string, options: any = {}): Promise<RequestArgs> => {
+        appendChatMessageUsingPOST: async (padID?: string, text?: string, authorID?: string, time?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/appendChatMessage`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -157,7 +158,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -172,7 +173,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkTokenUsingGET: async (options: any = {}): Promise<RequestArgs> => {
+        checkTokenUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/checkToken`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -190,7 +191,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -205,7 +206,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkTokenUsingPOST: async (options: any = {}): Promise<RequestArgs> => {
+        checkTokenUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/checkToken`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -223,7 +224,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -234,13 +235,14 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
         },
         /**
          * 
+         * @summary 
          * @param {string} [padID] 
          * @param {string} [startRev] 
          * @param {string} [endRev] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDiffHTMLUsingGET: async (padID?: string, startRev?: string, endRev?: string, options: any = {}): Promise<RequestArgs> => {
+        createDiffHTMLUsingGET: async (padID?: string, startRev?: string, endRev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createDiffHTML`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -270,7 +272,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -281,13 +283,14 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
         },
         /**
          * 
+         * @summary 
          * @param {string} [padID] 
          * @param {string} [startRev] 
          * @param {string} [endRev] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDiffHTMLUsingPOST: async (padID?: string, startRev?: string, endRev?: string, options: any = {}): Promise<RequestArgs> => {
+        createDiffHTMLUsingPOST: async (padID?: string, startRev?: string, endRev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createDiffHTML`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -317,7 +320,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -334,7 +337,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPadUsingGET: async (padID?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        createPadUsingGET: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -364,7 +367,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -381,7 +384,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPadUsingPOST: async (padID?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        createPadUsingPOST: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -411,7 +414,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -427,7 +430,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePadUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        deletePadUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/deletePad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -449,7 +452,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -465,7 +468,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePadUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        deletePadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/deletePad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -487,7 +490,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -503,7 +506,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHeadUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getChatHeadUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getChatHead`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -525,7 +528,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -541,7 +544,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHeadUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getChatHeadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getChatHead`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -563,7 +566,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -581,7 +584,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHistoryUsingGET: async (padID?: string, start?: string, end?: string, options: any = {}): Promise<RequestArgs> => {
+        getChatHistoryUsingGET: async (padID?: string, start?: string, end?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getChatHistory`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -611,7 +614,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -629,7 +632,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHistoryUsingPOST: async (padID?: string, start?: string, end?: string, options: any = {}): Promise<RequestArgs> => {
+        getChatHistoryUsingPOST: async (padID?: string, start?: string, end?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getChatHistory`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -659,7 +662,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -676,7 +679,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHTMLUsingGET: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        getHTMLUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getHTML`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -702,7 +705,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -719,7 +722,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHTMLUsingPOST: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        getHTMLUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getHTML`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -745,7 +748,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -761,7 +764,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLastEditedUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getLastEditedUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getLastEdited`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -783,7 +786,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -799,7 +802,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLastEditedUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getLastEditedUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getLastEdited`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -821,7 +824,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -837,7 +840,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPublicStatusUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getPublicStatusUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getPublicStatus`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -859,7 +862,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -875,7 +878,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPublicStatusUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getPublicStatusUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getPublicStatus`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -897,7 +900,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -913,7 +916,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getReadOnlyIDUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getReadOnlyIDUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getReadOnlyID`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -935,7 +938,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -951,7 +954,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getReadOnlyIDUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getReadOnlyIDUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getReadOnlyID`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -973,7 +976,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -989,7 +992,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionsCountUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getRevisionsCountUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getRevisionsCount`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1011,7 +1014,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1027,7 +1030,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionsCountUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        getRevisionsCountUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getRevisionsCount`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1049,7 +1052,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1066,7 +1069,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTextUsingGET: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        getTextUsingGET: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getText`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1092,7 +1095,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1109,7 +1112,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTextUsingPOST: async (padID?: string, rev?: string, options: any = {}): Promise<RequestArgs> => {
+        getTextUsingPOST: async (padID?: string, rev?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getText`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1135,7 +1138,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1150,7 +1153,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllPadsUsingGET: async (options: any = {}): Promise<RequestArgs> => {
+        listAllPadsUsingGET: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listAllPads`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1168,7 +1171,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1183,7 +1186,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllPadsUsingPOST: async (options: any = {}): Promise<RequestArgs> => {
+        listAllPadsUsingPOST: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listAllPads`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1201,7 +1204,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1217,7 +1220,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAuthorsOfPadUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        listAuthorsOfPadUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listAuthorsOfPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1239,7 +1242,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1255,7 +1258,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAuthorsOfPadUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        listAuthorsOfPadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listAuthorsOfPad`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1277,7 +1280,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1293,7 +1296,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersCountUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        padUsersCountUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/padUsersCount`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1315,7 +1318,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1331,7 +1334,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersCountUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        padUsersCountUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/padUsersCount`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1353,7 +1356,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1369,7 +1372,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersUsingGET: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        padUsersUsingGET: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/padUsers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1391,7 +1394,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1407,7 +1410,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersUsingPOST: async (padID?: string, options: any = {}): Promise<RequestArgs> => {
+        padUsersUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/padUsers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1429,7 +1432,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1446,7 +1449,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendClientsMessageUsingGET: async (padID?: string, msg?: string, options: any = {}): Promise<RequestArgs> => {
+        sendClientsMessageUsingGET: async (padID?: string, msg?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/sendClientsMessage`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1472,7 +1475,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1489,7 +1492,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendClientsMessageUsingPOST: async (padID?: string, msg?: string, options: any = {}): Promise<RequestArgs> => {
+        sendClientsMessageUsingPOST: async (padID?: string, msg?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/sendClientsMessage`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1515,7 +1518,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1533,7 +1536,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setHTMLUsingGET: async (padID?: string, html?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        setHTMLUsingGET: async (padID?: string, html?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/setHTML`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1563,7 +1566,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1581,7 +1584,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setHTMLUsingPOST: async (padID?: string, html?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        setHTMLUsingPOST: async (padID?: string, html?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/setHTML`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1611,7 +1614,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1628,7 +1631,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setPublicStatusUsingGET: async (padID?: string, publicStatus?: string, options: any = {}): Promise<RequestArgs> => {
+        setPublicStatusUsingGET: async (padID?: string, publicStatus?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/setPublicStatus`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1654,7 +1657,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1671,7 +1674,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setPublicStatusUsingPOST: async (padID?: string, publicStatus?: string, options: any = {}): Promise<RequestArgs> => {
+        setPublicStatusUsingPOST: async (padID?: string, publicStatus?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/setPublicStatus`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1697,7 +1700,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1715,7 +1718,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTextUsingGET: async (padID?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        setTextUsingGET: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/setText`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1745,7 +1748,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1763,7 +1766,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTextUsingPOST: async (padID?: string, text?: string, authorId?: string, options: any = {}): Promise<RequestArgs> => {
+        setTextUsingPOST: async (padID?: string, text?: string, authorId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/setText`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1793,7 +1796,7 @@ export const PadApiAxiosParamCreator = function (configuration?: Configuration) 
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -1822,9 +1825,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.appendChatMessageUsingGET(padID, text, authorID, time, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.appendChatMessageUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1836,9 +1841,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.appendChatMessageUsingPOST(padID, text, authorID, time, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.appendChatMessageUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1846,9 +1853,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async checkTokenUsingGET(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async checkTokenUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.checkTokenUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.checkTokenUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1856,33 +1865,41 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async checkTokenUsingPOST(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async checkTokenUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.checkTokenUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.checkTokenUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {string} [padID] 
          * @param {string} [startRev] 
          * @param {string} [endRev] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20018>> {
+        async createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateDiffHTMLUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createDiffHTMLUsingGET(padID, startRev, endRev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createDiffHTMLUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary 
          * @param {string} [padID] 
          * @param {string} [startRev] 
          * @param {string} [endRev] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20018>> {
+        async createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateDiffHTMLUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createDiffHTMLUsingPOST(padID, startRev, endRev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createDiffHTMLUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
@@ -1892,9 +1909,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPadUsingGET(padID, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
@@ -1904,9 +1923,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPadUsingPOST(padID, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.createPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1915,9 +1936,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePadUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async deletePadUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deletePadUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.deletePadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1926,9 +1949,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePadUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async deletePadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deletePadUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.deletePadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1937,9 +1962,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getChatHeadUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20020>> {
+        async getChatHeadUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHeadUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHeadUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHeadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1948,9 +1975,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getChatHeadUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20020>> {
+        async getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHeadUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHeadUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHeadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1961,9 +1990,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20019>> {
+        async getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHistoryUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHistoryUsingGET(padID, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHistoryUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1974,9 +2005,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20019>> {
+        async getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHistoryUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHistoryUsingPOST(padID, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getChatHistoryUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1986,9 +2019,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getHTMLUsingGET(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2008>> {
+        async getHTMLUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetHTMLUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getHTMLUsingGET(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getHTMLUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -1998,9 +2033,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getHTMLUsingPOST(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2008>> {
+        async getHTMLUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetHTMLUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getHTMLUsingPOST(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getHTMLUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2009,9 +2046,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLastEditedUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20010>> {
+        async getLastEditedUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetLastEditedUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getLastEditedUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getLastEditedUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2020,9 +2059,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLastEditedUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20010>> {
+        async getLastEditedUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetLastEditedUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getLastEditedUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getLastEditedUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2031,9 +2072,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPublicStatusUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20012>> {
+        async getPublicStatusUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPublicStatusUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPublicStatusUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getPublicStatusUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2042,9 +2085,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPublicStatusUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20012>> {
+        async getPublicStatusUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPublicStatusUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPublicStatusUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getPublicStatusUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2053,9 +2098,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getReadOnlyIDUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20011>> {
+        async getReadOnlyIDUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetReadOnlyIDUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getReadOnlyIDUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getReadOnlyIDUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2064,9 +2111,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getReadOnlyIDUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20011>> {
+        async getReadOnlyIDUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetReadOnlyIDUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getReadOnlyIDUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getReadOnlyIDUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2075,9 +2124,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRevisionsCountUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2009>> {
+        async getRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetRevisionsCountUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionsCountUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getRevisionsCountUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2086,9 +2137,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRevisionsCountUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2009>> {
+        async getRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetRevisionsCountUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRevisionsCountUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getRevisionsCountUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2098,9 +2151,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTextUsingGET(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2007>> {
+        async getTextUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetTextUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTextUsingGET(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getTextUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2110,9 +2165,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTextUsingPOST(padID?: string, rev?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2007>> {
+        async getTextUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetTextUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTextUsingPOST(padID, rev, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.getTextUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2120,9 +2177,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllPadsUsingGET(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2002>> {
+        async listAllPadsUsingGET(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAllPadsUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAllPadsUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2130,9 +2189,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAllPadsUsingPOST(options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2002>> {
+        async listAllPadsUsingPOST(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAllPadsUsingPOST(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAllPadsUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2141,9 +2202,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAuthorsOfPadUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20013>> {
+        async listAuthorsOfPadUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAuthorsOfPadUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAuthorsOfPadUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAuthorsOfPadUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2152,9 +2215,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAuthorsOfPadUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20013>> {
+        async listAuthorsOfPadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListAuthorsOfPadUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAuthorsOfPadUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.listAuthorsOfPadUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2163,9 +2228,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async padUsersCountUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20014>> {
+        async padUsersCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersCountUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersCountUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersCountUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2174,9 +2241,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async padUsersCountUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20014>> {
+        async padUsersCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersCountUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersCountUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersCountUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2185,9 +2254,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async padUsersUsingGET(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20016>> {
+        async padUsersUsingGET(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersUsingGET(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2196,9 +2267,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async padUsersUsingPOST(padID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20016>> {
+        async padUsersUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PadUsersUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.padUsersUsingPOST(padID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.padUsersUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2208,9 +2281,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async sendClientsMessageUsingGET(padID?: string, msg?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async sendClientsMessageUsingGET(padID?: string, msg?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.sendClientsMessageUsingGET(padID, msg, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.sendClientsMessageUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2220,9 +2295,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.sendClientsMessageUsingPOST(padID, msg, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.sendClientsMessageUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2233,9 +2310,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setHTMLUsingGET(padID, html, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setHTMLUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2246,9 +2325,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setHTMLUsingPOST(padID, html, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setHTMLUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2258,9 +2339,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setPublicStatusUsingGET(padID, publicStatus, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setPublicStatusUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2270,9 +2353,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setPublicStatusUsingPOST(padID, publicStatus, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setPublicStatusUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2283,9 +2368,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setTextUsingGET(padID, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setTextUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -2296,9 +2383,11 @@ export const PadApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setTextUsingPOST(padID, text, authorId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PadApi.setTextUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -2320,7 +2409,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.appendChatMessageUsingGET(padID, text, authorID, time, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2333,7 +2422,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.appendChatMessageUsingPOST(padID, text, authorID, time, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2342,7 +2431,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkTokenUsingGET(options?: any): AxiosPromise<InlineResponse2001> {
+        checkTokenUsingGET(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.checkTokenUsingGET(options).then((request) => request(axios, basePath));
         },
         /**
@@ -2351,29 +2440,31 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkTokenUsingPOST(options?: any): AxiosPromise<InlineResponse2001> {
+        checkTokenUsingPOST(options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.checkTokenUsingPOST(options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {string} [padID] 
          * @param {string} [startRev] 
          * @param {string} [endRev] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<InlineResponse20018> {
+        createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<CreateDiffHTMLUsingGET200Response> {
             return localVarFp.createDiffHTMLUsingGET(padID, startRev, endRev, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @summary 
          * @param {string} [padID] 
          * @param {string} [startRev] 
          * @param {string} [endRev] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<InlineResponse20018> {
+        createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<CreateDiffHTMLUsingGET200Response> {
             return localVarFp.createDiffHTMLUsingPOST(padID, startRev, endRev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2384,7 +2475,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.createPadUsingGET(padID, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2395,7 +2486,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.createPadUsingPOST(padID, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2405,7 +2496,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePadUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        deletePadUsingGET(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.deletePadUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2415,7 +2506,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePadUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        deletePadUsingPOST(padID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.deletePadUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2425,7 +2516,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHeadUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20020> {
+        getChatHeadUsingGET(padID?: string, options?: any): AxiosPromise<GetChatHeadUsingGET200Response> {
             return localVarFp.getChatHeadUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2435,7 +2526,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHeadUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20020> {
+        getChatHeadUsingPOST(padID?: string, options?: any): AxiosPromise<GetChatHeadUsingGET200Response> {
             return localVarFp.getChatHeadUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2447,7 +2538,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<InlineResponse20019> {
+        getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<GetChatHistoryUsingGET200Response> {
             return localVarFp.getChatHistoryUsingGET(padID, start, end, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2459,7 +2550,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<InlineResponse20019> {
+        getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<GetChatHistoryUsingGET200Response> {
             return localVarFp.getChatHistoryUsingPOST(padID, start, end, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2470,7 +2561,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHTMLUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2008> {
+        getHTMLUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<GetHTMLUsingGET200Response> {
             return localVarFp.getHTMLUsingGET(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2481,7 +2572,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHTMLUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2008> {
+        getHTMLUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<GetHTMLUsingGET200Response> {
             return localVarFp.getHTMLUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2491,7 +2582,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLastEditedUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20010> {
+        getLastEditedUsingGET(padID?: string, options?: any): AxiosPromise<GetLastEditedUsingGET200Response> {
             return localVarFp.getLastEditedUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2501,7 +2592,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLastEditedUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20010> {
+        getLastEditedUsingPOST(padID?: string, options?: any): AxiosPromise<GetLastEditedUsingGET200Response> {
             return localVarFp.getLastEditedUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2511,7 +2602,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPublicStatusUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20012> {
+        getPublicStatusUsingGET(padID?: string, options?: any): AxiosPromise<GetPublicStatusUsingGET200Response> {
             return localVarFp.getPublicStatusUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2521,7 +2612,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPublicStatusUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20012> {
+        getPublicStatusUsingPOST(padID?: string, options?: any): AxiosPromise<GetPublicStatusUsingGET200Response> {
             return localVarFp.getPublicStatusUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2531,7 +2622,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getReadOnlyIDUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20011> {
+        getReadOnlyIDUsingGET(padID?: string, options?: any): AxiosPromise<GetReadOnlyIDUsingGET200Response> {
             return localVarFp.getReadOnlyIDUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2541,7 +2632,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getReadOnlyIDUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20011> {
+        getReadOnlyIDUsingPOST(padID?: string, options?: any): AxiosPromise<GetReadOnlyIDUsingGET200Response> {
             return localVarFp.getReadOnlyIDUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2551,7 +2642,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2009> {
+        getRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<GetRevisionsCountUsingGET200Response> {
             return localVarFp.getRevisionsCountUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2561,7 +2652,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2009> {
+        getRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<GetRevisionsCountUsingGET200Response> {
             return localVarFp.getRevisionsCountUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2572,7 +2663,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTextUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2007> {
+        getTextUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<GetTextUsingGET200Response> {
             return localVarFp.getTextUsingGET(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2583,7 +2674,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTextUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2007> {
+        getTextUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<GetTextUsingGET200Response> {
             return localVarFp.getTextUsingPOST(padID, rev, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2592,7 +2683,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllPadsUsingGET(options?: any): AxiosPromise<InlineResponse2002> {
+        listAllPadsUsingGET(options?: any): AxiosPromise<ListPadsUsingGET200Response> {
             return localVarFp.listAllPadsUsingGET(options).then((request) => request(axios, basePath));
         },
         /**
@@ -2601,7 +2692,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAllPadsUsingPOST(options?: any): AxiosPromise<InlineResponse2002> {
+        listAllPadsUsingPOST(options?: any): AxiosPromise<ListPadsUsingGET200Response> {
             return localVarFp.listAllPadsUsingPOST(options).then((request) => request(axios, basePath));
         },
         /**
@@ -2611,7 +2702,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAuthorsOfPadUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20013> {
+        listAuthorsOfPadUsingGET(padID?: string, options?: any): AxiosPromise<ListAuthorsOfPadUsingGET200Response> {
             return localVarFp.listAuthorsOfPadUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2621,7 +2712,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAuthorsOfPadUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20013> {
+        listAuthorsOfPadUsingPOST(padID?: string, options?: any): AxiosPromise<ListAuthorsOfPadUsingGET200Response> {
             return localVarFp.listAuthorsOfPadUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2631,7 +2722,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersCountUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20014> {
+        padUsersCountUsingGET(padID?: string, options?: any): AxiosPromise<PadUsersCountUsingGET200Response> {
             return localVarFp.padUsersCountUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2641,7 +2732,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersCountUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20014> {
+        padUsersCountUsingPOST(padID?: string, options?: any): AxiosPromise<PadUsersCountUsingGET200Response> {
             return localVarFp.padUsersCountUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2651,7 +2742,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20016> {
+        padUsersUsingGET(padID?: string, options?: any): AxiosPromise<PadUsersUsingGET200Response> {
             return localVarFp.padUsersUsingGET(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2661,7 +2752,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        padUsersUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20016> {
+        padUsersUsingPOST(padID?: string, options?: any): AxiosPromise<PadUsersUsingGET200Response> {
             return localVarFp.padUsersUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2672,7 +2763,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendClientsMessageUsingGET(padID?: string, msg?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        sendClientsMessageUsingGET(padID?: string, msg?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.sendClientsMessageUsingGET(padID, msg, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2683,7 +2774,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.sendClientsMessageUsingPOST(padID, msg, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2695,7 +2786,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.setHTMLUsingGET(padID, html, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2707,7 +2798,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.setHTMLUsingPOST(padID, html, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2718,7 +2809,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.setPublicStatusUsingGET(padID, publicStatus, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2729,7 +2820,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.setPublicStatusUsingPOST(padID, publicStatus, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2741,7 +2832,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.setTextUsingGET(padID, text, authorId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2753,7 +2844,7 @@ export const PadApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.setTextUsingPOST(padID, text, authorId, options).then((request) => request(axios, basePath));
         },
     };
@@ -2776,7 +2867,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -2789,7 +2880,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -2798,7 +2889,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    checkTokenUsingGET(options?: any): AxiosPromise<InlineResponse2001>;
+    checkTokenUsingGET(options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -2807,10 +2898,11 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    checkTokenUsingPOST(options?: any): AxiosPromise<InlineResponse2001>;
+    checkTokenUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
+     * @summary 
      * @param {string} [padID] 
      * @param {string} [startRev] 
      * @param {string} [endRev] 
@@ -2818,10 +2910,11 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<InlineResponse20018>;
+    createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateDiffHTMLUsingGET200Response>;
 
     /**
      * 
+     * @summary 
      * @param {string} [padID] 
      * @param {string} [startRev] 
      * @param {string} [endRev] 
@@ -2829,7 +2922,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: any): AxiosPromise<InlineResponse20018>;
+    createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateDiffHTMLUsingGET200Response>;
 
     /**
      * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
@@ -2840,7 +2933,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * creates a new (non-group) pad. Note that if you need to create a group Pad, you should call createGroupPad
@@ -2851,7 +2944,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -2861,7 +2954,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    deletePadUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    deletePadUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -2871,7 +2964,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    deletePadUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    deletePadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -2881,7 +2974,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getChatHeadUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20020>;
+    getChatHeadUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHeadUsingGET200Response>;
 
     /**
      * 
@@ -2891,7 +2984,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getChatHeadUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20020>;
+    getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHeadUsingGET200Response>;
 
     /**
      * 
@@ -2903,7 +2996,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<InlineResponse20019>;
+    getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHistoryUsingGET200Response>;
 
     /**
      * 
@@ -2915,7 +3008,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: any): AxiosPromise<InlineResponse20019>;
+    getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHistoryUsingGET200Response>;
 
     /**
      * 
@@ -2926,7 +3019,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getHTMLUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2008>;
+    getHTMLUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetHTMLUsingGET200Response>;
 
     /**
      * 
@@ -2937,7 +3030,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getHTMLUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2008>;
+    getHTMLUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetHTMLUsingGET200Response>;
 
     /**
      * 
@@ -2947,7 +3040,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getLastEditedUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20010>;
+    getLastEditedUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetLastEditedUsingGET200Response>;
 
     /**
      * 
@@ -2957,7 +3050,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getLastEditedUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20010>;
+    getLastEditedUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetLastEditedUsingGET200Response>;
 
     /**
      * 
@@ -2967,7 +3060,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getPublicStatusUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20012>;
+    getPublicStatusUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetPublicStatusUsingGET200Response>;
 
     /**
      * 
@@ -2977,7 +3070,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getPublicStatusUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20012>;
+    getPublicStatusUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetPublicStatusUsingGET200Response>;
 
     /**
      * 
@@ -2987,7 +3080,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getReadOnlyIDUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20011>;
+    getReadOnlyIDUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetReadOnlyIDUsingGET200Response>;
 
     /**
      * 
@@ -2997,7 +3090,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getReadOnlyIDUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20011>;
+    getReadOnlyIDUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetReadOnlyIDUsingGET200Response>;
 
     /**
      * 
@@ -3007,7 +3100,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getRevisionsCountUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse2009>;
+    getRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetRevisionsCountUsingGET200Response>;
 
     /**
      * 
@@ -3017,7 +3110,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getRevisionsCountUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse2009>;
+    getRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetRevisionsCountUsingGET200Response>;
 
     /**
      * 
@@ -3028,7 +3121,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getTextUsingGET(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2007>;
+    getTextUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetTextUsingGET200Response>;
 
     /**
      * 
@@ -3039,7 +3132,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    getTextUsingPOST(padID?: string, rev?: string, options?: any): AxiosPromise<InlineResponse2007>;
+    getTextUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetTextUsingGET200Response>;
 
     /**
      * 
@@ -3048,7 +3141,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    listAllPadsUsingGET(options?: any): AxiosPromise<InlineResponse2002>;
+    listAllPadsUsingGET(options?: RawAxiosRequestConfig): AxiosPromise<ListPadsUsingGET200Response>;
 
     /**
      * 
@@ -3057,7 +3150,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    listAllPadsUsingPOST(options?: any): AxiosPromise<InlineResponse2002>;
+    listAllPadsUsingPOST(options?: RawAxiosRequestConfig): AxiosPromise<ListPadsUsingGET200Response>;
 
     /**
      * 
@@ -3067,7 +3160,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    listAuthorsOfPadUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20013>;
+    listAuthorsOfPadUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListAuthorsOfPadUsingGET200Response>;
 
     /**
      * 
@@ -3077,7 +3170,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    listAuthorsOfPadUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20013>;
+    listAuthorsOfPadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListAuthorsOfPadUsingGET200Response>;
 
     /**
      * 
@@ -3087,7 +3180,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    padUsersCountUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20014>;
+    padUsersCountUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<PadUsersCountUsingGET200Response>;
 
     /**
      * 
@@ -3097,7 +3190,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    padUsersCountUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20014>;
+    padUsersCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<PadUsersCountUsingGET200Response>;
 
     /**
      * 
@@ -3107,7 +3200,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    padUsersUsingGET(padID?: string, options?: any): AxiosPromise<InlineResponse20016>;
+    padUsersUsingGET(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<PadUsersUsingGET200Response>;
 
     /**
      * 
@@ -3117,7 +3210,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    padUsersUsingPOST(padID?: string, options?: any): AxiosPromise<InlineResponse20016>;
+    padUsersUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<PadUsersUsingGET200Response>;
 
     /**
      * 
@@ -3128,7 +3221,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    sendClientsMessageUsingGET(padID?: string, msg?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    sendClientsMessageUsingGET(padID?: string, msg?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3139,7 +3232,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3151,7 +3244,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3163,7 +3256,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3174,7 +3267,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3185,7 +3278,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3197,7 +3290,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -3209,7 +3302,7 @@ export interface PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApiInterface
      */
-    setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
 }
 
@@ -3231,7 +3324,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: any) {
+    public appendChatMessageUsingGET(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).appendChatMessageUsingGET(padID, text, authorID, time, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3246,7 +3339,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: any) {
+    public appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).appendChatMessageUsingPOST(padID, text, authorID, time, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3257,7 +3350,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public checkTokenUsingGET(options?: any) {
+    public checkTokenUsingGET(options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).checkTokenUsingGET(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3268,12 +3361,13 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public checkTokenUsingPOST(options?: any) {
+    public checkTokenUsingPOST(options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).checkTokenUsingPOST(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {string} [padID] 
      * @param {string} [startRev] 
      * @param {string} [endRev] 
@@ -3281,12 +3375,13 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: any) {
+    public createDiffHTMLUsingGET(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).createDiffHTMLUsingGET(padID, startRev, endRev, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @summary 
      * @param {string} [padID] 
      * @param {string} [startRev] 
      * @param {string} [endRev] 
@@ -3294,7 +3389,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: any) {
+    public createDiffHTMLUsingPOST(padID?: string, startRev?: string, endRev?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).createDiffHTMLUsingPOST(padID, startRev, endRev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3307,7 +3402,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: any) {
+    public createPadUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).createPadUsingGET(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3320,7 +3415,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: any) {
+    public createPadUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).createPadUsingPOST(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3332,7 +3427,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public deletePadUsingGET(padID?: string, options?: any) {
+    public deletePadUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).deletePadUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3344,7 +3439,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public deletePadUsingPOST(padID?: string, options?: any) {
+    public deletePadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).deletePadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3356,7 +3451,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getChatHeadUsingGET(padID?: string, options?: any) {
+    public getChatHeadUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getChatHeadUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3368,7 +3463,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getChatHeadUsingPOST(padID?: string, options?: any) {
+    public getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getChatHeadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3382,7 +3477,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: any) {
+    public getChatHistoryUsingGET(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getChatHistoryUsingGET(padID, start, end, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3396,7 +3491,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: any) {
+    public getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getChatHistoryUsingPOST(padID, start, end, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3409,7 +3504,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getHTMLUsingGET(padID?: string, rev?: string, options?: any) {
+    public getHTMLUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getHTMLUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3422,7 +3517,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getHTMLUsingPOST(padID?: string, rev?: string, options?: any) {
+    public getHTMLUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getHTMLUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3434,7 +3529,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getLastEditedUsingGET(padID?: string, options?: any) {
+    public getLastEditedUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getLastEditedUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3446,7 +3541,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getLastEditedUsingPOST(padID?: string, options?: any) {
+    public getLastEditedUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getLastEditedUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3458,7 +3553,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getPublicStatusUsingGET(padID?: string, options?: any) {
+    public getPublicStatusUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getPublicStatusUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3470,7 +3565,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getPublicStatusUsingPOST(padID?: string, options?: any) {
+    public getPublicStatusUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getPublicStatusUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3482,7 +3577,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getReadOnlyIDUsingGET(padID?: string, options?: any) {
+    public getReadOnlyIDUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getReadOnlyIDUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3494,7 +3589,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getReadOnlyIDUsingPOST(padID?: string, options?: any) {
+    public getReadOnlyIDUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getReadOnlyIDUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3506,7 +3601,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getRevisionsCountUsingGET(padID?: string, options?: any) {
+    public getRevisionsCountUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getRevisionsCountUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3518,7 +3613,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getRevisionsCountUsingPOST(padID?: string, options?: any) {
+    public getRevisionsCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getRevisionsCountUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3531,7 +3626,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getTextUsingGET(padID?: string, rev?: string, options?: any) {
+    public getTextUsingGET(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getTextUsingGET(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3544,7 +3639,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public getTextUsingPOST(padID?: string, rev?: string, options?: any) {
+    public getTextUsingPOST(padID?: string, rev?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).getTextUsingPOST(padID, rev, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3555,7 +3650,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public listAllPadsUsingGET(options?: any) {
+    public listAllPadsUsingGET(options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).listAllPadsUsingGET(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3566,7 +3661,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public listAllPadsUsingPOST(options?: any) {
+    public listAllPadsUsingPOST(options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).listAllPadsUsingPOST(options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3578,7 +3673,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public listAuthorsOfPadUsingGET(padID?: string, options?: any) {
+    public listAuthorsOfPadUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).listAuthorsOfPadUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3590,7 +3685,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public listAuthorsOfPadUsingPOST(padID?: string, options?: any) {
+    public listAuthorsOfPadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).listAuthorsOfPadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3602,7 +3697,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public padUsersCountUsingGET(padID?: string, options?: any) {
+    public padUsersCountUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).padUsersCountUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3614,7 +3709,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public padUsersCountUsingPOST(padID?: string, options?: any) {
+    public padUsersCountUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).padUsersCountUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3626,7 +3721,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public padUsersUsingGET(padID?: string, options?: any) {
+    public padUsersUsingGET(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).padUsersUsingGET(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3638,7 +3733,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public padUsersUsingPOST(padID?: string, options?: any) {
+    public padUsersUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).padUsersUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3651,7 +3746,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public sendClientsMessageUsingGET(padID?: string, msg?: string, options?: any) {
+    public sendClientsMessageUsingGET(padID?: string, msg?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).sendClientsMessageUsingGET(padID, msg, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3664,7 +3759,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: any) {
+    public sendClientsMessageUsingPOST(padID?: string, msg?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).sendClientsMessageUsingPOST(padID, msg, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3678,7 +3773,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: any) {
+    public setHTMLUsingGET(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).setHTMLUsingGET(padID, html, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3692,7 +3787,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: any) {
+    public setHTMLUsingPOST(padID?: string, html?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).setHTMLUsingPOST(padID, html, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3705,7 +3800,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: any) {
+    public setPublicStatusUsingGET(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).setPublicStatusUsingGET(padID, publicStatus, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3718,7 +3813,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: any) {
+    public setPublicStatusUsingPOST(padID?: string, publicStatus?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).setPublicStatusUsingPOST(padID, publicStatus, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3732,7 +3827,7 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: any) {
+    public setTextUsingGET(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).setTextUsingGET(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -3746,7 +3841,8 @@ export class PadApi extends BaseAPI implements PadApiInterface {
      * @throws {RequiredError}
      * @memberof PadApi
      */
-    public setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: any) {
+    public setTextUsingPOST(padID?: string, text?: string, authorId?: string, options?: RawAxiosRequestConfig) {
         return PadApiFp(this.configuration).setTextUsingPOST(padID, text, authorId, options).then((request) => request(this.axios, this.basePath));
     }
 }
+

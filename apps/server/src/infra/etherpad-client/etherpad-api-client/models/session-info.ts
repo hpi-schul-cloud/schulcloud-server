@@ -25,25 +25,24 @@ export interface SessionInfo {
      * @type {string}
      * @memberof SessionInfo
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof SessionInfo
      */
-    authorID?: string;
+    'authorID'?: string;
     /**
      * 
      * @type {string}
      * @memberof SessionInfo
      */
-    groupID?: string;
+    'groupID'?: string;
     /**
      * 
      * @type {number}
      * @memberof SessionInfo
      */
-    validUntil?: number;
+    'validUntil'?: number;
 }
-
 

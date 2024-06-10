@@ -13,25 +13,26 @@
  */
 
 
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
-import { Configuration } from '../configuration';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { InlineResponse2001 } from '../models';
+import type { CreateGroupUsingGET400Response } from '../models';
 // @ts-ignore
-import { InlineResponse2004 } from '../models';
+import type { CreateGroupUsingGET401Response } from '../models';
 // @ts-ignore
-import { InlineResponse2005 } from '../models';
+import type { CreateGroupUsingGET500Response } from '../models';
 // @ts-ignore
-import { InlineResponse400 } from '../models';
+import type { CreateSessionUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse401 } from '../models';
+import type { DeleteGroupUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse500 } from '../models';
+import type { GetSessionInfoUsingGET200Response } from '../models';
 /**
  * SessionApi - axios parameter creator
  * @export
@@ -47,7 +48,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSessionUsingGET: async (groupID?: string, authorID?: string, validUntil?: string, options: any = {}): Promise<RequestArgs> => {
+        createSessionUsingGET: async (groupID?: string, authorID?: string, validUntil?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createSession`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -77,7 +78,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -95,7 +96,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSessionUsingPOST: async (groupID?: string, authorID?: string, validUntil?: string, options: any = {}): Promise<RequestArgs> => {
+        createSessionUsingPOST: async (groupID?: string, authorID?: string, validUntil?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createSession`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -125,7 +126,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -141,7 +142,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteSessionUsingGET: async (sessionID?: string, options: any = {}): Promise<RequestArgs> => {
+        deleteSessionUsingGET: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/deleteSession`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -163,7 +164,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -179,7 +180,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteSessionUsingPOST: async (sessionID?: string, options: any = {}): Promise<RequestArgs> => {
+        deleteSessionUsingPOST: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/deleteSession`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -201,7 +202,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -217,7 +218,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionInfoUsingGET: async (sessionID?: string, options: any = {}): Promise<RequestArgs> => {
+        getSessionInfoUsingGET: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getSessionInfo`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -239,7 +240,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -255,7 +256,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionInfoUsingPOST: async (sessionID?: string, options: any = {}): Promise<RequestArgs> => {
+        getSessionInfoUsingPOST: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getSessionInfo`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -277,7 +278,7 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -305,9 +306,11 @@ export const SessionApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2004>> {
+        async createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateSessionUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createSessionUsingGET(groupID, authorID, validUntil, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.createSessionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -318,9 +321,11 @@ export const SessionApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2004>> {
+        async createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateSessionUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createSessionUsingPOST(groupID, authorID, validUntil, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.createSessionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -329,9 +334,11 @@ export const SessionApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteSessionUsingGET(sessionID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async deleteSessionUsingGET(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSessionUsingGET(sessionID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.deleteSessionUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -340,9 +347,11 @@ export const SessionApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteSessionUsingPOST(sessionID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2001>> {
+        async deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSessionUsingPOST(sessionID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.deleteSessionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -351,9 +360,11 @@ export const SessionApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSessionInfoUsingGET(sessionID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2005>> {
+        async getSessionInfoUsingGET(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionInfoUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionInfoUsingGET(sessionID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.getSessionInfoUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -362,9 +373,11 @@ export const SessionApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSessionInfoUsingPOST(sessionID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2005>> {
+        async getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionInfoUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionInfoUsingPOST(sessionID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SessionApi.getSessionInfoUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -385,7 +398,7 @@ export const SessionApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<InlineResponse2004> {
+        createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<CreateSessionUsingGET200Response> {
             return localVarFp.createSessionUsingGET(groupID, authorID, validUntil, options).then((request) => request(axios, basePath));
         },
         /**
@@ -397,7 +410,7 @@ export const SessionApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<InlineResponse2004> {
+        createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<CreateSessionUsingGET200Response> {
             return localVarFp.createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) => request(axios, basePath));
         },
         /**
@@ -407,7 +420,7 @@ export const SessionApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteSessionUsingGET(sessionID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        deleteSessionUsingGET(sessionID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.deleteSessionUsingGET(sessionID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -417,7 +430,7 @@ export const SessionApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteSessionUsingPOST(sessionID?: string, options?: any): AxiosPromise<InlineResponse2001> {
+        deleteSessionUsingPOST(sessionID?: string, options?: any): AxiosPromise<DeleteGroupUsingGET200Response> {
             return localVarFp.deleteSessionUsingPOST(sessionID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -427,7 +440,7 @@ export const SessionApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionInfoUsingGET(sessionID?: string, options?: any): AxiosPromise<InlineResponse2005> {
+        getSessionInfoUsingGET(sessionID?: string, options?: any): AxiosPromise<GetSessionInfoUsingGET200Response> {
             return localVarFp.getSessionInfoUsingGET(sessionID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -437,7 +450,7 @@ export const SessionApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionInfoUsingPOST(sessionID?: string, options?: any): AxiosPromise<InlineResponse2005> {
+        getSessionInfoUsingPOST(sessionID?: string, options?: any): AxiosPromise<GetSessionInfoUsingGET200Response> {
             return localVarFp.getSessionInfoUsingPOST(sessionID, options).then((request) => request(axios, basePath));
         },
     };
@@ -459,7 +472,7 @@ export interface SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApiInterface
      */
-    createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<InlineResponse2004>;
+    createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateSessionUsingGET200Response>;
 
     /**
      * 
@@ -471,7 +484,7 @@ export interface SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApiInterface
      */
-    createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any): AxiosPromise<InlineResponse2004>;
+    createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateSessionUsingGET200Response>;
 
     /**
      * 
@@ -481,7 +494,7 @@ export interface SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApiInterface
      */
-    deleteSessionUsingGET(sessionID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    deleteSessionUsingGET(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -491,7 +504,7 @@ export interface SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApiInterface
      */
-    deleteSessionUsingPOST(sessionID?: string, options?: any): AxiosPromise<InlineResponse2001>;
+    deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingGET200Response>;
 
     /**
      * 
@@ -501,7 +514,7 @@ export interface SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApiInterface
      */
-    getSessionInfoUsingGET(sessionID?: string, options?: any): AxiosPromise<InlineResponse2005>;
+    getSessionInfoUsingGET(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetSessionInfoUsingGET200Response>;
 
     /**
      * 
@@ -511,7 +524,7 @@ export interface SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApiInterface
      */
-    getSessionInfoUsingPOST(sessionID?: string, options?: any): AxiosPromise<InlineResponse2005>;
+    getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetSessionInfoUsingGET200Response>;
 
 }
 
@@ -532,7 +545,7 @@ export class SessionApi extends BaseAPI implements SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApi
      */
-    public createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: any) {
+    public createSessionUsingGET(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig) {
         return SessionApiFp(this.configuration).createSessionUsingGET(groupID, authorID, validUntil, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -546,7 +559,7 @@ export class SessionApi extends BaseAPI implements SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApi
      */
-    public createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: any) {
+    public createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig) {
         return SessionApiFp(this.configuration).createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -558,7 +571,7 @@ export class SessionApi extends BaseAPI implements SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApi
      */
-    public deleteSessionUsingGET(sessionID?: string, options?: any) {
+    public deleteSessionUsingGET(sessionID?: string, options?: RawAxiosRequestConfig) {
         return SessionApiFp(this.configuration).deleteSessionUsingGET(sessionID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -570,7 +583,7 @@ export class SessionApi extends BaseAPI implements SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApi
      */
-    public deleteSessionUsingPOST(sessionID?: string, options?: any) {
+    public deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig) {
         return SessionApiFp(this.configuration).deleteSessionUsingPOST(sessionID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -582,7 +595,7 @@ export class SessionApi extends BaseAPI implements SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApi
      */
-    public getSessionInfoUsingGET(sessionID?: string, options?: any) {
+    public getSessionInfoUsingGET(sessionID?: string, options?: RawAxiosRequestConfig) {
         return SessionApiFp(this.configuration).getSessionInfoUsingGET(sessionID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -594,7 +607,8 @@ export class SessionApi extends BaseAPI implements SessionApiInterface {
      * @throws {RequiredError}
      * @memberof SessionApi
      */
-    public getSessionInfoUsingPOST(sessionID?: string, options?: any) {
+    public getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig) {
         return SessionApiFp(this.configuration).getSessionInfoUsingPOST(sessionID, options).then((request) => request(this.axios, this.basePath));
     }
 }
+

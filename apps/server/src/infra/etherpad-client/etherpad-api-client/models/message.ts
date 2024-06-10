@@ -25,25 +25,24 @@ export interface Message {
      * @type {string}
      * @memberof Message
      */
-    text?: string;
+    'text'?: string;
     /**
      * 
      * @type {string}
      * @memberof Message
      */
-    userId?: string;
+    'userId'?: string;
     /**
      * 
      * @type {string}
      * @memberof Message
      */
-    userName?: string;
+    'userName'?: string;
     /**
      * 
      * @type {number}
      * @memberof Message
      */
-    time?: number;
+    'time'?: number;
 }
-
 

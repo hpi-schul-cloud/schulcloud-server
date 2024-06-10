@@ -13,27 +13,28 @@
  */
 
 
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
-import { Configuration } from '../configuration';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import { InlineResponse20015 } from '../models';
+import type { CreateAuthorUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse2002 } from '../models';
+import type { CreateGroupUsingGET400Response } from '../models';
 // @ts-ignore
-import { InlineResponse2003 } from '../models';
+import type { CreateGroupUsingGET401Response } from '../models';
 // @ts-ignore
-import { InlineResponse2006 } from '../models';
+import type { CreateGroupUsingGET500Response } from '../models';
 // @ts-ignore
-import { InlineResponse400 } from '../models';
+import type { GetAuthorNameUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse401 } from '../models';
+import type { ListPadsUsingGET200Response } from '../models';
 // @ts-ignore
-import { InlineResponse500 } from '../models';
+import type { ListSessionsOfGroupUsingGET200Response } from '../models';
 /**
  * AuthorApi - axios parameter creator
  * @export
@@ -48,7 +49,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorIfNotExistsForUsingGET: async (authorMapper?: string, name?: string, options: any = {}): Promise<RequestArgs> => {
+        createAuthorIfNotExistsForUsingGET: async (authorMapper?: string, name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createAuthorIfNotExistsFor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -74,7 +75,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -91,7 +92,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorIfNotExistsForUsingPOST: async (authorMapper?: string, name?: string, options: any = {}): Promise<RequestArgs> => {
+        createAuthorIfNotExistsForUsingPOST: async (authorMapper?: string, name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createAuthorIfNotExistsFor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -117,7 +118,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -133,7 +134,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorUsingGET: async (name?: string, options: any = {}): Promise<RequestArgs> => {
+        createAuthorUsingGET: async (name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createAuthor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -155,7 +156,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -171,7 +172,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorUsingPOST: async (name?: string, options: any = {}): Promise<RequestArgs> => {
+        createAuthorUsingPOST: async (name?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/createAuthor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -193,7 +194,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -209,7 +210,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthorNameUsingGET: async (authorID?: string, options: any = {}): Promise<RequestArgs> => {
+        getAuthorNameUsingGET: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getAuthorName`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -231,7 +232,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -247,7 +248,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthorNameUsingPOST: async (authorID?: string, options: any = {}): Promise<RequestArgs> => {
+        getAuthorNameUsingPOST: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/getAuthorName`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -269,7 +270,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -285,7 +286,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsOfAuthorUsingGET: async (authorID?: string, options: any = {}): Promise<RequestArgs> => {
+        listPadsOfAuthorUsingGET: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listPadsOfAuthor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -307,7 +308,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -323,7 +324,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsOfAuthorUsingPOST: async (authorID?: string, options: any = {}): Promise<RequestArgs> => {
+        listPadsOfAuthorUsingPOST: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listPadsOfAuthor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -345,7 +346,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -361,7 +362,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfAuthorUsingGET: async (authorID?: string, options: any = {}): Promise<RequestArgs> => {
+        listSessionsOfAuthorUsingGET: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listSessionsOfAuthor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -383,7 +384,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -399,7 +400,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfAuthorUsingPOST: async (authorID?: string, options: any = {}): Promise<RequestArgs> => {
+        listSessionsOfAuthorUsingPOST: async (authorID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/listSessionsOfAuthor`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -421,7 +422,7 @@ export const AuthorApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
-            setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
@@ -448,9 +449,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2003>> {
+        async createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorIfNotExistsForUsingGET(authorMapper, name, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorIfNotExistsForUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -460,9 +463,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2003>> {
+        async createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorIfNotExistsForUsingPOST(authorMapper, name, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorIfNotExistsForUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -471,9 +476,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAuthorUsingGET(name?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2003>> {
+        async createAuthorUsingGET(name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorUsingGET(name, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -482,9 +489,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAuthorUsingPOST(name?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2003>> {
+        async createAuthorUsingPOST(name?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateAuthorUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthorUsingPOST(name, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.createAuthorUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -493,9 +502,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAuthorNameUsingGET(authorID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20015>> {
+        async getAuthorNameUsingGET(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetAuthorNameUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthorNameUsingGET(authorID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.getAuthorNameUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -504,9 +515,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAuthorNameUsingPOST(authorID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse20015>> {
+        async getAuthorNameUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetAuthorNameUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthorNameUsingPOST(authorID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.getAuthorNameUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -515,9 +528,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPadsOfAuthorUsingGET(authorID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2002>> {
+        async listPadsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsOfAuthorUsingGET(authorID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listPadsOfAuthorUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -526,9 +541,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPadsOfAuthorUsingPOST(authorID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2002>> {
+        async listPadsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListPadsUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPadsOfAuthorUsingPOST(authorID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listPadsOfAuthorUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -537,9 +554,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSessionsOfAuthorUsingGET(authorID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2006>> {
+        async listSessionsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfAuthorUsingGET(authorID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listSessionsOfAuthorUsingGET']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -548,9 +567,11 @@ export const AuthorApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InlineResponse2006>> {
+        async listSessionsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListSessionsOfGroupUsingGET200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsOfAuthorUsingPOST(authorID, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorApi.listSessionsOfAuthorUsingPOST']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -570,7 +591,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): AxiosPromise<InlineResponse2003> {
+        createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
             return localVarFp.createAuthorIfNotExistsForUsingGET(authorMapper, name, options).then((request) => request(axios, basePath));
         },
         /**
@@ -581,7 +602,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): AxiosPromise<InlineResponse2003> {
+        createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
             return localVarFp.createAuthorIfNotExistsForUsingPOST(authorMapper, name, options).then((request) => request(axios, basePath));
         },
         /**
@@ -591,7 +612,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorUsingGET(name?: string, options?: any): AxiosPromise<InlineResponse2003> {
+        createAuthorUsingGET(name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
             return localVarFp.createAuthorUsingGET(name, options).then((request) => request(axios, basePath));
         },
         /**
@@ -601,7 +622,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAuthorUsingPOST(name?: string, options?: any): AxiosPromise<InlineResponse2003> {
+        createAuthorUsingPOST(name?: string, options?: any): AxiosPromise<CreateAuthorUsingGET200Response> {
             return localVarFp.createAuthorUsingPOST(name, options).then((request) => request(axios, basePath));
         },
         /**
@@ -611,7 +632,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthorNameUsingGET(authorID?: string, options?: any): AxiosPromise<InlineResponse20015> {
+        getAuthorNameUsingGET(authorID?: string, options?: any): AxiosPromise<GetAuthorNameUsingGET200Response> {
             return localVarFp.getAuthorNameUsingGET(authorID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -621,7 +642,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthorNameUsingPOST(authorID?: string, options?: any): AxiosPromise<InlineResponse20015> {
+        getAuthorNameUsingPOST(authorID?: string, options?: any): AxiosPromise<GetAuthorNameUsingGET200Response> {
             return localVarFp.getAuthorNameUsingPOST(authorID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -631,7 +652,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<InlineResponse2002> {
+        listPadsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
             return localVarFp.listPadsOfAuthorUsingGET(authorID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -641,7 +662,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPadsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<InlineResponse2002> {
+        listPadsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<ListPadsUsingGET200Response> {
             return localVarFp.listPadsOfAuthorUsingPOST(authorID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -651,7 +672,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<InlineResponse2006> {
+        listSessionsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
             return localVarFp.listSessionsOfAuthorUsingGET(authorID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -661,7 +682,7 @@ export const AuthorApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<InlineResponse2006> {
+        listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<ListSessionsOfGroupUsingGET200Response> {
             return localVarFp.listSessionsOfAuthorUsingPOST(authorID, options).then((request) => request(axios, basePath));
         },
     };
@@ -682,7 +703,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any): AxiosPromise<InlineResponse2003>;
+    createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateAuthorUsingGET200Response>;
 
     /**
      * 
@@ -693,7 +714,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any): AxiosPromise<InlineResponse2003>;
+    createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateAuthorUsingGET200Response>;
 
     /**
      * 
@@ -703,7 +724,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    createAuthorUsingGET(name?: string, options?: any): AxiosPromise<InlineResponse2003>;
+    createAuthorUsingGET(name?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateAuthorUsingGET200Response>;
 
     /**
      * 
@@ -713,7 +734,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    createAuthorUsingPOST(name?: string, options?: any): AxiosPromise<InlineResponse2003>;
+    createAuthorUsingPOST(name?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateAuthorUsingGET200Response>;
 
     /**
      * 
@@ -723,7 +744,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    getAuthorNameUsingGET(authorID?: string, options?: any): AxiosPromise<InlineResponse20015>;
+    getAuthorNameUsingGET(authorID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetAuthorNameUsingGET200Response>;
 
     /**
      * 
@@ -733,7 +754,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    getAuthorNameUsingPOST(authorID?: string, options?: any): AxiosPromise<InlineResponse20015>;
+    getAuthorNameUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetAuthorNameUsingGET200Response>;
 
     /**
      * 
@@ -743,7 +764,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    listPadsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<InlineResponse2002>;
+    listPadsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListPadsUsingGET200Response>;
 
     /**
      * 
@@ -753,7 +774,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    listPadsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<InlineResponse2002>;
+    listPadsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListPadsUsingGET200Response>;
 
     /**
      * 
@@ -763,7 +784,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    listSessionsOfAuthorUsingGET(authorID?: string, options?: any): AxiosPromise<InlineResponse2006>;
+    listSessionsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListSessionsOfGroupUsingGET200Response>;
 
     /**
      * 
@@ -773,7 +794,7 @@ export interface AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApiInterface
      */
-    listSessionsOfAuthorUsingPOST(authorID?: string, options?: any): AxiosPromise<InlineResponse2006>;
+    listSessionsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig): AxiosPromise<ListSessionsOfGroupUsingGET200Response>;
 
 }
 
@@ -793,7 +814,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: any) {
+    public createAuthorIfNotExistsForUsingGET(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).createAuthorIfNotExistsForUsingGET(authorMapper, name, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -806,7 +827,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: any) {
+    public createAuthorIfNotExistsForUsingPOST(authorMapper?: string, name?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).createAuthorIfNotExistsForUsingPOST(authorMapper, name, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -818,7 +839,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public createAuthorUsingGET(name?: string, options?: any) {
+    public createAuthorUsingGET(name?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).createAuthorUsingGET(name, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -830,7 +851,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public createAuthorUsingPOST(name?: string, options?: any) {
+    public createAuthorUsingPOST(name?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).createAuthorUsingPOST(name, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -842,7 +863,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public getAuthorNameUsingGET(authorID?: string, options?: any) {
+    public getAuthorNameUsingGET(authorID?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).getAuthorNameUsingGET(authorID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -854,7 +875,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public getAuthorNameUsingPOST(authorID?: string, options?: any) {
+    public getAuthorNameUsingPOST(authorID?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).getAuthorNameUsingPOST(authorID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -866,7 +887,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public listPadsOfAuthorUsingGET(authorID?: string, options?: any) {
+    public listPadsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).listPadsOfAuthorUsingGET(authorID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -878,7 +899,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public listPadsOfAuthorUsingPOST(authorID?: string, options?: any) {
+    public listPadsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).listPadsOfAuthorUsingPOST(authorID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -890,7 +911,7 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public listSessionsOfAuthorUsingGET(authorID?: string, options?: any) {
+    public listSessionsOfAuthorUsingGET(authorID?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).listSessionsOfAuthorUsingGET(authorID, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -902,7 +923,8 @@ export class AuthorApi extends BaseAPI implements AuthorApiInterface {
      * @throws {RequiredError}
      * @memberof AuthorApi
      */
-    public listSessionsOfAuthorUsingPOST(authorID?: string, options?: any) {
+    public listSessionsOfAuthorUsingPOST(authorID?: string, options?: RawAxiosRequestConfig) {
         return AuthorApiFp(this.configuration).listSessionsOfAuthorUsingPOST(authorID, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
