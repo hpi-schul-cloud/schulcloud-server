@@ -1,8 +1,8 @@
-import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { ErrorUtils } from '@src/core/error/utils';
 import { Request } from 'express';
 import { AuthorizationApi, AuthorizationBodyParams } from './authorization-api-client';
+import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
 @Injectable()
 export class AuthorizationClientAdapter {
@@ -10,7 +10,7 @@ export class AuthorizationClientAdapter {
 
 	public async checkPermissionByReferences(params: AuthorizationBodyParams): Promise<void> {
 		if (!(await this.hasPermissionByReferences(params))) {
-			throw new ForbiddenException('AuthorizationClientAdapter:checkPermissionByReferences');
+			throw new AuthorizationForbiddenLoggableException(params);
 		}
 	}
 
@@ -25,11 +25,8 @@ export class AuthorizationClientAdapter {
 			const hasPermission = response.data.isAuthorized;
 
 			return hasPermission;
-		} catch (err) {
-			throw new InternalServerErrorException(
-				'AuthorizationClientAdapter:hasPermissionByReferences',
-				ErrorUtils.createHttpExceptionOptions(err)
-			);
+		} catch (error) {
+			throw new AuthorizationErrorLoggableException(error as Error, params);
 		}
 	}
 }

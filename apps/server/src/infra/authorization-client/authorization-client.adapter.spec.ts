@@ -1,8 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InternalServerErrorException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
 import { Request } from 'express';
 import {
@@ -12,6 +10,7 @@ import {
 	AuthorizedReponse,
 } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
+import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
 const jwtToken = 'Bearer someJwtToken';
 
@@ -51,10 +50,10 @@ describe(AuthorizationClientAdapter.name, () => {
 		expect(service).toBeDefined();
 	});
 
-	const setup = () => {
+	const setup = (isAuthorized = true) => {
 		const response = createMock<AxiosResponse<AuthorizedReponse>>({
 			data: {
-				isAuthorized: true,
+				isAuthorized,
 				userId: 'userId',
 			},
 		});
@@ -65,28 +64,28 @@ describe(AuthorizationClientAdapter.name, () => {
 	};
 
 	describe('checkPermissionByReferences', () => {
-		describe('when client returns response', () => {
-			it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
-				setup();
+		it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
+			setup();
 
-				const params = {
-					context: {
-						action: Action.READ,
-						requiredPermissions: [],
-					},
-					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-					referenceId: 'someReferenceId',
-				};
-				const expectedOptions = { headers: { authorization: jwtToken } };
+			const params = {
+				context: {
+					action: Action.READ,
+					requiredPermissions: [],
+				},
+				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+				referenceId: 'someReferenceId',
+			};
+			const expectedOptions = { headers: { authorization: jwtToken } };
 
-				await service.checkPermissionByReferences(params);
+			await service.checkPermissionByReferences(params);
 
-				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
-					params,
-					expectedOptions
-				);
-			});
+			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+				params,
+				expectedOptions
+			);
+		});
 
+		describe('when permission is granted', () => {
 			it('should return', async () => {
 				setup();
 
@@ -103,17 +102,9 @@ describe(AuthorizationClientAdapter.name, () => {
 			});
 		});
 
-		describe('when client throws error', () => {
-			it('should throw error', async () => {
-				const error = new Error('testError');
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
-				const expectedError = new InternalServerErrorException(
-					'AuthorizationClientAdapter:hasPermissionByReferences',
-					ErrorUtils.createHttpExceptionOptions(error)
-				);
+		describe('when permission is denied', () => {
+			it('should throw AuthorizationForbiddenLoggableException', async () => {
+				setup(false);
 
 				const params = {
 					context: {
@@ -123,6 +114,30 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
+
+				const expectedError = new AuthorizationForbiddenLoggableException(params);
+
+				await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
+			});
+		});
+
+		describe('when client throws error', () => {
+			it('should throw AuthorizationErrorLoggableException', async () => {
+				const error = new Error('testError');
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
+
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions: [],
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
 				await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
 			});
@@ -130,28 +145,28 @@ describe(AuthorizationClientAdapter.name, () => {
 	});
 
 	describe('hasPermissionByReferences', () => {
+		it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
+			setup();
+
+			const params = {
+				context: {
+					action: Action.READ,
+					requiredPermissions: [],
+				},
+				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+				referenceId: 'someReferenceId',
+			};
+			const expectedOptions = { headers: { authorization: jwtToken } };
+
+			await service.hasPermissionByReferences(params);
+
+			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+				params,
+				expectedOptions
+			);
+		});
+
 		describe('when client returns response', () => {
-			it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
-				setup();
-
-				const params = {
-					context: {
-						action: Action.READ,
-						requiredPermissions: [],
-					},
-					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-					referenceId: 'someReferenceId',
-				};
-				const expectedOptions = { headers: { authorization: jwtToken } };
-
-				await service.hasPermissionByReferences(params);
-
-				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
-					params,
-					expectedOptions
-				);
-			});
-
 			it('should return isAuthorized', async () => {
 				const { response } = setup();
 
@@ -171,16 +186,11 @@ describe(AuthorizationClientAdapter.name, () => {
 		});
 
 		describe('when client throws error', () => {
-			it('should throw error', async () => {
+			it('should throw AuthorizationErrorLoggableException', async () => {
 				const error = new Error('testError');
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
-				const expectedError = new InternalServerErrorException(
-					'AuthorizationClientAdapter:hasPermissionByReferences',
-					ErrorUtils.createHttpExceptionOptions(error)
-				);
 
 				const params = {
 					context: {
@@ -190,6 +200,8 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
+
+				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
 				await expect(service.hasPermissionByReferences(params)).rejects.toThrowError(expectedError);
 			});
