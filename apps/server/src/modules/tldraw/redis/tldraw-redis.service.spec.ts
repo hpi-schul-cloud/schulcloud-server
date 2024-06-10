@@ -1,14 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
 import { Test } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import * as Yjs from 'yjs';
 import * as AwarenessProtocol from 'y-protocols/awareness';
-import { HttpService } from '@nestjs/axios';
-import { TldrawWsService } from '../service';
-import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
-import { MetricsService } from '../metrics';
+import { DomainErrorHandler } from '@src/core';
 import { WsSharedDocDo } from '../domain';
 import { TldrawRedisFactory, TldrawRedisService } from '.';
 import { tldrawTestConfig } from '../testing';
@@ -27,13 +23,6 @@ jest.mock('y-protocols/awareness', () => {
 	};
 	return moduleMock;
 });
-jest.mock('y-protocols/sync', () => {
-	const moduleMock: unknown = {
-		__esModule: true,
-		...jest.requireActual('y-protocols/sync'),
-	};
-	return moduleMock;
-});
 
 describe('TldrawRedisService', () => {
 	let service: TldrawRedisService;
@@ -42,29 +31,11 @@ describe('TldrawRedisService', () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig))],
 			providers: [
-				YMongodb,
-				MetricsService,
 				TldrawRedisFactory,
 				TldrawRedisService,
 				{
-					provide: TldrawWsService,
-					useValue: createMock<TldrawWsService>(),
-				},
-				{
-					provide: TldrawBoardRepo,
-					useValue: createMock<TldrawBoardRepo>(),
-				},
-				{
-					provide: TldrawRepo,
-					useValue: createMock<TldrawRepo>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
