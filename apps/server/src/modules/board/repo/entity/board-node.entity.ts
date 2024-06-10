@@ -1,11 +1,11 @@
 import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
+import { ObjectIdType } from '@shared/repo/types/object-id.type';
 import { AnyBoardNode, BoardLayout, BoardNodeType, ROOT_PATH } from '../../domain';
 import { MediaBoardColors } from '../../domain/media-board/types';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
-import { ObjectIdType } from './object-id-type';
 
 @Entity({ tableName: 'boardnodes' })
 export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNodeEntityProps {
