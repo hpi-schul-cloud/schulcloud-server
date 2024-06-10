@@ -302,8 +302,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -383,8 +383,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="140"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:140</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:142</a></div>
                         </td>
                     </tr>
 
@@ -836,8 +836,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -986,8 +986,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">apps/server/src/modules/board/service/media-board/media-available-line.service.ts:158</a></div>
                         </td>
                     </tr>
 
@@ -1145,15 +1145,17 @@ export class MediaAvailableLineService {
 	}
 
 	private async getContextExternalToolsByBoard(board: MediaBoard): Promise&lt;ContextExternalTool[]&gt; {
-		const contextExternalTools: Promise&lt;ContextExternalTool&gt;[] &#x3D; board
+		const contextExternalTools: Promise&lt;ContextExternalTool | null&gt;[] &#x3D; board
 			.getChildrenOfType(MediaExternalToolElement)
 			.map((element: MediaExternalToolElement) &#x3D;&gt;
-				this.contextExternalToolService.findByIdOrFail(element.contextExternalToolId)
+				this.contextExternalToolService.findById(element.contextExternalToolId)
 			);
 
-		const allContextExternalTools: ContextExternalTool[] &#x3D; await Promise.all(contextExternalTools);
+		const notNullContextExternalTools: ContextExternalTool[] &#x3D; (await Promise.all(contextExternalTools)).filter(
+			(tool): tool is ContextExternalTool &#x3D;&gt; tool !&#x3D;&#x3D; null
+		);
 
-		return allContextExternalTools;
+		return notNullContextExternalTools;
 	}
 
 	public matchTools(
