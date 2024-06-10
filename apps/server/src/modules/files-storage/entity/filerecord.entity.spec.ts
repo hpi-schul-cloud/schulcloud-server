@@ -220,43 +220,6 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
-	describe('getStorageLocationId is called', () => {
-		describe('WHEN storageLocationId exists', () => {
-			const setup = () => {
-				const storageLocationId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ storageLocationId });
-
-				return { fileRecord, storageLocationId };
-			};
-
-			it('should return the correct storageLocationId', () => {
-				const { fileRecord, storageLocationId } = setup();
-
-				const result = fileRecord.getStorageLocationId();
-
-				expect(result).toEqual(storageLocationId);
-			});
-		});
-	});
-
-	describe('getStorageLocation is called', () => {
-		describe('WHEN storageLocation exists', () => {
-			const setup = () => {
-				const fileRecord = fileRecordFactory.build({ storageLocation: StorageLocation.INSTANCE });
-
-				return { fileRecord, storageLocation: StorageLocation.INSTANCE };
-			};
-
-			it('should return the correct storageLocation', () => {
-				const { fileRecord, storageLocation } = setup();
-
-				const result = fileRecord.getStorageLocation();
-
-				expect(result).toEqual(storageLocation);
-			});
-		});
-	});
-
 	describe('getSecurityToken is called', () => {
 		describe('WHEN security token exists', () => {
 			const setup = () => {

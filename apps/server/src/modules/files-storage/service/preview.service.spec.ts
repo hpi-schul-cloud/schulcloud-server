@@ -112,8 +112,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
+						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 						return {
 							bytesRange,
@@ -175,8 +175,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
+						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 						return {
 							bytesRange,
@@ -246,8 +246,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
+						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 						return {
 							bytesRange,
@@ -288,8 +288,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
+						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 						return {
 							bytesRange,
@@ -347,8 +347,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
+						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 						return {
 							bytesRange,
@@ -418,8 +418,8 @@ describe('PreviewService', () => {
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.getStorageLocationId(), hash, fileRecord.id);
-						const originPath = createPath(fileRecord.getStorageLocationId(), fileRecord.id);
+						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
+						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
 
 						return {
 							bytesRange,
@@ -557,7 +557,7 @@ describe('PreviewService', () => {
 					...defaultPreviewParams,
 				};
 				const format = previewParams.outputFormat.split('/')[1];
-				const directoryPath = createPreviewDirectoryPath(fileRecord.getStorageLocationId(), fileRecord.id);
+				const directoryPath = createPreviewDirectoryPath(fileRecord.storageLocationId, fileRecord.id);
 
 				return {
 					fileRecord,

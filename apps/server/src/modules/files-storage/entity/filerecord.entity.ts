@@ -106,7 +106,7 @@ interface ParentInfo {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: 'filerecords' })
-@Index({ properties: ['_storageLocation', '_storageLocationId', '_parentId'], options: { background: true } })
+@Index({ properties: ['storageLocation', '_storageLocationId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
 export class FileRecord extends BaseEntityWithTimestamps {
@@ -160,12 +160,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._storageLocationId.toHexString();
 	}
 
-	@Property({ fieldName: 'storageLocation' })
-	_storageLocation: StorageLocation;
-
-	get storageLocation(): StorageLocation {
-		return this._storageLocation;
-	}
+	@Property()
+	storageLocation: StorageLocation;
 
 	@Property({ fieldName: 'isCopyFrom', nullable: true })
 	_isCopyFrom?: ObjectId;
@@ -188,7 +184,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			this._creatorId = new ObjectId(props.creatorId);
 		}
 		this._storageLocationId = new ObjectId(props.storageLocationId);
-		this._storageLocation = props.storageLocation;
+		this.storageLocation = props.storageLocation;
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
 		}
@@ -296,14 +292,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		const { parentId, parentType, storageLocation, storageLocationId } = this;
 
 		return { parentId, parentType, storageLocation, storageLocationId };
-	}
-
-	public getStorageLocationId(): EntityId {
-		return this._storageLocationId.toHexString();
-	}
-
-	public getStorageLocation(): StorageLocation {
-		return this._storageLocation;
 	}
 
 	public getPreviewStatus(): PreviewStatus {

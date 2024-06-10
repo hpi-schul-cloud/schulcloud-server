@@ -27,15 +27,15 @@ export function createPreviewFilePath(storageLocationId: EntityId, hash: string,
 }
 
 export function getPaths(fileRecords: FileRecord[]): string[] {
-	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.getStorageLocationId(), fileRecord.id));
+	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.storageLocationId, fileRecord.id));
 
 	return paths;
 }
 
 export function createCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): CopyFiles {
 	const copyFiles = {
-		sourcePath: createPath(sourceFile.getStorageLocationId(), sourceFile.id),
-		targetPath: createPath(targetFile.getStorageLocationId(), targetFile.id),
+		sourcePath: createPath(sourceFile.storageLocationId, sourceFile.id),
+		targetPath: createPath(targetFile.storageLocationId, targetFile.id),
 	};
 
 	return copyFiles;

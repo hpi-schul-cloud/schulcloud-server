@@ -36,7 +36,7 @@ export class PreviewService {
 
 	public async deletePreviews(fileRecords: FileRecord[]): Promise<void> {
 		const paths = fileRecords.map((fileRecord) =>
-			createPreviewDirectoryPath(fileRecord.getStorageLocationId(), fileRecord.id)
+			createPreviewDirectoryPath(fileRecord.storageLocationId, fileRecord.id)
 		);
 
 		const promises = paths.map((path) => this.storageClient.deleteDirectory(path));
