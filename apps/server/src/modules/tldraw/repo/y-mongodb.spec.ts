@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ConfigModule } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
+import { DomainErrorHandler } from '@src/core';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
@@ -37,8 +37,8 @@ describe('YMongoDb', () => {
 				YMongodb,
 				TldrawRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
@@ -227,7 +227,7 @@ describe('YMongoDb', () => {
 
 				const doc = await mdb.getDocument('test-name');
 
-				expect(doc).toBeUndefined();
+				expect(doc).toBeNull();
 				applyUpdateSpy.mockRestore();
 			});
 		});

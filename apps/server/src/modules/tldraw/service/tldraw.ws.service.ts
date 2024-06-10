@@ -95,6 +95,7 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
+	// this is a private method, need to be changed
 	public async getDocument(docName: string) {
 		const existingDoc = this.docs.get(docName);
 
@@ -108,6 +109,7 @@ export class TldrawWsService {
 			return existingDoc;
 		}
 
+		// doc can be null, need to be handled
 		const doc = await this.tldrawBoardRepo.getDocumentFromDb(docName);
 		doc.isLoaded = false;
 
@@ -179,7 +181,7 @@ export class TldrawWsService {
 	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 
-		// get doc, initialize if it does not exist yet
+		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
 
