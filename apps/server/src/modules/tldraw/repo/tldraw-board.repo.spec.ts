@@ -39,7 +39,7 @@ describe('TldrawBoardRepo', () => {
 	});
 
 	afterEach(() => {
-		jest.restoreAllMocks();
+		jest.resetAllMocks();
 	});
 
 	it('should check if repo and its properties are set correctly', () => {

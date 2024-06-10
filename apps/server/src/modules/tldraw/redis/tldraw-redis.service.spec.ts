@@ -44,7 +44,7 @@ describe('TldrawRedisService', () => {
 	});
 
 	afterEach(() => {
-		jest.restoreAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('redisMessageHandler', () => {
