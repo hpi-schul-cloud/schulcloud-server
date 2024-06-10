@@ -50,7 +50,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 			const ethPath = '/api';
 			const mockUrl = `http://localhost:${port}${ethPath}`;
-			Configuration.set('ETHERPAD_URI', mockUrl);
+			Configuration.set('ETHERPAD__URI', mockUrl);
 			Configuration.set('ETHERPAD__API_KEY', 'someapikey');
 
 			app = await appPromise();

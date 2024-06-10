@@ -12,8 +12,8 @@ const logger = require('../../../logger');
  */
 class EtherpadClient {
 	constructor() {
-		if (Configuration.has('ETHERPAD_URI')) {
-			this.uri = () => Configuration.get('ETHERPAD_URI');
+		if (Configuration.has('ETHERPAD__URI')) {
+			this.uri = () => Configuration.get('ETHERPAD__URI');
 			logger.info('Etherpad uri is set to=', this.uri());
 		} else {
 			this.uri = null;

@@ -50,7 +50,7 @@ describe('Etherpad services', () => {
 
 			const API_PATH_CONFIG = `/api`;
 			const mockUrl = `http://localhost:${port}${API_PATH_CONFIG}`;
-			Configuration.set('ETHERPAD_URI', mockUrl);
+			Configuration.set('ETHERPAD__URI', mockUrl);
 			Configuration.set('ETHERPAD__API_KEY', 'someapikey');
 
 			app = await appPromise();
