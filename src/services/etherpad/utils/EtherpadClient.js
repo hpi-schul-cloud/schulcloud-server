@@ -24,8 +24,8 @@ class EtherpadClient {
 		} else {
 			this.cookieExpiresSeconds = 28800;
 		}
-		if (Configuration.has('ETHERPAD_COOKIE_RELEASE_THRESHOLD')) {
-			this.cookieReleaseThreshold = Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD');
+		if (Configuration.has('ETHERPAD__COOKIE_RELEASE_THRESHOLD')) {
+			this.cookieReleaseThreshold = Configuration.get('ETHERPAD__COOKIE_RELEASE_THRESHOLD');
 		} else {
 			this.cookieReleaseThreshold = 7200;
 		}
