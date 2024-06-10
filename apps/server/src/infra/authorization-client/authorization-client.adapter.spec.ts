@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosResponse } from 'axios';
+import { Request } from 'express';
 import {
 	Action,
 	AuthorizationApi,
@@ -23,6 +25,10 @@ describe(AuthorizationClientAdapter.name, () => {
 				{
 					provide: AuthorizationApi,
 					useValue: createMock<AuthorizationApi>(),
+				},
+				{
+					provide: REQUEST,
+					useValue: createMock<Request>(),
 				},
 			],
 		}).compile();
@@ -50,10 +56,14 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
+				const expectedOptions = { headers: { Authorization: 'Bearer ' } };
 
 				await service.checkPermissionByReferences(params);
 
-				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(params);
+				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+					params,
+					expectedOptions
+				);
 			});
 
 			it('should return the response data', async () => {
