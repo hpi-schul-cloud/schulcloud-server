@@ -809,13 +809,13 @@
 					"default": "",
 					"type": "string",
 					"description": "The etherpad api key for sending requests."
+				},
+				"COOKIE_EXPIRES_SECONDS": {
+					"type": "integer",
+					"default": 28800,
+					"description": "Number of seconds after an etherpad cookie expires."
 				}
 			}
-		},
-		"ETHERPAD_COOKIE_EXPIRES_SECONDS": {
-			"type": "integer",
-			"default": 28800,
-			"description": "Number of seconds after an etherpad cookie expires."
 		},
 		"ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
 			"type": "integer",
