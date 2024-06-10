@@ -783,11 +783,6 @@
 			"default": true,
 			"description": "Etherpad feature enabled"
 		},
-		"ETHERPAD_OLD_PAD_URI": {
-			"type": "string",
-			"default": "https://etherpad.dbildungscloud.de/p",
-			"description": "The etherpad api version uri."
-		},
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
@@ -804,6 +799,11 @@
 					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
+				},
+				"OLD_PAD_URI": {
+					"type": "string",
+					"default": "https://etherpad.dbildungscloud.de/p",
+					"description": "The etherpad api version uri."
 				},
 				"API_KEY": {
 					"default": "",
