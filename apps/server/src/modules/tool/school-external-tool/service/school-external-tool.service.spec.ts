@@ -267,7 +267,7 @@ describe(SchoolExternalToolService.name, () => {
 					it('should call the schoolExternalToolRepo', () => {
 						const { schoolExternalToolId } = setup();
 
-						service.deleteSchoolExternalToolById(schoolExternalToolId);
+						service.deleteSchoolExternalTool(schoolExternalToolId);
 
 						expect(schoolExternalToolRepo.deleteById).toHaveBeenCalledWith(schoolExternalToolId);
 					});

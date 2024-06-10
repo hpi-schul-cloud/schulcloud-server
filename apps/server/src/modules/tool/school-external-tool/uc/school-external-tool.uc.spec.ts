@@ -220,7 +220,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
 
-				expect(contextExternalToolService.deleteBySchoolExternalToolId).toHaveBeenCalledWith(schoolExternalToolId);
+				expect(contextExternalToolService.deleteBySchoolExternalTool).toHaveBeenCalledWith(schoolExternalToolId);
 			});
 
 			it('should call the schoolExternalToolService', async () => {
@@ -228,7 +228,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
 
-				expect(schoolExternalToolService.deleteSchoolExternalToolById).toHaveBeenCalledWith(schoolExternalToolId);
+				expect(schoolExternalToolService.deleteSchoolExternalTool).toHaveBeenCalledWith(schoolExternalToolId);
 			});
 		});
 	});

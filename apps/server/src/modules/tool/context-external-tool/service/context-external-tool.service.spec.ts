@@ -122,7 +122,7 @@ describe(ContextExternalToolService.name, () => {
 			it('should call find()', async () => {
 				const { schoolExternalToolId } = setup();
 
-				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
+				await service.deleteBySchoolExternalTool(schoolExternalToolId);
 
 				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({
 					schoolToolRef: { schoolToolId: schoolExternalToolId },
@@ -132,7 +132,7 @@ describe(ContextExternalToolService.name, () => {
 			it('should call deleteBySchoolExternalToolIds()', async () => {
 				const { schoolExternalToolId, contextExternalTool1, contextExternalTool2 } = setup();
 
-				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
+				await service.deleteBySchoolExternalTool(schoolExternalToolId);
 
 				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1, contextExternalTool2]);
 			});

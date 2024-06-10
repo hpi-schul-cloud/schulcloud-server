@@ -6,11 +6,9 @@ import {
 	Card,
 	ContentElementFactory,
 	ContentElementType,
+	ExternalToolElement,
 	isAnyContentElement,
-	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { BoardNodeType, ExternalToolElementNodeEntity } from '@shared/domain/entity';
-import { PlaceholderElementNodeEntity } from '@shared/domain/entity/boardnode/placeholder-element-node.entity';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
@@ -35,15 +33,11 @@ export class ContentElementService {
 		return element;
 	}
 
-	public async findElementsById(contextExternalToolId: EntityId): Promise<ExternalToolElementNodeEntity[]> {
-		const elements = await this.boardDoRepo.findElementsById(contextExternalToolId);
-		// validation?
-		return elements;
-	}
+	public async findElementsByContextExternalToolId(contextExternalToolId: EntityId): Promise<ExternalToolElement[]> {
+		const elements: ExternalToolElement[] = await this.boardDoRepo.findElementsByContextExternalToolId(
+			contextExternalToolId
+		);
 
-	public async findByContent(elementType: ContentElementType): Promise<AnyContentElementDo[]> {
-		const elements: AnyContentElementDo[] = await this.boardDoRepo.findByContent(elementType);
-		// validation?
 		return elements;
 	}
 
@@ -61,7 +55,7 @@ export class ContentElementService {
 		return count;
 	}
 
-	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
+	async create(parent: AnyBoardDo, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
 
@@ -72,6 +66,15 @@ export class ContentElementService {
 
 	async delete(element: AnyContentElementDo): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(element);
+	}
+
+	async replace(target: AnyContentElementDo, source: AnyContentElementDo): Promise<void> {
+		const parent = await this.findParentOfId(target.id);
+		parent.addChild(source);
+
+		await this.delete(target);
+
+		await this.boardDoRepo.save(parent.children, parent);
 	}
 
 	async move(element: AnyContentElementDo, targetCard: Card, targetPosition: number): Promise<void> {
@@ -87,24 +90,5 @@ export class ContentElementService {
 		await this.boardDoRepo.save(element, parent);
 
 		return element;
-	}
-
-	async replaceElementWithPlaceholder(contextExternalToolId: EntityId) {
-		const externalToolElements: ExternalToolElementNodeEntity[] = await this.findElementsById(contextExternalToolId);
-
-		externalToolElements.forEach(async (element) => {
-			if (element.parentId) {
-				const boardNode = this.boardDoRepo.findById(element.parentId);
-
-				// TODO
-				await this.create(boardNode, BoardNodeType.PLACEHOLDER);
-				const placeholder = new PlaceholderElementNodeEntity({
-					title,
-					type,
-					parent: boardNode,
-					position: element.position,
-				});
-			}
-		});
 	}
 }

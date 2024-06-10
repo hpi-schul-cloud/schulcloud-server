@@ -1,5 +1,5 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class PlaceholderElement extends BoardComposite<PlaceholderElementProps> {
 	get previousElementType(): string {

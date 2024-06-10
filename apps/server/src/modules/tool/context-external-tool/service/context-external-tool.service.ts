@@ -1,22 +1,19 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EventBus } from '@nestjs/cqrs';
-import { ContentElementType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
-import { CommonToolService } from '../../common/service';
-import { ExternalTool } from '../../external-tool/domain';
+import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import {
 	ContextExternalTool,
 	ContextExternalToolLaunchable,
 	ContextRef,
 	RestrictedContextMismatchLoggableException,
 } from '../domain';
-import { ReplaceElementWithPlaceholderEvent } from '../domain/event/replace-element-with-placeholder.event';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
@@ -26,7 +23,7 @@ export class ContextExternalToolService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly commonToolService: CommonToolService,
-		private readonly eventbus: EventBus
+		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
@@ -53,26 +50,20 @@ export class ContextExternalToolService {
 		return savedContextExternalTool;
 	}
 
-	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
+	public async deleteBySchoolExternalTool(schoolExternalTool: SchoolExternalTool) {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			schoolToolRef: {
-				schoolToolId: schoolExternalToolId,
+				schoolToolId: schoolExternalTool.id,
 			},
 		});
 
-		await this.contextExternalToolRepo.delete(contextExternalTools);
+		contextExternalTools.map(async (contextExternalTool) =>
+			this.commonToolDeleteService.deleteContextExternalTool(contextExternalTool)
+		);
 	}
 
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
-		await this.contextExternalToolRepo.delete(contextExternalTool);
-
-		this.eventbus.publish(
-			new ReplaceElementWithPlaceholderEvent(
-				contextExternalTool.id,
-				ContentElementType.EXTERNAL_TOOL,
-				contextExternalTool.displayName
-			)
-		);
+		await this.commonToolDeleteService.deleteContextExternalTool(contextExternalTool);
 	}
 
 	public async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {

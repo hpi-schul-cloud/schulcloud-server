@@ -130,7 +130,9 @@ export class ExternalToolUc {
 	public async deleteExternalTool(userId: EntityId, toolId: EntityId): Promise<void> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
+		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
+		const promise: Promise<void> = this.externalToolService.deleteExternalTool(externalTool);
+
 		return promise;
 	}
 

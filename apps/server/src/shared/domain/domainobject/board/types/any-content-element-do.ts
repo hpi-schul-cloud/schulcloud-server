@@ -3,6 +3,7 @@ import { DrawingElement } from '../drawing-element.do';
 import { ExternalToolElement } from '../external-tool-element.do';
 import { FileElement } from '../file-element.do';
 import { LinkElement } from '../link-element.do';
+import { PlaceholderElement } from '../placeholder-element.do';
 import { RichTextElement } from '../rich-text-element.do';
 import { SubmissionContainerElement } from '../submission-container-element.do';
 import type { AnyBoardDo } from './any-board-do';
@@ -14,7 +15,8 @@ export type AnyContentElementDo =
 	| FileElement
 	| LinkElement
 	| RichTextElement
-	| SubmissionContainerElement;
+	| SubmissionContainerElement
+	| PlaceholderElement;
 
 export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentElementDo => {
 	const result =
@@ -24,7 +26,8 @@ export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentE
 		element instanceof FileElement ||
 		element instanceof LinkElement ||
 		element instanceof RichTextElement ||
-		element instanceof SubmissionContainerElement;
+		element instanceof SubmissionContainerElement ||
+		element instanceof PlaceholderElement;
 
 	return result;
 };

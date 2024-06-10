@@ -2,7 +2,7 @@ import { type FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
+import { AnyBoardDo, BoardExternalReference, ExternalToolElement } from '@shared/domain/domainobject';
 
 import { BoardNode, ExternalToolElementNodeEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -27,14 +27,20 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
-	public async findElementsById(id: EntityId): Promise<ExternalToolElementNodeEntity[]> {
-		// const domainObjects = await this.boardNodeRepo.findByContent(elementType);
-
-		const boardNodes = await this.em.find(ExternalToolElementNodeEntity, {
-			contextExternalTool: id,
+	public async findElementsByContextExternalToolId(id: EntityId): Promise<ExternalToolElement[]> {
+		// TODO: maybe replace contexExternalToolId at element with something like ExternalElementReference and use it here
+		// TODO: and rename function to findElementsByExternalElementReference, dont forget the migration for existing externalToolElements
+		const boardNodes: ExternalToolElementNodeEntity[] = await this.em.find(ExternalToolElementNodeEntity, {
+			contextExternalTool: { id },
 		});
 
-		return boardNodes;
+		const boardDoBuilder = new BoardDoBuilderImpl();
+
+		const externalToolElements: ExternalToolElement[] = boardNodes.map((boardNode) =>
+			boardDoBuilder.buildExternalToolElement(boardNode)
+		);
+
+		return externalToolElements;
 	}
 
 	async findByClassAndId<S, T extends AnyBoardDo>(
