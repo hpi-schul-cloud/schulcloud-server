@@ -17,7 +17,7 @@ export class FileRecordScope extends Scope<FileRecord> {
 	}
 
 	byStorageType(storageLocation: StorageLocation): FileRecordScope {
-		this.addQuery({ _storageLocation: storageLocation });
+		this.addQuery({ storageLocation });
 
 		return this;
 	}
