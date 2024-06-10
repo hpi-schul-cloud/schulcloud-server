@@ -1,12 +1,12 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import type { BoardCompositeVisitor, BoardCompositeVisitorAsync, ContentElementType } from './types';
 
 export class PlaceholderElement extends BoardComposite<PlaceholderElementProps> {
-	get previousElementType(): string {
+	get previousElementType(): ContentElementType {
 		return this.props.previousElementType;
 	}
 
-	set previousElementType(value: string) {
+	set previousElementType(value: ContentElementType) {
 		this.props.previousElementType = value;
 	}
 
@@ -32,7 +32,7 @@ export class PlaceholderElement extends BoardComposite<PlaceholderElementProps> 
 }
 
 export interface PlaceholderElementProps extends BoardCompositeProps {
-	previousElementType: string;
+	previousElementType: ContentElementType;
 	previousElementDisplayName: string;
 }
 

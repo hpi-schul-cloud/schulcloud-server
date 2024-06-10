@@ -1,4 +1,3 @@
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
@@ -10,6 +9,7 @@ import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/e
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
@@ -26,6 +26,7 @@ import {
 	MediaBoardNode,
 	MediaExternalToolElementNode,
 	MediaLineNode,
+	PlaceholderElementNodeEntity,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -124,4 +125,5 @@ export const ALL_ENTITIES = [
 	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
+	PlaceholderElementNodeEntity,
 ];

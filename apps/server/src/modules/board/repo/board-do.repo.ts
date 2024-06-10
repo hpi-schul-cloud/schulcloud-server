@@ -31,7 +31,7 @@ export class BoardDoRepo {
 		// TODO: maybe replace contexExternalToolId at element with something like ExternalElementReference and use it here
 		// TODO: and rename function to findElementsByExternalElementReference, dont forget the migration for existing externalToolElements
 		const boardNodes: ExternalToolElementNodeEntity[] = await this.em.find(ExternalToolElementNodeEntity, {
-			contextExternalTool: { id },
+			contextExternalTool: id,
 		});
 
 		const boardDoBuilder = new BoardDoBuilderImpl();

@@ -131,7 +131,7 @@ export class ContentElementFactory {
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			previousElementType: '',
+			previousElementType: ContentElementType.PLACEHOLDER,
 			previousElementDisplayName: '',
 		});
 

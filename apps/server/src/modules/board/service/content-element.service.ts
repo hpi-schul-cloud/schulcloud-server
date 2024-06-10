@@ -69,10 +69,10 @@ export class ContentElementService {
 	}
 
 	async replace(target: AnyContentElementDo, source: AnyContentElementDo): Promise<void> {
+		await this.delete(target);
+
 		const parent = await this.findParentOfId(target.id);
 		parent.addChild(source);
-
-		await this.delete(target);
 
 		await this.boardDoRepo.save(parent.children, parent);
 	}

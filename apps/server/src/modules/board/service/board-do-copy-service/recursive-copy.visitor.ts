@@ -14,14 +14,15 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	MediaBoard,
 	MediaExternalToolElement,
 	MediaLine,
+	PlaceholderElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
@@ -365,5 +366,10 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		});
 
 		return copies;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	visitPlaceholderElementAsync(placeholderElement: PlaceholderElement): Promise<void> {
+		return Promise.resolve(); // TODO Not in scope yet
 	}
 }

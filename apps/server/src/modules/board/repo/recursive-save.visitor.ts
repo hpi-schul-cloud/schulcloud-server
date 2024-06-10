@@ -215,6 +215,8 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			id: placeholderElement.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			previousElementDisplayName: placeholderElement.previousElementDisplayName,
+			previousElementType: placeholderElement.previousElementType,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);

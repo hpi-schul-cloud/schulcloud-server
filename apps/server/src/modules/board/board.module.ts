@@ -20,6 +20,7 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
+	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
 	MediaElementService,
 	MediaLineService,
@@ -64,6 +65,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		MediaLineService,
 		MediaElementService,
 		UserDeletedEventHandlerService,
+		ContextExternalToolDeletedEventHandlerService,
 	],
 	exports: [
 		BoardDoAuthorizableService,

@@ -1,13 +1,15 @@
-import { Entity } from '@mikro-orm/core';
-import { AnyBoardDo } from '@shared/domain/domainobject';
+import { Entity, Enum, Property } from '@mikro-orm/core';
+import { AnyBoardDo, ContentElementType } from '@shared/domain/domainobject';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 @Entity({ discriminatorValue: BoardNodeType.PLACEHOLDER })
 export class PlaceholderElementNodeEntity extends BoardNode {
+	@Property()
 	previousElementDisplayName: string;
 
-	previousElementType: string;
+	@Enum(() => ContentElementType)
+	previousElementType: ContentElementType;
 
 	constructor(props: PlaceholderElementNodeEntityProps) {
 		super(props);
@@ -24,6 +26,6 @@ export class PlaceholderElementNodeEntity extends BoardNode {
 }
 
 export interface PlaceholderElementNodeEntityProps extends BoardNodeProps {
-	previousElementType: string;
+	previousElementType: ContentElementType;
 	previousElementDisplayName: string;
 }

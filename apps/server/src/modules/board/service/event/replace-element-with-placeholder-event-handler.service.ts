@@ -1,5 +1,4 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ContentElementService } from '@modules/board';
 import {
 	ContextExternalToolDeletedEvent,
 	ContextExternalToolsDeletedEvent,
@@ -8,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { ContentElementType, ExternalToolElement, PlaceholderElement } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
+import { ContentElementService } from '../content-element.service';
 
 @Injectable()
 @EventsHandler(ContextExternalToolDeletedEvent)

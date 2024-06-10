@@ -8,6 +8,7 @@ import {
 	LinkElement,
 	MediaBoard,
 	MediaLine,
+	PlaceholderElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
@@ -77,6 +78,11 @@ export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 	}
 
 	visitMediaExternalToolElement(): void {
+		this.doNothing();
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	visitPlaceholderElement(placeholderElement: PlaceholderElement): void {
 		this.doNothing();
 	}
 }

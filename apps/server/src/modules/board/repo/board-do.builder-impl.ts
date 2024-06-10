@@ -12,6 +12,7 @@ import {
 	MediaBoard,
 	MediaExternalToolElement,
 	MediaLine,
+	PlaceholderElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -31,6 +32,7 @@ import {
 	type MediaBoardNode,
 	type MediaExternalToolElementNode,
 	type MediaLineNode,
+	type PlaceholderElementNodeEntity,
 	type RichTextElementNode,
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
@@ -93,6 +95,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 			BoardNodeType.EXTERNAL_TOOL,
 			BoardNodeType.COLLABORATIVE_TEXT_EDITOR,
+			BoardNodeType.PLACEHOLDER,
 		]);
 
 		const elements = this.buildChildren<
@@ -303,6 +306,21 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 			contextExternalToolId: boardNode.contextExternalTool.id,
+		});
+
+		return element;
+	}
+
+	buildPlaceholderElement(boardNode: PlaceholderElementNodeEntity): PlaceholderElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: PlaceholderElement = new PlaceholderElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			previousElementType: boardNode.previousElementType,
+			previousElementDisplayName: boardNode.previousElementDisplayName,
 		});
 
 		return element;

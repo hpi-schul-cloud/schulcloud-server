@@ -10,6 +10,7 @@ import {
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
 } from '../element';
+import { PlaceholderElementResponse } from '../element/placeholder-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
@@ -20,7 +21,8 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	RichTextElementResponse,
 	DrawingElementResponse,
 	SubmissionContainerElementResponse,
-	CollaborativeTextEditorElementResponse
+	CollaborativeTextEditorElementResponse,
+	PlaceholderElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -55,6 +57,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
+				{ $ref: getSchemaPath(PlaceholderElementResponse) },
 			],
 		},
 	})

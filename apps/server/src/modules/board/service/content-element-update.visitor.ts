@@ -1,24 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
-import type {
+import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
 	Card,
+	CollaborativeTextEditorElement,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	MediaBoard,
 	MediaExternalToolElement,
 	MediaLine,
+	PlaceholderElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain/domainobject';
-import { CollaborativeTextEditorElement } from '@shared/domain/domainobject/board/collaborative-text-editor-element.do';
-import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { InputFormat } from '@shared/domain/types';
+import { URL } from 'url';
 import {
 	AnyElementContentBody,
 	DrawingContentBody,
@@ -139,5 +141,10 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 
 	visitMediaExternalToolElementAsync(mediaElement: MediaExternalToolElement): Promise<void> {
 		return this.rejectNotHandled(mediaElement);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	visitPlaceholderElementAsync(placeholderElement: PlaceholderElement): Promise<void> {
+		return Promise.resolve(); // TODO Not in scope yet
 	}
 }

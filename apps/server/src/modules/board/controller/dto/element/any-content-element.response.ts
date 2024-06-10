@@ -3,6 +3,7 @@ import { DrawingElementResponse } from './drawing-element.response';
 import { ExternalToolElementResponse } from './external-tool-element.response';
 import { FileElementResponse } from './file-element.response';
 import { LinkElementResponse } from './link-element.response';
+import { PlaceholderElementResponse } from './placeholder-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
 import { SubmissionContainerElementResponse } from './submission-container-element.response';
 
@@ -13,7 +14,8 @@ export type AnyContentElementResponse =
 	| SubmissionContainerElementResponse
 	| ExternalToolElementResponse
 	| DrawingElementResponse
-	| CollaborativeTextEditorElementResponse;
+	| CollaborativeTextEditorElementResponse
+	| PlaceholderElementResponse;
 
 export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
 	element instanceof FileElementResponse;
