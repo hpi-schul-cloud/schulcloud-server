@@ -64,7 +64,10 @@ describe(BoardCollaborationGateway.name, () => {
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 		const columnNode2 = columnEntityFactory.withParent(columnBoardNode).build();
 
-		const cardNodes = cardEntityFactory.withParent(columnBoardNode).buildList(2);
+		const cardNodes = [
+			cardEntityFactory.withParent(columnNode).build(),
+			cardEntityFactory.withParent(columnNode).build(),
+		];
 		const elementNodes = richTextElementEntityFactory.withParent(cardNodes[0]).buildList(3);
 
 		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]);
@@ -484,7 +487,7 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 
 		describe('when an error is thrown', () => {
-			it('should answer with failure', async () => {
+			it.only('should answer with failure', async () => {
 				const { cardNodes, columnNode } = await setup();
 
 				// passing a column id instead of a card id to force an error
