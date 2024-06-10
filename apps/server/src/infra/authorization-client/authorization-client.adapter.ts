@@ -22,7 +22,7 @@ export class AuthorizationClientAdapter {
 
 		try {
 			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(params, {
-				headers: { authorization: `${jwt}` },
+				headers: { authorization: `Bearer ${jwt}` },
 			});
 
 			const hasPermission = response.data.isAuthorized;
