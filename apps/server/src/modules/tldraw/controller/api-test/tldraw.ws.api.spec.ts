@@ -77,7 +77,7 @@ describe('WebSocketController (WsAdapter)', () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	describe('when tldraw connection is established', () => {
