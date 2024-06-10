@@ -13,6 +13,8 @@ import {
 } from './authorization-api-client';
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
 
+const jwtToken = 'Bearer someJwtToken';
+
 describe(AuthorizationClientAdapter.name, () => {
 	let module: TestingModule;
 	let service: AuthorizationClientAdapter;
@@ -28,7 +30,11 @@ describe(AuthorizationClientAdapter.name, () => {
 				},
 				{
 					provide: REQUEST,
-					useValue: createMock<Request>(),
+					useValue: createMock<Request>({
+						headers: {
+							authorization: jwtToken,
+						},
+					}),
 				},
 			],
 		}).compile();
@@ -71,7 +77,7 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
-				const expectedOptions = { headers: { Authorization: 'Bearer ' } };
+				const expectedOptions = { headers: { authorization: jwtToken } };
 
 				await service.checkPermissionByReferences(params);
 
@@ -136,7 +142,7 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
-				const expectedOptions = { headers: { Authorization: 'Bearer ' } };
+				const expectedOptions = { headers: { authorization: jwtToken } };
 
 				await service.hasPermissionByReferences(params);
 

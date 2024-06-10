@@ -19,7 +19,7 @@ export class AuthorizationClientAdapter {
 			const tokenStr = this.request.headers.authorization || '';
 
 			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(params, {
-				headers: { Authorization: `Bearer ${tokenStr}` },
+				headers: { authorization: `${tokenStr}` },
 			});
 
 			const hasPermission = response.data.isAuthorized;
