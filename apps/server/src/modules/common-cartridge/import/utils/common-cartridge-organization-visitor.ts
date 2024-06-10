@@ -65,7 +65,7 @@ export class CommonCartridgeOrganizationVisitor {
 	}
 
 	private visit(element: SearchElement, queue: SearchElement[]): void {
-		element.element.querySelectorAll('item').forEach((child) => {
+		element.element.querySelectorAll(':scope > item').forEach((child) => {
 			queue.push({
 				depth: element.depth + 1,
 				path: `${element.path}${this.options.pathSeparator}${this.getElementIdentifier(child)}`,
