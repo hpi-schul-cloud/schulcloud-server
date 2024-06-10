@@ -45,7 +45,7 @@ class EtherpadClient {
 			method = 'POST',
 			endpoint,
 			formDef = {
-				apikey: Configuration.get('ETHERPAD_API_KEY'),
+				apikey: Configuration.get('ETHERPAD__API_KEY'),
 			},
 			body,
 		},

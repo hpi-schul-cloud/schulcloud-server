@@ -783,11 +783,6 @@
 			"default": true,
 			"description": "Etherpad feature enabled"
 		},
-		"ETHERPAD_API_KEY": {
-			"default": "",
-			"type": "string",
-			"description": "The etherpad api key for sending requests."
-		},
 		"ETHERPAD_URI": {
 			"type": "string",
 			"default": "https://dbildungscloud.de/etherpad/api/1",
@@ -806,12 +801,15 @@
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
+					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
+				},
+				"API_KEY": {
+					"default": "",
+					"type": "string",
+					"description": "The etherpad api key for sending requests."
 				}
-			},
-			"default": {
-				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
 		"ETHERPAD_COOKIE_EXPIRES_SECONDS": {

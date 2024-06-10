@@ -96,8 +96,8 @@
 		"IS_VISIBLE": true
 	},
 	"ETHERPAD_URI": "http://localhost:9001/api/1/",
-	"ETHERPAD_API_KEY": "381d67e6347d235ac9446",
 	"ETHERPAD": {
-		"PAD_URI": "http://localhost:9001/p"
+		"PAD_URI": "http://localhost:9001/p",
+		"API_KEY": "381d67e6347d235ac9446"
 	}
 }
