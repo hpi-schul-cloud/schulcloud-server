@@ -7,7 +7,7 @@ export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
-		this.url = `${API_VERSION_PATH}/file/download/${fileRecord.id}`;
+		this.url = `${API_VERSION_PATH}/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;
 		this.size = fileRecord.size;
 		this.securityCheckStatus = fileRecord.securityCheck.status;
 		this.parentId = fileRecord.parentId;
