@@ -47,6 +47,10 @@ describe(AuthorizationClientAdapter.name, () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
