@@ -57,61 +57,62 @@ describe(AuthorizationClientAdapter.name, () => {
 	});
 
 	describe('checkPermissionByReferences', () => {
-		const setup = (props: { isAuthorized: boolean }) => {
-			const params = {
-				context: {
-					action: Action.READ,
-					requiredPermissions,
-				},
-				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-				referenceId: 'someReferenceId',
+		describe('when authorizationReferenceControllerAuthorizeByReference resolves successful', () => {
+			const setup = (props: { isAuthorized: boolean }) => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+					data: {
+						isAuthorized: props.isAuthorized,
+						userId: 'userId',
+					},
+				});
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
+
+				return { params };
 			};
 
-			const response = createMock<AxiosResponse<AuthorizedReponse>>({
-				data: {
-					isAuthorized: props.isAuthorized,
-					userId: 'userId',
-				},
-			});
-
-			authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
-
-			return { params, response };
-		};
-
-		it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
-			const { params } = setup({ isAuthorized: true });
-
-			const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
-
-			await service.checkPermissionByReferences(params);
-
-			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
-				params,
-				expectedOptions
-			);
-		});
-
-		describe('when permission is granted', () => {
-			it('should return', async () => {
+			it('should call authorizationReferenceControllerAuthorizeByReference with correct params', async () => {
 				const { params } = setup({ isAuthorized: true });
 
-				await expect(service.checkPermissionByReferences(params)).resolves.toBeUndefined();
+				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
+
+				await service.checkPermissionByReferences(params);
+
+				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+					params,
+					expectedOptions
+				);
+			});
+
+			describe('when permission is granted', () => {
+				it('should return', async () => {
+					const { params } = setup({ isAuthorized: true });
+
+					await expect(service.checkPermissionByReferences(params)).resolves.toBeUndefined();
+				});
+			});
+
+			describe('when permission is denied', () => {
+				it('should throw AuthorizationForbiddenLoggableException', async () => {
+					const { params } = setup({ isAuthorized: false });
+
+					const expectedError = new AuthorizationForbiddenLoggableException(params);
+
+					await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
+				});
 			});
 		});
 
-		describe('when permission is denied', () => {
-			it('should throw AuthorizationForbiddenLoggableException', async () => {
-				const { params } = setup({ isAuthorized: false });
-
-				const expectedError = new AuthorizationForbiddenLoggableException(params);
-
-				await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
-			});
-		});
-
-		describe('when client throws error', () => {
-			it('should throw AuthorizationErrorLoggableException', async () => {
+		describe('when authorizationReferenceControllerAuthorizeByReference returns error', () => {
+			const setup = () => {
 				const error = new Error('testError');
 				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
 
@@ -124,6 +125,12 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceId: 'someReferenceId',
 				};
 
+				return { params, error };
+			};
+
+			it('should throw AuthorizationErrorLoggableException', async () => {
+				const { params, error } = setup();
+
 				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
 				await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
@@ -132,44 +139,68 @@ describe(AuthorizationClientAdapter.name, () => {
 	});
 
 	describe('hasPermissionByReferences', () => {
-		const setup = (props: { isAuthorized: boolean }) => {
-			const params = {
-				context: {
-					action: Action.READ,
-					requiredPermissions,
-				},
-				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-				referenceId: 'someReferenceId',
+		describe('when authorizationReferenceControllerAuthorizeByReference resolves successful', () => {
+			const setup = (props: { isAuthorized: boolean }) => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+					data: {
+						isAuthorized: props.isAuthorized,
+						userId: 'userId',
+					},
+				});
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
+
+				return { params, response };
 			};
 
-			const response = createMock<AxiosResponse<AuthorizedReponse>>({
-				data: {
-					isAuthorized: props.isAuthorized,
-					userId: 'userId',
-				},
+			it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
+				const { params } = setup({ isAuthorized: true });
+
+				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
+
+				await service.hasPermissionByReferences(params);
+
+				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+					params,
+					expectedOptions
+				);
 			});
 
-			authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
+			it('should return isAuthorized', async () => {
+				const { params, response } = setup({ isAuthorized: true });
 
-			return { params, response };
-		};
+				const result = await service.hasPermissionByReferences(params);
 
-		it('should call authorizationReferenceControllerAuthorizeByReference with the correct params', async () => {
-			const { params } = setup({ isAuthorized: true });
-
-			const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
-
-			await service.hasPermissionByReferences(params);
-
-			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
-				params,
-				expectedOptions
-			);
+				expect(result).toEqual(response.data.isAuthorized);
+			});
 		});
 
 		describe('when cookie header contains JWT token', () => {
-			it('should forward the JWT as bearer token', async () => {
-				const { params } = setup({ isAuthorized: true });
+			const setup = (props: { isAuthorized: boolean }) => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+					data: {
+						isAuthorized: props.isAuthorized,
+						userId: 'userId',
+					},
+				});
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
 
 				const request = createMock<Request>({
 					headers: {
@@ -177,6 +208,12 @@ describe(AuthorizationClientAdapter.name, () => {
 					},
 				});
 				const adapter = new AuthorizationClientAdapter(authorizationApi, request);
+
+				return { params, adapter };
+			};
+
+			it('should forward the JWT as bearer token', async () => {
+				const { params, adapter } = setup({ isAuthorized: true });
 
 				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
@@ -189,17 +226,37 @@ describe(AuthorizationClientAdapter.name, () => {
 			});
 		});
 
-		describe('when authorization header does not contain Bearer token', () => {
-			it('should forward the JWT as bearer token', async () => {
-				const { params } = setup({ isAuthorized: true });
+		describe('when authorization header is without "Bearer " at the start', () => {
+			const setup = (props: { isAuthorized: boolean }) => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
+				};
+
+				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+					data: {
+						isAuthorized: props.isAuthorized,
+						userId: 'userId',
+					},
+				});
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
 
 				const request = createMock<Request>({
 					headers: {
 						authorization: jwtToken,
 					},
 				});
-
 				const adapter = new AuthorizationClientAdapter(authorizationApi, request);
+
+				return { params, adapter };
+			};
+
+			it('should forward the JWT as bearer token', async () => {
+				const { params, adapter } = setup({ isAuthorized: true });
 
 				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
@@ -213,13 +270,7 @@ describe(AuthorizationClientAdapter.name, () => {
 		});
 
 		describe('when no JWT token is found', () => {
-			it('should throw an UnauthorizedException', async () => {
-				const request = createMock<Request>({
-					headers: {},
-				});
-
-				const adapter = new AuthorizationClientAdapter(authorizationApi, request);
-
+			const setup = (props: { isAuthorized: boolean }) => {
 				const params = {
 					context: {
 						action: Action.READ,
@@ -229,22 +280,31 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceId: 'someReferenceId',
 				};
 
+				const response = createMock<AxiosResponse<AuthorizedReponse>>({
+					data: {
+						isAuthorized: props.isAuthorized,
+						userId: 'userId',
+					},
+				});
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
+
+				const request = createMock<Request>({
+					headers: {},
+				});
+				const adapter = new AuthorizationClientAdapter(authorizationApi, request);
+
+				return { params, adapter };
+			};
+
+			it('should throw an UnauthorizedException', async () => {
+				const { params, adapter } = setup({ isAuthorized: true });
+
 				await expect(adapter.hasPermissionByReferences(params)).rejects.toThrowError(UnauthorizedException);
 			});
 		});
 
-		describe('when client returns response', () => {
-			it('should return isAuthorized', async () => {
-				const { response, params } = setup({ isAuthorized: true });
-
-				const result = await service.hasPermissionByReferences(params);
-
-				expect(result).toEqual(response.data.isAuthorized);
-			});
-		});
-
-		describe('when client throws error', () => {
-			it('should throw AuthorizationErrorLoggableException', async () => {
+		describe('when authorizationReferenceControllerAuthorizeByReference returns error', () => {
+			const setup = () => {
 				const error = new Error('testError');
 				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
 
@@ -256,6 +316,12 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
+
+				return { params, error };
+			};
+
+			it('should throw AuthorizationErrorLoggableException', async () => {
+				const { params, error } = setup();
 
 				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
