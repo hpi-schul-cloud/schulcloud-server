@@ -357,7 +357,7 @@ describe('files-storage controller (API)', () => {
 	describe('download action', () => {
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid recordId', async () => {
-				const response = await api.getDownloadFile('/file/download/123');
+				const response = await api.getDownloadFile('/file/download/123/text.txt');
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -369,7 +369,7 @@ describe('files-storage controller (API)', () => {
 			});
 
 			it('should return status 404 for wrong filename', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 				const response = await api.getDownloadFile(`/file/download/${result.id}/wrong-name.txt`);
 
 				expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
@@ -377,7 +377,7 @@ describe('files-storage controller (API)', () => {
 			});
 
 			it('should return status 404 for file not found', async () => {
-				const response = await api.getDownloadFile(`/file/download/${validId}`);
+				const response = await api.getDownloadFile(`/file/download/${validId}/wrong-name.txt`);
 
 				expect(response.status).toEqual(404);
 			});

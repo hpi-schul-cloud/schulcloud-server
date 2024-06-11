@@ -13,6 +13,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { InstanceModule } from '../instance';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
 
@@ -29,6 +30,7 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 		forwardRef(() => ToolModule),
 		forwardRef(() => BoardModule),
 		LoggerModule,
+		InstanceModule,
 	],
 	providers: [
 		AuthorizationHelper,
