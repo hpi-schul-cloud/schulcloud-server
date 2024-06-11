@@ -35,10 +35,7 @@ export class AuthorizationClientAdapter {
 
 	private getJWT(): string {
 		const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), this.fromCookie('jwt')]);
-		let jwt = getJWT(this.request) || this.request.headers.authorization;
-		if (jwt?.toLowerCase()?.startsWith('bearer ')) {
-			[, jwt] = jwt.split(' ');
-		}
+		const jwt = getJWT(this.request) || this.request.headers.authorization;
 
 		if (!jwt) {
 			throw new UnauthorizedException('Authentication is required.');

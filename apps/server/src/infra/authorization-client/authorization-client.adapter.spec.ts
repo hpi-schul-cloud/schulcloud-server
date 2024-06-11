@@ -200,6 +200,35 @@ describe(AuthorizationClientAdapter.name, () => {
 			);
 		});
 
+		it('should forward the JWT token from authorization header even without Bearer token', async () => {
+			setup();
+
+			const request = createMock<Request>({
+				headers: {
+					authorization: jwtToken,
+				},
+			});
+
+			const adapter = new AuthorizationClientAdapter(authorizationApi, request);
+
+			const params = {
+				context: {
+					action: Action.READ,
+					requiredPermissions: [],
+				},
+				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+				referenceId: 'someReferenceId',
+			};
+			const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
+
+			await adapter.hasPermissionByReferences(params);
+
+			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+				params,
+				expectedOptions
+			);
+		});
+
 		it('should throw an UnauthorizedException if no JWT token is found', async () => {
 			const request = createMock<Request>({
 				headers: {},
