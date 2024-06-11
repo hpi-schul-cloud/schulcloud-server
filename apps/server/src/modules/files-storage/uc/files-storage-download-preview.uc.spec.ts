@@ -4,7 +4,6 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { InstanceConfigService } from '@modules/instance-config';
 import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
@@ -12,6 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
+import { InstanceService } from 'apps/server/src/modules/instances';
 import { DownloadFileParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { TestHelper } from '../helper/test-helper';
@@ -96,8 +96,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<SchoolService>(),
 				},
 				{
-					provide: InstanceConfigService,
-					useValue: createMock<InstanceConfigService>(),
+					provide: InstanceService,
+					useValue: createMock<InstanceService>(),
 				},
 			],
 		}).compile();

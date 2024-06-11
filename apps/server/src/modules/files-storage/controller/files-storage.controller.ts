@@ -100,7 +100,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
-	@Get('/download/:fileRecordId')
+	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,

@@ -1,7 +1,5 @@
 import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
-import { InstanceConfigModule } from '@modules/instance-config';
-import { SchoolModule } from '@modules/school';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -20,8 +18,6 @@ import { FilesStorageUC } from './uc';
 		CoreModule,
 		HttpModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
-		InstanceConfigModule,
-		SchoolModule,
 	],
 	controllers: [FilesStorageController, FilesStorageConfigController, FileSecurityController],
 	providers: [FilesStorageUC],

@@ -17,6 +17,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
+import { InstanceService } from '../../../instances';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
@@ -31,7 +32,8 @@ type RepoType =
 	| TaskRepo
 	| TeamsRepo
 	| UserRepo
-	| ExternalToolAuthorizableService;
+	| ExternalToolAuthorizableService
+	| InstanceService;
 
 interface RepoLoader {
 	repo: RepoType;
@@ -54,7 +56,8 @@ export class ReferenceLoader {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
-		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService
+		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
+		private readonly instanceService: InstanceService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -70,6 +73,7 @@ export class ReferenceLoader {
 			repo: this.contextExternalToolAuthorizableService,
 		});
 		this.repos.set(AuthorizableReferenceType.ExternalTool, { repo: this.externalToolAuthorizableService });
+		this.repos.set(AuthorizableReferenceType.Instance, { repo: this.instanceService });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {

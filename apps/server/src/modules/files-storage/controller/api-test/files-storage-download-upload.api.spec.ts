@@ -19,6 +19,7 @@ import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord } from '../../entity';
+import { ErrorType } from '../../error';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { TestHelper } from '../../helper/test-helper';
@@ -291,7 +292,7 @@ describe('files-storage controller (API)', () => {
 					const uploadResponse = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 					const { result } = uploadResponse;
 					body = {
-						url: `http://localhost:${appPort}/file/download/${result.id}`,
+						url: `http://localhost:${appPort}/file/download/${result.id}/${result.name}`,
 						fileName: 'test.txt',
 					};
 				});
@@ -334,7 +335,7 @@ describe('files-storage controller (API)', () => {
 					const uploadResponse = await api.postUploadFile(`/file/upload/school/${validId}/schools/${validId}`);
 					const { result } = uploadResponse;
 					body = {
-						url: `http://localhost:${appPort}/file/download/${result.id}`,
+						url: `http://localhost:${appPort}/file/download/${result.id}/${result.name}`,
 						fileName: 'test.txt',
 					};
 
@@ -367,6 +368,14 @@ describe('files-storage controller (API)', () => {
 				expect(response.status).toEqual(400);
 			});
 
+			it('should return status 404 for wrong filename', async () => {
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const response = await api.getDownloadFile(`/file/download/${result.id}/wrong-name.txt`);
+
+				expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
+				expect(response.status).toEqual(404);
+			});
+
 			it('should return status 404 for file not found', async () => {
 				const response = await api.getDownloadFile(`/file/download/${validId}`);
 
@@ -390,7 +399,7 @@ describe('files-storage controller (API)', () => {
 				it('should return status 200 for successful download', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
 
 					expect(response.status).toEqual(200);
 				});
@@ -398,7 +407,10 @@ describe('files-storage controller (API)', () => {
 				it('should return status 206 and required headers for the successful partial file stream download', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFileBytesRange(`/file/download/${uploadedFile.id}`, 'bytes=0-');
+					const response = await api.getDownloadFileBytesRange(
+						`/file/download/${uploadedFile.id}/${uploadedFile.name}`,
+						'bytes=0-'
+					);
 
 					expect(response.status).toEqual(206);
 
@@ -409,7 +421,7 @@ describe('files-storage controller (API)', () => {
 				it('should set content-disposition header to attachment', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
 
 					expect(response.headers['content-disposition']).toMatch('attachment');
 				});
@@ -430,7 +442,7 @@ describe('files-storage controller (API)', () => {
 				it('should set content-disposition to inline', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}`);
+					const response = await api.getDownloadFile(`/file/download/${uploadedFile.id}/${uploadedFile.name}`);
 
 					expect(response.headers['content-disposition']).toMatch('inline');
 				});

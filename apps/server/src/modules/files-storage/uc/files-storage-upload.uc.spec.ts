@@ -3,12 +3,11 @@ import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { InstanceConfigService } from '@modules/instance-config';
-import { SchoolService } from '@modules/school';
+import { Action, AuthorizationContextBuilder, AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { AxiosHeadersKeyValue, axiosResponseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
@@ -22,7 +21,6 @@ import { ErrorType } from '../error';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>
@@ -78,8 +76,6 @@ describe('FilesStorageUC upload methods', () => {
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let httpService: DeepMocked<HttpService>;
-	let schoolService: DeepMocked<SchoolService>;
-	let instanceConfigService: DeepMocked<InstanceConfigService>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -123,14 +119,6 @@ describe('FilesStorageUC upload methods', () => {
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
 				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
-				{
-					provide: InstanceConfigService,
-					useValue: createMock<InstanceConfigService>(),
-				},
 			],
 		}).compile();
 
@@ -138,8 +126,6 @@ describe('FilesStorageUC upload methods', () => {
 		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
-		schoolService = module.get(SchoolService);
-		instanceConfigService = module.get(InstanceConfigService);
 	});
 
 	beforeEach(() => {
@@ -199,7 +185,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
-					FileStorageAuthorizationContext.create(uploadFromUrlParams.storageLocation)
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
@@ -294,35 +280,47 @@ describe('FilesStorageUC upload methods', () => {
 			});
 		});
 
-		describe('WHEN the storage location is school and the storage location id is not valid', () => {
+		describe('WHEN the storage location is school', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams } = createUploadFromUrlParams(StorageLocation.INSTANCE);
+				const { params, userId } = buildFileRecordsWithParams(StorageLocation.SCHOOL);
+				const request = createRequest();
 
-				schoolService.getSchoolById.mockRejectedValueOnce(new Error());
-
-				return { uploadFromUrlParams, userId };
+				return { params, userId, request };
 			};
 
-			it('should throw an error', async () => {
-				const { uploadFromUrlParams, userId } = setup();
+			it('should check permissions', async () => {
+				const { params, userId, request } = setup();
 
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
+				await filesStorageUC.upload(userId, params, request);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
+					params.parentId,
+					AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE])
+				);
 			});
 		});
 
-		describe('WHEN the storage location is instance and the storage location id is not valid', () => {
+		describe('WHEN the storage location is instance', () => {
 			const setup = () => {
-				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
+				const { params, userId } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
+				const request = createRequest();
 
-				instanceConfigService.findById.mockRejectedValueOnce(new Error());
-
-				return { uploadFromUrlParams, userId };
+				return { params, userId, request };
 			};
 
-			it('should throw an error', async () => {
-				const { uploadFromUrlParams, userId } = setup();
+			it('should check permissions', async () => {
+				const { params, userId, request } = setup();
 
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
+				await filesStorageUC.upload(userId, params, request);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
+					params.parentId,
+					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
+				);
 			});
 		});
 	});
@@ -368,7 +366,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					allowedType,
 					params.parentId,
-					FileStorageAuthorizationContext.create(params.storageLocation)
+					AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE])
 				);
 			});
 
@@ -447,37 +445,47 @@ describe('FilesStorageUC upload methods', () => {
 			});
 		});
 
-		describe('WHEN the storage location is school and the storage location id is not valid', () => {
+		describe('WHEN the storage location is school', () => {
 			const setup = () => {
 				const { params, userId } = buildFileRecordsWithParams(StorageLocation.SCHOOL);
 				const request = createRequest();
 
-				schoolService.getSchoolById.mockRejectedValueOnce(new Error());
-
 				return { params, userId, request };
 			};
 
-			it('should throw an error', async () => {
+			it('should check permissions', async () => {
 				const { params, userId, request } = setup();
 
-				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrow();
+				await filesStorageUC.upload(userId, params, request);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
+					params.parentId,
+					AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE])
+				);
 			});
 		});
 
-		describe('WHEN the storage location is instance and the storage location id is not valid', () => {
+		describe('WHEN the storage location is instance', () => {
 			const setup = () => {
 				const { params, userId } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
 				const request = createRequest();
 
-				instanceConfigService.findById.mockRejectedValueOnce(new Error());
-
 				return { params, userId, request };
 			};
 
-			it('should throw an error', async () => {
+			it('should check permissions', async () => {
 				const { params, userId, request } = setup();
 
-				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrow();
+				await filesStorageUC.upload(userId, params, request);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
+					params.parentId,
+					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
+				);
 			});
 		});
 	});

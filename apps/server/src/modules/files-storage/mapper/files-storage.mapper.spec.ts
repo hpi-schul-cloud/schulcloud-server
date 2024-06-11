@@ -57,8 +57,8 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToSingleFileParams is called', () => {
 		const setup = () => {
-			const { id: fileRecordId } = fileRecordFactory.buildWithId();
-			const downloadFileParams: DownloadFileParams = { fileRecordId };
+			const { id: fileRecordId, name: fileName } = fileRecordFactory.buildWithId();
+			const downloadFileParams: DownloadFileParams = { fileRecordId, fileName };
 
 			return { downloadFileParams, fileRecordId };
 		};

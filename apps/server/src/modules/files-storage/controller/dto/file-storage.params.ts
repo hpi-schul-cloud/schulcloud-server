@@ -50,6 +50,10 @@ export class DownloadFileParams {
 	@ApiProperty()
 	@IsMongoId()
 	fileRecordId!: EntityId;
+
+	@ApiProperty()
+	@IsString()
+	fileName!: string;
 }
 
 export class ScanResultParams implements ScanResult {

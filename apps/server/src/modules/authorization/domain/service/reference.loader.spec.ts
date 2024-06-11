@@ -18,6 +18,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
+import { InstanceService } from '../../../instances';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 
@@ -35,6 +36,7 @@ describe('reference.loader', () => {
 	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
 	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
+	let instanceService: DeepMocked<InstanceService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -91,6 +93,10 @@ describe('reference.loader', () => {
 					provide: ExternalToolAuthorizableService,
 					useValue: createMock<ExternalToolAuthorizableService>(),
 				},
+				{
+					provide: InstanceService,
+					useValue: createMock<InstanceService>(),
+				},
 			],
 		}).compile();
 
@@ -107,6 +113,7 @@ describe('reference.loader', () => {
 		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
 		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
+		instanceService = await module.get(InstanceService);
 	});
 
 	afterEach(() => {
@@ -188,6 +195,12 @@ describe('reference.loader', () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
 
 			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call instanceService.findById', async () => {
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Instance, entityId);
+
+			expect(instanceService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return authorizable object', async () => {

@@ -46,7 +46,6 @@ export const userPermissions = [
 	Permission.FILESTORAGE_VIEW,
 	Permission.FILESTORAGE_EDIT,
 	Permission.FILESTORAGE_CREATE,
-	Permission.FILESTORAGE_WRITE_SCHOOL,
 	Permission.CONTENT_VIEW,
 	Permission.CONTENT_NON_OER_VIEW,
 	Permission.FILESTORAGE_REMOVE,
@@ -146,4 +145,4 @@ export const adminPermissions = [
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
 ];
 
-export const superheroPermissions = [Permission.USER_LOGIN_MIGRATION_ROLLBACK, Permission.FILESTORAGE_WRITE_INSTANCE];
+export const superheroPermissions = [Permission.USER_LOGIN_MIGRATION_ROLLBACK, Permission.INSTANCE_VIEW];

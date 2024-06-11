@@ -2,18 +2,18 @@ import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 
-export interface InstanceConfigEntityProps {
+export interface InstanceEntityProps {
 	id?: EntityId;
 
 	name: string;
 }
 
-@Entity({ tableName: 'instance-configs' })
-export class InstanceConfigEntity extends BaseEntityWithTimestamps {
+@Entity({ tableName: 'instances' })
+export class InstanceEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
-	constructor(props: InstanceConfigEntityProps) {
+	constructor(props: InstanceEntityProps) {
 		super();
 		if (props.id) {
 			this.id = props.id;

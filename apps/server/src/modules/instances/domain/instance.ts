@@ -1,10 +1,10 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 
-export interface InstanceConfigProps extends AuthorizableObject {
+export interface InstanceProps extends AuthorizableObject {
 	name: string;
 }
 
-export class InstanceConfig extends DomainObject<InstanceConfigProps> {
+export class Instance extends DomainObject<InstanceProps> {
 	public get name(): string {
 		return this.props.name;
 	}
