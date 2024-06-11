@@ -129,9 +129,11 @@ export class BoardCollaborationGateway {
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const card = await this.columnUc.createCard(userId, data.columnId);
+			const newCard = CardResponseMapper.mapToResponse(card);
+
 			const responsePayload = {
 				...data,
-				newCard: card.getProps(),
+				newCard,
 			};
 
 			await emitter.emitToClientAndRoom(responsePayload);
