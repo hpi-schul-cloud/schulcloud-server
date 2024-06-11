@@ -21,14 +21,6 @@ export class BoardNodePermissionService {
 		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
 	}
 
-	// TODO
-	async checkBoardEditor(userId: EntityId, boardNode: AnyBoardNode): Promise<void> {
-		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
-		if (this.isUserBoardEditor(userId, boardNodeAuthorizable.users)) {
-			throw new ForbiddenException();
-		}
-	}
-
 	isUserBoardEditor(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
 		const boardDoAuthorisedUser = userBoardRoles.find((user) => user.userId === userId);
 
