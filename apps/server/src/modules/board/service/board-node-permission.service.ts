@@ -1,5 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { ForbiddenException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardRoles, UserWithBoardRoles } from '../domain';
