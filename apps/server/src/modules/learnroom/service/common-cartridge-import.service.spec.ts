@@ -81,8 +81,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(1);
-				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(1);
+				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(14);
+				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(14);
 			});
 
 			it('should create columns', async () => {
@@ -131,8 +131,8 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(1);
-				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(1);
+				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(3);
+				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create columns', async () => {

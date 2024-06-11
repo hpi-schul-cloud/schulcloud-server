@@ -93,7 +93,9 @@ export class CommonCartridgeImportService {
 		columnBoard: ColumnBoard,
 		columnProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
-		const column = this.boardNodeFactory.buildColumn(this.mapper.mapOrganizationToColumn(columnProps));
+		const column = this.boardNodeFactory.buildColumn();
+		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
+		column.title = title;
 		await this.boardNodeService.addToParent(columnBoard, column);
 		await this.createCardWithElement(parser, column, columnProps, false);
 	}
@@ -104,7 +106,9 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeOrganizationProps,
 		organizations: CommonCartridgeOrganizationProps[]
 	): Promise<void> {
-		const column = this.boardNodeFactory.buildColumn(this.mapper.mapOrganizationToColumn(columnProps));
+		const column = this.boardNodeFactory.buildColumn();
+		const { title } = this.mapper.mapOrganizationToColumn(columnProps);
+		column.title = title;
 		await this.boardNodeService.addToParent(columnBoard, column);
 
 		const cards = organizations.filter(
@@ -130,7 +134,10 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		withTitle = true
 	): Promise<void> {
-		const card = this.boardNodeFactory.buildCard(this.mapper.mapOrganizationToCard(cardProps, withTitle));
+		const card = this.boardNodeFactory.buildCard();
+		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, withTitle);
+		card.title = title;
+		card.height = height;
 		await this.boardNodeService.addToParent(column, card);
 		const resource = parser.getResource(cardProps);
 		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
@@ -150,7 +157,10 @@ export class CommonCartridgeImportService {
 		cardProps: CommonCartridgeOrganizationProps,
 		organizations: CommonCartridgeOrganizationProps[]
 	) {
-		const card = this.boardNodeFactory.buildCard(this.mapper.mapOrganizationToCard(cardProps, true));
+		const card = this.boardNodeFactory.buildCard();
+		const { title, height } = this.mapper.mapOrganizationToCard(cardProps, true);
+		card.title = title;
+		card.height = height;
 		await this.boardNodeService.addToParent(column, column);
 
 		const cardElements = organizations.filter(
