@@ -1,14 +1,34 @@
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementType } from '@modules/board/domain';
-import { LinkContentBody, RichTextContentBody } from '@src/modules/board/controller/dto';
-import { CommonCartridgeImportResourceProps, CommonCartridgeResourceTypeV1P1 } from '@src/modules/common-cartridge';
+import { LinkContentBody, RichTextContentBody } from '@modules/board/controller/dto';
+import {
+	CommonCartridgeImportResourceProps,
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeResourceTypeV1P1,
+} from '@modules/common-cartridge';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 describe('CommonCartridgeImportMapper', () => {
 	let moduleRef: TestingModule;
 	let sut: CommonCartridgeImportMapper;
+
+	const setupOrganization = () => {
+		const organization: CommonCartridgeOrganizationProps = {
+			path: faker.string.uuid(),
+			pathDepth: faker.number.int({ min: 0, max: 3 }),
+			identifier: faker.string.uuid(),
+			identifierRef: faker.string.uuid(),
+			title: faker.lorem.words(3),
+			isResource: true,
+			isInlined: false,
+			resourcePath: faker.system.filePath(),
+			resourceType: faker.string.alpha(10),
+		};
+
+		return { organization };
+	};
 
 	// AI next 18 lines
 	beforeAll(async () => {
@@ -25,6 +45,73 @@ describe('CommonCartridgeImportMapper', () => {
 
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
+	});
+
+	describe('mapOrganizationToColumn', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to column', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToColumn(organization);
+
+				expect(result).toEqual({
+					title: organization.title,
+				});
+			});
+		});
+	});
+
+	describe('mapOrganizationToCard', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to card', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization);
+
+				expect(result).toEqual({
+					title: organization.title,
+					height: 150,
+				});
+			});
+		});
+
+		describe('when organization is provided and withTitle is false', () => {
+			const setup = () => setupOrganization();
+
+			it('should set the title to an empty string', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization, false);
+
+				expect(result).toEqual({
+					title: '',
+					height: 150,
+				});
+			});
+		});
+	});
+
+	// AI next 17 lines
+	describe('mapOrganizationToTextElement', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to text element', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToTextElement(organization);
+
+				expect(result).toBeInstanceOf(RichTextContentBody);
+				expect(result).toEqual<RichTextContentBody>({
+					text: `<b>${organization.title}</b>`,
+					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
+				});
+			});
+		});
 	});
 
 	describe('mapResourceTypeToContentElementType', () => {

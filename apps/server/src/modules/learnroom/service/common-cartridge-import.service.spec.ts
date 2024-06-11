@@ -56,16 +56,67 @@ describe('CommonCartridgeImportService', () => {
 		expect(sut).toBeDefined();
 	});
 
+	const setupEnvironment = async (filePath: string) => {
+		const user = userFactory.buildWithId();
+		const buffer = await readFile(filePath);
+
+		return { user, buffer };
+	};
+
 	describe('importFile', () => {
 		describe('when the common cartridge is valid', () => {
-			const setup = async () => {
-				const user = userFactory.buildWithId();
-				const buffer = await readFile(
-					'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
-				);
+			const setup = async () =>
+				setupEnvironment('./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc');
 
-				return { user, buffer };
-			};
+			it('should create a course', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(courseServiceMock.create).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create a column board', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(boardNodeFactoryMock.buildColumnBoard).toHaveBeenCalledTimes(1);
+				expect(boardNodeServiceMock.addRoot).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create columns', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(boardNodeFactoryMock.buildColumn).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
+			});
+
+			it('should create cards', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(boardNodeFactoryMock.buildCard).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
+			});
+
+			it('should create elements', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(boardNodeFactoryMock.buildContentElement).toHaveBeenCalled();
+				expect(boardNodeServiceMock.addToParent).toHaveBeenCalled();
+				expect(boardNodeServiceMock.updateContent).toHaveBeenCalled();
+			});
+		});
+
+		describe('when the common cartridge is a valid dbc course', () => {
+			const setup = async () =>
+				setupEnvironment('./apps/server/src/modules/common-cartridge/testing/assets/dbc_course.imscc');
 
 			it('should create a course', async () => {
 				const { user, buffer } = await setup();
