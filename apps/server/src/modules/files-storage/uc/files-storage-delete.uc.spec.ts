@@ -4,8 +4,6 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { InstanceService } from '@modules/instance';
-import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -106,14 +104,6 @@ describe('FilesStorageUC delete methods', () => {
 				{
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
-				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
-				{
-					provide: InstanceService,
-					useValue: createMock<InstanceService>(),
 				},
 			],
 		}).compile();
