@@ -20,6 +20,7 @@ import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord, ScanStatus } from '../../entity';
+import { ErrorType } from '../../error';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { TestHelper } from '../../helper/test-helper';
@@ -179,7 +180,7 @@ describe('File Controller (API) - preview', () => {
 		describe('with bad request data', () => {
 			describe('WHEN recordId is invalid', () => {
 				it('should return status 400', async () => {
-					const response = await api.getPreview('/file/preview/123', defaultQueryParameters);
+					const response = await api.getPreview('/file/preview/123/test.png', defaultQueryParameters);
 
 					expect(response.error.validationErrors).toEqual([
 						{
@@ -199,7 +200,7 @@ describe('File Controller (API) - preview', () => {
 						width: 2000,
 					};
 
-					const response = await api.getPreview(`/file/preview/${result.id}`, query);
+					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
 
 					expect(response.error.validationErrors).toEqual([
 						{
@@ -216,7 +217,7 @@ describe('File Controller (API) - preview', () => {
 					const { result } = await api.postUploadFile(uploadPath);
 					const query = { ...defaultQueryParameters, outputFormat: 'image/txt' };
 
-					const response = await api.getPreview(`/file/preview/${result.id}`, query);
+					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
 
 					expect(response.error.validationErrors).toEqual([
 						{
@@ -230,12 +231,32 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN file does not exist', () => {
 				it('should return status 404', async () => {
-					await api.postUploadFile(uploadPath);
+					const { result } = await api.postUploadFile(uploadPath);
 					const wrongId = new ObjectId().toString();
 
-					const response = await api.getPreview(`/file/preview/${wrongId}`, defaultQueryParameters);
+					const response = await api.getPreview(`/file/preview/${wrongId}/${result.name}`, defaultQueryParameters);
 
 					expect(response.error.message).toEqual('The requested FileRecord: [object Object] has not been found.');
+					expect(response.status).toEqual(404);
+				});
+			});
+
+			describe('WHEN filename is wrong', () => {
+				const setup = async () => {
+					const { result } = await api.postUploadFile(uploadPath);
+					await setScanStatus(result.id, ScanStatus.VERIFIED);
+					const error = new NotFoundException();
+					s3ClientAdapter.get.mockRejectedValueOnce(error);
+
+					return { result };
+				};
+
+				it('should return status 404', async () => {
+					const { result } = await setup();
+
+					const response = await api.getPreview(`/file/preview/${result.id}/wrong-name.txt`, defaultQueryParameters);
+
+					expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
 					expect(response.status).toEqual(404);
 				});
 			});
@@ -258,7 +279,10 @@ describe('File Controller (API) - preview', () => {
 						const { uploadedFile } = await setup();
 						const buffer = Buffer.from('testText');
 
-						const response = await api.getPreview(`/file/preview/${uploadedFile.id}`, defaultQueryParameters);
+						const response = await api.getPreview(
+							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+							defaultQueryParameters
+						);
 
 						expect(response.status).toEqual(200);
 						expect(response.result).toEqual(buffer);
@@ -268,7 +292,7 @@ describe('File Controller (API) - preview', () => {
 						const { uploadedFile } = await setup();
 
 						const response = await api.getPreviewBytesRange(
-							`/file/preview/${uploadedFile.id}`,
+							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 							'bytes=0-',
 							defaultQueryParameters
 						);
@@ -298,7 +322,7 @@ describe('File Controller (API) - preview', () => {
 								forceUpdate: false,
 							};
 
-							const response = await api.getPreview(`/file/preview/${uploadedFile.id}`, query);
+							const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 							expect(response.status).toEqual(200);
 						});
@@ -310,7 +334,11 @@ describe('File Controller (API) - preview', () => {
 								forceUpdate: false,
 							};
 
-							const response = await api.getPreviewBytesRange(`/file/preview/${uploadedFile.id}`, 'bytes=0-', query);
+							const response = await api.getPreviewBytesRange(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								'bytes=0-',
+								query
+							);
 
 							expect(response.status).toEqual(206);
 							expect(response.headers['accept-ranges']).toMatch('bytes');
@@ -328,7 +356,11 @@ describe('File Controller (API) - preview', () => {
 							};
 							const etag = 'otherTag';
 
-							const response = await api.getPreviewWithEtag(`/file/preview/${uploadedFile.id}`, etag, query);
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
 
 							expect(response.status).toEqual(200);
 						});
@@ -343,7 +375,11 @@ describe('File Controller (API) - preview', () => {
 							};
 							const etag = 'testTag';
 
-							const response = await api.getPreviewWithEtag(`/file/preview/${uploadedFile.id}`, etag, query);
+							const response = await api.getPreviewWithEtag(
+								`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+								etag,
+								query
+							);
 
 							expect(response.status).toEqual(304);
 						});
@@ -368,7 +404,7 @@ describe('File Controller (API) - preview', () => {
 							forceUpdate: true,
 						};
 
-						const response = await api.getPreview(`/file/preview/${uploadedFile.id}`, query);
+						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 						expect(response.status).toEqual(200);
 					});
@@ -380,7 +416,11 @@ describe('File Controller (API) - preview', () => {
 							forceUpdate: true,
 						};
 
-						const response = await api.getPreviewBytesRange(`/file/preview/${uploadedFile.id}`, 'bytes=0-', query);
+						const response = await api.getPreviewBytesRange(
+							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+							'bytes=0-',
+							query
+						);
 
 						expect(response.status).toEqual(206);
 						expect(response.headers['accept-ranges']).toMatch('bytes');
@@ -405,7 +445,10 @@ describe('File Controller (API) - preview', () => {
 				it('should return status 200 for successful download', async () => {
 					const { uploadedFile } = await setup();
 
-					const response = await api.getPreview(`/file/preview/${uploadedFile.id}`, defaultQueryParameters);
+					const response = await api.getPreview(
+						`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+						defaultQueryParameters
+					);
 
 					expect(response.status).toEqual(200);
 				});
@@ -414,7 +457,7 @@ describe('File Controller (API) - preview', () => {
 					const { uploadedFile } = await setup();
 
 					const response = await api.getPreviewBytesRange(
-						`/file/preview/${uploadedFile.id}`,
+						`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 						'bytes=0-',
 						defaultQueryParameters
 					);

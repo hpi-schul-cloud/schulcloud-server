@@ -126,7 +126,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
 	@ApiHeader({ name: 'If-None-Match', required: false })
-	@Get('/preview/:fileRecordId')
+	@Get('/preview/:fileRecordId/:fileName')
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
