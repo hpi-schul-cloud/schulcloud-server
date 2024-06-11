@@ -21,7 +21,9 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
-
+.gitignore
+.npmignore
+git_push.sh
 # ignore all files in the "models" folder
 models/*
 
