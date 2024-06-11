@@ -6,7 +6,7 @@ export class ColumnResponseMapper {
 	static mapToResponse(column: Column): ColumnResponse {
 		const result = new ColumnResponse({
 			id: column.id,
-			title: column.title,
+			title: column.title ?? '',
 			cards: column.children.map((card) => {
 				/* istanbul ignore next */
 				if (!(card instanceof Card)) {
