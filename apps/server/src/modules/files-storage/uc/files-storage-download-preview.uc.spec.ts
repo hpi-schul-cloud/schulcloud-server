@@ -4,22 +4,20 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { InstanceService } from 'apps/server/src/modules/instances';
-import { DownloadFileParams, SingleFileParams } from '../controller/dto';
+import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewOutputMimeTypes } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
@@ -91,14 +89,6 @@ describe('FilesStorageUC', () => {
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
 				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
-				{
-					provide: InstanceService,
-					useValue: createMock<InstanceService>(),
-				},
 			],
 		}).compile();
 
@@ -124,7 +114,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN preview is returned and user is authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const singleFileParams = FilesStorageMapper.mapToSingleFileParams(fileDownloadParams);
 
 				const previewParams = getPreviewParams();
@@ -162,7 +152,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					allowedType,
 					fileRecord.parentId,
-					FileStorageAuthorizationContext.read()
+					FileStorageAuthorizationContext.read
 				);
 			});
 
@@ -177,8 +167,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFileRecord throws error', () => {
 			const setup = () => {
-				const { params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const { fileRecord, params, userId } = buildFileRecordWithParams();
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
 				const previewParams = getPreviewParams();
 
@@ -198,7 +188,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
 				const previewParams = getPreviewParams();
 
@@ -220,7 +210,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN getPreview throws error', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
 				const previewParams = getPreviewParams();
 

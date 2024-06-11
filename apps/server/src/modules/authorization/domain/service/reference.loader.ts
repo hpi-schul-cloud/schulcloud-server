@@ -17,7 +17,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { InstanceService } from '../../../instances';
+import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =

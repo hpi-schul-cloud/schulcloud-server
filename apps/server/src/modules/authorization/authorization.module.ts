@@ -9,6 +9,7 @@ import {
 	CourseGroupRule,
 	CourseRule,
 	GroupRule,
+	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
@@ -51,6 +52,7 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 		SystemRule,
 		SchoolSystemOptionsRule,
 		ExternalToolRule,
+		InstanceRule,
 	],
 	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
 })

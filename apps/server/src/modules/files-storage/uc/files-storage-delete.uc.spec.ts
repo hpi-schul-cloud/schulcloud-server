@@ -12,13 +12,13 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { InstanceService } from 'apps/server/src/modules/instances';
+import { InstanceService } from 'apps/server/src/modules/instance';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -160,7 +160,7 @@ describe('FilesStorageUC delete methods', () => {
 					userId,
 					allowedType,
 					requestParams.parentId,
-					FileStorageAuthorizationContext.delete(requestParams.storageLocation)
+					FileStorageAuthorizationContext.delete
 				);
 			});
 
@@ -257,7 +257,7 @@ describe('FilesStorageUC delete methods', () => {
 					userId,
 					allowedType,
 					fileRecord.parentId,
-					FileStorageAuthorizationContext.delete(fileRecord.storageLocation)
+					FileStorageAuthorizationContext.delete
 				);
 			});
 

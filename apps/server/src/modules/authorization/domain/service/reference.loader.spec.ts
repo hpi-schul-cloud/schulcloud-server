@@ -18,7 +18,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { InstanceService } from '../../../instances';
+import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 

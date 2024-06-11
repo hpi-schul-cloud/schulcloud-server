@@ -8,7 +8,7 @@ export class Migration20240604131554 extends Migration {
 			await this.driver.nativeInsert('instances', {
 				name: 'nbc',
 			});
-			console.info('Instance config was added for nbc');
+			console.info('Instance was added for nbc');
 		}
 
 		// eslint-disable-next-line no-process-env
@@ -16,7 +16,7 @@ export class Migration20240604131554 extends Migration {
 			await this.driver.nativeInsert('instances', {
 				name: 'brb',
 			});
-			console.info('Instance config was added for brb');
+			console.info('Instance was added for brb');
 		}
 
 		// eslint-disable-next-line no-process-env
@@ -24,7 +24,7 @@ export class Migration20240604131554 extends Migration {
 			await this.driver.nativeInsert('instances', {
 				name: 'thr',
 			});
-			console.info('Instance config was added for thr');
+			console.info('Instance was added for thr');
 		}
 
 		// eslint-disable-next-line no-process-env
@@ -32,13 +32,13 @@ export class Migration20240604131554 extends Migration {
 			await this.driver.nativeInsert('instances', {
 				name: 'dbc',
 			});
-			console.info('Instance config was added for default');
+			console.info('Instance was added for default');
 		}
 	}
 
 	async down(): Promise<void> {
 		await this.getCollection('instances').drop();
 
-		console.info('Collection "instance-configs" was dropped');
+		console.info('Collection "instances" was dropped');
 	}
 }

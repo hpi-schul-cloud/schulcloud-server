@@ -11,13 +11,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { InstanceService } from 'apps/server/src/modules/instances';
+import { InstanceService } from 'apps/server/src/modules/instance';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -152,7 +152,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					allowedType,
 					params.parentId,
-					FileStorageAuthorizationContext.create(params.storageLocation)
+					FileStorageAuthorizationContext.create
 				);
 			});
 
@@ -236,7 +236,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					allowedType,
 					fileRecord.parentId,
-					FileStorageAuthorizationContext.create(fileRecord.storageLocation)
+					FileStorageAuthorizationContext.create
 				);
 			});
 

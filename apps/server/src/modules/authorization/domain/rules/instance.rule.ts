@@ -1,4 +1,4 @@
-import { Instance } from '@modules/instances';
+import { Instance } from '@modules/instance';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../service/authorization.helper';

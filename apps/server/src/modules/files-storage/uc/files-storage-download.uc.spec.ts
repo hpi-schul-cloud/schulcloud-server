@@ -4,21 +4,19 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { SchoolService } from '@modules/school';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { InstanceService } from 'apps/server/src/modules/instances';
-import { DownloadFileParams, SingleFileParams } from '../controller/dto';
+import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { GetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
@@ -82,14 +80,6 @@ describe('FilesStorageUC', () => {
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
 				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
-				{
-					provide: InstanceService,
-					useValue: createMock<InstanceService>(),
-				},
 			],
 		}).compile();
 
@@ -114,7 +104,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN file is found, user is authorized and file is successfully downloaded', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
 				const fileResponse = createMock<GetFileResponse>();
 
@@ -145,7 +135,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					allowedType,
 					fileRecord.parentId,
-					FileStorageAuthorizationContext.read()
+					FileStorageAuthorizationContext.read
 				);
 			});
 
@@ -154,7 +144,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.download(userId, fileDownloadParams);
 
-				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, undefined);
+				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams, undefined);
 			});
 
 			it('should return correct result', async () => {
@@ -168,8 +158,8 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFile throws error', () => {
 			const setup = () => {
-				const { params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const { fileRecord, params, userId } = buildFileRecordWithParams();
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
@@ -187,7 +177,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams: DownloadFileParams = { ...params };
+				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);

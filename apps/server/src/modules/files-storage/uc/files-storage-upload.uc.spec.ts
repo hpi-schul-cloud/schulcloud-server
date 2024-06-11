@@ -3,7 +3,12 @@ import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationContextBuilder, AuthorizationReferenceService } from '@modules/authorization/domain';
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
+	AuthorizationReferenceService,
+} from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -18,6 +23,7 @@ import { Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -189,6 +195,19 @@ describe('FilesStorageUC upload methods', () => {
 				);
 			});
 
+			it('should call authorizationService for storage location', async () => {
+				const { uploadFromUrlParams, userId } = setup();
+
+				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AuthorizableReferenceType.School,
+					uploadFromUrlParams.storageLocationId,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
 			it('should call httpService get with correct params', async () => {
 				const { uploadFromUrlParams, userId } = setup();
 
@@ -279,56 +298,12 @@ describe('FilesStorageUC upload methods', () => {
 				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
 			});
 		});
-
-		describe('WHEN the storage location is school', () => {
-			const setup = () => {
-				const { params, userId } = buildFileRecordsWithParams(StorageLocation.SCHOOL);
-				const request = createRequest();
-
-				return { params, userId, request };
-			};
-
-			it('should check permissions', async () => {
-				const { params, userId, request } = setup();
-
-				await filesStorageUC.upload(userId, params, request);
-
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
-					params.parentId,
-					AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE])
-				);
-			});
-		});
-
-		describe('WHEN the storage location is instance', () => {
-			const setup = () => {
-				const { params, userId } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
-				const request = createRequest();
-
-				return { params, userId, request };
-			};
-
-			it('should check permissions', async () => {
-				const { params, userId, request } = setup();
-
-				await filesStorageUC.upload(userId, params, request);
-
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
-					params.parentId,
-					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
-				);
-			});
-		});
 	});
 
 	describe('upload is called', () => {
 		describe('WHEN user is authorized, busboy emits event and file is uploaded successfully', () => {
 			const setup = () => {
-				const { params, userId, fileRecords } = buildFileRecordsWithParams();
+				const { params, userId, fileRecords } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
 				const readable = Readable.from('abc');
@@ -366,7 +341,20 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					allowedType,
 					params.parentId,
-					AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE])
+					FileStorageAuthorizationContext.create
+				);
+			});
+
+			it('should call checkPermissionByReferences for storage location instance', async () => {
+				const { params, userId, request } = setup();
+
+				await filesStorageUC.upload(userId, params, request);
+
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AuthorizableReferenceType.Instance,
+					params.storageLocationId,
+					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
 				);
 			});
 
@@ -442,50 +430,6 @@ describe('FilesStorageUC upload methods', () => {
 				const { params, userId, request, error } = setup();
 
 				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrowError(error);
-			});
-		});
-
-		describe('WHEN the storage location is school', () => {
-			const setup = () => {
-				const { params, userId } = buildFileRecordsWithParams(StorageLocation.SCHOOL);
-				const request = createRequest();
-
-				return { params, userId, request };
-			};
-
-			it('should check permissions', async () => {
-				const { params, userId, request } = setup();
-
-				await filesStorageUC.upload(userId, params, request);
-
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
-					params.parentId,
-					AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE])
-				);
-			});
-		});
-
-		describe('WHEN the storage location is instance', () => {
-			const setup = () => {
-				const { params, userId } = buildFileRecordsWithParams(StorageLocation.INSTANCE);
-				const request = createRequest();
-
-				return { params, userId, request };
-			};
-
-			it('should check permissions', async () => {
-				const { params, userId, request } = setup();
-
-				await filesStorageUC.upload(userId, params, request);
-
-				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType),
-					params.parentId,
-					AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW])
-				);
 			});
 		});
 	});

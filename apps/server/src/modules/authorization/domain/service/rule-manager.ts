@@ -8,6 +8,7 @@ import {
 	CourseGroupRule,
 	CourseRule,
 	GroupRule,
+	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
@@ -44,7 +45,8 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
 		private readonly userRule: UserRule,
-		private readonly externalToolRule: ExternalToolRule
+		private readonly externalToolRule: ExternalToolRule,
+		private readonly instanceRule: InstanceRule
 	) {
 		this.rules = [
 			this.boardDoRule,
@@ -64,6 +66,7 @@ export class RuleManager {
 			this.userLoginMigrationRule,
 			this.userRule,
 			this.externalToolRule,
+			this.instanceRule,
 		];
 	}
 

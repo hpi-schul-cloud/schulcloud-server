@@ -12,13 +12,13 @@ import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { DomainErrorHandler } from '@src/core';
 import { LegacyLogger } from '@src/core/logger';
-import { InstanceService } from 'apps/server/src/modules/instances';
+import { InstanceService } from 'apps/server/src/modules/instance';
 import { CopyFilesOfParentParams, FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageAuthorizationContext } from './files-storage-authorization';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -174,7 +174,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					sourceParams.parentType,
 					sourceParams.parentId,
-					FileStorageAuthorizationContext.create(sourceParams.storageLocation)
+					FileStorageAuthorizationContext.create
 				);
 			});
 
@@ -188,7 +188,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					targetParams.target.parentType,
 					targetParams.target.parentId,
-					FileStorageAuthorizationContext.create(targetParams.target.storageLocation)
+					FileStorageAuthorizationContext.create
 				);
 			});
 
@@ -339,7 +339,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					FileStorageAuthorizationContext.create(fileRecord.storageLocation)
+					FileStorageAuthorizationContext.create
 				);
 			});
 
@@ -353,7 +353,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					copyFileParams.target.parentType,
 					copyFileParams.target.parentId,
-					FileStorageAuthorizationContext.create(copyFileParams.target.storageLocation)
+					FileStorageAuthorizationContext.create
 				);
 			});
 
