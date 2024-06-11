@@ -149,8 +149,8 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async isUniqueEmail(email: string): Promise<boolean> {
-		const foundUsers = await this.userRepo.findByEmail(email);
-		const isUnique = foundUsers.length === 0;
+		const account = await this.accountRepo.findByUsername(email);
+		const isUnique = !account;
 
 		return isUnique;
 	}

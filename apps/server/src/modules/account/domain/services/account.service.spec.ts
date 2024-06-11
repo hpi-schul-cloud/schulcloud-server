@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -28,6 +29,7 @@ import { IdmCallbackLoggableException } from '../error';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
+import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -2078,6 +2080,26 @@ describe('AccountService', () => {
 				await accountService.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+	});
+
+	describe('isUniqueEmail', () => {
+		describe('when checking if email is unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+				const accountImpl = Reflect.get(accountService, 'accountImpl') as DeepMocked<AbstractAccountService>;
+				const isUniqueEmailSpy = jest.spyOn(accountImpl, 'isUniqueEmail');
+
+				return { email, isUniqueEmailSpy };
+			};
+
+			it('should call the underlying account service implementation', async () => {
+				const { email, isUniqueEmailSpy } = setup();
+
+				await accountService.isUniqueEmail(email);
+
+				expect(isUniqueEmailSpy).toHaveBeenCalledWith(email);
 			});
 		});
 	});
