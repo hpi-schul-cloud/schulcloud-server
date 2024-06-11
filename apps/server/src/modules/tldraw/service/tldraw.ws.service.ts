@@ -59,15 +59,15 @@ export class TldrawWsService {
 			this.closeConnection(doc, ws).catch((err) => {
 				this.domainErrorHandler.exec(new CloseConnectionLoggable('send | isClosedOrClosing', err));
 			});
+		} else {
+			ws.send(message, (err) => {
+				if (err) {
+					this.closeConnection(doc, ws).catch((e) => {
+						this.domainErrorHandler.exec(new CloseConnectionLoggable('send', e));
+					});
+				}
+			});
 		}
-
-		ws.send(message, (err) => {
-			if (err) {
-				this.closeConnection(doc, ws).catch((e) => {
-					this.domainErrorHandler.exec(new CloseConnectionLoggable('send', e));
-				});
-			}
-		});
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
