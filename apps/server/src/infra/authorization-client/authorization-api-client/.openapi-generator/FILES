@@ -1,11 +1,8 @@
-.gitignore
-.npmignore
 api.ts
 api/authorization-api.ts
 base.ts
 common.ts
 configuration.ts
-git_push.sh
 index.ts
 models/action.ts
 models/authorization-body-params.ts
