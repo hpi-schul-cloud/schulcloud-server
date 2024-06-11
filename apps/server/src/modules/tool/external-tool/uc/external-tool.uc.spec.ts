@@ -281,14 +281,14 @@ describe(ExternalToolUc.name, () => {
 					name: 'tool1',
 					medium: {
 						mediumId: 'medium1',
-						mediaSourceId: 'mediumSource1',
+						sourceId: 'mediumSource1',
 					},
 				});
 				const externalTool2 = externalToolFactory.build({
 					name: 'tool2',
 					medium: {
 						mediumId: 'medium2',
-						mediaSourceId: 'mediumSource2',
+						sourceId: 'mediumSource2',
 					},
 				});
 
@@ -363,13 +363,13 @@ describe(ExternalToolUc.name, () => {
 					{
 						toolName: externalTool1.name,
 						mediumId: externalTool1.medium?.mediumId,
-						mediumSourceId: externalTool1.medium?.mediaSourceId,
+						mediumSourceId: externalTool1.medium?.sourceId,
 						toolId: externalTool1.id,
 					},
 					{
 						toolName: externalTool2.name,
 						mediumId: externalTool2.medium?.mediumId,
-						mediumSourceId: externalTool2.medium?.mediaSourceId,
+						mediumSourceId: externalTool2.medium?.sourceId,
 						toolId: externalTool2.id,
 					},
 				]);
@@ -383,14 +383,14 @@ describe(ExternalToolUc.name, () => {
 					name: 'tool1',
 					medium: {
 						mediumId: 'medium1',
-						mediaSourceId: 'mediumSource1',
+						sourceId: 'mediumSource1',
 					},
 				});
 				const externalTool2 = externalToolFactory.build({
 					name: 'tool1',
 					medium: {
 						mediumId: 'medium2',
-						mediaSourceId: 'mediumSource2',
+						sourceId: 'mediumSource2',
 					},
 				});
 				const error = new Error('same tool name');
@@ -418,7 +418,7 @@ describe(ExternalToolUc.name, () => {
 				expect(results[1]).toEqual<ExternalToolImportResult>({
 					toolName: externalTool2.name,
 					mediumId: externalTool2.medium?.mediumId,
-					mediumSourceId: externalTool2.medium?.mediaSourceId,
+					mediumSourceId: externalTool2.medium?.sourceId,
 					toolId: undefined,
 					error: error.message,
 				});

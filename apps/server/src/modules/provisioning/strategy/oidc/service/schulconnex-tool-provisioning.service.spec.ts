@@ -75,7 +75,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
@@ -124,7 +127,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 
 				expect(externalToolService.findExternalToolByMedium).toHaveBeenCalledWith(
 					mediaUserLicenses[0].mediumId,
-					mediaUserLicenses[0].mediaSourceId
+					mediaUserLicenses[0].mediaSource?.sourceId
 				);
 			});
 
@@ -163,7 +166,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const { provisioningOptions } = schoolSystemOptionsFactory.build({});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 				});
 
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
@@ -258,7 +264,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 					parameters: [customParameterFactory.build()],
 				});
 
@@ -293,7 +302,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				});
 				const mediaUserLicenses: MediaUserLicense[] = [mediaUserLicenseFactory.build({ userId })];
 				const externalTool: ExternalTool = externalToolFactory.build({
-					medium: { mediumId: mediaUserLicenses[0].mediumId, mediaSourceId: mediaUserLicenses[0].mediaSourceId },
+					medium: {
+						mediumId: mediaUserLicenses[0].mediumId,
+						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+					},
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,

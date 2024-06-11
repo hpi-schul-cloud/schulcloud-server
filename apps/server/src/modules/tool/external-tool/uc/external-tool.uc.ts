@@ -53,7 +53,7 @@ export class ExternalToolUc {
 			const result: ExternalToolImportResult = new ExternalToolImportResult({
 				toolName: externalTool.name,
 				mediumId: externalTool.medium?.mediumId,
-				mediumSourceId: externalTool.medium?.mediaSourceId,
+				mediumSourceId: externalTool.medium?.sourceId,
 			});
 
 			try {

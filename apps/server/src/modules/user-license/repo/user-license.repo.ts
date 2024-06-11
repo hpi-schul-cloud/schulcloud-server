@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import { AnyUserLicense, MediaUserLicense } from '../domain';
-import { MediaUserLicenseEntity, UserLicenseEntity, UserLicenseType } from '../entity';
+import { AnyUserLicense, MediaSource, MediaUserLicense } from '../domain';
+import { MediaSourceEntity, MediaUserLicenseEntity, UserLicenseEntity, UserLicenseType } from '../entity';
 import { UserLicenseQuery } from './user-license-query';
 import { UserLicenseScope } from './user-license.scope';
 
@@ -10,15 +10,21 @@ import { UserLicenseScope } from './user-license.scope';
 export class UserLicenseRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async findUserLicenses(query: UserLicenseQuery): Promise<AnyUserLicense[]> {
+	public async findMediaUserLicenses(query: UserLicenseQuery): Promise<MediaUserLicense[]> {
 		const scope: UserLicenseScope = new UserLicenseScope();
 		scope.byUserId(query.userId);
-		scope.byType(query.type);
+		scope.byType(UserLicenseType.MEDIA_LICENSE);
 		scope.allowEmptyQuery(true);
 
-		const entities: UserLicenseEntity[] = await this.em.find(UserLicenseEntity, scope.query);
+		const entities: MediaUserLicenseEntity[] = await this.em.find<MediaUserLicenseEntity>(
+			MediaUserLicenseEntity,
+			scope.query,
+			{
+				populate: ['mediaSource'],
+			}
+		);
 
-		const domainObjects: AnyUserLicense[] = entities.map((entity: UserLicenseEntity) =>
+		const domainObjects: MediaUserLicense[] = entities.map((entity: MediaUserLicenseEntity) =>
 			this.mapEntityToDomainObject(entity)
 		);
 
@@ -43,7 +49,13 @@ export class UserLicenseRepo {
 			user: this.em.getReference(User, domainObject.userId),
 			type: UserLicenseType.MEDIA_LICENSE,
 			mediumId: domainObject.mediumId,
-			mediaSourceId: domainObject.mediaSourceId,
+			mediaSource: domainObject.mediaSource
+				? new MediaSourceEntity({
+						id: domainObject.mediaSource.id,
+						name: domainObject.mediaSource.name,
+						sourceId: domainObject.mediaSource.sourceId,
+				  })
+				: undefined,
 		});
 
 		return entity;
@@ -51,11 +63,21 @@ export class UserLicenseRepo {
 
 	private mapEntityToDomainObject(entity: UserLicenseEntity): AnyUserLicense {
 		if (entity.type === UserLicenseType.MEDIA_LICENSE && entity instanceof MediaUserLicenseEntity) {
+			let mediaSource: MediaSource | undefined;
+
+			if (entity.mediaSource) {
+				mediaSource = new MediaSource({
+					id: entity.mediaSource?.id,
+					name: entity.mediaSource?.name,
+					sourceId: entity.mediaSource?.sourceId,
+				});
+			}
+
 			const userLicense: MediaUserLicense = new MediaUserLicense({
 				id: entity.id,
 				userId: entity.user.id,
 				mediumId: entity.mediumId,
-				mediaSourceId: entity.mediaSourceId,
+				mediaSource,
 				type: entity.type,
 			});
 

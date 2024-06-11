@@ -36,7 +36,7 @@ export class SchulconnexToolProvisioningService {
 			mediaUserLicenses.map(async (license) => {
 				const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
 					license.mediumId,
-					license.mediaSourceId
+					license.mediaSource?.sourceId
 				);
 
 				if (!externalTool || !this.hasOnlyGlobalParamters(externalTool)) {

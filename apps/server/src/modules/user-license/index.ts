@@ -1,5 +1,10 @@
 export { UserLicenseModule } from './user-license.module';
-export { UserLicenseService } from './service/user-license.service';
+export { UserLicenseService, MediaSourceService } from './service';
 export { MediaUserLicense } from './domain/media-user-license';
 export { UserLicenseType } from './entity/user-license-type';
-export { mediaUserLicenseFactory } from './testing';
+export {
+	mediaUserLicenseFactory,
+	mediaSourceFactory,
+	mediaSourceEntityFactory,
+	mediaUserLicenseEntityFactory,
+} from './testing';

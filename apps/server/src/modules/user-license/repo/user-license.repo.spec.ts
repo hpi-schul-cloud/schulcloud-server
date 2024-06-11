@@ -4,7 +4,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { cleanupCollections, userFactory } from '@shared/testing';
-import { MediaUserLicense } from '../domain';
+import { MediaSource, MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity, UserLicenseEntity, UserLicenseType } from '../entity';
 import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';
 import { UserLicenseRepo } from './user-license.repo';
@@ -38,12 +38,9 @@ describe(UserLicenseRepo.name, () => {
 				const user: UserEntity = userFactory.build();
 				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({
 					user,
-					mediumId: 'mediumId',
-					mediaSourceId: 'sourceId',
 				});
 
 				await em.persistAndFlush([user, mediaUserLicense]);
-
 				em.clear();
 
 				return {
@@ -55,14 +52,18 @@ describe(UserLicenseRepo.name, () => {
 			it('should return all user licenses', async () => {
 				const { mediaUserLicense } = await setup();
 
-				const result: MediaUserLicense[] = await repo.findUserLicenses({});
+				const result: MediaUserLicense[] = await repo.findMediaUserLicenses({});
 
 				expect(result).toEqual([
 					new MediaUserLicense({
 						id: mediaUserLicense.id,
 						userId: mediaUserLicense.user.id,
 						mediumId: mediaUserLicense.mediumId,
-						mediaSourceId: mediaUserLicense.mediaSourceId,
+						mediaSource: new MediaSource({
+							id: mediaUserLicense.mediaSource?.id as string,
+							name: mediaUserLicense.mediaSource?.name,
+							sourceId: mediaUserLicense.mediaSource?.sourceId as string,
+						}),
 						type: mediaUserLicense.type,
 					}),
 				]);
@@ -87,7 +88,7 @@ describe(UserLicenseRepo.name, () => {
 			it('should return user licenses for user', async () => {
 				const { user } = await setup();
 
-				const result: MediaUserLicense[] = await repo.findUserLicenses({ userId: user.id });
+				const result: MediaUserLicense[] = await repo.findMediaUserLicenses({ userId: user.id });
 
 				expect(result).toEqual([
 					expect.objectContaining<Partial<MediaUserLicense>>({
@@ -114,7 +115,7 @@ describe(UserLicenseRepo.name, () => {
 			it('should return user licenses for type', async () => {
 				await setup();
 
-				const result: MediaUserLicense[] = await repo.findUserLicenses({ type: UserLicenseType.MEDIA_LICENSE });
+				const result: MediaUserLicense[] = await repo.findMediaUserLicenses({});
 
 				expect(result).toEqual([
 					expect.objectContaining<Partial<MediaUserLicense>>({
@@ -137,7 +138,7 @@ describe(UserLicenseRepo.name, () => {
 			it('should throw InternalServerErrorException', async () => {
 				await setup();
 
-				await expect(repo.findUserLicenses({})).rejects.toThrow(InternalServerErrorException);
+				await expect(repo.findMediaUserLicenses({})).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});

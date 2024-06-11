@@ -1,8 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService, UserLicenseType } from '@modules/user-license';
+import {
+	mediaSourceFactory,
+	MediaSourceService,
+	MediaUserLicense,
+	mediaUserLicenseFactory,
+	UserLicenseService,
+	UserLicenseType,
+} from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { setupEntities, userFactory } from '@shared/testing';
+import { MediaSource } from '../../../../user-license/domain';
 import { ExternalLicenseDto } from '../../../dto';
 import { SchulconnexLicenseProvisioningService } from './schulconnex-license-provisioning.service';
 
@@ -11,6 +19,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 	let service: SchulconnexLicenseProvisioningService;
 
 	let userLicenseService: DeepMocked<UserLicenseService>;
+	let mediaSourceService: DeepMocked<MediaSourceService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -21,11 +30,16 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 					provide: UserLicenseService,
 					useValue: createMock<UserLicenseService>(),
 				},
+				{
+					provide: MediaSourceService,
+					useValue: createMock<MediaSourceService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(SchulconnexLicenseProvisioningService);
 		userLicenseService = module.get(UserLicenseService);
+		mediaSourceService = module.get(MediaSourceService);
 	});
 
 	afterAll(async () => {
@@ -61,10 +75,13 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				};
 				const externalLicenses: ExternalLicenseDto[] = [newExternalLicense];
 
-				const existingMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
-				existingMediaUserLicense.mediumId = existingExternalLicense.mediumId;
-				existingMediaUserLicense.mediaSourceId = existingExternalLicense.mediaSourceId;
-				existingMediaUserLicense.userId = user.id;
+				const existingMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({
+					mediumId: existingExternalLicense.mediumId,
+					mediaSource: mediaSourceFactory.build({
+						sourceId: 'toDeleteMediaSourceId',
+					}),
+					userId: user.id,
+				});
 
 				userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([existingMediaUserLicense]);
 
@@ -77,12 +94,16 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				await service.provisionExternalLicenses(user.id, externalLicenses);
 
 				expect(userLicenseService.saveUserLicense).toHaveBeenCalledWith(
-					expect.objectContaining({
+					expect.objectContaining<Partial<MediaUserLicense>>({
 						id: expect.any(String),
 						type: UserLicenseType.MEDIA_LICENSE,
 						userId: user.id,
 						mediumId: newExternalLicense.mediumId,
-						mediaSourceId: newExternalLicense.mediaSourceId,
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						mediaSource: expect.objectContaining<Partial<MediaSource>>({
+							id: expect.any(String),
+							sourceId: newExternalLicense.mediaSourceId as string,
+						}),
 					})
 				);
 			});
@@ -100,7 +121,9 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 				const existingMediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(1, {
 					userId: user.id,
 					mediumId: 'toDeleteMediumId',
-					mediaSourceId: 'toDeleteMediaSourceId',
+					mediaSource: mediaSourceFactory.build({
+						sourceId: 'toDeleteMediaSourceId',
+					}),
 				});
 
 				userLicenseService.getMediaUserLicensesForUser.mockResolvedValue(existingMediaUserLicenses);
@@ -119,7 +142,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 						type: existingMediaUserLicense.type,
 						userId: existingMediaUserLicense.userId,
 						mediumId: existingMediaUserLicense.mediumId,
-						mediaSourceId: existingMediaUserLicense.mediaSourceId,
+						mediaSourceId: existingMediaUserLicense.mediaSource?.sourceId,
 					})
 				);
 			});

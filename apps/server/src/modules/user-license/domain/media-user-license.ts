@@ -1,9 +1,10 @@
+import { MediaSource } from './media-source';
 import { UserLicense, UserLicenseProps } from './user-license';
 
 export interface MediaUserLicenseProps extends UserLicenseProps {
 	mediumId: string;
 
-	mediaSourceId?: string;
+	mediaSource?: MediaSource;
 }
 
 export class MediaUserLicense extends UserLicense<MediaUserLicenseProps> {
@@ -15,11 +16,11 @@ export class MediaUserLicense extends UserLicense<MediaUserLicenseProps> {
 		this.props.mediumId = value;
 	}
 
-	get mediaSourceId(): string | undefined {
-		return this.props.mediaSourceId;
+	get mediaSource(): MediaSource | undefined {
+		return this.props.mediaSource;
 	}
 
-	set mediaSourceId(value: string | undefined) {
-		this.props.mediaSourceId = value;
+	set mediaSource(value: MediaSource | undefined) {
+		this.props.mediaSource = value;
 	}
 }

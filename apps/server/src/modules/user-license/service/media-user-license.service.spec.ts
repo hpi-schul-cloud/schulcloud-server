@@ -1,7 +1,8 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaUserLicense, mediaUserLicenseFactory } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service/media-user-license.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MediaUserLicense } from '../domain';
+import { mediaSourceFactory, mediaUserLicenseFactory } from '../testing';
+import { MediaUserLicenseService } from './media-user-license.service';
 
 describe(MediaUserLicenseService.name, () => {
 	let module: TestingModule;
@@ -28,11 +29,13 @@ describe(MediaUserLicenseService.name, () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
 					mediumId: 'mediumId',
-					mediaSourceId: 'mediaSourceId',
+					sourceId: 'mediaSourceId',
 				};
 				const medium = mediaUserLicenseFactory.build({
 					mediumId: toolMedium.mediumId,
-					mediaSourceId: toolMedium.mediaSourceId,
+					mediaSource: mediaSourceFactory.build({
+						sourceId: toolMedium.sourceId,
+					}),
 				});
 				const unusedMedium = mediaUserLicenseFactory.build();
 				const mediaUserLicenses: MediaUserLicense[] = [medium, unusedMedium];
@@ -59,7 +62,7 @@ describe(MediaUserLicenseService.name, () => {
 				};
 				const medium = mediaUserLicenseFactory.build({
 					mediumId: toolMedium.mediumId,
-					mediaSourceId: undefined,
+					mediaSource: undefined,
 				});
 				const unusedMedium = mediaUserLicenseFactory.build();
 				const mediaUserLicenses: MediaUserLicense[] = [medium, unusedMedium];

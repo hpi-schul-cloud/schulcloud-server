@@ -41,7 +41,7 @@ describe(UserLicenseService.name, () => {
 			const userId = new ObjectId().toHexString();
 			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			userLicenseRepo.findUserLicenses.mockResolvedValue([mediaUserLicense]);
+			userLicenseRepo.findMediaUserLicenses.mockResolvedValue([mediaUserLicense]);
 
 			return { userId, mediaUserLicense };
 		};
@@ -51,7 +51,7 @@ describe(UserLicenseService.name, () => {
 
 			await service.getMediaUserLicensesForUser(userId);
 
-			expect(userLicenseRepo.findUserLicenses).toHaveBeenCalledWith({
+			expect(userLicenseRepo.findMediaUserLicenses).toHaveBeenCalledWith({
 				userId,
 				type: UserLicenseType.MEDIA_LICENSE,
 			});
