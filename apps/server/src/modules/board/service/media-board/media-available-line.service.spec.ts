@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolService } from '@modules/tool';
 import { CustomParameterScope, ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
@@ -66,32 +67,35 @@ describe(MediaAvailableLineService.name, () => {
 	});
 
 	describe('getUnusedAvailableSchoolExternalTools', () => {
-		const setup = () => {
-			const user: User = userFactory.build();
-
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
-				.withSchoolId(user.school.id)
-				.buildWithId();
-			const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
-				.withSchoolId(user.school.id)
-				.buildWithId();
-
-			const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory
-				.withSchoolExternalToolRef(usedSchoolExternalTool.id, user.school.id)
-				.buildWithId();
-
-			const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build({
-				contextExternalToolId: usedContextExternalTool.id,
-			});
-			const board: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
-
-			schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool, usedSchoolExternalTool]);
-			contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(usedContextExternalTool);
-
-			return { user, board, mediaExternalToolElement, schoolExternalTool };
-		};
-
 		describe('when there are unused tools', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+
+				const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(usedSchoolExternalTool.id, user.school.id)
+					.buildWithId();
+
+				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build({
+					contextExternalToolId: usedContextExternalTool.id,
+				});
+				const board: MediaBoard = mediaBoardFactory.addChild(mediaExternalToolElement).build();
+
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+					schoolExternalTool,
+					usedSchoolExternalTool,
+				]);
+				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
+
+				return { user, board, mediaExternalToolElement, schoolExternalTool };
+			};
+
 			it('should call the service to get school external tools for users school', async () => {
 				const { user, board } = setup();
 
@@ -108,10 +112,60 @@ describe(MediaAvailableLineService.name, () => {
 
 				await service.getUnusedAvailableSchoolExternalTools(user, board);
 
-				expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(
+				expect(contextExternalToolService.findById).toHaveBeenCalledWith(
 					mediaExternalToolElement.contextExternalToolId
 				);
 			});
+
+			it('should return the available tools', async () => {
+				const { user, board, schoolExternalTool } = setup();
+
+				const schoolExternalTools: SchoolExternalTool[] = await service.getUnusedAvailableSchoolExternalTools(
+					user,
+					board
+				);
+
+				expect(schoolExternalTools).toEqual([schoolExternalTool]);
+			});
+		});
+
+		describe('when there are elements on board which has deleted context external tool', () => {
+			const setup = () => {
+				const user: User = userFactory.build();
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory
+					.withSchoolId(user.school.id)
+					.buildWithId();
+
+				const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(usedSchoolExternalTool.id, user.school.id)
+					.buildWithId();
+
+				const mediaExternalToolElement: MediaExternalToolElement = mediaExternalToolElementFactory.build({
+					contextExternalToolId: usedContextExternalTool.id,
+				});
+				const mediaExternalToolElementWithDeletedTool: MediaExternalToolElement = mediaExternalToolElementFactory.build(
+					{
+						contextExternalToolId: new ObjectId().toHexString(),
+					}
+				);
+				const board: MediaBoard = mediaBoardFactory
+					.addChild(mediaExternalToolElement)
+					.addChild(mediaExternalToolElementWithDeletedTool)
+					.build();
+
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+					schoolExternalTool,
+					usedSchoolExternalTool,
+				]);
+				contextExternalToolService.findById.mockResolvedValueOnce(usedContextExternalTool);
+				contextExternalToolService.findById.mockResolvedValueOnce(null);
+
+				return { user, board, mediaExternalToolElement, schoolExternalTool };
+			};
 
 			it('should return the available tools', async () => {
 				const { user, board, schoolExternalTool } = setup();
