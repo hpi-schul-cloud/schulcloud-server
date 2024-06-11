@@ -2,6 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+// IMPORTANT: RuleManager has to be imported before the rules to prevent import cycles!
+import { RuleManager } from '.';
 import { AuthorizationContextBuilder } from '../mapper';
 import {
 	BoardNodeRule,
@@ -21,7 +23,6 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from '../rules';
-import { RuleManager } from './rule-manager';
 
 describe('RuleManager', () => {
 	let service: RuleManager;
