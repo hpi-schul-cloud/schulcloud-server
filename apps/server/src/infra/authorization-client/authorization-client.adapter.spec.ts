@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
@@ -12,7 +13,7 @@ import {
 import { AuthorizationClientAdapter } from './authorization-client.adapter';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 
-const jwtToken = 'Bearer someJwtToken';
+const jwtToken = 'someJwtToken';
 
 describe(AuthorizationClientAdapter.name, () => {
 	let module: TestingModule;
@@ -31,7 +32,7 @@ describe(AuthorizationClientAdapter.name, () => {
 					provide: REQUEST,
 					useValue: createMock<Request>({
 						headers: {
-							authorization: jwtToken,
+							authorization: `Bearer ${jwtToken}`,
 						},
 					}),
 				},
@@ -75,7 +76,7 @@ describe(AuthorizationClientAdapter.name, () => {
 				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 				referenceId: 'someReferenceId',
 			};
-			const expectedOptions = { headers: { authorization: jwtToken } };
+			const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
 			await service.checkPermissionByReferences(params);
 
@@ -156,7 +157,7 @@ describe(AuthorizationClientAdapter.name, () => {
 				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 				referenceId: 'someReferenceId',
 			};
-			const expectedOptions = { headers: { authorization: jwtToken } };
+			const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
 			await service.hasPermissionByReferences(params);
 
@@ -164,6 +165,54 @@ describe(AuthorizationClientAdapter.name, () => {
 				params,
 				expectedOptions
 			);
+		});
+
+		it('should forward the JWT token from the "jwt" cookie', async () => {
+			setup();
+
+			const request = createMock<Request>({
+				headers: {
+					cookie: `jwt=${jwtToken}`,
+				},
+			});
+
+			const adapter = new AuthorizationClientAdapter(authorizationApi, request);
+
+			const params = {
+				context: {
+					action: Action.READ,
+					requiredPermissions: [],
+				},
+				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+				referenceId: 'someReferenceId',
+			};
+			const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
+
+			await adapter.hasPermissionByReferences(params);
+
+			expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
+				params,
+				expectedOptions
+			);
+		});
+
+		it('should throw an UnauthorizedException if no JWT token is found', async () => {
+			const request = createMock<Request>({
+				headers: {},
+			});
+
+			const adapter = new AuthorizationClientAdapter(authorizationApi, request);
+
+			const params = {
+				context: {
+					action: Action.READ,
+					requiredPermissions: [],
+				},
+				referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+				referenceId: 'someReferenceId',
+			};
+
+			await expect(adapter.hasPermissionByReferences(params)).rejects.toThrowError(UnauthorizedException);
 		});
 
 		describe('when client returns response', () => {
