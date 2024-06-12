@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { UserService } from '@src/modules/user';
-import { Gauge, register } from 'prom-client';
+import { Gauge, Histogram, linearBuckets, register } from 'prom-client';
 
 type ClientId = string;
 type Role = 'owner' | 'editor' | 'viewer';
@@ -19,7 +19,7 @@ export class MetricsService {
 
 	private numberOfViewersOnServerCounter: Gauge<string>;
 
-	private executionTimes: Map<string, Gauge<string>> = new Map();
+	private executionTimes: Map<string, Histogram<string>> = new Map();
 
 	// better percentile than avg
 	constructor(private readonly userService: UserService) {
@@ -98,16 +98,17 @@ export class MetricsService {
 	}
 
 	public setExecutionTime(actionName: string, value: number): void {
-		let gauge = this.executionTimes.get(actionName);
+		let histogram = this.executionTimes.get(actionName);
 
-		if (!gauge) {
-			gauge = new Gauge({
+		if (!histogram) {
+			histogram = new Histogram({
 				name: `sc_boards_execution_time_${actionName}`,
 				help: '...',
+				buckets: linearBuckets(0, 25, 40),
 			});
-			this.executionTimes.set(actionName, gauge);
-			register.registerMetric(gauge);
+			this.executionTimes.set(actionName, histogram);
+			register.registerMetric(histogram);
 		}
-		gauge.set(value);
+		histogram.observe(value);
 	}
 }
