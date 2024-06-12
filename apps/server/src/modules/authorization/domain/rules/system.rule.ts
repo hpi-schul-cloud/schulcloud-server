@@ -8,21 +8,21 @@ import { Action, AuthorizationContext, Rule } from '../type';
 export class SystemRule implements Rule<System> {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, domainObject: System): boolean {
-		const isMatched: boolean = domainObject instanceof System;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean = object instanceof System;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, domainObject: System, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: System, context: AuthorizationContext): boolean {
 		const hasPermissions: boolean = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		const hasAccess: boolean = user.school.systems.getIdentifiers().includes(domainObject.id);
+		const hasAccess: boolean = user.school.systems.getIdentifiers().includes(object.id);
 
 		let isAuthorized: boolean = hasPermissions && hasAccess;
 
 		if (context.action === Action.write) {
-			isAuthorized = isAuthorized && this.canEdit(domainObject);
+			isAuthorized = isAuthorized && this.canEdit(object);
 		}
 
 		return isAuthorized;

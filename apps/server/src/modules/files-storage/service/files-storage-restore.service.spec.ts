@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { getPaths, unmarkForDelete } from '../helper';
 import { FileRecordRepo } from '../repo';
@@ -18,13 +18,18 @@ const buildFileRecordsWithParams = () => {
 	const parentSchoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text.txt' }),
+		fileRecordFactory
+			.markedForDelete()
+			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-two.txt' }),
+		fileRecordFactory
+			.markedForDelete()
+			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId: parentSchoolId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -95,7 +100,7 @@ describe('FilesStorageService restore methods', () => {
 			const setup = () => {
 				const { params, fileRecords } = buildFileRecordsWithParams();
 
-				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([
+				fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([
 					fileRecords,
 					fileRecords.length,
 				]);
@@ -109,8 +114,9 @@ describe('FilesStorageService restore methods', () => {
 
 				await service.restoreFilesOfParent(params);
 
-				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
-					params.schoolId,
+				expect(fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
+					params.storageLocation,
+					params.storageLocationId,
 					params.parentId
 				);
 			});
@@ -142,7 +148,7 @@ describe('FilesStorageService restore methods', () => {
 			const setup = () => {
 				const { params } = buildFileRecordsWithParams();
 
-				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([[], 0]);
+				fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([[], 0]);
 				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
 
 				return { params };
@@ -168,7 +174,7 @@ describe('FilesStorageService restore methods', () => {
 				const { params } = buildFileRecordsWithParams();
 				const error = new Error('bla');
 
-				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValueOnce(error);
+				fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete.mockRejectedValueOnce(error);
 				spy = jest.spyOn(service, 'restore').mockResolvedValueOnce();
 
 				return { params, error };
@@ -192,7 +198,7 @@ describe('FilesStorageService restore methods', () => {
 				const { params, fileRecords } = buildFileRecordsWithParams();
 				const error = new Error('bla');
 
-				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([fileRecords, 3]);
+				fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete.mockResolvedValueOnce([fileRecords, 3]);
 				spy = jest.spyOn(service, 'restore').mockRejectedValueOnce(error);
 
 				return { params, error };

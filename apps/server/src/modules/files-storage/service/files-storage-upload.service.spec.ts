@@ -13,7 +13,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
@@ -28,16 +28,17 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -244,7 +245,7 @@ describe('FilesStorageService upload methods', () => {
 
 				const fileRecord = await service.uploadFile(userId, params, file);
 
-				const filePath = [fileRecord.schoolId, fileRecord.id].join('/');
+				const filePath = [fileRecord.storageLocationId, fileRecord.id].join('/');
 				expect(storageClient.create).toHaveBeenCalledWith(filePath, file);
 			});
 
