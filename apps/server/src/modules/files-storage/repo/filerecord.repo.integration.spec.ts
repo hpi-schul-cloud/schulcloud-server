@@ -1,10 +1,9 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, fileRecordFactory } from '@shared/testing';
 
-import { MongoMemoryDatabaseModule } from '@infra/database';
-
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FileRecordRepo } from './filerecord.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);
@@ -174,14 +173,14 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	describe('findBySchoolIdAndParentId', () => {
+	describe('findByStorageLocationIdAndParentId', () => {
 		const parentId1 = new ObjectId().toHexString();
-		const schoolId1 = new ObjectId().toHexString();
+		const storageLocationId1 = new ObjectId().toHexString();
 		let fileRecords1: FileRecord[];
 
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.buildList(3, {
-				schoolId: schoolId1,
+				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -193,7 +192,14 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const pagination = { limit: 1 };
-			const [fileRecords, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1, { pagination });
+			const [fileRecords, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1,
+				{
+					pagination,
+				}
+			);
 
 			expect(count).toEqual(3);
 			expect(fileRecords.length).toEqual(1);
@@ -204,7 +210,14 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const pagination = { skip: 1 };
-			const [fileRecords, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1, { pagination });
+			const [fileRecords, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1,
+				{
+					pagination,
+				}
+			);
 
 			expect(count).toEqual(3);
 			expect(fileRecords.length).toEqual(2);
@@ -213,7 +226,7 @@ describe('FileRecordRepo', () => {
 		it('should only find searched parent', async () => {
 			const parentId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
-				schoolId: schoolId1,
+				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 			});
@@ -221,7 +234,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -229,9 +246,9 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should only find searched school', async () => {
-			const schoolId2 = new ObjectId().toHexString();
+			const storageLocationId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
-				schoolId: schoolId2,
+				storageLocationId: storageLocationId2,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -239,16 +256,24 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
+			expect(results.map((o) => o.storageLocationId)).toEqual([
+				storageLocationId1,
+				storageLocationId1,
+				storageLocationId1,
+			]);
 		});
 
 		it('should ignore deletedSince', async () => {
 			const fileRecordsExpired = fileRecordFactory.markedForDelete().buildList(3, {
-				schoolId: schoolId1,
+				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -256,7 +281,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecordsExpired]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentId(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -268,12 +297,12 @@ describe('FileRecordRepo', () => {
 
 	describe('findBySchoolIdAndParentIdAndMarkedForDelete', () => {
 		const parentId1 = new ObjectId().toHexString();
-		const schoolId1 = new ObjectId().toHexString();
+		const storageLocationId1 = new ObjectId().toHexString();
 		let fileRecords1: FileRecord[];
 
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.markedForDelete().buildList(3, {
-				schoolId: schoolId1,
+				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -283,7 +312,7 @@ describe('FileRecordRepo', () => {
 			const parentId2 = new ObjectId().toHexString();
 
 			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
-				schoolId: schoolId1,
+				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 			});
@@ -291,7 +320,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -299,10 +332,10 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should only find searched school', async () => {
-			const schoolId2 = new ObjectId().toHexString();
+			const storageLocationId2 = new ObjectId().toHexString();
 
 			const fileRecords2 = fileRecordFactory.markedForDelete().buildList(3, {
-				schoolId: schoolId2,
+				storageLocationId: storageLocationId2,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -310,16 +343,24 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
+			expect(results.map((o) => o.storageLocationId)).toEqual([
+				storageLocationId1,
+				storageLocationId1,
+				storageLocationId1,
+			]);
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
 			const fileRecordsExpired = fileRecordFactory.buildList(3, {
-				schoolId: schoolId1,
+				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -327,7 +368,11 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecordsExpired]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId1);
+			const [results, count] = await repo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+				StorageLocation.SCHOOL,
+				storageLocationId1,
+				parentId1
+			);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -341,11 +386,11 @@ describe('FileRecordRepo', () => {
 		let fileRecord: FileRecord;
 
 		beforeEach(() => {
-			const schoolId = new ObjectId().toHexString();
+			const storageLocationId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 
 			fileRecord = fileRecordFactory.build({
-				schoolId,
+				storageLocationId,
 				parentType: FileRecordParentType.Task,
 				parentId,
 			});
