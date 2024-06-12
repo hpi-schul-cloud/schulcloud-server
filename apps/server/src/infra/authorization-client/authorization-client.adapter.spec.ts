@@ -93,7 +93,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			});
 
 			describe('when permission is granted', () => {
-				it('should return', async () => {
+				it('should resolve', async () => {
 					const { params } = setup({ isAuthorized: true });
 
 					await expect(service.checkPermissionByReferences(params)).resolves.toBeUndefined();
