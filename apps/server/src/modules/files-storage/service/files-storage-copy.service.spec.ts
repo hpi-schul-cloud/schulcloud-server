@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus, StorageLocation } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createCopyFiles } from '../helper';
 import { CopyFileResponseBuilder } from '../mapper';
@@ -16,16 +16,17 @@ import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId: parentSchoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId,
 		parentType: FileRecordParentType.User,
 	};
@@ -100,7 +101,10 @@ describe('FilesStorageService copy methods', () => {
 				const { fileRecords: targetFileRecords, params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
+				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([
+					sourceFileRecords,
+					sourceFileRecords.length,
+				]);
 				spy = jest.spyOn(service, 'copy');
 				spy.mockResolvedValueOnce(targetFileRecords);
 
@@ -112,9 +116,10 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copyFilesOfParent(userId, sourceParams, copyFilesOfParentParams);
 
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(
+				expect(fileRecordRepo.findByStorageLocationIdAndParentId).toHaveBeenNthCalledWith(
 					1,
-					sourceParams.schoolId,
+					sourceParams.storageLocation,
+					sourceParams.storageLocationId,
 					sourceParams.parentId
 				);
 			});
@@ -143,7 +148,7 @@ describe('FilesStorageService copy methods', () => {
 				const { params } = buildFileRecordsWithParams();
 				const copyFilesOfParentParams = { target: params };
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([[], 0]);
+				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([[], 0]);
 
 				return { sourceParams, copyFilesOfParentParams, fileRecords, userId };
 			};
@@ -170,7 +175,10 @@ describe('FilesStorageService copy methods', () => {
 				const copyFilesOfParentParams = { target: params };
 				const error = new Error('test');
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([sourceFileRecords, sourceFileRecords.length]);
+				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([
+					sourceFileRecords,
+					sourceFileRecords.length,
+				]);
 				spy = jest.spyOn(service, 'copy');
 				spy.mockRejectedValueOnce(error);
 

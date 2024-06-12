@@ -18,7 +18,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 	}
 
 	public async findCourseById(id: EntityId): Promise<Course> {
-		const entity: CourseEntity = await super.findById(id);
+		const entity: CourseEntity = await super.findEntityById(id);
 
 		if (!entity.courseGroups.isInitialized()) {
 			await entity.courseGroups.init();

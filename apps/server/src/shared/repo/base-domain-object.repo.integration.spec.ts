@@ -350,7 +350,7 @@ describe('BaseDomainObjectRepo', () => {
 		it('should find an entity by id', async () => {
 			const { entity } = await setup();
 
-			const foundEntity = await repo.findById(entity.id);
+			const foundEntity = await repo.findEntityById(entity.id);
 
 			expect(foundEntity).toBeInstanceOf(TestEntity);
 			expect(foundEntity.id).toEqual(entity.id);

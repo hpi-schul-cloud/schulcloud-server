@@ -14,43 +14,39 @@ import { AuthorizationHelper } from '../service/authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../type';
 
 @Injectable()
-export class BoardDoRule implements Rule {
+export class BoardDoRule implements Rule<BoardDoAuthorizable> {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, boardDoAuthorizable: unknown): boolean {
-		const isMatched = boardDoAuthorizable instanceof BoardDoAuthorizable;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched = object instanceof BoardDoAuthorizable;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, boardDoAuthorizable: BoardDoAuthorizable, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: BoardDoAuthorizable, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		if (!hasPermission) {
 			return false;
 		}
 
-		const userWithBoardRoles = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
+		const userWithBoardRoles = object.users.find(({ userId }) => userId === user.id);
 		if (!userWithBoardRoles) {
 			return false;
 		}
 
-		if (
-			boardDoAuthorizable.rootDo instanceof ColumnBoard &&
-			!boardDoAuthorizable.rootDo.isVisible &&
-			!this.isBoardEditor(userWithBoardRoles)
-		) {
+		if (object.rootDo instanceof ColumnBoard && !object.rootDo.isVisible && !this.isBoardEditor(userWithBoardRoles)) {
 			return false;
 		}
 
-		if (this.shouldProcessSubmissionItem(boardDoAuthorizable)) {
-			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardDoAuthorizable, context);
+		if (this.shouldProcessSubmissionItem(object)) {
+			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, object, context);
 		}
 
-		if (this.shouldProcessDrawingElementFile(boardDoAuthorizable, context)) {
+		if (this.shouldProcessDrawingElementFile(object, context)) {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
 
-		if (this.shouldProcessDrawingElement(boardDoAuthorizable)) {
+		if (this.shouldProcessDrawingElement(object)) {
 			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
 		}
 
