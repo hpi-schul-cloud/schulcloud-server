@@ -56,7 +56,6 @@ describe('SchoolRule', () => {
 			it('should return false', () => {
 				const { user, someRandomObject } = setup();
 
-				// @ts-expect-error Testcase
 				const result = rule.isApplicable(user, someRandomObject);
 
 				expect(result).toBe(false);

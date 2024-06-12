@@ -1,4 +1,5 @@
 import { BoardModule } from '@modules/board';
+import { InstanceModule } from '@modules/instance';
 import { LessonModule } from '@modules/lesson';
 import { ToolModule } from '@modules/tool';
 import { forwardRef, Module } from '@nestjs/common';
@@ -29,6 +30,7 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
 		forwardRef(() => ToolModule),
 		forwardRef(() => BoardModule),
 		LoggerModule,
+		InstanceModule,
 	],
 	providers: [
 		AuthorizationHelper,

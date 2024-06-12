@@ -8,10 +8,10 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 import { DomainErrorHandler } from '@src/core';
+import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -20,16 +20,17 @@ import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};
@@ -39,9 +40,11 @@ const buildFileRecordsWithParams = () => {
 
 const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, schoolId, name: 'text.txt' });
+	const fileRecord = fileRecordFactory
+		.markedForDelete()
+		.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,

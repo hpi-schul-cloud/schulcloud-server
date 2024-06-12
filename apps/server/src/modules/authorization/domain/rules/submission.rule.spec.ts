@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import {
@@ -9,14 +10,13 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { NotImplementedException } from '@nestjs/common';
-import { Action, AuthorizationContext } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
-import { SubmissionRule } from './submission.rule';
-import { TaskRule } from './task.rule';
+import { Action, AuthorizationContext } from '../type';
+import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
-import { CourseGroupRule } from './course-group.rule';
+import { SubmissionRule } from './submission.rule';
+import { TaskRule } from './task.rule';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });
@@ -72,7 +72,6 @@ describe('SubmissionRule', () => {
 			it('should return false', () => {
 				const { user, task } = setup();
 
-				// @ts-expect-error Testcase
 				const result = submissionRule.isApplicable(user, task);
 
 				expect(result).toBe(false);

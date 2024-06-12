@@ -18,3 +18,5 @@ export * from './user.rule';
 export * from './group.rule';
 export { SystemRule } from './system.rule';
 export { SchoolSystemOptionsRule } from './school-system-options.rule';
+export { InstanceRule } from './instance.rule';
+export { ExternalToolRule } from './external-tool.rule';
