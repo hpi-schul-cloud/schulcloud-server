@@ -1,5 +1,5 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
 import { MediaSource } from '../domain';
@@ -31,7 +31,7 @@ describe(MediaSourceRepo.name, () => {
 	});
 
 	describe('findBySourceId', () => {
-		describe('when searching for a media source', () => {
+		describe('when a media source exists', () => {
 			const setup = async () => {
 				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
 
@@ -56,6 +56,14 @@ describe(MediaSourceRepo.name, () => {
 						sourceId: mediaSource.sourceId,
 					})
 				);
+			});
+		});
+
+		describe('when no media source exists', () => {
+			it('should return null', async () => {
+				const result = await repo.findBySourceId(new ObjectId().toHexString());
+
+				expect(result).toBeNull();
 			});
 		});
 	});
