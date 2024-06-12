@@ -9,10 +9,10 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 import { DomainErrorHandler } from '@src/core';
+import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -21,16 +21,17 @@ import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
-	const schoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
-		schoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};
@@ -38,9 +39,10 @@ const buildFileRecordsWithParams = () => {
 	return { params, fileRecords, userId };
 };
 
-const createRequestParams = (schoolId: EntityId, userId: EntityId) => {
+const createRequestParams = (storageLocationId: EntityId, userId: EntityId): FileRecordParams => {
 	return {
-		schoolId,
+		storageLocation: StorageLocation.SCHOOL,
+		storageLocationId,
 		parentId: userId,
 		parentType: FileRecordParentType.User,
 	};

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory, teamFactory } from '@shared/testing';
+import { roleFactory, setupEntities, teamFactory, userFactory } from '@shared/testing';
+import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { TeamRule } from './team.rule';
-import { AuthorizationContextBuilder } from '../mapper';
 
 describe('TeamRule', () => {
 	let rule: TeamRule;
@@ -54,7 +54,7 @@ describe('TeamRule', () => {
 
 			it('should return false', () => {
 				const { user } = setup();
-				// @ts-expect-error test with wrong instance
+
 				const result = rule.isApplicable(user, user);
 
 				expect(result).toBe(false);

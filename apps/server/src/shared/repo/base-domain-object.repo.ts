@@ -2,7 +2,7 @@ import { EntityData, EntityName, FilterQuery, Primary, RequiredEntityData, Utils
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { BaseEntity, baseEntityProperties } from '@shared/domain/entity';
+import { BaseEntity, baseEntityProperties } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepoInterface } from './base-domain-object.repo.interface';
 
@@ -57,7 +57,7 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 		await this.em.remove(entities).flush();
 	}
 
-	async findById(id: EntityId): Promise<E> {
+	public async findEntityById(id: EntityId): Promise<E> {
 		const entity: E = await this.em.findOneOrFail(this.entityName, { id } as FilterQuery<E>);
 
 		return entity;

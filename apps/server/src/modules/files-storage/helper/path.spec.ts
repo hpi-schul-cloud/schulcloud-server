@@ -1,6 +1,6 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
@@ -12,12 +12,12 @@ describe('Path Helper', () => {
 
 	const setupFileRecords = () => {
 		const userId: EntityId = new ObjectId().toHexString();
-		const schoolId: EntityId = new ObjectId().toHexString();
+		const storageLocationId: EntityId = new ObjectId().toHexString();
 
 		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 		];
 
 		return fileRecords;
@@ -73,10 +73,12 @@ describe('Path Helper', () => {
 
 			const fileRecordId1 = fileRecords[0].id;
 			const fileRecordId2 = fileRecords[1].id;
-			const schoolId1 = fileRecords[0].schoolId;
-			const schoolId2 = fileRecords[1].schoolId;
+			const storageLocationId1 = fileRecords[0].storageLocationId;
+			const storageLocationId2 = fileRecords[1].storageLocationId;
 
-			expect(paths).toEqual(expect.arrayContaining([`${schoolId1}/${fileRecordId1}`, `${schoolId2}/${fileRecordId2}`]));
+			expect(paths).toEqual(
+				expect.arrayContaining([`${storageLocationId1}/${fileRecordId1}`, `${storageLocationId2}/${fileRecordId2}`])
+			);
 		});
 
 		it('should return empty array on empty fileRecordsArray', () => {
@@ -97,8 +99,8 @@ describe('Path Helper', () => {
 			const targetFile = fileRecords[1];
 
 			const expectedICopyFiles = {
-				sourcePath: createPath(sourceFile.schoolId, sourceFile.id),
-				targetPath: createPath(targetFile.schoolId, targetFile.id),
+				sourcePath: createPath(sourceFile.storageLocationId, sourceFile.id),
+				targetPath: createPath(targetFile.storageLocationId, targetFile.id),
 			};
 
 			const result = createCopyFiles(sourceFile, targetFile);
