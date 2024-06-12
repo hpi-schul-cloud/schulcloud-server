@@ -92,15 +92,17 @@ export class MediaAvailableLineService {
 	}
 
 	private async getContextExternalToolsByBoard(board: MediaBoard): Promise<ContextExternalTool[]> {
-		const contextExternalTools: Promise<ContextExternalTool>[] = board
+		const contextExternalTools: Promise<ContextExternalTool | null>[] = board
 			.getChildrenOfType(MediaExternalToolElement)
 			.map((element: MediaExternalToolElement) =>
-				this.contextExternalToolService.findByIdOrFail(element.contextExternalToolId)
+				this.contextExternalToolService.findById(element.contextExternalToolId)
 			);
 
-		const allContextExternalTools: ContextExternalTool[] = await Promise.all(contextExternalTools);
+		const notNullContextExternalTools: ContextExternalTool[] = (await Promise.all(contextExternalTools)).filter(
+			(tool): tool is ContextExternalTool => tool !== null
+		);
 
-		return allContextExternalTools;
+		return notNullContextExternalTools;
 	}
 
 	public matchTools(
