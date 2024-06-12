@@ -1,26 +1,17 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { WsAdapter } from '@nestjs/platform-ws';
 import { Doc } from 'yjs';
 import { createMock } from '@golevelup/ts-jest';
-import { HttpService } from '@nestjs/axios';
 import { Logger } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { createConfigModuleOptions } from '@src/config';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
-import { TldrawWsService } from '../service';
 import { tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
-import { TldrawWs } from '../controller';
-import { MetricsService } from '../metrics';
-import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
-import { TldrawRedisFactory, TldrawRedisService } from '../redis';
 
 describe('TldrawBoardRepo', () => {
-	let app: INestApplication;
 	let repo: TldrawBoardRepo;
 
 	beforeAll(async () => {
@@ -30,42 +21,25 @@ describe('TldrawBoardRepo', () => {
 				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
 			],
 			providers: [
-				TldrawWs,
-				TldrawWsService,
 				TldrawBoardRepo,
-				YMongodb,
-				MetricsService,
-				TldrawRedisFactory,
-				TldrawRedisService,
 				{
-					provide: TldrawRepo,
-					useValue: createMock<TldrawRepo>(),
+					provide: YMongodb,
+					useValue: createMock<YMongodb>(),
 				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
-				},
 			],
 		}).compile();
 
 		repo = testingModule.get(TldrawBoardRepo);
-		app = testingModule.createNestApplication();
-		app.useWebSocketAdapter(new WsAdapter(app));
-		await app.init();
 
 		jest.useFakeTimers();
 	});
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	afterAll(async () => {
-		await app.close();
 	});
 
 	it('should check if repo and its properties are set correctly', () => {

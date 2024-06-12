@@ -1,16 +1,17 @@
 import { Redis } from 'ioredis';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
+import { DomainErrorHandler } from '@src/core';
 import { TldrawConfig } from '../config';
 import { RedisErrorLoggable } from '../loggable';
 import { RedisConnectionTypeEnum } from '../types';
 
 @Injectable()
 export class TldrawRedisFactory {
-	constructor(private readonly configService: ConfigService<TldrawConfig, true>, private readonly logger: Logger) {
-		this.logger.setContext(TldrawRedisFactory.name);
-	}
+	constructor(
+		private readonly configService: ConfigService<TldrawConfig, true>,
+		private readonly domainErrorHandler: DomainErrorHandler
+	) {}
 
 	public build(connectionType: RedisConnectionTypeEnum) {
 		const redisUri = this.configService.get<string>('REDIS_URI');
@@ -22,7 +23,7 @@ export class TldrawRedisFactory {
 			maxRetriesPerRequest: null,
 		});
 
-		redis.on('error', (err) => this.logger.warning(new RedisErrorLoggable(connectionType, err)));
+		redis.on('error', (err) => this.domainErrorHandler.exec(new RedisErrorLoggable(connectionType, err)));
 
 		return redis;
 	}
