@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity';
 import { EntityId } from '@shared/domain/types/entity-id';
 
-// TODO comment
 /**
  * @deprecated - this is here only for the sake of the legacy-board (lernraum)
  */
