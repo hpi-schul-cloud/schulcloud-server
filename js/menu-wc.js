@@ -5843,6 +5843,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Migration20240606142059.html" data-type="entity-link" >Migration20240606142059</a>
                             </li>
                             <li class="link">
+                                <a href="classes/Migration20240612122202.html" data-type="entity-link" >Migration20240612122202</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MigrationAlreadyActivatedException.html" data-type="entity-link" >MigrationAlreadyActivatedException</a>
                             </li>
                             <li class="link">

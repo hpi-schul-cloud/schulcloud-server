@@ -24,13 +24,13 @@
 <title>cluster_AuthorizationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 4375,-268 4375,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_AuthorizationModule_imports</title>
-<polygon fill="none" stroke="black" points="4127,-78 4127,-130 4367,-130 4367,-78 4127,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_AuthorizationModule_exports</title>
 <polygon fill="none" stroke="black" points="1871,-208 1871,-260 2337,-260 2337,-208 1871,-208"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_AuthorizationModule_imports</title>
+<polygon fill="none" stroke="black" points="4127,-78 4127,-130 4367,-130 4367,-78 4127,-78"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_AuthorizationModule_providers</title>
