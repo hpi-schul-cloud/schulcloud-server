@@ -29,3 +29,4 @@ export * from './userloginmigration';
 export * from './videoconference';
 export * from './contextexternaltool';
 export * from './externaltool';
+export { BaseDomainObjectRepo } from './base-domain-object.repo';

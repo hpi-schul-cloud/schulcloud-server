@@ -8,6 +8,7 @@ import {
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	ExternalToolRule,
 	GroupRule,
 	InstanceRule,
 	LegacySchoolRule,
@@ -22,7 +23,6 @@ import {
 	UserLoginMigrationRule,
 	UserRule,
 } from './domain/rules';
-import { ExternalToolRule } from './domain/rules/external-tool.rule';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 
 @Module({

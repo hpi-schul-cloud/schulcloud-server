@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService } from '@modules/board';
+import { InstanceService } from '@modules/instance';
 import { LessonService } from '@modules/lesson';
-import { ContextExternalToolAuthorizableService } from '@modules/tool';
-import { ExternalToolAuthorizableService } from '@modules/tool/external-tool/service';
+import { ContextExternalToolAuthorizableService, ExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
@@ -18,7 +18,6 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 
