@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService } from '@modules/board';
+import { InstanceService } from '@modules/instance';
 import { LessonService } from '@modules/lesson';
-import { ContextExternalToolAuthorizableService } from '@modules/tool';
+import { ContextExternalToolAuthorizableService, ExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
@@ -33,6 +34,8 @@ describe('reference.loader', () => {
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
+	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
+	let instanceService: DeepMocked<InstanceService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -85,6 +88,14 @@ describe('reference.loader', () => {
 					provide: ContextExternalToolAuthorizableService,
 					useValue: createMock<ContextExternalToolAuthorizableService>(),
 				},
+				{
+					provide: ExternalToolAuthorizableService,
+					useValue: createMock<ExternalToolAuthorizableService>(),
+				},
+				{
+					provide: InstanceService,
+					useValue: createMock<InstanceService>(),
+				},
 			],
 		}).compile();
 
@@ -100,6 +111,8 @@ describe('reference.loader', () => {
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
+		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
+		instanceService = await module.get(InstanceService);
 	});
 
 	afterEach(() => {
@@ -171,10 +184,22 @@ describe('reference.loader', () => {
 			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});
 
+		it('should call externalToolAuthorizableService.findById', async () => {
+			await service.loadAuthorizableObject(AuthorizableReferenceType.ExternalTool, entityId);
+
+			expect(externalToolAuthorizableService.findById).toBeCalledWith(entityId);
+		});
+
 		it('should call findNodeService.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
 
 			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call instanceService.findById', async () => {
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Instance, entityId);
+
+			expect(instanceService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return authorizable object', async () => {
