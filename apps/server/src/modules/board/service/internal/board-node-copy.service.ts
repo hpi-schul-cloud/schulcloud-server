@@ -286,9 +286,7 @@ export class BoardNodeCopyService {
 
 		let status: CopyStatusEnum;
 		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
-			const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
-				original.contextExternalToolId
-			);
+			const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
 
 			if (linkedTool) {
 				const contextExternalToolCopy: ContextExternalTool =
