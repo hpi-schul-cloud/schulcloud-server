@@ -10,14 +10,14 @@ import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableExce
 export class AuthorizationClientAdapter {
 	constructor(private readonly authorizationApi: AuthorizationApi, @Inject(REQUEST) private request: Request) {}
 
-	public async checkPermissionByReferences(params: AuthorizationBodyParams): Promise<void> {
-		const hasPermission = await this.hasPermissionByReferences(params);
+	public async checkPermissionsByReference(params: AuthorizationBodyParams): Promise<void> {
+		const hasPermission = await this.hasPermissionsByReference(params);
 		if (!hasPermission) {
 			throw new AuthorizationForbiddenLoggableException(params);
 		}
 	}
 
-	public async hasPermissionByReferences(params: AuthorizationBodyParams): Promise<boolean> {
+	public async hasPermissionsByReference(params: AuthorizationBodyParams): Promise<boolean> {
 		const jwt = this.getJWT();
 
 		try {

@@ -56,7 +56,7 @@ describe(AuthorizationClientAdapter.name, () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('checkPermissionByReferences', () => {
+	describe('checkPermissionsByReference', () => {
 		describe('when authorizationReferenceControllerAuthorizeByReference resolves successful', () => {
 			const setup = (props: { isAuthorized: boolean }) => {
 				const params = {
@@ -84,7 +84,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
-				await service.checkPermissionByReferences(params);
+				await service.checkPermissionsByReference(params);
 
 				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
 					params,
@@ -96,7 +96,7 @@ describe(AuthorizationClientAdapter.name, () => {
 				it('should resolve', async () => {
 					const { params } = setup({ isAuthorized: true });
 
-					await expect(service.checkPermissionByReferences(params)).resolves.toBeUndefined();
+					await expect(service.checkPermissionsByReference(params)).resolves.toBeUndefined();
 				});
 			});
 
@@ -106,7 +106,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 					const expectedError = new AuthorizationForbiddenLoggableException(params);
 
-					await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
+					await expect(service.checkPermissionsByReference(params)).rejects.toThrowError(expectedError);
 				});
 			});
 		});
@@ -133,12 +133,12 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
-				await expect(service.checkPermissionByReferences(params)).rejects.toThrowError(expectedError);
+				await expect(service.checkPermissionsByReference(params)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
 
-	describe('hasPermissionByReferences', () => {
+	describe('hasPermissionsByReference', () => {
 		describe('when authorizationReferenceControllerAuthorizeByReference resolves successful', () => {
 			const setup = () => {
 				const params = {
@@ -166,7 +166,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
-				await service.hasPermissionByReferences(params);
+				await service.hasPermissionsByReference(params);
 
 				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
 					params,
@@ -177,7 +177,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			it('should return isAuthorized', async () => {
 				const { params, response } = setup();
 
-				const result = await service.hasPermissionByReferences(params);
+				const result = await service.hasPermissionsByReference(params);
 
 				expect(result).toEqual(response.data.isAuthorized);
 			});
@@ -217,7 +217,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
-				await adapter.hasPermissionByReferences(params);
+				await adapter.hasPermissionsByReference(params);
 
 				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
 					params,
@@ -260,7 +260,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
 
-				await adapter.hasPermissionByReferences(params);
+				await adapter.hasPermissionsByReference(params);
 
 				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
 					params,
@@ -291,7 +291,7 @@ describe(AuthorizationClientAdapter.name, () => {
 			it('should throw an UnauthorizedException', async () => {
 				const { params, adapter } = setup();
 
-				await expect(adapter.hasPermissionByReferences(params)).rejects.toThrowError(UnauthorizedException);
+				await expect(adapter.hasPermissionsByReference(params)).rejects.toThrowError(UnauthorizedException);
 			});
 		});
 
@@ -317,7 +317,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
-				await expect(service.hasPermissionByReferences(params)).rejects.toThrowError(expectedError);
+				await expect(service.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
