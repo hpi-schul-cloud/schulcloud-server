@@ -7,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import bcrypt from 'bcryptjs';
@@ -58,10 +57,6 @@ describe('AccountDbService', () => {
 				{
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
-				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
