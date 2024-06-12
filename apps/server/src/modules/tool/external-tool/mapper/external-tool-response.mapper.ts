@@ -19,7 +19,7 @@ import {
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
-import { ExternalToolImportResult } from '../uc';
+import type { ExternalToolImportResult } from '../uc';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,

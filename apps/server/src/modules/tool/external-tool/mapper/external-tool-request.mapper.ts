@@ -24,7 +24,7 @@ import {
 	SortExternalToolParams,
 } from '../controller/dto';
 import { ExternalTool } from '../domain';
-import {
+import type {
 	BasicToolConfigDto,
 	CustomParameterDto,
 	ExternalToolCreate,
