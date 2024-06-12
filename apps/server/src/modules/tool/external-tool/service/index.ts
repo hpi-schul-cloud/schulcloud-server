@@ -5,3 +5,4 @@ export * from './external-tool-parameter-validation.service';
 export * from './external-tool-configuration.service';
 export * from './external-tool-logo.service';
 export { DatasheetPdfService } from './datasheet-pdf.service';
+export { ExternalToolAuthorizableService } from './external-tool-authorizable.service';

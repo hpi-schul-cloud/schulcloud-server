@@ -8,16 +8,16 @@ import { AuthorizationContext, Rule } from '../type';
 export class GroupRule implements Rule<Group> {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, domainObject: Group): boolean {
-		const isMatched: boolean = domainObject instanceof Group;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean = object instanceof Group;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, domainObject: Group, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: Group, context: AuthorizationContext): boolean {
 		const hasPermission: boolean =
 			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
-			(domainObject.organizationId ? user.school.id === domainObject.organizationId : true);
+			(object.organizationId ? user.school.id === object.organizationId : true);
 
 		return hasPermission;
 	}

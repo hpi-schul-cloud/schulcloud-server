@@ -1,6 +1,6 @@
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import {
 	DownloadFileParams,
 	FileRecordListResponse,
@@ -40,6 +40,11 @@ describe('FilesStorageMapper', () => {
 		it('should return allowed type equal Submission', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Submission);
 			expect(result).toBe(AuthorizableReferenceType.Submission);
+		});
+
+		it('should return allowed type equal ExternalTool', () => {
+			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.ExternalTool);
+			expect(result).toBe(AuthorizableReferenceType.ExternalTool);
 		});
 
 		it('should throw Error', () => {
@@ -91,7 +96,8 @@ describe('FilesStorageMapper', () => {
 			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 
 			expect(result).toEqual({
-				schoolId: fileRecord.schoolId,
+				storageLocationId: fileRecord.storageLocationId,
+				storageLocation: fileRecord.storageLocation,
 				parentId: fileRecord.parentId,
 				parentType: fileRecord.parentType,
 			});
