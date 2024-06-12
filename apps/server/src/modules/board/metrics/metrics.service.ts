@@ -11,8 +11,6 @@ type Role = 'owner' | 'editor' | 'viewer';
 export class MetricsService {
 	private knownClientRoles: Map<ClientId, Role> = new Map();
 
-	private numberOfUsersOnServerCounter: Gauge<string>;
-
 	private numberOfBoardroomsOnServerCounter: Gauge<string>;
 
 	private numberOfEditorsOnServerCounter: Gauge<string>;
@@ -21,13 +19,7 @@ export class MetricsService {
 
 	private executionTimesSummary: Map<string, Summary<string>> = new Map();
 
-	// better percentile than avg
 	constructor(private readonly userService: UserService) {
-		this.numberOfUsersOnServerCounter = new Gauge({
-			name: 'sc_boards_users',
-			help: 'Number of active users per pod',
-		});
-
 		this.numberOfBoardroomsOnServerCounter = new Gauge({
 			name: 'sc_boards_rooms',
 			help: 'Number of active boards per pod',
@@ -43,7 +35,8 @@ export class MetricsService {
 			help: 'Number of active viewers per pod',
 		});
 
-		register.registerMetric(this.numberOfUsersOnServerCounter);
+		register.registerMetric(this.numberOfEditorsOnServerCounter);
+		register.registerMetric(this.numberOfViewersOnServerCounter);
 		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
@@ -89,10 +82,6 @@ export class MetricsService {
 		return Array.from(this.knownClientRoles.values()).filter((r) => r === role).length;
 	}
 
-	public setNumberOfUsers(value: number): void {
-		this.numberOfUsersOnServerCounter.set(value);
-	}
-
 	public setNumberOfBoardRooms(value: number): void {
 		this.numberOfBoardroomsOnServerCounter.set(value);
 	}
@@ -103,7 +92,7 @@ export class MetricsService {
 		if (!summary) {
 			summary = new Summary({
 				name: `sc_boards_execution_time_${actionName}`,
-				help: '...',
+				help: 'Average execution time of a specific action in milliseconds',
 				maxAgeSeconds: 60,
 				ageBuckets: 5,
 				percentiles: [0.01, 0.1, 0.9, 0.99],
