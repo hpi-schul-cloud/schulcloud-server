@@ -4,10 +4,10 @@ import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';
-import { ExternalToolService } from '../../external-tool';
 import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool';
+import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
 import {
 	ContextExternalTool,
 	ContextExternalToolLaunchable,
