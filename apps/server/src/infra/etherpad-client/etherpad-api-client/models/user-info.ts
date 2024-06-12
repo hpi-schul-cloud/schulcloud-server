@@ -25,25 +25,24 @@ export interface UserInfo {
      * @type {string}
      * @memberof UserInfo
      */
-    id?: string;
+    'id'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserInfo
      */
-    colorId?: string;
+    'colorId'?: string;
     /**
      * 
      * @type {string}
      * @memberof UserInfo
      */
-    name?: string;
+    'name'?: string;
     /**
      * 
      * @type {number}
      * @memberof UserInfo
      */
-    timestamp?: number;
+    'timestamp'?: number;
 }
-
 
