@@ -145,6 +145,15 @@
 	},
 	{
 		"_id": {
+			"$oid": "666993d9c1989bee3e0e5df2"
+		},
+		"name": "Migration20240612122202",
+		"created_at": {
+			"$date": "2024-06-12T12:26:01.665Z"
+		}
+	},
+	{
+		"_id": {
 			"$oid": "6668485aadfd9c4d7be91ca3"
 		},
 		"name": "Migration20240611081033",
