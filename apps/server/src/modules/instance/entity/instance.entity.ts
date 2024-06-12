@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity'; // directly imported because of circular dependencies through ALL_ENTITIES
 import { EntityId } from '@shared/domain/types';
 
 export interface InstanceEntityProps {
