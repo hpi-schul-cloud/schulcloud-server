@@ -9,10 +9,10 @@ import {
 	NotFoundException,
 	NotAcceptableException,
 } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
 import { isAxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { DomainErrorHandler } from '@src/core';
 import { WebsocketInitErrorLoggable } from '../loggable';
 import { TldrawConfig, TLDRAW_SOCKET_PORT } from '../config';
 import { WsCloseCode, WsCloseMessage } from '../types';
@@ -27,7 +27,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawWsService: TldrawWsService,
 		private readonly httpService: HttpService,
-		private readonly logger: Logger
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {}
 
 	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
@@ -106,7 +106,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		err?: unknown
 	): void {
 		client.close(code, message);
-		this.logger.warning(new WebsocketInitErrorLoggable(code, message, docName, err));
+		this.domainErrorHandler.exec(new WebsocketInitErrorLoggable(code, message, docName, err));
 	}
 
 	private handleError(err: unknown, client: WebSocket, docName: string): void {
