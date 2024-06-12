@@ -58,8 +58,8 @@ export class ReferenceLoader {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
-        private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
-        private readonly instanceService: InstanceService
+		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
+		private readonly instanceService: InstanceService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });

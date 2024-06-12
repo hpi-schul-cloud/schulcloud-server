@@ -6,7 +6,6 @@ import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { externalToolFactory } from '@src/modules/tool/external-tool/testing';
 import {
 	cardFactory,
 	collaborativeTextEditorFactory,

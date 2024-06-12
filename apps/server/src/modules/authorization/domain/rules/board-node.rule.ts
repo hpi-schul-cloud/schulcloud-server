@@ -25,11 +25,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return isMatched;
 	}
 
-	public hasPermission(
-		user: User,
-		object: BoardNodeAuthorizable,
-		context: AuthorizationContext
-	): boolean {
+	public hasPermission(user: User, object: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		if (!hasPermission) {
 			return false;
