@@ -6,10 +6,10 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, StorageLocation } from '../entity';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileRecordResponse } from './dto';
+import { CopyFilesOfParentPayload, FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
 
 describe('FilesStorageConsumer', () => {
@@ -55,20 +55,22 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	describe('copyFilesOfParent()', () => {
-		const schoolId: EntityId = new ObjectId().toHexString();
+		const storageLocationId: EntityId = new ObjectId().toHexString();
 		describe('WHEN valid file exists', () => {
 			it('should call filesStorageService.copyFilesOfParent with params', async () => {
-				const payload = {
+				const payload: CopyFilesOfParentPayload = {
 					userId: new ObjectId().toHexString(),
 					source: {
 						parentId: new ObjectId().toHexString(),
 						parentType: FileRecordParentType.Course,
-						schoolId,
+						storageLocationId,
+						storageLocation: StorageLocation.SCHOOL,
 					},
 					target: {
 						parentId: new ObjectId().toHexString(),
 						parentType: FileRecordParentType.Course,
-						schoolId,
+						storageLocationId,
+						storageLocation: StorageLocation.SCHOOL,
 					},
 				};
 				await service.copyFilesOfParent(payload);
@@ -79,17 +81,19 @@ describe('FilesStorageConsumer', () => {
 			it('regular RPC handler should receive a valid RPC response', async () => {
 				const sourceCourse = courseFactory.buildWithId();
 				const targetCourse = courseFactory.buildWithId();
-				const payload = {
+				const payload: CopyFilesOfParentPayload = {
 					userId: new ObjectId().toHexString(),
 					source: {
 						parentId: sourceCourse.id,
 						parentType: FileRecordParentType.Course,
-						schoolId: sourceCourse.school.id,
+						storageLocationId,
+						storageLocation: StorageLocation.SCHOOL,
 					},
 					target: {
 						parentId: targetCourse.id,
 						parentType: FileRecordParentType.Course,
-						schoolId: targetCourse.school.id,
+						storageLocationId,
+						storageLocation: StorageLocation.SCHOOL,
 					},
 				};
 				const responseData = [{ id: '1', sourceId: '2', name: 'test.txt' }];
@@ -107,12 +111,14 @@ describe('FilesStorageConsumer', () => {
 					source: {
 						parentId: sourceCourse.id,
 						parentType: FileRecordParentType.Course,
-						schoolId: sourceCourse.school.id,
+						storageLocationId,
+						storageLocation: StorageLocation.SCHOOL,
 					},
 					target: {
 						parentId: targetCourse.id,
 						parentType: FileRecordParentType.Course,
-						schoolId: targetCourse.school.id,
+						storageLocationId,
+						storageLocation: StorageLocation.SCHOOL,
 					},
 				};
 				filesStorageService.copyFilesOfParent.mockResolvedValue([[], 0]);

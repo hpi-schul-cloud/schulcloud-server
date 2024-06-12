@@ -10,12 +10,12 @@ export class PreviewBuilder {
 		previewParams: PreviewParams,
 		bytesRange: string | undefined
 	): PreviewFileParams {
-		const { schoolId, id, mimeType } = fileRecord;
-		const originFilePath = createPath(schoolId, id);
+		const { storageLocationId, id, mimeType } = fileRecord;
+		const originFilePath = createPath(storageLocationId, id);
 		const format = getFormat(previewParams.outputFormat ?? mimeType);
 
 		const hash = createPreviewNameHash(id, previewParams);
-		const previewFilePath = createPreviewFilePath(schoolId, hash, id);
+		const previewFilePath = createPreviewFilePath(storageLocationId, hash, id);
 
 		const previewFileParams = {
 			fileRecord,
