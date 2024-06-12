@@ -14,6 +14,7 @@ export class TldrawDeleteFilesUc {
 		const docNames = await this.mdb.getAllDocumentNames();
 
 		for (const docName of docNames) {
+			// this.mdb.getDocument(docName); can be return null, it is not handled
 			const doc = await this.mdb.getDocument(docName);
 			const usedAssets = this.getUsedAssetsFromDocument(doc);
 
