@@ -1,5 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { RawAxiosRequestConfig } from 'axios';
 import cookie from 'cookie';
 import { Request } from 'express';
 import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
@@ -18,12 +19,13 @@ export class AuthorizationClientAdapter {
 	}
 
 	public async hasPermissionsByReference(params: AuthorizationBodyParams): Promise<boolean> {
-		const jwt = this.getJWT();
+		const options = this.createOptionParams();
 
 		try {
-			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(params, {
-				headers: { authorization: `Bearer ${jwt}` },
-			});
+			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(
+				params,
+				options
+			);
 
 			const hasPermission = response.data.isAuthorized;
 
@@ -31,6 +33,13 @@ export class AuthorizationClientAdapter {
 		} catch (error) {
 			throw new AuthorizationErrorLoggableException(error as Error, params);
 		}
+	}
+
+	private createOptionParams(): RawAxiosRequestConfig<any> {
+		const jwt = this.getJWT();
+		const options: RawAxiosRequestConfig<any> = { headers: { authorization: `Bearer ${jwt}` } };
+
+		return options;
 	}
 
 	private getJWT(): string {
