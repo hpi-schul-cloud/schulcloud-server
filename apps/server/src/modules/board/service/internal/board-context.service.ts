@@ -18,6 +18,8 @@ export class BoardContextService {
 			usersWithRoles = await this.getFromCourse(rootNode.context.id);
 		else if (rootNode.context.type === BoardExternalReferenceType.User) {
 			usersWithRoles = this.getFromUser(rootNode.context.id);
+		} else {
+			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
 		}
 
 		return usersWithRoles;
