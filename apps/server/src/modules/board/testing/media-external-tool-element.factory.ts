@@ -7,8 +7,6 @@ export const mediaExternalToolElementFactory = BaseFactory.define<
 	MediaExternalToolElement,
 	MediaExternalToolElementProps
 >(MediaExternalToolElement, () => {
-	const contextExternalTool = contextExternalToolEntityFactory.build();
-
 	const props: MediaExternalToolElementProps = {
 		id: new ObjectId().toHexString(),
 		path: ROOT_PATH,
@@ -17,7 +15,7 @@ export const mediaExternalToolElementFactory = BaseFactory.define<
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		contextExternalToolId: contextExternalTool.id,
+		contextExternalToolId: new ObjectId().toHexString(),
 	};
 
 	return props;
