@@ -13,15 +13,7 @@ export class MediaSource extends DomainObject<MediaSourceProps> {
 		return this.props.name;
 	}
 
-	set name(value: string | undefined) {
-		this.props.name = value;
-	}
-
 	get sourceId(): string {
 		return this.props.sourceId;
-	}
-
-	set sourceId(value: string) {
-		this.props.sourceId = value;
 	}
 }

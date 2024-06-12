@@ -19,8 +19,4 @@ export class MediaUserLicense extends UserLicense<MediaUserLicenseProps> {
 	get mediaSource(): MediaSource | undefined {
 		return this.props.mediaSource;
 	}
-
-	set mediaSource(value: MediaSource | undefined) {
-		this.props.mediaSource = value;
-	}
 }
