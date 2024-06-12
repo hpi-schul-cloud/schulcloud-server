@@ -1,8 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSourceService, MediaUserLicense, UserLicenseService, UserLicenseType } from '@modules/user-license';
+import {
+	MediaSource,
+	MediaSourceService,
+	MediaUserLicense,
+	UserLicenseService,
+	UserLicenseType,
+} from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaSource } from '../../../../user-license/domain';
 import { ExternalLicenseDto } from '../../../dto';
 
 @Injectable()

@@ -11,7 +11,7 @@ export class MediaUserLicenseService {
 		return mediaUserLicenses.some(
 			(license: MediaUserLicense) =>
 				license.mediumId === externalToolMedium.mediumId &&
-				license.mediaSource?.sourceId === externalToolMedium.sourceId
+				license.mediaSource?.sourceId === externalToolMedium.mediaSourceId
 		);
 	}
 }

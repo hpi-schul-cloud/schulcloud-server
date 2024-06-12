@@ -3,7 +3,7 @@ export interface ExternalToolMediumProps {
 
 	publisher?: string;
 
-	sourceId?: string;
+	mediaSourceId?: string;
 }
 
 export class ExternalToolMedium {
@@ -11,11 +11,11 @@ export class ExternalToolMedium {
 
 	publisher?: string;
 
-	sourceId?: string;
+	mediaSourceId?: string;
 
 	constructor(props: ExternalToolMediumProps) {
 		this.mediumId = props.mediumId;
 		this.publisher = props.publisher;
-		this.sourceId = props.sourceId;
+		this.mediaSourceId = props.mediaSourceId;
 	}
 }

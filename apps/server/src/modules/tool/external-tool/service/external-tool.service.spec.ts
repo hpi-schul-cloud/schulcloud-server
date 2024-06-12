@@ -507,7 +507,7 @@ describe(ExternalToolService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					medium: {
 						mediumId: 'mediumId',
-						sourceId: 'mediaSourceId',
+						mediaSourceId: 'mediaSourceId',
 					},
 				});
 				externalToolRepo.findByMedium.mockResolvedValue(externalTool);

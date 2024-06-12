@@ -29,12 +29,12 @@ describe(MediaUserLicenseService.name, () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
 					mediumId: 'mediumId',
-					sourceId: 'mediaSourceId',
+					mediaSourceId: 'mediaSourceId',
 				};
 				const medium = mediaUserLicenseFactory.build({
 					mediumId: toolMedium.mediumId,
 					mediaSource: mediaSourceFactory.build({
-						sourceId: toolMedium.sourceId,
+						sourceId: toolMedium.mediaSourceId,
 					}),
 				});
 				const unusedMedium = mediaUserLicenseFactory.build();

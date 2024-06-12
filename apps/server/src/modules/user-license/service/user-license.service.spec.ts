@@ -2,8 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaUserLicense } from '../domain';
-import { UserLicenseType } from '../entity';
-import { UserLicenseRepo } from '../repo';
+import { MediaUserLicenseRepo } from '../repo';
 import { mediaUserLicenseFactory } from '../testing';
 import { UserLicenseService } from './user-license.service';
 
@@ -11,21 +10,21 @@ describe(UserLicenseService.name, () => {
 	let module: TestingModule;
 	let service: UserLicenseService;
 
-	let userLicenseRepo: DeepMocked<UserLicenseRepo>;
+	let userLicenseRepo: DeepMocked<MediaUserLicenseRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserLicenseService,
 				{
-					provide: UserLicenseRepo,
-					useValue: createMock<UserLicenseRepo>(),
+					provide: MediaUserLicenseRepo,
+					useValue: createMock<MediaUserLicenseRepo>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(UserLicenseService);
-		userLicenseRepo = module.get(UserLicenseRepo);
+		userLicenseRepo = module.get(MediaUserLicenseRepo);
 	});
 
 	afterAll(async () => {
@@ -41,7 +40,7 @@ describe(UserLicenseService.name, () => {
 			const userId = new ObjectId().toHexString();
 			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			userLicenseRepo.findMediaUserLicenses.mockResolvedValue([mediaUserLicense]);
+			userLicenseRepo.findMediaUserLicensesForUser.mockResolvedValue([mediaUserLicense]);
 
 			return { userId, mediaUserLicense };
 		};
@@ -51,10 +50,7 @@ describe(UserLicenseService.name, () => {
 
 			await service.getMediaUserLicensesForUser(userId);
 
-			expect(userLicenseRepo.findMediaUserLicenses).toHaveBeenCalledWith({
-				userId,
-				type: UserLicenseType.MEDIA_LICENSE,
-			});
+			expect(userLicenseRepo.findMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
 		});
 
 		it('should return media user licenses for user', async () => {
@@ -72,7 +68,7 @@ describe(UserLicenseService.name, () => {
 
 			await service.saveUserLicense(mediaUserLicense);
 
-			expect(userLicenseRepo.saveUserLicense).toHaveBeenCalledWith(mediaUserLicense);
+			expect(userLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicense);
 		});
 	});
 
@@ -82,7 +78,7 @@ describe(UserLicenseService.name, () => {
 
 			await service.deleteUserLicense(mediaUserLicense);
 
-			expect(userLicenseRepo.deleteUserLicense).toHaveBeenCalledWith(mediaUserLicense);
+			expect(userLicenseRepo.delete).toHaveBeenCalledWith(mediaUserLicense);
 		});
 	});
 });

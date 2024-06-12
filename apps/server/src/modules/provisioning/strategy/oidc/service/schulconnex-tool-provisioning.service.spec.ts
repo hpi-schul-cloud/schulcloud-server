@@ -77,7 +77,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					medium: {
 						mediumId: mediaUserLicenses[0].mediumId,
-						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
 					},
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
@@ -168,7 +168,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					medium: {
 						mediumId: mediaUserLicenses[0].mediumId,
-						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
 					},
 				});
 
@@ -266,7 +266,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					medium: {
 						mediumId: mediaUserLicenses[0].mediumId,
-						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
 					},
 					parameters: [customParameterFactory.build()],
 				});
@@ -304,7 +304,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					medium: {
 						mediumId: mediaUserLicenses[0].mediumId,
-						sourceId: mediaUserLicenses[0].mediaSource?.sourceId,
+						mediaSourceId: mediaUserLicenses[0].mediaSource?.sourceId,
 					},
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
