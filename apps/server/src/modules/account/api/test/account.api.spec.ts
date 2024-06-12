@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
@@ -495,7 +496,7 @@ describe('Account Controller (API)', () => {
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 
-				const studentAccount = accountFactory.withUser(studentUser).build();
+				const studentAccount = accountFactory.withUser(studentUser).build({ username: faker.internet.email() });
 				const superheroAccount = accountFactory.withUser(superheroUser).build();
 
 				em.persist(school);
