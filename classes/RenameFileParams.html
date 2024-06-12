@@ -195,7 +195,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:79</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -219,13 +219,17 @@ import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { StringToBoolean } from &#x27;@shared/controller&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
-import { FileRecordParentType } from &#x27;../../entity&#x27;;
+import { FileRecordParentType, StorageLocation } from &#x27;../../entity&#x27;;
 import { PreviewOutputMimeTypes, PreviewWidth } from &#x27;../../interface&#x27;;
 
 export class FileRecordParams {
 	@ApiProperty()
 	@IsMongoId()
-	schoolId!: EntityId;
+	storageLocationId!: EntityId;
+
+	@ApiProperty({ enum: StorageLocation, enumName: &#x27;StorageLocation&#x27; })
+	@IsEnum(StorageLocation)
+	storageLocation!: StorageLocation;
 
 	@ApiProperty()
 	@IsMongoId()

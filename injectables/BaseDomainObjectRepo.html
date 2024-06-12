@@ -145,8 +145,9 @@
                                 <a href="#delete" >delete</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findById" >findById</a>
+                                <a href="#findEntityById" >findEntityById</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -388,18 +389,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findById"></a>
+                    <a name="findEntityById"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findById</b></span>
-                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findEntityById</b></span>
+                        <a href="#findEntityById"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findEntityById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -769,7 +771,7 @@
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
-import { BaseEntity, baseEntityProperties } from &#x27;@shared/domain/entity&#x27;;
+import { BaseEntity, baseEntityProperties } from &#x27;@shared/domain/entity/base.entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BaseDomainObjectRepoInterface } from &#x27;./base-domain-object.repo.interface&#x27;;
 
@@ -824,7 +826,7 @@ export abstract class BaseDomainObjectRepo&lt;D extends DomainObject&lt;Authoriz
 		await this.em.remove(entities).flush();
 	}
 
-	async findById(id: EntityId): Promise&lt;E&gt; {
+	public async findEntityById(id: EntityId): Promise&lt;E&gt; {
 		const entity: E &#x3D; await this.em.findOneOrFail(this.entityName, { id } as FilterQuery&lt;E&gt;);
 
 		return entity;

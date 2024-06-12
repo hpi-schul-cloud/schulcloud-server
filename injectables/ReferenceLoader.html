@@ -176,12 +176,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, courseGroupRepo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>, taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, submissionRepo: <a href="../injectables/SubmissionRepo.html" target="_self">SubmissionRepo</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, boardNodeAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, contextExternalToolAuthorizableService: <a href="../injectables/ContextExternalToolAuthorizableService.html" target="_self">ContextExternalToolAuthorizableService</a>)</code>
+<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, courseGroupRepo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>, taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, submissionRepo: <a href="../injectables/SubmissionRepo.html" target="_self">SubmissionRepo</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, boardNodeAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, contextExternalToolAuthorizableService: <a href="../injectables/ContextExternalToolAuthorizableService.html" target="_self">ContextExternalToolAuthorizableService</a>, externalToolAuthorizableService: <a href="../injectables/ExternalToolAuthorizableService.html" target="_self">ExternalToolAuthorizableService</a>, instanceService: <a href="../injectables/InstanceService.html" target="_self">InstanceService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:45</a></div>
                             </td>
                         </tr>
 
@@ -330,6 +330,30 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>externalToolAuthorizableService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ExternalToolAuthorizableService.html" target="_self" >ExternalToolAuthorizableService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>instanceService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/InstanceService.html" target="_self" >InstanceService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -366,8 +390,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +471,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -525,7 +549,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/modules/authorization/domain/service/reference.loader.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -542,6 +566,7 @@
 
 import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { ContextExternalToolAuthorizableService } from &#x27;@modules/tool&#x27;;
+import { ExternalToolAuthorizableService } from &#x27;@modules/tool/external-tool/service&#x27;;
 import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { BaseDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -556,6 +581,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
+import { InstanceService } from &#x27;../../../instance&#x27;;
 import { AuthorizableReferenceType } from &#x27;../type&#x27;;
 
 type RepoType &#x3D;
@@ -569,7 +595,9 @@ type RepoType &#x3D;
 	| SubmissionRepo
 	| TaskRepo
 	| TeamsRepo
-	| UserRepo;
+	| UserRepo
+	| ExternalToolAuthorizableService
+	| InstanceService;
 
 interface RepoLoader {
 	repo: RepoType;
@@ -591,7 +619,9 @@ export class ReferenceLoader {
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
-		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
+		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
+		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
+		private readonly instanceService: InstanceService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -606,6 +636,8 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
 			repo: this.contextExternalToolAuthorizableService,
 		});
+		this.repos.set(AuthorizableReferenceType.ExternalTool, { repo: this.externalToolAuthorizableService });
+		this.repos.set(AuthorizableReferenceType.Instance, { repo: this.instanceService });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {

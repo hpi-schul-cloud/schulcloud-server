@@ -224,7 +224,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: SchoolExternalToolEntity | SchoolExternalTool, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: SchoolExternalToolEntity | SchoolExternalTool, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -265,7 +265,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
                                                         <code>SchoolExternalToolEntity | SchoolExternalTool</code>
                                             </td>
@@ -317,7 +317,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: SchoolExternalToolEntity | SchoolExternalTool)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -358,9 +358,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
-                                                        <code>SchoolExternalToolEntity | SchoolExternalTool</code>
                                             </td>
 
                                             <td>
@@ -389,37 +388,37 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SchoolExternalTool } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolExternalTool } from &#x27;@modules/tool/school-external-tool/domain&#x27;;
 import { SchoolExternalToolEntity } from &#x27;@modules/tool/school-external-tool/entity&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
-import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
+import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 
 @Injectable()
-export class SchoolExternalToolRule implements Rule {
+export class SchoolExternalToolRule implements Rule&lt;SchoolExternalToolEntity | SchoolExternalTool&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: SchoolExternalToolEntity | SchoolExternalTool): boolean {
-		const isMatched: boolean &#x3D; entity instanceof SchoolExternalToolEntity || entity instanceof SchoolExternalTool;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean &#x3D; object instanceof SchoolExternalToolEntity || object instanceof SchoolExternalTool;
 
 		return isMatched;
 	}
 
 	public hasPermission(
 		user: User,
-		entity: SchoolExternalToolEntity | SchoolExternalTool,
+		object: SchoolExternalToolEntity | SchoolExternalTool,
 		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;
-		if (entity instanceof SchoolExternalToolEntity) {
+		if (object instanceof SchoolExternalToolEntity) {
 			hasPermission &#x3D;
 				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &amp;&amp;
-				user.school.id &#x3D;&#x3D;&#x3D; entity.school.id;
+				user.school.id &#x3D;&#x3D;&#x3D; object.school.id;
 		} else {
 			hasPermission &#x3D;
 				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &amp;&amp;
-				user.school.id &#x3D;&#x3D;&#x3D; entity.schoolId;
+				user.school.id &#x3D;&#x3D;&#x3D; object.schoolId;
 		}
 		return hasPermission;
 	}

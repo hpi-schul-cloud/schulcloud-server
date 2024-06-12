@@ -268,7 +268,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object: T, context?: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+<code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object, context?: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -311,7 +311,6 @@
                                         <tr>
                                                 <td>object</td>
                                             <td>
-                                                        <code>T</code>
                                             </td>
 
                                             <td>
@@ -357,8 +356,8 @@ import { BaseDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationContext } from &#x27;./authorization-context.interface&#x27;;
 
-export interface Rule&lt;T &#x3D; AuthorizableObject | BaseDO&gt; {
-	isApplicable(user: User, object: T, context?: AuthorizationContext): boolean;
+export interface Rule&lt;T extends AuthorizableObject | BaseDO &#x3D; AuthorizableObject | BaseDO&gt; {
+	isApplicable(user: User, object: unknown, context?: AuthorizationContext): boolean;
 	hasPermission(user: User, object: T, context: AuthorizationContext): boolean;
 }
 </code></pre>

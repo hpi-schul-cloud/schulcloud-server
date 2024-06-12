@@ -166,7 +166,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/school.rule.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/school.rule.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -231,8 +231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/school.rule.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/school.rule.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -317,15 +317,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../interfaces/AuthorizableObject.html" target="_self">AuthorizableObject</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/school.rule.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/school.rule.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -360,7 +360,6 @@
                                         <tr>
                                                 <td>object</td>
                                             <td>
-                                                            <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject</a></code>
                                             </td>
 
                                             <td>
@@ -390,17 +389,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { School } from &#x27;@src/modules/school/domain/do&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 
 @Injectable()
-export class SchoolRule implements Rule {
+export class SchoolRule implements Rule&lt;School&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, object: AuthorizableObject): boolean {
+	public isApplicable(user: User, object: unknown): boolean {
 		const isApplicable &#x3D; object instanceof School;
 
 		return isApplicable;

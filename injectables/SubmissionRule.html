@@ -766,7 +766,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Submission.html" target="_self">Submission</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -807,9 +807,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
-                                                            <code><a href="../classes/Submission.html" target="_self" >Submission</a></code>
                                             </td>
 
                                             <td>
@@ -840,16 +839,16 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { Submission, User } from &#x27;@shared/domain/entity&#x27;;
-import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { TaskRule } from &#x27;./task.rule&#x27;;
 
 @Injectable()
-export class SubmissionRule implements Rule {
+export class SubmissionRule implements Rule&lt;Submission&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
-	public isApplicable(user: User, entity: Submission): boolean {
-		const isMatched &#x3D; entity instanceof Submission;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched &#x3D; object instanceof Submission;
 
 		return isMatched;
 	}

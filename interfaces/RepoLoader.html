@@ -244,6 +244,7 @@
 
 import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { ContextExternalToolAuthorizableService } from &#x27;@modules/tool&#x27;;
+import { ExternalToolAuthorizableService } from &#x27;@modules/tool/external-tool/service&#x27;;
 import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { BaseDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -258,6 +259,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
+import { InstanceService } from &#x27;../../../instance&#x27;;
 import { AuthorizableReferenceType } from &#x27;../type&#x27;;
 
 type RepoType &#x3D;
@@ -271,7 +273,9 @@ type RepoType &#x3D;
 	| SubmissionRepo
 	| TaskRepo
 	| TeamsRepo
-	| UserRepo;
+	| UserRepo
+	| ExternalToolAuthorizableService
+	| InstanceService;
 
 interface RepoLoader {
 	repo: RepoType;
@@ -293,7 +297,9 @@ export class ReferenceLoader {
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
-		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
+		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
+		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
+		private readonly instanceService: InstanceService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -308,6 +314,8 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
 			repo: this.contextExternalToolAuthorizableService,
 		});
+		this.repos.set(AuthorizableReferenceType.ExternalTool, { repo: this.externalToolAuthorizableService });
+		this.repos.set(AuthorizableReferenceType.Instance, { repo: this.instanceService });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {

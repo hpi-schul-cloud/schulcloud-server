@@ -317,7 +317,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -358,9 +358,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
-                                                            <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
                                             </td>
 
                                             <td>
@@ -392,15 +391,15 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserLoginMigrationDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
-import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
+import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 
 @Injectable()
 export class UserLoginMigrationRule implements Rule&lt;UserLoginMigrationDO&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: UserLoginMigrationDO): boolean {
-		const isMatched: boolean &#x3D; entity instanceof UserLoginMigrationDO;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean &#x3D; object instanceof UserLoginMigrationDO;
 
 		return isMatched;
 	}

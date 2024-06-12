@@ -700,6 +700,12 @@
                             <a href="#inputFormatsSanitizeConfig" title="apps/server/src/shared/controller/transformer/sanitize-html.transformer.ts" ><b>inputFormatsSanitizeConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../sanitize-html.transformer.ts)</a>
                         </li>
                         <li>
+                            <a href="#instanceEntityFactory" title="apps/server/src/modules/instance/testing/instance-entity.factory.ts" ><b>instanceEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../instance-entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#instanceFactory" title="apps/server/src/modules/instance/testing/instance.factory.ts" ><b>instanceFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../instance.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#isAnyContentElement" title="apps/server/src/shared/domain/domainobject/board/types/any-content-element-do.ts" ><b>isAnyContentElement</b>&nbsp;&nbsp;&nbsp;(apps/.../any-content-element-do.ts)</a>
                         </li>
                         <li>
@@ -1730,7 +1736,7 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[Permission.USER_LOGIN_MIGRATION_ROLLBACK]</code>
+                        <i>Default value : </i><code>[Permission.USER_LOGIN_MIGRATION_ROLLBACK, Permission.INSTANCE_VIEW]</code>
                     </td>
                 </tr>
 
@@ -2068,6 +2074,7 @@
 	TldrawDrawing,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
+	InstanceEntity,
 ]</code>
                     </td>
                 </tr>
@@ -3510,7 +3517,7 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&#x27;users, schools, courses, tasks, lessons, submissions, gradings, boardnodes&#x27;</code>
+                        <i>Default value : </i><code>&#x27;users, schools, courses, tasks, lessons, submissions, gradings, boardnodes, externaltools&#x27;</code>
                     </td>
                 </tr>
 
@@ -11397,7 +11404,8 @@ it should ensure an empty result</p>
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
-		schoolId: new ObjectId().toHexString(),
+		storageLocationId: new ObjectId().toHexString(),
+		storageLocation: StorageLocation.SCHOOL,
 	};
 })</code>
                     </td>
@@ -13612,6 +13620,62 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		roleNames: [RoleName.STUDENT as IImportUserRoleName],
 		classNames: [&#x27;firstClass&#x27;],
 		flagged: false,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/instance/testing/instance-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="instanceEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>instanceEntityFactory</b></span>
+                        <a href="#instanceEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;InstanceEntity, InstanceEntityProps&gt;(InstanceEntity, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x27;dbc&#x27;,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/instance/testing/instance.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="instanceFactory"></a>
+                    <span class="name">
+                        <span ><b>instanceFactory</b></span>
+                        <a href="#instanceFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;Instance, InstanceProps&gt;(Instance, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x27;dbc&#x27;,
 	};
 })</code>
                     </td>

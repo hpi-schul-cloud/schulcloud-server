@@ -284,8 +284,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/filerecord.factory.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/filerecord.factory.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -1318,8 +1318,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FileRecordParentType } from &#x27;@infra/rabbitmq&#x27;;
-import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from &#x27;@modules/files-storage/entity&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import {
+	FileRecord,
+	FileRecordProperties,
+	FileRecordSecurityCheck,
+	StorageLocation,
+} from &#x27;@modules/files-storage/entity&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
@@ -1341,7 +1346,8 @@ export const fileRecordFactory &#x3D; FileRecordFactory.define(FileRecord, ({ se
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
-		schoolId: new ObjectId().toHexString(),
+		storageLocationId: new ObjectId().toHexString(),
+		storageLocation: StorageLocation.SCHOOL,
 	};
 });
 </code></pre>

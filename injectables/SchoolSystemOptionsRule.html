@@ -224,7 +224,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, domainObject: <a href="../classes/SchoolSystemOptions.html" target="_self">SchoolSystemOptions</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../classes/SchoolSystemOptions.html" target="_self">SchoolSystemOptions</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -265,7 +265,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domainObject</td>
+                                                <td>object</td>
                                             <td>
                                                             <code><a href="../classes/SchoolSystemOptions.html" target="_self" >SchoolSystemOptions</a></code>
                                             </td>
@@ -317,7 +317,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, domainObject: <a href="../classes/SchoolSystemOptions.html" target="_self">SchoolSystemOptions</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -358,9 +358,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domainObject</td>
+                                                <td>object</td>
                                             <td>
-                                                            <code><a href="../classes/SchoolSystemOptions.html" target="_self" >SchoolSystemOptions</a></code>
                                             </td>
 
                                             <td>
@@ -389,7 +388,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AnyProvisioningOptions, SchoolSystemOptions } from &#x27;@modules/legacy-school&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolSystemOptions } from &#x27;@modules/legacy-school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
@@ -399,18 +398,18 @@ import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 export class SchoolSystemOptionsRule implements Rule&lt;SchoolSystemOptions&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, domainObject: SchoolSystemOptions): boolean {
-		const isMatched: boolean &#x3D; domainObject instanceof SchoolSystemOptions&lt;AnyProvisioningOptions&gt;;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean &#x3D; object instanceof SchoolSystemOptions;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, domainObject: SchoolSystemOptions, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: SchoolSystemOptions, context: AuthorizationContext): boolean {
 		const hasPermissions: boolean &#x3D; this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		const isAtSchool: boolean &#x3D; user.school.id &#x3D;&#x3D;&#x3D; domainObject.schoolId;
+		const isAtSchool: boolean &#x3D; user.school.id &#x3D;&#x3D;&#x3D; object.schoolId;
 
-		const hasSystem: boolean &#x3D; user.school.systems.getIdentifiers().includes(domainObject.systemId);
+		const hasSystem: boolean &#x3D; user.school.systems.getIdentifiers().includes(object.systemId);
 
 		const isAuthorized: boolean &#x3D; hasPermissions &amp;&amp; isAtSchool &amp;&amp; hasSystem;
 

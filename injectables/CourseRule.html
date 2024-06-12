@@ -224,7 +224,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Course.html" target="_self">CourseEntity | Course</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../classes/Course.html" target="_self">CourseEntity | Course</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -265,7 +265,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
                                                             <code><a href="../classes/Course.html" target="_self" >CourseEntity | Course</a></code>
                                             </td>
@@ -317,7 +317,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -358,7 +358,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
                                             </td>
 
@@ -395,22 +395,22 @@ import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 
 @Injectable()
-export class CourseRule implements Rule {
+export class CourseRule implements Rule&lt;CourseEntity | Course&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: unknown): boolean {
-		const isMatched &#x3D; entity instanceof CourseEntity || entity instanceof Course;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched &#x3D; object instanceof CourseEntity || object instanceof Course;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: CourseEntity | Course, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } &#x3D; context;
 		const hasPermission &#x3D;
 			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &amp;&amp;
 			this.authorizationHelper.hasAccessToEntity(
 				user,
-				entity,
+				object,
 				action &#x3D;&#x3D;&#x3D; Action.read ? [&#x27;teachers&#x27;, &#x27;substitutionTeachers&#x27;, &#x27;students&#x27;] : [&#x27;teachers&#x27;, &#x27;substitutionTeachers&#x27;]
 			);
 

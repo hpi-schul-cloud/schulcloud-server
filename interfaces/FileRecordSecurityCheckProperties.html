@@ -318,6 +318,12 @@ export enum FileRecordParentType {
 	&#x27;Submission&#x27; &#x3D; &#x27;submissions&#x27;,
 	&#x27;Grading&#x27; &#x3D; &#x27;gradings&#x27;,
 	&#x27;BoardNode&#x27; &#x3D; &#x27;boardnodes&#x27;,
+	&#x27;ExternalTool&#x27; &#x3D; &#x27;externaltools&#x27;,
+}
+
+export enum StorageLocation {
+	SCHOOL &#x3D; &#x27;school&#x27;,
+	INSTANCE &#x3D; &#x27;instance&#x27;,
 }
 
 export enum PreviewStatus {
@@ -371,14 +377,16 @@ export interface FileRecordProperties {
 	parentType: FileRecordParentType;
 	parentId: EntityId;
 	creatorId?: EntityId;
-	schoolId: EntityId;
+	storageLocation: StorageLocation;
+	storageLocationId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
 	isUploading?: boolean;
 }
 
 interface ParentInfo {
-	schoolId: EntityId;
+	storageLocationId: EntityId;
+	storageLocation: StorageLocation;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }
@@ -391,7 +399,7 @@ interface ParentInfo {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: &#x27;filerecords&#x27; })
-@Index({ properties: [&#x27;_schoolId&#x27;, &#x27;_parentId&#x27;], options: { background: true } })
+@Index({ properties: [&#x27;storageLocation&#x27;, &#x27;_storageLocationId&#x27;, &#x27;_parentId&#x27;], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { &#x27;securityCheck.requestToken&#x27;: 1 } })
 export class FileRecord extends BaseEntityWithTimestamps {
@@ -438,12 +446,15 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this._creatorId &#x3D; userId !&#x3D;&#x3D; undefined ? new ObjectId(userId) : undefined;
 	}
 
-	@Property({ fieldName: &#x27;school&#x27; })
-	_schoolId: ObjectId;
+	@Property({ fieldName: &#x27;storageLocationId&#x27; })
+	_storageLocationId: ObjectId;
 
-	get schoolId(): EntityId {
-		return this._schoolId.toHexString();
+	get storageLocationId(): EntityId {
+		return this._storageLocationId.toHexString();
 	}
+
+	@Property()
+	storageLocation: StorageLocation;
 
 	@Property({ fieldName: &#x27;isCopyFrom&#x27;, nullable: true })
 	_isCopyFrom?: ObjectId;
@@ -465,7 +476,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		if (props.creatorId !&#x3D;&#x3D; undefined) {
 			this._creatorId &#x3D; new ObjectId(props.creatorId);
 		}
-		this._schoolId &#x3D; new ObjectId(props.schoolId);
+		this._storageLocationId &#x3D; new ObjectId(props.storageLocationId);
+		this.storageLocation &#x3D; props.storageLocation;
 		if (props.isCopyFrom) {
 			this._isCopyFrom &#x3D; new ObjectId(props.isCopyFrom);
 		}
@@ -486,7 +498,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
 		const { size, name, mimeType, id } &#x3D; this;
-		const { parentType, parentId, schoolId } &#x3D; targetParentInfo;
+		const { parentType, parentId, storageLocation, storageLocationId } &#x3D; targetParentInfo;
 
 		const fileRecordCopy &#x3D; new FileRecord({
 			size,
@@ -495,7 +507,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			parentType,
 			parentId,
 			creatorId: userId,
-			schoolId,
+			storageLocationId,
+			storageLocation,
 			isCopyFrom: id,
 		});
 
@@ -569,13 +582,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getParentInfo(): ParentInfo {
-		const { parentId, parentType, schoolId } &#x3D; this;
+		const { parentId, parentType, storageLocation, storageLocationId } &#x3D; this;
 
-		return { parentId, parentType, schoolId };
-	}
-
-	public getSchoolId(): EntityId {
-		return this.schoolId;
+		return { parentId, parentType, storageLocation, storageLocationId };
 	}
 
 	public getPreviewStatus(): PreviewStatus {

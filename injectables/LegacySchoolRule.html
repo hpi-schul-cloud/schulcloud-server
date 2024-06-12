@@ -174,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/legacy-school.rule.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/legacy-school.rule.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -232,15 +232,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/legacy-school.rule.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/legacy-school.rule.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -273,7 +273,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
                                                             <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                             </td>
@@ -325,15 +325,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../interfaces/AuthorizableObject.html" target="_self">AuthorizableObject | BaseDO</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/legacy-school.rule.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/legacy-school.rule.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -368,7 +368,6 @@
                                         <tr>
                                                 <td>object</td>
                                             <td>
-                                                            <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject | BaseDO</a></code>
                                             </td>
 
                                             <td>
@@ -398,8 +397,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
-import { BaseDO, LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
+import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
@@ -408,18 +406,18 @@ import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
-export class LegacySchoolRule implements Rule {
+export class LegacySchoolRule implements Rule&lt;LegacySchoolDo&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, object: AuthorizableObject | BaseDO): boolean {
+	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched &#x3D; object instanceof LegacySchoolDo;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: LegacySchoolDo, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: LegacySchoolDo, context: AuthorizationContext): boolean {
 		const hasPermission &#x3D;
-			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &amp;&amp; user.school.id &#x3D;&#x3D;&#x3D; entity.id;
+			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &amp;&amp; user.school.id &#x3D;&#x3D;&#x3D; object.id;
 
 		return hasPermission;
 	}

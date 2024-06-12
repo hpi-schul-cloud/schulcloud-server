@@ -345,7 +345,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Task.html" target="_self">Task</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../classes/Task.html" target="_self">Task</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -386,7 +386,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
                                                             <code><a href="../classes/Task.html" target="_self" >Task</a></code>
                                             </td>
@@ -438,7 +438,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Task.html" target="_self">Task</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -479,9 +479,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>entity</td>
+                                                <td>object</td>
                                             <td>
-                                                            <code><a href="../classes/Task.html" target="_self" >Task</a></code>
                                             </td>
 
                                             <td>
@@ -512,26 +511,26 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Task, User } from &#x27;@shared/domain/entity&#x27;;
-import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { CourseRule } from &#x27;./course.rule&#x27;;
 import { LessonRule } from &#x27;./lesson.rule&#x27;;
 
 @Injectable()
-export class TaskRule implements Rule {
+export class TaskRule implements Rule&lt;Task&gt; {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
 		private readonly lessonRule: LessonRule
 	) {}
 
-	public isApplicable(user: User, entity: Task): boolean {
-		const isMatched &#x3D; entity instanceof Task;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched &#x3D; object instanceof Task;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Task, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: Task, context: AuthorizationContext): boolean {
 		let { action } &#x3D; context;
 		const { requiredPermissions } &#x3D; context;
 		const hasRequiredPermission &#x3D; this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
@@ -539,12 +538,12 @@ export class TaskRule implements Rule {
 			return false;
 		}
 
-		const isCreator &#x3D; this.authorizationHelper.hasAccessToEntity(user, entity, [&#x27;creator&#x27;]);
-		if (entity.isDraft()) {
+		const isCreator &#x3D; this.authorizationHelper.hasAccessToEntity(user, object, [&#x27;creator&#x27;]);
+		if (object.isDraft()) {
 			action &#x3D; Action.write;
 		}
 
-		const hasParentPermission &#x3D; this.hasParentPermission(user, entity, action);
+		const hasParentPermission &#x3D; this.hasParentPermission(user, object, action);
 
 		// TODO why parent permission has OR cond?
 		const result &#x3D; isCreator || hasParentPermission;

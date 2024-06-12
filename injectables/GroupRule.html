@@ -224,7 +224,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, domainObject: <a href="../interfaces/Group.html" target="_self">Group</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../interfaces/Group.html" target="_self">Group</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -265,7 +265,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domainObject</td>
+                                                <td>object</td>
                                             <td>
                                                             <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
                                             </td>
@@ -317,7 +317,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, domainObject: <a href="../interfaces/Group.html" target="_self">Group</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -358,9 +358,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domainObject</td>
+                                                <td>object</td>
                                             <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
                                             </td>
 
                                             <td>
@@ -399,16 +398,16 @@ import { AuthorizationContext, Rule } from &#x27;../type&#x27;;
 export class GroupRule implements Rule&lt;Group&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, domainObject: Group): boolean {
-		const isMatched: boolean &#x3D; domainObject instanceof Group;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean &#x3D; object instanceof Group;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, domainObject: Group, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: Group, context: AuthorizationContext): boolean {
 		const hasPermission: boolean &#x3D;
 			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &amp;&amp;
-			(domainObject.organizationId ? user.school.id &#x3D;&#x3D;&#x3D; domainObject.organizationId : true);
+			(object.organizationId ? user.school.id &#x3D;&#x3D;&#x3D; object.organizationId : true);
 
 		return hasPermission;
 	}

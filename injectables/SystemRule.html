@@ -293,7 +293,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, domainObject: <a href="../classes/System.html" target="_self">System</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../classes/System.html" target="_self">System</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -334,7 +334,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domainObject</td>
+                                                <td>object</td>
                                             <td>
                                                             <code><a href="../classes/System.html" target="_self" >System</a></code>
                                             </td>
@@ -386,7 +386,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, domainObject: <a href="../classes/System.html" target="_self">System</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, object)</code>
                 </td>
             </tr>
 
@@ -427,9 +427,8 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domainObject</td>
+                                                <td>object</td>
                                             <td>
-                                                            <code><a href="../classes/System.html" target="_self" >System</a></code>
                                             </td>
 
                                             <td>
@@ -468,21 +467,21 @@ import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 export class SystemRule implements Rule&lt;System&gt; {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, domainObject: System): boolean {
-		const isMatched: boolean &#x3D; domainObject instanceof System;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched: boolean &#x3D; object instanceof System;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, domainObject: System, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: System, context: AuthorizationContext): boolean {
 		const hasPermissions: boolean &#x3D; this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		const hasAccess: boolean &#x3D; user.school.systems.getIdentifiers().includes(domainObject.id);
+		const hasAccess: boolean &#x3D; user.school.systems.getIdentifiers().includes(object.id);
 
 		let isAuthorized: boolean &#x3D; hasPermissions &amp;&amp; hasAccess;
 
 		if (context.action &#x3D;&#x3D;&#x3D; Action.write) {
-			isAuthorized &#x3D; isAuthorized &amp;&amp; this.canEdit(domainObject);
+			isAuthorized &#x3D; isAuthorized &amp;&amp; this.canEdit(object);
 		}
 
 		return isAuthorized;

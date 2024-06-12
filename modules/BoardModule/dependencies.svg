@@ -24,10 +24,6 @@
 <title>cluster_BoardModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 5431,-268 5431,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_BoardModule_exports</title>
-<polygon fill="none" stroke="black" points="2186,-208 2186,-260 3893,-260 3893,-208 2186,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_BoardModule_imports</title>
 <polygon fill="none" stroke="black" points="4010,-78 4010,-130 5423,-130 5423,-78 4010,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust6" class="cluster">
 <title>cluster_BoardModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 4002,-130 4002,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_BoardModule_exports</title>
+<polygon fill="none" stroke="black" points="2186,-208 2186,-260 3893,-260 3893,-208 2186,-208"/>
 </g>
 <!-- CollaborativeTextEditorModule -->
 <g id="node1" class="node">

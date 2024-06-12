@@ -276,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -510,8 +510,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -580,8 +580,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -650,8 +650,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -703,9 +703,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { PreviewProducer } from &#x27;@infra/preview-generator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PreviewProducer } from &#x27;@infra/preview-generator&#x27;;
 import { S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
+import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { PreviewParams } from &#x27;../controller/dto&#x27;;
 import { FileRecord, PreviewStatus } from &#x27;../entity&#x27;;
@@ -740,7 +740,9 @@ export class PreviewService {
 	}
 
 	public async deletePreviews(fileRecords: FileRecord[]): Promise&lt;void&gt; {
-		const paths &#x3D; fileRecords.map((fileRecord) &#x3D;&gt; createPreviewDirectoryPath(fileRecord.getSchoolId(), fileRecord.id));
+		const paths &#x3D; fileRecords.map((fileRecord) &#x3D;&gt;
+			createPreviewDirectoryPath(fileRecord.storageLocationId, fileRecord.id)
+		);
 
 		const promises &#x3D; paths.map((path) &#x3D;&gt; this.storageClient.deleteDirectory(path));
 

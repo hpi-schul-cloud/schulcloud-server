@@ -681,8 +681,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="426"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:426</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="431"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:431</a></div>
                         </td>
                     </tr>
 
@@ -775,8 +775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="391"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:391</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="396"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:396</a></div>
                         </td>
                     </tr>
 
@@ -869,8 +869,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="375"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:375</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="376"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:376</a></div>
                         </td>
                     </tr>
 
@@ -963,8 +963,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="408"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:408</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="413"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:413</a></div>
                         </td>
                     </tr>
 
@@ -2590,8 +2590,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="365"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:365</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="366"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:366</a></div>
                         </td>
                     </tr>
 
@@ -2940,8 +2940,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="402"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:402</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="407"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:407</a></div>
                         </td>
                     </tr>
 
@@ -3398,7 +3398,7 @@ export class FilesStorageService {
 		params: FileRecordParams,
 		file: FileDto
 	): Promise&lt;void&gt; {
-		const filePath &#x3D; createPath(params.schoolId, fileRecord.id);
+		const filePath &#x3D; createPath(params.storageLocationId, fileRecord.id);
 		const useStreamToAntivirus &#x3D; this.configService.get&lt;boolean&gt;(&#x27;USE_STREAM_TO_ANTIVIRUS&#x27;);
 
 		try {
@@ -3515,7 +3515,7 @@ export class FilesStorageService {
 	}
 
 	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise&lt;GetFileResponse&gt; {
-		const pathToFile &#x3D; createPath(fileRecord.schoolId, fileRecord.id);
+		const pathToFile &#x3D; createPath(fileRecord.storageLocationId, fileRecord.id);
 		const file &#x3D; await this.storageClient.get(pathToFile, bytesRange);
 		const response &#x3D; FileResponseBuilder.build(file, fileRecord.getName());
 
@@ -3591,8 +3591,9 @@ export class FilesStorageService {
 	}
 
 	public async restoreFilesOfParent(params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
-		const [fileRecords, count] &#x3D; await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
-			params.schoolId,
+		const [fileRecords, count] &#x3D; await this.fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
+			params.storageLocation,
+			params.storageLocationId,
 			params.parentId
 		);
 
@@ -3617,7 +3618,11 @@ export class FilesStorageService {
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise&lt;Counted&lt;CopyFileResponse[]&gt;&gt; {
-		const [fileRecords, count] &#x3D; await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const [fileRecords, count] &#x3D; await this.fileRecordRepo.findByStorageLocationIdAndParentId(
+			params.storageLocation,
+			params.storageLocationId,
+			params.parentId
+		);
 
 		if (count &#x3D;&#x3D;&#x3D; 0) {
 			return [[], 0];
