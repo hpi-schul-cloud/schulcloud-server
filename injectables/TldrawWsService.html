@@ -286,7 +286,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawBoardRepo: <a href="../injectables/TldrawBoardRepo.html" target="_self">TldrawBoardRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, tldrawRedisService: <a href="../injectables/TldrawRedisService.html" target="_self">TldrawRedisService</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawBoardRepo: <a href="../injectables/TldrawBoardRepo.html" target="_self">TldrawBoardRepo</a>, domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, tldrawRedisService: <a href="../injectables/TldrawRedisService.html" target="_self">TldrawRedisService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -333,10 +333,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>domainErrorHandler</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/DomainErrorHandler.html" target="_self" >DomainErrorHandler</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -405,8 +405,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -527,8 +527,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -828,8 +828,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -1840,8 +1840,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -2226,7 +2226,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -2327,8 +2327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -2422,7 +2422,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:90</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -2494,8 +2494,8 @@ import { encodeAwarenessUpdate, removeAwarenessStates } from &#x27;y-protocols/a
 import { decoding, encoding } from &#x27;lib0&#x27;;
 import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from &#x27;y-protocols/sync&#x27;;
 import { Buffer } from &#x27;node:buffer&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
 import { YMap } from &#x27;yjs/dist/src/types/YMap&#x27;;
+import { DomainErrorHandler } from &#x27;@src/core&#x27;;
 import { TldrawRedisService } from &#x27;../redis&#x27;;
 import {
 	CloseConnectionLoggable,
@@ -2523,12 +2523,10 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService&lt;TldrawConfig, true&gt;,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly logger: Logger,
+		private readonly domainErrorHandler: DomainErrorHandler,
 		private readonly metricsService: MetricsService,
 		private readonly tldrawRedisService: TldrawRedisService
 	) {
-		this.logger.setContext(TldrawWsService.name);
-
 		this.tldrawRedisService.sub.on(&#x27;messageBuffer&#x27;, (channel, message) &#x3D;&gt; this.redisMessageHandler(channel, message));
 	}
 
@@ -2548,17 +2546,17 @@ export class TldrawWsService {
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
 		if (this.isClosedOrClosing(ws)) {
 			this.closeConnection(doc, ws).catch((err) &#x3D;&gt; {
-				this.logger.warning(new CloseConnectionLoggable(&#x27;send | isClosedOrClosing&#x27;, err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable(&#x27;send | isClosedOrClosing&#x27;, err));
+			});
+		} else {
+			ws.send(message, (err) &#x3D;&gt; {
+				if (err) {
+					this.closeConnection(doc, ws).catch((e) &#x3D;&gt; {
+						this.domainErrorHandler.exec(new CloseConnectionLoggable(&#x27;send&#x27;, e));
+					});
+				}
 			});
 		}
-
-		ws.send(message, (err) &#x3D;&gt; {
-			if (err) {
-				this.closeConnection(doc, ws).catch((e) &#x3D;&gt; {
-					this.logger.warning(new CloseConnectionLoggable(&#x27;send&#x27;, e));
-				});
-			}
-		});
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
@@ -2586,6 +2584,7 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
+	// this is a private method, need to be changed
 	public async getDocument(docName: string) {
 		const existingDoc &#x3D; this.docs.get(docName);
 
@@ -2599,6 +2598,7 @@ export class TldrawWsService {
 			return existingDoc;
 		}
 
+		// doc can be null, need to be handled
 		const doc &#x3D; await this.tldrawBoardRepo.getDocumentFromDb(docName);
 		doc.isLoaded &#x3D; false;
 
@@ -2667,22 +2667,22 @@ export class TldrawWsService {
 		this.tldrawRedisService.handleMessage(channelId, update, doc);
 	};
 
-	public async setupWsConnection(ws: WebSocket, docName: string) {
+	public async setupWsConnection(ws: WebSocket, docName: string): Promise&lt;void&gt; {
 		ws.binaryType &#x3D; &#x27;arraybuffer&#x27;;
 
-		// get doc, initialize if it does not exist yet
+		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc &#x3D; await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
 
 		ws.on(&#x27;error&#x27;, (err) &#x3D;&gt; {
-			this.logger.warning(new WebsocketErrorLoggable(err));
+			this.domainErrorHandler.exec(new WebsocketErrorLoggable(err));
 		});
 
 		ws.on(&#x27;message&#x27;, (message: ArrayBufferLike) &#x3D;&gt; {
 			try {
 				this.messageHandler(ws, doc, new Uint8Array(message));
 			} catch (err) {
-				this.logger.warning(new WebsocketMessageErrorLoggable(err));
+				this.domainErrorHandler.exec(new WebsocketMessageErrorLoggable(err));
 			}
 		});
 
@@ -2697,14 +2697,14 @@ export class TldrawWsService {
 			}
 
 			this.closeConnection(doc, ws).catch((err) &#x3D;&gt; {
-				this.logger.warning(new CloseConnectionLoggable(&#x27;pingInterval&#x27;, err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable(&#x27;pingInterval&#x27;, err));
 			});
 			clearInterval(pingInterval);
 		}, pingTimeout);
 
 		ws.on(&#x27;close&#x27;, () &#x3D;&gt; {
 			this.closeConnection(doc, ws).catch((err) &#x3D;&gt; {
-				this.logger.warning(new CloseConnectionLoggable(&#x27;websocket close&#x27;, err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable(&#x27;websocket close&#x27;, err));
 			});
 			clearInterval(pingInterval);
 		});
@@ -2755,7 +2755,7 @@ export class TldrawWsService {
 			this.tldrawRedisService.unsubscribeFromRedisChannels(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 		} catch (err) {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while finalizing document&#x27;, err));
+			this.domainErrorHandler.exec(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while finalizing document&#x27;, err));
 		} finally {
 			doc.destroy();
 			this.docs.delete(doc.name);

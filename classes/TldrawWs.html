@@ -211,7 +211,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawWsService: <a href="../injectables/TldrawWsService.html" target="_self">TldrawWsService</a>, httpService: HttpService, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawWsService: <a href="../injectables/TldrawWsService.html" target="_self">TldrawWsService</a>, httpService: HttpService, domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -270,10 +270,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>domainErrorHandler</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/DomainErrorHandler.html" target="_self" >DomainErrorHandler</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -909,10 +909,10 @@ import {
 	NotFoundException,
 	NotAcceptableException,
 } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
 import { isAxiosError } from &#x27;axios&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { DomainErrorHandler } from &#x27;@src/core&#x27;;
 import { WebsocketInitErrorLoggable } from &#x27;../loggable&#x27;;
 import { TldrawConfig, TLDRAW_SOCKET_PORT } from &#x27;../config&#x27;;
 import { WsCloseCode, WsCloseMessage } from &#x27;../types&#x27;;
@@ -927,7 +927,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		private readonly configService: ConfigService&lt;TldrawConfig, true&gt;,
 		private readonly tldrawWsService: TldrawWsService,
 		private readonly httpService: HttpService,
-		private readonly logger: Logger
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {}
 
 	public async handleConnection(client: WebSocket, request: Request): Promise&lt;void&gt; {
@@ -1006,7 +1006,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		err?: unknown
 	): void {
 		client.close(code, message);
-		this.logger.warning(new WebsocketInitErrorLoggable(code, message, docName, err));
+		this.domainErrorHandler.exec(new WebsocketInitErrorLoggable(code, message, docName, err));
 	}
 
 	private handleError(err: unknown, client: WebSocket, docName: string): void {

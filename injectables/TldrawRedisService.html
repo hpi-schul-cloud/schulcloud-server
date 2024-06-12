@@ -190,7 +190,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, tldrawRedisFactory: <a href="../injectables/TldrawRedisFactory.html" target="_self">TldrawRedisFactory</a>)</code>
+<code>constructor(domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>, tldrawRedisFactory: <a href="../injectables/TldrawRedisFactory.html" target="_self">TldrawRedisFactory</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -213,10 +213,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>domainErrorHandler</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/DomainErrorHandler.html" target="_self" >DomainErrorHandler</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -272,8 +272,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -365,8 +365,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -434,8 +434,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -506,7 +506,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.service.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -577,10 +577,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Redis } from &#x27;ioredis&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
 import { Buffer } from &#x27;node:buffer&#x27;;
 import { applyAwarenessUpdate } from &#x27;y-protocols/awareness&#x27;;
 import { applyUpdate } from &#x27;yjs&#x27;;
+import { DomainErrorHandler } from &#x27;@src/core&#x27;;
 import { WsSharedDocDo } from &#x27;../domain&#x27;;
 import { RedisConnectionTypeEnum, UpdateOrigin, UpdateType } from &#x27;../types&#x27;;
 import { RedisPublishErrorLoggable, WsSharedDocErrorLoggable } from &#x27;../loggable&#x27;;
@@ -592,9 +592,10 @@ export class TldrawRedisService {
 
 	private readonly pub: Redis;
 
-	constructor(private readonly logger: Logger, private readonly tldrawRedisFactory: TldrawRedisFactory) {
-		this.logger.setContext(TldrawRedisService.name);
-
+	constructor(
+		private readonly domainErrorHandler: DomainErrorHandler,
+		private readonly tldrawRedisFactory: TldrawRedisFactory
+	) {
 		this.sub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 	}
@@ -609,20 +610,24 @@ export class TldrawRedisService {
 
 	public subscribeToRedisChannels(doc: WsSharedDocDo) {
 		this.sub.subscribe(doc.name, doc.awarenessChannel).catch((err) &#x3D;&gt; {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while subscribing to Redis channels&#x27;, err));
+			this.domainErrorHandler.exec(
+				new WsSharedDocErrorLoggable(doc.name, &#x27;Error while subscribing to Redis channels&#x27;, err)
+			);
 		});
 	}
 
 	public unsubscribeFromRedisChannels(doc: WsSharedDocDo) {
 		this.sub.unsubscribe(doc.name, doc.awarenessChannel).catch((err) &#x3D;&gt; {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while unsubscribing from Redis channels&#x27;, err));
+			this.domainErrorHandler.exec(
+				new WsSharedDocErrorLoggable(doc.name, &#x27;Error while unsubscribing from Redis channels&#x27;, err)
+			);
 		});
 	}
 
 	public publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: UpdateType) {
 		const channel &#x3D; type &#x3D;&#x3D;&#x3D; UpdateType.AWARENESS ? doc.awarenessChannel : doc.name;
 		this.pub.publish(channel, Buffer.from(update)).catch((err) &#x3D;&gt; {
-			this.logger.warning(new RedisPublishErrorLoggable(type, err));
+			this.domainErrorHandler.exec(new RedisPublishErrorLoggable(type, err));
 		});
 	}
 }

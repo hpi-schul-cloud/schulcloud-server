@@ -157,7 +157,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, domainErrorHandler: <a href="../injectables/DomainErrorHandler.html" target="_self">DomainErrorHandler</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -192,10 +192,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>domainErrorHandler</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/DomainErrorHandler.html" target="_self" >DomainErrorHandler</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -239,8 +239,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -295,16 +295,17 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Redis } from &#x27;ioredis&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { DomainErrorHandler } from &#x27;@src/core&#x27;;
 import { TldrawConfig } from &#x27;../config&#x27;;
 import { RedisErrorLoggable } from &#x27;../loggable&#x27;;
 import { RedisConnectionTypeEnum } from &#x27;../types&#x27;;
 
 @Injectable()
 export class TldrawRedisFactory {
-	constructor(private readonly configService: ConfigService&lt;TldrawConfig, true&gt;, private readonly logger: Logger) {
-		this.logger.setContext(TldrawRedisFactory.name);
-	}
+	constructor(
+		private readonly configService: ConfigService&lt;TldrawConfig, true&gt;,
+		private readonly domainErrorHandler: DomainErrorHandler
+	) {}
 
 	public build(connectionType: RedisConnectionTypeEnum) {
 		const redisUri &#x3D; this.configService.get&lt;string&gt;(&#x27;REDIS_URI&#x27;);
@@ -316,7 +317,7 @@ export class TldrawRedisFactory {
 			maxRetriesPerRequest: null,
 		});
 
-		redis.on(&#x27;error&#x27;, (err) &#x3D;&gt; this.logger.warning(new RedisErrorLoggable(connectionType, err)));
+		redis.on(&#x27;error&#x27;, (err) &#x3D;&gt; this.domainErrorHandler.exec(new RedisErrorLoggable(connectionType, err)));
 
 		return redis;
 	}

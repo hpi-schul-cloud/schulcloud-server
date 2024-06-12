@@ -314,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/uc/tldraw-delete-files.uc.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/uc/tldraw-delete-files.uc.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -382,6 +382,7 @@ export class TldrawDeleteFilesUc {
 		const docNames &#x3D; await this.mdb.getAllDocumentNames();
 
 		for (const docName of docNames) {
+			// this.mdb.getDocument(docName); can be return null, it is not handled
 			const doc &#x3D; await this.mdb.getDocument(docName);
 			const usedAssets &#x3D; this.getUsedAssetsFromDocument(doc);
 
