@@ -118,6 +118,18 @@ describe(BoardNodePermissionService.name, () => {
 			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
 			expect(result).toBe(false);
 		});
+
+		it('should return false if user is not part of board', () => {
+			const { anyBoardDo, user } = setup();
+			const boardDoAuthorizable = new BoardNodeAuthorizable({
+				users: [],
+				id: anyBoardDo.id,
+				boardNode: anyBoardDo,
+				rootNode: anyBoardDo,
+			});
+			const result = service.isUserBoardEditor(user.id, boardDoAuthorizable.users);
+			expect(result).toBe(false);
+		});
 	});
 
 	describe('isUserBoardReader', () => {
