@@ -790,19 +790,16 @@
 			"properties": {
 				"URI": {
 					"type": "string",
-					"default": "https://dbildungscloud.de/etherpad/api/1",
 					"description": "The etherpad api version uri."
 				},
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
-					"default": "https://dbildungscloud.de/etherpad/p",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
 				},
 				"OLD_PAD_URI": {
 					"type": "string",
-					"default": "https://etherpad.dbildungscloud.de/p",
 					"description": "The etherpad api version uri."
 				},
 				"API_KEY": {
@@ -812,7 +809,7 @@
 				},
 				"COOKIE_EXPIRES_SECONDS": {
 					"type": "integer",
-					"default": 28800,
+					"default": 7200,
 					"description": "Number of seconds after an etherpad cookie expires."
 				},
 				"COOKIE_RELEASE_THRESHOLD": {
@@ -820,9 +817,6 @@
 					"default": 7200,
 					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
-			},
-			"default": {
-				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
 		"NEXTCLOUD_BASE_URL": {
