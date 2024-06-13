@@ -5,6 +5,6 @@ import { BoardLayout } from '../../../domain/types';
 export class LayoutBodyParams {
 	@IsEnum(BoardLayout)
 	@NotEquals(BoardLayout[BoardLayout.COLUMNS])
-	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
+	@ApiProperty({ enum: BoardLayout, enumName: 'MediaBoardLayoutType' })
 	layout!: BoardLayout;
 }
