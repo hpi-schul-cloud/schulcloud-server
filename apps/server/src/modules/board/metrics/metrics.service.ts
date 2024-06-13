@@ -13,7 +13,7 @@ export class MetricsService {
 
 	private numberOfBoardroomsOnServerCounter: Gauge<string>;
 
-	private numberOfEditorsOnServerCounter: Gauge<string>;
+	public numberOfEditorsOnServerCounter: Gauge<string>;
 
 	private numberOfViewersOnServerCounter: Gauge<string>;
 
@@ -45,27 +45,26 @@ export class MetricsService {
 	}
 
 	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
-		if (user.roles.find((r) => r.name === RoleName.TEACHER)) {
+		const EDITOR_ROLES = [RoleName.TEACHER, RoleName.COURSESUBSTITUTIONTEACHER, RoleName.COURSETEACHER];
+		if (user.roles.find((r) => EDITOR_ROLES.includes(r.name))) {
 			return 'editor';
 		}
-		if (user.roles.find((r) => r.name === RoleName.STUDENT)) {
-			return 'viewer';
-		}
-		return undefined;
+		return 'viewer';
 	}
 
-	public async trackClientRole(clientId: ClientId, userId: string | undefined): Promise<void> {
-		if (userId) {
-			// extract => metricsService
-			if (!this.knownClientRoles.has(clientId)) {
-				const userDo = await this.userService.findById(userId);
-				const role = this.mapRole(userDo);
+	public async trackRoleOfClient(clientId: ClientId, userId: string | undefined): Promise<string | undefined> {
+		let role = this.knownClientRoles.get(clientId);
+		if (role === undefined && userId) {
+			const userDo = await this.userService.findById(userId);
+			if (userDo) {
+				role = this.mapRole(userDo);
 				if (role) {
 					this.knownClientRoles.set(clientId, role);
 					this.updateRoleCounts();
 				}
 			}
 		}
+		return role;
 	}
 
 	public untrackClient(clientId: ClientId): void {

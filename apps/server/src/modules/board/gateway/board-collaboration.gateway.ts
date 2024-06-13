@@ -74,14 +74,12 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			throw new Error('Server is not initialized');
 		}
 
-		const userCount = Array.from(this.server.of('/').adapter.sids.keys()).length;
 		const roomCount = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) =>
 			key.startsWith('board_')
 		).length;
-		this.metricsService.setNumberOfUsers(userCount);
 		this.metricsService.setNumberOfBoardRooms(roomCount);
 		const { user } = socket.handshake;
-		await this.metricsService.trackClientRole(socket.id, user?.userId);
+		await this.metricsService.trackRoleOfClient(socket.id, user?.userId);
 	}
 
 	public handleConnection(socket: Socket): Promise<void> {
