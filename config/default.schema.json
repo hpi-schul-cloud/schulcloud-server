@@ -786,7 +786,7 @@
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
-			"required": [],
+			"required": ["PAD_URI"],
 			"properties": {
 				"URI": {
 					"type": "string",
