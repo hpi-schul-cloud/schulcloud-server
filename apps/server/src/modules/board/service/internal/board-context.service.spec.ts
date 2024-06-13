@@ -45,12 +45,28 @@ describe(`${BoardContextService.name}`, () => {
 				return { column };
 			};
 
-			it('should throw an error', async () => {
+			it('should return empty array', async () => {
 				const { column } = setup();
 
 				const result = await service.getUsersWithBoardRoles(column);
 
 				expect(result).toHaveLength(0);
+			});
+		});
+
+		describe('when node has wrong context type', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build({
+					context: { id: new ObjectId().toHexString(), type: 'foo' as BoardExternalReferenceType },
+				});
+
+				return { columnBoard };
+			};
+
+			it('should throw an error', async () => {
+				const { columnBoard } = setup();
+
+				await expect(service.getUsersWithBoardRoles(columnBoard)).rejects.toThrowError();
 			});
 		});
 
