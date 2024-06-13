@@ -96,7 +96,7 @@ describe(MediaAvailableLineService.name, () => {
 				});
 				const board: MediaBoard = mediaBoardFactory.build({ children: [mediaExternalToolElement] });
 
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool,
 					usedSchoolExternalTool,
 				]);
@@ -168,7 +168,7 @@ describe(MediaAvailableLineService.name, () => {
 				});
 				mediaBoardService.findMediaElements.mockReturnValueOnce([mediaExternalToolElement]);
 
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([
 					schoolExternalTool,
 					usedSchoolExternalTool,
 				]);

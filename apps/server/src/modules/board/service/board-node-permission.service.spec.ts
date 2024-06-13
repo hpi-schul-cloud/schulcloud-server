@@ -74,7 +74,7 @@ describe(BoardNodePermissionService.name, () => {
 
 		it('should call authorization service to checkPermission', async () => {
 			const { anyBoardDo, boardNodeAuthorizable, user } = setup();
-			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 			boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 

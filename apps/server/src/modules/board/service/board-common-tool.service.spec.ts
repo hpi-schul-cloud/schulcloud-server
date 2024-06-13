@@ -52,7 +52,7 @@ describe('BoardCommonToolService', () => {
 				{ rootId: '2' } as AnyBoardNode,
 				{ rootId: '1' } as AnyBoardNode,
 			];
-			boardNodeRepo.findByContextExternalToolIds.mockResolvedValue(boardNodes);
+			boardNodeRepo.findByContextExternalToolIds.mockResolvedValueOnce(boardNodes);
 
 			return { contextExternalTools };
 		};
@@ -68,7 +68,7 @@ describe('BoardCommonToolService', () => {
 		it('should return the root node when it is a ColumnBoard', async () => {
 			const boardNode: AnyBoardNode = { id: '1', rootId: '2' } as AnyBoardNode;
 			const rootNode: ColumnBoard = columnBoardFactory.build();
-			boardNodeService.findRoot.mockResolvedValue(rootNode);
+			boardNodeService.findRoot.mockResolvedValueOnce(rootNode);
 
 			const result = await service.findByDescendant(boardNode);
 
@@ -78,7 +78,7 @@ describe('BoardCommonToolService', () => {
 		it('should return the root node when it is a MediaBoard', async () => {
 			const boardNode: AnyBoardNode = { id: '1', rootId: '2' } as AnyBoardNode;
 			const rootNode: MediaBoard = mediaBoardFactory.build();
-			boardNodeService.findRoot.mockResolvedValue(rootNode);
+			boardNodeService.findRoot.mockResolvedValueOnce(rootNode);
 
 			const result = await service.findByDescendant(boardNode);
 
@@ -88,7 +88,7 @@ describe('BoardCommonToolService', () => {
 		it('should throw NotFoundException when root node is not a ColumnBoard or MediaBoard', async () => {
 			const boardNode: AnyBoardNode = { id: '1', rootId: '2' } as AnyBoardNode;
 			const rootNode: AnyBoardNode = { id: '2' } as AnyBoardNode;
-			boardNodeService.findRoot.mockResolvedValue(rootNode);
+			boardNodeService.findRoot.mockResolvedValueOnce(rootNode);
 
 			await expect(service.findByDescendant(boardNode)).rejects.toThrow(NotFoundException);
 		});

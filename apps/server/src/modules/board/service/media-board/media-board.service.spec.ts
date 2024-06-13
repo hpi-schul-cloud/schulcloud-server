@@ -72,14 +72,14 @@ describe('MediaBoardService', () => {
 				const mediaLine = mediaLineFactory.build({ children: [mediaExternalToolElement] });
 				const mediaBoard = mediaBoardFactory.build({ children: [mediaLine] });
 
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
 
 				return { schoolExternalTool, mediaBoard };
 			};
 			it('should call findContextExternalTools', async () => {
 				const schoolExternalTool = schoolExternalToolFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
 				await service.checkElementExists(mediaBoard, schoolExternalTool);
 				expect(contextExternalToolService.findContextExternalTools).toHaveBeenCalledWith({
 					schoolToolRef: { schoolToolId: schoolExternalTool.id },
@@ -102,7 +102,7 @@ describe('MediaBoardService', () => {
 				const mediaLine = mediaLineFactory.build({ children: [mediaExternalToolElement] });
 				const mediaBoard = mediaBoardFactory.build({ children: [mediaLine] });
 
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
 
 				return { schoolExternalTool, mediaBoard };
 			};

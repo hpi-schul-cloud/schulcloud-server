@@ -68,7 +68,7 @@ describe('ColumnBoardService', () => {
 
 	it('should find ColumnBoards by external reference', async () => {
 		const columnBoard = columnBoardFactory.build();
-		repo.findByExternalReference.mockResolvedValue([columnBoard]);
+		repo.findByExternalReference.mockResolvedValueOnce([columnBoard]);
 		const reference: BoardExternalReference = {
 			type: BoardExternalReferenceType.Course,
 			id: '1',
@@ -90,7 +90,7 @@ describe('ColumnBoardService', () => {
 
 	it('should delete ColumnBoards by course id', async () => {
 		const columnBoard = columnBoardFactory.build();
-		repo.findByExternalReference.mockResolvedValue([columnBoard]);
+		repo.findByExternalReference.mockResolvedValueOnce([columnBoard]);
 		const reference: BoardExternalReference = {
 			type: BoardExternalReferenceType.Course,
 			id: '1',
@@ -104,7 +104,7 @@ describe('ColumnBoardService', () => {
 
 	it('should copy ColumnBoard', async () => {
 		const copyStatus: CopyStatus = { status: CopyStatusEnum.SUCCESS, type: CopyElementType.COLUMNBOARD };
-		columnBoardCopyService.copyColumnBoard.mockResolvedValue(copyStatus);
+		columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(copyStatus);
 		const result = await service.copyColumnBoard({
 			originalColumnBoardId: '1',
 			destinationExternalReference: {
@@ -121,7 +121,7 @@ describe('ColumnBoardService', () => {
 		const idMap = new Map<EntityId, EntityId>();
 		idMap.set('1', '2');
 		const columnBoard = columnBoardFactory.build();
-		columnBoardLinkService.swapLinkedIds.mockResolvedValue(columnBoard);
+		columnBoardLinkService.swapLinkedIds.mockResolvedValueOnce(columnBoard);
 
 		const result = await service.swapLinkedIds('1', idMap);
 

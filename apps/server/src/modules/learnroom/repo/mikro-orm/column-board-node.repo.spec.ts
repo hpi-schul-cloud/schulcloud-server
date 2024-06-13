@@ -36,7 +36,7 @@ describe('ColumnBoardNodeRepo', () => {
 	describe('findById', () => {
 		const setup = () => {
 			const columnBoardNode = columnBoardFactory.build();
-			em.findOneOrFail.mockResolvedValue(columnBoardNode);
+			em.findOneOrFail.mockResolvedValueOnce(columnBoardNode);
 
 			return { columnBoardNode };
 		};
