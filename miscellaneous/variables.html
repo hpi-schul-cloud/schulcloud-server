@@ -5942,8 +5942,8 @@ This allows adding console commands to execute provider methods.</p>
 	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get(&#x27;FEATURE_NEXBOARD_COPY_ENABLED&#x27;) as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get(&#x27;FEATURE_ETHERPAD_ENABLED&#x27;) as boolean,
 	ETHERPAD__PAD_URI: Configuration.get(&#x27;ETHERPAD__PAD_URI&#x27;) as string,
-	ETHERPAD_COOKIE_EXPIRES_SECONDS: Configuration.get(&#x27;ETHERPAD_COOKIE_EXPIRES_SECONDS&#x27;) as number,
-	ETHERPAD_COOKIE_RELEASE_THRESHOLD: Configuration.get(&#x27;ETHERPAD_COOKIE_RELEASE_THRESHOLD&#x27;) as number,
+	ETHERPAD__COOKIE_EXPIRES_SECONDS: Configuration.get(&#x27;ETHERPAD__COOKIE_EXPIRES_SECONDS&#x27;) as number,
+	ETHERPAD__COOKIE_RELEASE_THRESHOLD: Configuration.get(&#x27;ETHERPAD__COOKIE_RELEASE_THRESHOLD&#x27;) as number,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;) as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as unknown as LanguageType,
 	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as unknown as LanguageType,
@@ -11502,8 +11502,8 @@ it should ensure an empty result</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
-	apiKey: Configuration.has(&#x27;ETHERPAD_API_KEY&#x27;) ? (Configuration.get(&#x27;ETHERPAD_API_KEY&#x27;) as string) : undefined,
-	basePath: Configuration.has(&#x27;ETHERPAD_URI&#x27;) ? (Configuration.get(&#x27;ETHERPAD_URI&#x27;) as string) : undefined,
+	apiKey: Configuration.has(&#x27;ETHERPAD__API_KEY&#x27;) ? (Configuration.get(&#x27;ETHERPAD__API_KEY&#x27;) as string) : undefined,
+	basePath: Configuration.has(&#x27;ETHERPAD__URI&#x27;) ? (Configuration.get(&#x27;ETHERPAD__URI&#x27;) as string) : undefined,
 }</code>
                     </td>
                 </tr>
@@ -20850,8 +20850,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
 	EtherpadClientModule.register({
-		apiKey: Configuration.has(&#x27;ETHERPAD_API_KEY&#x27;) ? (Configuration.get(&#x27;ETHERPAD_API_KEY&#x27;) as string) : undefined,
-		basePath: Configuration.has(&#x27;ETHERPAD_URI&#x27;) ? (Configuration.get(&#x27;ETHERPAD_URI&#x27;) as string) : undefined,
+		apiKey: Configuration.has(&#x27;ETHERPAD__API_KEY&#x27;) ? (Configuration.get(&#x27;ETHERPAD__API_KEY&#x27;) as string) : undefined,
+		basePath: Configuration.has(&#x27;ETHERPAD__URI&#x27;) ? (Configuration.get(&#x27;ETHERPAD__URI&#x27;) as string) : undefined,
 	}),
 ]</code>
                     </td>
