@@ -40,10 +40,6 @@ export class MetricsService {
 		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
-	public isClientRoleKnown(clientId: ClientId): boolean {
-		return this.knownClientRoles.has(clientId);
-	}
-
 	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
 		const EDITOR_ROLES = [RoleName.TEACHER, RoleName.COURSESUBSTITUTIONTEACHER, RoleName.COURSETEACHER];
 		if (user.roles.find((r) => EDITOR_ROLES.includes(r.name))) {
