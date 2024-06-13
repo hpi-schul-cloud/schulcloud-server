@@ -803,7 +803,6 @@
 					"description": "The etherpad api version uri."
 				},
 				"API_KEY": {
-					"default": "",
 					"type": "string",
 					"description": "The etherpad api key for sending requests."
 				},
