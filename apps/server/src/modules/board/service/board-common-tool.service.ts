@@ -26,10 +26,10 @@ export class BoardCommonToolService {
 	async findByDescendant(boardNode: AnyBoardNode): Promise<ColumnBoard | MediaBoard> {
 		const rootNode = await this.boardNodeService.findRoot(boardNode);
 
-		if (!isColumnBoard(boardNode) && !isMediaBoard(boardNode)) {
+		if (!isColumnBoard(rootNode) && !isMediaBoard(rootNode)) {
 			throw new NotFoundException(`There is no board with this id`);
 		}
 
-		return rootNode as ColumnBoard | MediaBoard;
+		return rootNode;
 	}
 }
