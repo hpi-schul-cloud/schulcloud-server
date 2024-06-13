@@ -1,17 +1,10 @@
-import { INestApplication } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
 import { Test } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import * as Yjs from 'yjs';
 import * as AwarenessProtocol from 'y-protocols/awareness';
-import { HttpService } from '@nestjs/axios';
-import { WsAdapter } from '@nestjs/platform-ws';
-import { TldrawWs } from '../controller';
-import { TldrawWsService } from '../service';
-import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
-import { MetricsService } from '../metrics';
+import { DomainErrorHandler } from '@src/core';
 import { WsSharedDocDo } from '../domain';
 import { TldrawRedisFactory, TldrawRedisService } from '.';
 import { tldrawTestConfig } from '../testing';
@@ -30,60 +23,28 @@ jest.mock('y-protocols/awareness', () => {
 	};
 	return moduleMock;
 });
-jest.mock('y-protocols/sync', () => {
-	const moduleMock: unknown = {
-		__esModule: true,
-		...jest.requireActual('y-protocols/sync'),
-	};
-	return moduleMock;
-});
 
 describe('TldrawRedisService', () => {
-	let app: INestApplication;
 	let service: TldrawRedisService;
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig))],
 			providers: [
-				TldrawWs,
-				TldrawWsService,
-				YMongodb,
-				MetricsService,
 				TldrawRedisFactory,
 				TldrawRedisService,
 				{
-					provide: TldrawBoardRepo,
-					useValue: createMock<TldrawBoardRepo>(),
-				},
-				{
-					provide: TldrawRepo,
-					useValue: createMock<TldrawRepo>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
 
 		service = testingModule.get(TldrawRedisService);
-		app = testingModule.createNestApplication();
-		app.useWebSocketAdapter(new WsAdapter(app));
-		await app.init();
-	});
-
-	afterAll(async () => {
-		await app.close();
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
-		jest.restoreAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('redisMessageHandler', () => {

@@ -5,8 +5,8 @@ import { encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awaren
 import { decoding, encoding } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
 import { Buffer } from 'node:buffer';
-import { Logger } from '@src/core/logger';
 import { YMap } from 'yjs/dist/src/types/YMap';
+import { DomainErrorHandler } from '@src/core';
 import { TldrawRedisService } from '../redis';
 import {
 	CloseConnectionLoggable,
@@ -34,12 +34,10 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly logger: Logger,
+		private readonly domainErrorHandler: DomainErrorHandler,
 		private readonly metricsService: MetricsService,
 		private readonly tldrawRedisService: TldrawRedisService
 	) {
-		this.logger.setContext(TldrawWsService.name);
-
 		this.tldrawRedisService.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}
 
@@ -59,17 +57,17 @@ export class TldrawWsService {
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
 		if (this.isClosedOrClosing(ws)) {
 			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('send | isClosedOrClosing', err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable('send | isClosedOrClosing', err));
+			});
+		} else {
+			ws.send(message, (err) => {
+				if (err) {
+					this.closeConnection(doc, ws).catch((e) => {
+						this.domainErrorHandler.exec(new CloseConnectionLoggable('send', e));
+					});
+				}
 			});
 		}
-
-		ws.send(message, (err) => {
-			if (err) {
-				this.closeConnection(doc, ws).catch((e) => {
-					this.logger.warning(new CloseConnectionLoggable('send', e));
-				});
-			}
-		});
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
@@ -97,6 +95,7 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
+	// this is a private method, need to be changed
 	public async getDocument(docName: string) {
 		const existingDoc = this.docs.get(docName);
 
@@ -110,6 +109,7 @@ export class TldrawWsService {
 			return existingDoc;
 		}
 
+		// doc can be null, need to be handled
 		const doc = await this.tldrawBoardRepo.getDocumentFromDb(docName);
 		doc.isLoaded = false;
 
@@ -178,22 +178,22 @@ export class TldrawWsService {
 		this.tldrawRedisService.handleMessage(channelId, update, doc);
 	};
 
-	public async setupWsConnection(ws: WebSocket, docName: string) {
+	public async setupWsConnection(ws: WebSocket, docName: string): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 
-		// get doc, initialize if it does not exist yet
+		// get doc, initialize if it does not exist yet - update this.getDocument(docName) can be return null
 		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
 
 		ws.on('error', (err) => {
-			this.logger.warning(new WebsocketErrorLoggable(err));
+			this.domainErrorHandler.exec(new WebsocketErrorLoggable(err));
 		});
 
 		ws.on('message', (message: ArrayBufferLike) => {
 			try {
 				this.messageHandler(ws, doc, new Uint8Array(message));
 			} catch (err) {
-				this.logger.warning(new WebsocketMessageErrorLoggable(err));
+				this.domainErrorHandler.exec(new WebsocketMessageErrorLoggable(err));
 			}
 		});
 
@@ -208,14 +208,14 @@ export class TldrawWsService {
 			}
 
 			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable('pingInterval', err));
 			});
 			clearInterval(pingInterval);
 		}, pingTimeout);
 
 		ws.on('close', () => {
 			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('websocket close', err));
+				this.domainErrorHandler.exec(new CloseConnectionLoggable('websocket close', err));
 			});
 			clearInterval(pingInterval);
 		});
@@ -266,7 +266,7 @@ export class TldrawWsService {
 			this.tldrawRedisService.unsubscribeFromRedisChannels(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 		} catch (err) {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
+			this.domainErrorHandler.exec(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
 		} finally {
 			doc.destroy();
 			this.docs.delete(doc.name);

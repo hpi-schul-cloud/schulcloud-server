@@ -17,6 +17,9 @@ const args = arg(
 
 		'--config': String,
 		'-c': '--config',
+
+		'--filter': String,
+		'-f': '--filter',
 	},
 	{
 		argv: process.argv.slice(2),
@@ -30,6 +33,7 @@ OPTIONS:
 	--path (-p)		Path to the newly created client's directory.
 	--url (-u)		URL/path to the spec file in yml/json format.
 	--config (-c)	path to the additional-properties config file in yml/json format
+	--filter (-f)	filter to apply to the openapi spec before generating the client
 `);
 	process.exit(0);
 }
@@ -41,15 +45,19 @@ const params = {
 	path: args._[1] || args['--path'],
 
 	config: args._[2] || args['--config'] || '',
+
+
+	filter: args._[3] || args['--filter'] || '',
 };
 
 const errorMessageContains = (includedString, error) =>
 	error && error.message && typeof error.message === 'string' && error.message.includes(includedString);
 
 const getOpenApiCommand = (params) => {
-	const { url, path, config } = params;
+	const { url, path, config, filter } = params;
 	const configFile = config ? `-c ${config}` : '';
-	const command = `openapi-generator-cli generate -i ${url} -g typescript-axios -o ${path} ${configFile} --skip-validate-spec`;
+	const filterString = filter ? `--openapi-normalizer FILTER="${filter}"` : '';
+	const command = `openapi-generator-cli generate -i ${url} -g typescript-axios -o ${path} ${configFile} --skip-validate-spec ${filterString}`;
 
 	return command;
 };
