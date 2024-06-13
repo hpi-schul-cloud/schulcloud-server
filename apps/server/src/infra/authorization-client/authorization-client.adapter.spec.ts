@@ -289,7 +289,7 @@ describe(AuthorizationClientAdapter.name, () => {
 				return { params, adapter, error };
 			};
 
-			it('should throw an UnauthorizedException', async () => {
+			it('should throw an AuthorizationErrorLoggableException', async () => {
 				const { params, adapter, error } = setup();
 
 				const expectedError = new AuthorizationErrorLoggableException(error, params);
