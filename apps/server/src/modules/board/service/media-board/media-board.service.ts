@@ -30,9 +30,9 @@ export class MediaBoardService {
 	async findByExternalReference(reference: BoardExternalReference): Promise<MediaBoard[]> {
 		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference);
 
-		const boards = boardNodes.filter((bn) => isMediaBoard(bn));
+		const boards = boardNodes.filter((bn): bn is MediaBoard => isMediaBoard(bn));
 
-		return boards as MediaBoard[];
+		return boards;
 	}
 
 	public async createContextExternalToolForMediaBoard(
