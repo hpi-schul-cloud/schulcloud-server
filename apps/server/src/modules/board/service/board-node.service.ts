@@ -97,10 +97,6 @@ export class BoardNodeService {
 		const boardNodes = await this.boardNodeRepo.findByIds(ids, depth);
 		const filteredNodes = boardNodes.filter((node) => node instanceof Constructor);
 
-		// if (filteredNodes.length !== ids.length) {
-		// 	throw new NotFoundException(`There is no '${Constructor.name}' with these ids`);
-		// }
-
 		return filteredNodes as T[];
 	}
 
