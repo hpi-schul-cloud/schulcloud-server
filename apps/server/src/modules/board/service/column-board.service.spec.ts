@@ -11,6 +11,7 @@ import { columnBoardFactory } from '../testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 
 describe('ColumnBoardService', () => {
+	let module: TestingModule;
 	let service: ColumnBoardService;
 	let repo: jest.Mocked<BoardNodeRepo>;
 	let boardNodeService: jest.Mocked<BoardNodeService>;
@@ -18,7 +19,7 @@ describe('ColumnBoardService', () => {
 	let columnBoardLinkService: DeepMocked<ColumnBoardLinkService>;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				ColumnBoardService,
 				{
@@ -47,8 +48,12 @@ describe('ColumnBoardService', () => {
 		columnBoardLinkService = module.get(ColumnBoardLinkService);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	beforeEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	it('should find ColumnBoard by id', async () => {

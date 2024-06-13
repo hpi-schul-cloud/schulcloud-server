@@ -41,6 +41,10 @@ describe('ContentElementUpdateService', () => {
 		repo = module.get(BoardNodeRepo);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});

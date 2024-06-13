@@ -10,12 +10,13 @@ import { ColumnBoard, MediaBoard, AnyBoardNode } from '../domain';
 import { columnBoardFactory, mediaBoardFactory } from '../testing';
 
 describe('BoardCommonToolService', () => {
+	let module: TestingModule;
 	let service: BoardCommonToolService;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				BoardCommonToolService,
 				{
@@ -32,6 +33,10 @@ describe('BoardCommonToolService', () => {
 		service = module.get<BoardCommonToolService>(BoardCommonToolService);
 		boardNodeRepo = module.get(BoardNodeRepo);
 		boardNodeService = module.get(BoardNodeService);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	beforeEach(() => {
