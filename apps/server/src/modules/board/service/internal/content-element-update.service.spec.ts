@@ -41,6 +41,10 @@ describe('ContentElementUpdateService', () => {
 		repo = module.get(BoardNodeRepo);
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should update FileElement', async () => {
 		const element = fileElementFactory.build();
 		const content = new FileContentBody();
