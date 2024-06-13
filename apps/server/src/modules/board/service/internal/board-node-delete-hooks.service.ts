@@ -49,6 +49,8 @@ export class BoardNodeDeleteHooksService {
 			await this.afterDeleteCollaborativeTextEditorElement(boardNode);
 		} else if (isMediaExternalToolElement(boardNode)) {
 			await this.afterDeleteMediaExternalToolElement(boardNode);
+		} else {
+			// noop
 		}
 		await Promise.allSettled(boardNode.children.map(async (child) => this.afterDelete(child)));
 	}
