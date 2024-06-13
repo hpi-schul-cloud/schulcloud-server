@@ -30,7 +30,7 @@ export class AuthorizationClientAdapter {
 
 			return hasPermission;
 		} catch (error) {
-			throw new AuthorizationErrorLoggableException(error as Error, params);
+			throw new AuthorizationErrorLoggableException(error, params);
 		}
 	}
 
