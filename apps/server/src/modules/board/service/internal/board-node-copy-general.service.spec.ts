@@ -14,6 +14,7 @@ import {
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
 	mediaLineFactory,
@@ -142,13 +143,13 @@ describe(BoardNodeCopyService.name, () => {
 			});
 
 			describe('when called with link element', () => {
-				it('should copy file element', async () => {
+				it('should copy link element', async () => {
 					const { copyContext, mockStatus } = setup();
-					const node = fileElementFactory.build();
+					const node = linkElementFactory.build();
 
 					const result = await service.copy(node, copyContext);
 
-					expect(service.copyFileElement).toHaveBeenCalledWith(node, copyContext);
+					expect(service.copyLinkElement).toHaveBeenCalledWith(node, copyContext);
 					expect(result).toEqual(mockStatus);
 				});
 			});

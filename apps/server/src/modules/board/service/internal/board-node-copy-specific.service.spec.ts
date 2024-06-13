@@ -223,6 +223,10 @@ describe(BoardNodeCopyService.name, () => {
 				id: sourceId,
 				imageUrl: `https://example.com/${sourceId}/bird.jpg`,
 			});
+			const linkElementWithoutId = linkElementFactory.build({
+				id: sourceId,
+				imageUrl: `https://example.com/plane.jpg`,
+			});
 			const fileCopyStatus: CopyFileDto = {
 				name: 'bird.jpg',
 				id: new ObjectId().toHexString(),
@@ -230,7 +234,7 @@ describe(BoardNodeCopyService.name, () => {
 			};
 			jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
-			return { copyContext, linkElement, fileCopyStatus };
+			return { copyContext, linkElement, linkElementWithoutId, fileCopyStatus };
 		};
 
 		it('should copy the node', async () => {
@@ -250,14 +254,25 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.elements ?? []).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
 		});
 
-		describe('when imageUrl is present', () => {
-			it('should replace the source id in image urls', async () => {
+		describe('when imageUrl includes source id', () => {
+			it('should replace the source id in image url', async () => {
 				const { copyContext, linkElement, fileCopyStatus } = setup();
 
 				const result = await service.copyLinkElement(linkElement, copyContext);
 
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				expect((result.copyEntity as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
+			});
+		});
+
+		describe('when imageUrl doesnt include source id', () => {
+			it('should set blank image url', async () => {
+				const { copyContext, linkElementWithoutId } = setup();
+
+				const result = await service.copyLinkElement(linkElementWithoutId, copyContext);
+
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				expect((result.copyEntity as LinkElement).imageUrl).toBe('');
 			});
 		});
 
@@ -469,33 +484,6 @@ describe(BoardNodeCopyService.name, () => {
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 		});
-
-		// 	describe('when ctl tools copy is enabled and external tool is attached', () => {
-		// 		const setupToolElement = () => {
-		// 			const { copyContext } = setupContext();
-
-		// 			const tool = contextExternalToolFactory.build();
-		// 			const toolCopy = contextExternalToolFactory.build();
-		// 			contextExternalToolService.findById.mockResolvedValueOnce(tool);
-		// 			contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(toolCopy);
-
-		// 			const externalToolElement = externalToolElementFactory.build({
-		// 				contextExternalToolId: tool.id,
-		// 			});
-
-		// 			return { copyContext, externalToolElement, tool, toolCopy };
-		// 		};
-
-		// 		it('should copy the external tool', async () => {
-		// 			const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
-
-		// 			const result = await service.copyExternalToolElement(externalToolElement, copyContext);
-
-		// 			expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
-		// 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tool, result.copyEntity?.id);
-		// 			expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
-		// 		});
-		// 	});
 	});
 
 	describe('copy collaborative text editor element', () => {

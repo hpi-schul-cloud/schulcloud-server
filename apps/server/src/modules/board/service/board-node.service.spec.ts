@@ -12,8 +12,8 @@ describe(BoardNodeService.name, () => {
 	let service: BoardNodeService;
 
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
-	let contentElementUpdateService: DeepMocked<ContentElementUpdateService>;
-	let boardNodeDeleteHooksService: DeepMocked<BoardNodeDeleteHooksService>;
+	// let contentElementUpdateService: DeepMocked<ContentElementUpdateService>;
+	// let boardNodeDeleteHooksService: DeepMocked<BoardNodeDeleteHooksService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,8 +36,8 @@ describe(BoardNodeService.name, () => {
 
 		service = module.get(BoardNodeService);
 		boardNodeRepo = module.get(BoardNodeRepo);
-		contentElementUpdateService = module.get(ContentElementUpdateService);
-		boardNodeDeleteHooksService = module.get(BoardNodeDeleteHooksService);
+		// contentElementUpdateService = module.get(ContentElementUpdateService);
+		// boardNodeDeleteHooksService = module.get(BoardNodeDeleteHooksService);
 
 		await setupEntities();
 	});

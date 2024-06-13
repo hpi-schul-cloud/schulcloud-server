@@ -12,7 +12,6 @@ describe('ColumnBoardNodeRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			// imports: [MongoMemoryDatabaseModule.forRoot({ entities: [BaseEntityWithTimestamps, ColumnBoardNode] })],
 			providers: [
 				ColumnBoardNodeRepo,
 				{
@@ -48,6 +47,7 @@ describe('ColumnBoardNodeRepo', () => {
 
 			expect(em.findOneOrFail).toHaveBeenCalledWith(ColumnBoardNode, id);
 		});
+
 		it('should return ColumnBoardNode', async () => {
 			const id = 'someId';
 			const { columnBoardNode } = setup();
