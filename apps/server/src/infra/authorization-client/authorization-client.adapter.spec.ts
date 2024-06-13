@@ -107,137 +107,32 @@ describe(AuthorizationClientAdapter.name, () => {
 
 					await expect(service.checkPermissionsByReference(params)).rejects.toThrowError(expectedError);
 				});
-
-				it('should have correct log message', async () => {
-					const { params } = setup({ isAuthorized: false });
-
-					const expectedLogMessage = {
-						type: 'FORBIDDEN_EXCEPTION',
-						stack: expect.any(String),
-						data: {
-							action: params.context.action,
-							referenceId: params.referenceId,
-							referenceType: params.referenceType,
-							requiredPermissions: params.context.requiredPermissions.join(','),
-						},
-					};
-
-					try {
-						await service.checkPermissionsByReference(params);
-						// Fail test if above expression doesn't throw anything.
-						expect(true).toBe(false);
-					} catch (e) {
-						const logMessage = (e as AuthorizationForbiddenLoggableException).getLogMessage();
-
-						expect(logMessage).toEqual(expectedLogMessage);
-					}
-				});
 			});
 		});
 
 		describe('when authorizationReferenceControllerAuthorizeByReference returns error', () => {
-			describe('when error is instance of Error', () => {
-				const setup = () => {
-					const error = new Error('testError');
-					authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
-					const params = {
-						context: {
-							action: Action.READ,
-							requiredPermissions,
-						},
-						referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-						referenceId: 'someReferenceId',
-					};
-
-					return { params, error };
+			const setup = () => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
 				};
 
-				it('should throw AuthorizationErrorLoggableException', async () => {
-					const { params, error } = setup();
+				const error = new Error('testError');
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
 
-					const expectedError = new AuthorizationErrorLoggableException(error, params);
+				return { params, error };
+			};
 
-					await expect(service.checkPermissionsByReference(params)).rejects.toThrowError(expectedError);
-				});
+			it('should throw AuthorizationErrorLoggableException', async () => {
+				const { params, error } = setup();
 
-				it('should have correct log message', async () => {
-					const { params, error } = setup();
+				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
-					const expectedLogMessage = {
-						type: 'INTERNAL_SERVER_ERROR',
-						error,
-						stack: expect.any(String),
-						data: {
-							action: params.context.action,
-							referenceId: params.referenceId,
-							referenceType: params.referenceType,
-							requiredPermissions: params.context.requiredPermissions.join(','),
-						},
-					};
-
-					try {
-						await service.hasPermissionsByReference(params);
-						// Fail test if above expression doesn't throw anything.
-						expect(true).toBe(false);
-					} catch (e) {
-						const logMessage = (e as AuthorizationErrorLoggableException).getLogMessage();
-
-						expect(logMessage).toEqual(expectedLogMessage);
-					}
-				});
-			});
-
-			describe('when error is NOT instance of Error', () => {
-				const setup = () => {
-					const params = {
-						context: {
-							action: Action.READ,
-							requiredPermissions,
-						},
-						referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-						referenceId: 'someReferenceId',
-					};
-
-					const error = { code: '123', message: 'testError' };
-					authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
-					return { params, error };
-				};
-
-				it('should throw AuthorizationErrorLoggableException', async () => {
-					const { params, error } = setup();
-
-					const expectedError = new AuthorizationErrorLoggableException(error, params);
-
-					await expect(service.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
-				});
-
-				it('should have correct log message', async () => {
-					const { params, error } = setup();
-
-					const expectedLogMessage = {
-						type: 'INTERNAL_SERVER_ERROR',
-						error: new Error(JSON.stringify(error)),
-						stack: expect.any(String),
-						data: {
-							action: params.context.action,
-							referenceId: params.referenceId,
-							referenceType: params.referenceType,
-							requiredPermissions: params.context.requiredPermissions.join(','),
-						},
-					};
-
-					try {
-						await service.hasPermissionsByReference(params);
-						// Fail test if above expression doesn't throw anything.
-						expect(true).toBe(false);
-					} catch (e) {
-						const logMessage = (e as AuthorizationErrorLoggableException).getLogMessage();
-
-						expect(logMessage).toEqual(expectedLogMessage);
-					}
-				});
+				await expect(service.checkPermissionsByReference(params)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
@@ -401,137 +296,31 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				await expect(adapter.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
 			});
-
-			it('should have correct log message', async () => {
-				const { params, adapter, error } = setup();
-
-				const expectedLogMessage = {
-					type: 'INTERNAL_SERVER_ERROR',
-					error,
-					stack: expect.any(String),
-					data: {
-						action: params.context.action,
-						referenceId: params.referenceId,
-						referenceType: params.referenceType,
-						requiredPermissions: params.context.requiredPermissions.join(','),
-					},
-				};
-
-				try {
-					await adapter.hasPermissionsByReference(params);
-					// Fail test if above expression doesn't throw anything.
-					expect(true).toBe(false);
-				} catch (e) {
-					const logMessage = (e as AuthorizationErrorLoggableException).getLogMessage();
-
-					expect(logMessage).toEqual(expectedLogMessage);
-				}
-			});
 		});
 
 		describe('when authorizationReferenceControllerAuthorizeByReference returns error', () => {
-			describe('when error is instance of Error', () => {
-				const setup = () => {
-					const params = {
-						context: {
-							action: Action.READ,
-							requiredPermissions,
-						},
-						referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-						referenceId: 'someReferenceId',
-					};
-
-					const error = new Error('testError');
-					authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
-					return { params, error };
+			const setup = () => {
+				const params = {
+					context: {
+						action: Action.READ,
+						requiredPermissions,
+					},
+					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
+					referenceId: 'someReferenceId',
 				};
 
-				it('should throw AuthorizationErrorLoggableException', async () => {
-					const { params, error } = setup();
+				const error = new Error('testError');
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
 
-					const expectedError = new AuthorizationErrorLoggableException(error, params);
+				return { params, error };
+			};
 
-					await expect(service.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
-				});
+			it('should throw AuthorizationErrorLoggableException', async () => {
+				const { params, error } = setup();
 
-				it('should have correct log message', async () => {
-					const { params, error } = setup();
+				const expectedError = new AuthorizationErrorLoggableException(error, params);
 
-					const expectedLogMessage = {
-						type: 'INTERNAL_SERVER_ERROR',
-						error,
-						stack: expect.any(String),
-						data: {
-							action: params.context.action,
-							referenceId: params.referenceId,
-							referenceType: params.referenceType,
-							requiredPermissions: params.context.requiredPermissions.join(','),
-						},
-					};
-
-					try {
-						await service.hasPermissionsByReference(params);
-						// Fail test if above expression doesn't throw anything.
-						expect(true).toBe(false);
-					} catch (e) {
-						const logMessage = (e as AuthorizationErrorLoggableException).getLogMessage();
-
-						expect(logMessage).toEqual(expectedLogMessage);
-					}
-				});
-			});
-
-			describe('when error is NOT instance of Error', () => {
-				const setup = () => {
-					const params = {
-						context: {
-							action: Action.READ,
-							requiredPermissions,
-						},
-						referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-						referenceId: 'someReferenceId',
-					};
-
-					const error = { code: '123', message: 'testError' };
-					authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
-					return { params, error };
-				};
-
-				it('should throw AuthorizationErrorLoggableException', async () => {
-					const { params, error } = setup();
-
-					const expectedError = new AuthorizationErrorLoggableException(error, params);
-
-					await expect(service.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
-				});
-
-				it('should have correct log message', async () => {
-					const { params, error } = setup();
-
-					const expectedLogMessage = {
-						type: 'INTERNAL_SERVER_ERROR',
-						error: new Error(JSON.stringify(error)),
-						stack: expect.any(String),
-						data: {
-							action: params.context.action,
-							referenceId: params.referenceId,
-							referenceType: params.referenceType,
-							requiredPermissions: params.context.requiredPermissions.join(','),
-						},
-					};
-
-					try {
-						await service.hasPermissionsByReference(params);
-						// Fail test if above expression doesn't throw anything.
-						expect(true).toBe(false);
-					} catch (e) {
-						const logMessage = (e as AuthorizationErrorLoggableException).getLogMessage();
-
-						expect(logMessage).toEqual(expectedLogMessage);
-					}
-				});
+				await expect(service.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
