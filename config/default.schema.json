@@ -820,6 +820,9 @@
 					"default": 7200,
 					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
+			},
+			"default": {
+				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
 		},
 		"NEXTCLOUD_BASE_URL": {
