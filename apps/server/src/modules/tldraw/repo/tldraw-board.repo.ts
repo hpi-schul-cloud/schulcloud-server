@@ -20,6 +20,7 @@ export class TldrawBoardRepo {
 	}
 
 	public async getDocumentFromDb(docName: string): Promise<WsSharedDocDo> {
+		// can be return null, return type of functions need to be improve
 		const yDoc = await this.mdb.getDocument(docName);
 		return yDoc;
 	}

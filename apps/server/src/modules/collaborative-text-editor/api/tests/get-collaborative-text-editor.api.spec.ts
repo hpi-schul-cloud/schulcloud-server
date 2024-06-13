@@ -140,7 +140,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
 					const expectedPath = `${basePath}/${editorId}`;
 
-					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE_EXPIRES_SECONDS')) * 1000;
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
@@ -211,7 +211,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
 					const expectedPath = `${basePath}/${editorId}`;
 
-					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE_EXPIRES_SECONDS')) * 1000;
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
@@ -282,7 +282,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const basePath = Configuration.get('ETHERPAD__PAD_URI') as string;
 					const expectedPath = `${basePath}/${editorId}`;
 
-					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD_COOKIE_EXPIRES_SECONDS')) * 1000;
+					const cookieExpiresMilliseconds = Number(Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS')) * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
 					const sessionCookieExpiryDate = new Date(Date.now() + cookieExpiresMilliseconds).toUTCString().slice(0, -8);
 
