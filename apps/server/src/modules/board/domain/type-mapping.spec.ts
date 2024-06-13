@@ -1,4 +1,4 @@
-import { getBoardNodeType } from './type-mapping';
+import { getBoardNodeType, handleNonExhaustiveSwitch } from './type-mapping';
 
 import { BoardNodeType } from './types/board-node-type.enum';
 
@@ -42,5 +42,11 @@ describe('getBoardNodeType', () => {
 	it('should throw error for unknown type', () => {
 		class UnknownType {}
 		expect(() => getBoardNodeType(new UnknownType() as any)).toThrow();
+	});
+});
+
+describe('handleNonExhaustiveSwitch', () => {
+	it('should throw error', () => {
+		expect(() => handleNonExhaustiveSwitch('unknown' as never)).toThrow();
 	});
 });
