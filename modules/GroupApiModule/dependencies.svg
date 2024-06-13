@@ -24,163 +24,163 @@
 <title>cluster_GroupApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1531,-195 1531,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_GroupApiModule_imports</title>
-<polygon fill="none" stroke="black" points="288,-78 288,-130 1523,-130 1523,-78 288,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_GroupApiModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 280,-130 280,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1259,-78 1259,-130 1523,-130 1523,-78 1259,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_GroupApiModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1251,-130 1251,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1514.81,-122 1511.81,-126 1490.81,-126 1487.81,-122 1377.19,-122 1377.19,-86 1514.81,-86 1514.81,-122"/>
-<text text-anchor="middle" x="1446" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1242.81,-122 1239.81,-126 1218.81,-126 1215.81,-122 1105.19,-122 1105.19,-86 1242.81,-86 1242.81,-122"/>
+<text text-anchor="middle" x="1174" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- GroupApiModule -->
 <g id="node11" class="node">
 <title>GroupApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="791.31,-187 788.31,-191 767.31,-191 764.31,-187 674.69,-187 674.69,-151 791.31,-151 791.31,-187"/>
-<text text-anchor="middle" x="733" y="-164.8" font-family="Times,serif" font-size="14.00">GroupApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="787.31,-187 784.31,-191 763.31,-191 760.31,-187 670.69,-187 670.69,-151 787.31,-151 787.31,-187"/>
+<text text-anchor="middle" x="729" y="-164.8" font-family="Times,serif" font-size="14.00">GroupApiModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;GroupApiModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M1446,-122.09C1446,-145.13 1446,-182 1446,-182 1446,-182 801.35,-182 801.35,-182"/>
-<polygon fill="black" stroke="black" points="801.35,-178.5 791.35,-182 801.35,-185.5 801.35,-178.5"/>
+<path fill="none" stroke="black" d="M1174,-122.11C1174,-141.34 1174,-169 1174,-169 1174,-169 797.18,-169 797.18,-169"/>
+<polygon fill="black" stroke="black" points="797.18,-165.5 787.18,-169 797.18,-172.5 797.18,-165.5"/>
 </g>
 <!-- ClassModule -->
 <g id="node2" class="node">
 <title>ClassModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1358.88,-122 1355.88,-126 1334.88,-126 1331.88,-122 1269.12,-122 1269.12,-86 1358.88,-86 1358.88,-122"/>
-<text text-anchor="middle" x="1314" y="-99.8" font-family="Times,serif" font-size="14.00">ClassModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1086.88,-122 1083.88,-126 1062.88,-126 1059.88,-122 997.12,-122 997.12,-86 1086.88,-86 1086.88,-122"/>
+<text text-anchor="middle" x="1042" y="-99.8" font-family="Times,serif" font-size="14.00">ClassModule</text>
 </g>
 <!-- ClassModule&#45;&gt;GroupApiModule -->
 <g id="edge2" class="edge">
 <title>ClassModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M1314,-122.28C1314,-143.32 1314,-175 1314,-175 1314,-175 801.37,-175 801.37,-175"/>
-<polygon fill="black" stroke="black" points="801.37,-171.5 791.37,-175 801.37,-178.5 801.37,-171.5"/>
+<path fill="none" stroke="black" d="M1042,-122.02C1042,-139.37 1042,-163 1042,-163 1042,-163 797.51,-163 797.51,-163"/>
+<polygon fill="black" stroke="black" points="797.51,-159.5 787.51,-163 797.51,-166.5 797.51,-159.5"/>
 </g>
 <!-- GroupModule -->
 <g id="node3" class="node">
 <title>GroupModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1250.82,-122 1247.82,-126 1226.82,-126 1223.82,-122 1155.18,-122 1155.18,-86 1250.82,-86 1250.82,-122"/>
-<text text-anchor="middle" x="1203" y="-99.8" font-family="Times,serif" font-size="14.00">GroupModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="978.82,-122 975.82,-126 954.82,-126 951.82,-122 883.18,-122 883.18,-86 978.82,-86 978.82,-122"/>
+<text text-anchor="middle" x="931" y="-99.8" font-family="Times,serif" font-size="14.00">GroupModule</text>
 </g>
 <!-- GroupModule&#45;&gt;GroupApiModule -->
 <g id="edge3" class="edge">
 <title>GroupModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M1203,-122.11C1203,-141.34 1203,-169 1203,-169 1203,-169 801.58,-169 801.58,-169"/>
-<polygon fill="black" stroke="black" points="801.58,-165.5 791.58,-169 801.58,-172.5 801.58,-165.5"/>
+<path fill="none" stroke="black" d="M931,-122.24C931,-137.57 931,-157 931,-157 931,-157 797.43,-157 797.43,-157"/>
+<polygon fill="black" stroke="black" points="797.43,-153.5 787.43,-157 797.43,-160.5 797.43,-153.5"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node4" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1136.74,-122 1133.74,-126 1112.74,-126 1109.74,-122 1015.26,-122 1015.26,-86 1136.74,-86 1136.74,-122"/>
-<text text-anchor="middle" x="1076" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="864.74,-122 861.74,-126 840.74,-126 837.74,-122 743.26,-122 743.26,-86 864.74,-86 864.74,-122"/>
+<text text-anchor="middle" x="804" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- LearnroomModule&#45;&gt;GroupApiModule -->
 <g id="edge4" class="edge">
 <title>LearnroomModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M1076,-122.02C1076,-139.37 1076,-163 1076,-163 1076,-163 801.19,-163 801.19,-163"/>
-<polygon fill="black" stroke="black" points="801.19,-159.5 791.19,-163 801.19,-166.5 801.19,-159.5"/>
+<path fill="none" stroke="black" d="M765.14,-122.11C765.14,-122.11 765.14,-140.99 765.14,-140.99"/>
+<polygon fill="black" stroke="black" points="761.64,-140.99 765.14,-150.99 768.64,-140.99 761.64,-140.99"/>
 </g>
 <!-- LegacySchoolModule -->
 <g id="node5" class="node">
 <title>LegacySchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="996.63,-122 993.63,-126 972.63,-126 969.63,-122 857.37,-122 857.37,-86 996.63,-86 996.63,-122"/>
-<text text-anchor="middle" x="927" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="724.63,-122 721.63,-126 700.63,-126 697.63,-122 585.37,-122 585.37,-86 724.63,-86 724.63,-122"/>
+<text text-anchor="middle" x="655" y="-99.8" font-family="Times,serif" font-size="14.00">LegacySchoolModule</text>
 </g>
 <!-- LegacySchoolModule&#45;&gt;GroupApiModule -->
 <g id="edge5" class="edge">
 <title>LegacySchoolModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M927,-122.24C927,-137.57 927,-157 927,-157 927,-157 801.21,-157 801.21,-157"/>
-<polygon fill="black" stroke="black" points="801.21,-153.5 791.21,-157 801.21,-160.5 801.21,-153.5"/>
+<path fill="none" stroke="black" d="M697.83,-122.11C697.83,-122.11 697.83,-140.99 697.83,-140.99"/>
+<polygon fill="black" stroke="black" points="694.33,-140.99 697.83,-150.99 701.33,-140.99 694.33,-140.99"/>
 </g>
 <!-- LoggerModule -->
 <g id="node6" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="838.98,-122 835.98,-126 814.98,-126 811.98,-122 739.02,-122 739.02,-86 838.98,-86 838.98,-122"/>
-<text text-anchor="middle" x="789" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="566.98,-122 563.98,-126 542.98,-126 539.98,-122 467.02,-122 467.02,-86 566.98,-86 566.98,-122"/>
+<text text-anchor="middle" x="517" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;GroupApiModule -->
 <g id="edge6" class="edge">
 <title>LoggerModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M765.08,-122.11C765.08,-122.11 765.08,-140.99 765.08,-140.99"/>
-<polygon fill="black" stroke="black" points="761.58,-140.99 765.08,-150.99 768.58,-140.99 761.58,-140.99"/>
+<path fill="none" stroke="black" d="M517,-122.24C517,-137.57 517,-157 517,-157 517,-157 660.79,-157 660.79,-157"/>
+<polygon fill="black" stroke="black" points="660.79,-160.5 670.79,-157 660.79,-153.5 660.79,-160.5"/>
 </g>
 <!-- RoleModule -->
 <g id="node7" class="node">
 <title>RoleModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="720.99,-122 717.99,-126 696.99,-126 693.99,-122 635.01,-122 635.01,-86 720.99,-86 720.99,-122"/>
-<text text-anchor="middle" x="678" y="-99.8" font-family="Times,serif" font-size="14.00">RoleModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="448.99,-122 445.99,-126 424.99,-126 421.99,-122 363.01,-122 363.01,-86 448.99,-86 448.99,-122"/>
+<text text-anchor="middle" x="406" y="-99.8" font-family="Times,serif" font-size="14.00">RoleModule</text>
 </g>
 <!-- RoleModule&#45;&gt;GroupApiModule -->
 <g id="edge7" class="edge">
 <title>RoleModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M697.92,-122.11C697.92,-122.11 697.92,-140.99 697.92,-140.99"/>
-<polygon fill="black" stroke="black" points="694.42,-140.99 697.92,-150.99 701.42,-140.99 694.42,-140.99"/>
+<path fill="none" stroke="black" d="M406,-122.02C406,-139.37 406,-163 406,-163 406,-163 660.51,-163 660.51,-163"/>
+<polygon fill="black" stroke="black" points="660.51,-166.5 670.51,-163 660.51,-159.5 660.51,-166.5"/>
 </g>
 <!-- SchoolModule -->
 <g id="node8" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="617.44,-122 614.44,-126 593.44,-126 590.44,-122 518.56,-122 518.56,-86 617.44,-86 617.44,-122"/>
-<text text-anchor="middle" x="568" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="345.44,-122 342.44,-126 321.44,-126 318.44,-122 246.56,-122 246.56,-86 345.44,-86 345.44,-122"/>
+<text text-anchor="middle" x="296" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- SchoolModule&#45;&gt;GroupApiModule -->
 <g id="edge8" class="edge">
 <title>SchoolModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M568,-122.24C568,-137.57 568,-157 568,-157 568,-157 664.83,-157 664.83,-157"/>
-<polygon fill="black" stroke="black" points="664.83,-160.5 674.83,-157 664.83,-153.5 664.83,-160.5"/>
+<path fill="none" stroke="black" d="M296,-122.11C296,-141.34 296,-169 296,-169 296,-169 660.6,-169 660.6,-169"/>
+<polygon fill="black" stroke="black" points="660.6,-172.5 670.6,-169 660.6,-165.5 660.6,-172.5"/>
 </g>
 <!-- SystemModule -->
 <g id="node9" class="node">
 <title>SystemModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="500.27,-122 497.27,-126 476.27,-126 473.27,-122 399.73,-122 399.73,-86 500.27,-86 500.27,-122"/>
-<text text-anchor="middle" x="450" y="-99.8" font-family="Times,serif" font-size="14.00">SystemModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="228.27,-122 225.27,-126 204.27,-126 201.27,-122 127.73,-122 127.73,-86 228.27,-86 228.27,-122"/>
+<text text-anchor="middle" x="178" y="-99.8" font-family="Times,serif" font-size="14.00">SystemModule</text>
 </g>
 <!-- SystemModule&#45;&gt;GroupApiModule -->
 <g id="edge9" class="edge">
 <title>SystemModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M450,-122.02C450,-139.37 450,-163 450,-163 450,-163 664.71,-163 664.71,-163"/>
-<polygon fill="black" stroke="black" points="664.71,-166.5 674.71,-163 664.71,-159.5 664.71,-166.5"/>
+<path fill="none" stroke="black" d="M178,-122.28C178,-143.32 178,-175 178,-175 178,-175 660.82,-175 660.82,-175"/>
+<polygon fill="black" stroke="black" points="660.82,-178.5 670.82,-175 660.82,-171.5 660.82,-178.5"/>
 </g>
 <!-- UserModule -->
 <g id="node10" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="381.98,-122 378.98,-126 357.98,-126 354.98,-122 296.02,-122 296.02,-86 381.98,-86 381.98,-122"/>
-<text text-anchor="middle" x="339" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
+<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;GroupApiModule -->
 <g id="edge10" class="edge">
 <title>UserModule&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M339,-122.11C339,-141.34 339,-169 339,-169 339,-169 664.44,-169 664.44,-169"/>
-<polygon fill="black" stroke="black" points="664.44,-172.5 674.44,-169 664.44,-165.5 664.44,-172.5"/>
+<path fill="none" stroke="black" d="M67,-122.09C67,-145.13 67,-182 67,-182 67,-182 660.83,-182 660.83,-182"/>
+<polygon fill="black" stroke="black" points="660.83,-185.5 670.83,-182 660.83,-178.5 660.83,-185.5"/>
 </g>
 <!-- ClassGroupUc -->
 <g id="node12" class="node">
 <title>ClassGroupUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="204" cy="-104" rx="67.78" ry="18"/>
-<text text-anchor="middle" x="204" y="-99.8" font-family="Times,serif" font-size="14.00">ClassGroupUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1447" cy="-104" rx="67.78" ry="18"/>
+<text text-anchor="middle" x="1447" y="-99.8" font-family="Times,serif" font-size="14.00">ClassGroupUc</text>
 </g>
 <!-- ClassGroupUc&#45;&gt;GroupApiModule -->
 <g id="edge11" class="edge">
 <title>ClassGroupUc&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M204,-122.28C204,-143.32 204,-175 204,-175 204,-175 664.62,-175 664.62,-175"/>
-<polygon fill="black" stroke="black" points="664.62,-178.5 674.62,-175 664.62,-171.5 664.62,-178.5"/>
+<path fill="none" stroke="black" d="M1447,-122.09C1447,-145.13 1447,-182 1447,-182 1447,-182 797.45,-182 797.45,-182"/>
+<polygon fill="black" stroke="black" points="797.45,-178.5 787.45,-182 797.45,-185.5 797.45,-178.5"/>
 </g>
 <!-- GroupUc -->
 <g id="node13" class="node">
 <title>GroupUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="71" cy="-104" rx="46.93" ry="18"/>
-<text text-anchor="middle" x="71" y="-99.8" font-family="Times,serif" font-size="14.00">GroupUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1314" cy="-104" rx="46.93" ry="18"/>
+<text text-anchor="middle" x="1314" y="-99.8" font-family="Times,serif" font-size="14.00">GroupUc</text>
 </g>
 <!-- GroupUc&#45;&gt;GroupApiModule -->
 <g id="edge12" class="edge">
 <title>GroupUc&#45;&gt;GroupApiModule</title>
-<path fill="none" stroke="black" d="M71,-122.09C71,-145.13 71,-182 71,-182 71,-182 664.83,-182 664.83,-182"/>
-<polygon fill="black" stroke="black" points="664.83,-185.5 674.83,-182 664.83,-178.5 664.83,-185.5"/>
+<path fill="none" stroke="black" d="M1314,-122.28C1314,-143.32 1314,-175 1314,-175 1314,-175 797.23,-175 797.23,-175"/>
+<polygon fill="black" stroke="black" points="797.23,-171.5 787.23,-175 797.23,-178.5 797.23,-171.5"/>
 </g>
 </g>
 </svg>
