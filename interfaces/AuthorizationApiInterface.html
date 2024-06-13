@@ -1,0 +1,486 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  AuthorizationApiInterface</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/infra/authorization-client/authorization-api-client/api/authorization-api.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>AuthorizationApi - interface</p>
+
+            </p>
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Methods</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#authorizationReferenceControllerAuthorizeByReference" 
+>
+                                        authorizationReferenceControllerAuthorizeByReference
+                                    </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="authorizationReferenceControllerAuthorizeByReference"></a>
+                    <span class="name">
+                        <span ><b>authorizationReferenceControllerAuthorizeByReference</b></span>
+                        <a href="#authorizationReferenceControllerAuthorizeByReference"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams: <a href="../interfaces/AuthorizationBodyParams.html" target="_self">AuthorizationBodyParams</a>, options?: RawAxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/infra/authorization-client/authorization-api-client/api/authorization-api.ts:136</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorizationBodyParams</td>
+                                            <td>
+                                                            <code><a href="../interfaces/AuthorizationBodyParams.html" target="_self" >AuthorizationBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>RawAxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>Override http request option.</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/AuthorizedReponse.html" target="_self" >AxiosPromise&lt;AuthorizedReponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Configuration } from &#x27;../configuration&#x27;;
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from &#x27;axios&#x27;;
+import globalAxios from &#x27;axios&#x27;;
+// Some imports not used depending on template conditions
+// @ts-ignore
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from &#x27;../common&#x27;;
+// @ts-ignore
+import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from &#x27;../base&#x27;;
+// @ts-ignore
+import type { ApiValidationError } from &#x27;../models&#x27;;
+// @ts-ignore
+import type { AuthorizationBodyParams } from &#x27;../models&#x27;;
+// @ts-ignore
+import type { AuthorizedReponse } from &#x27;../models&#x27;;
+/**
+ * AuthorizationApi - axios parameter creator
+ * @export
+ */
+export const AuthorizationApiAxiosParamCreator &#x3D; function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Checks if user is authorized to perform the given operation.
+         * @param {AuthorizationBodyParams} authorizationBodyParams 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authorizationReferenceControllerAuthorizeByReference: async (authorizationBodyParams: AuthorizationBodyParams, options: RawAxiosRequestConfig &#x3D; {}): Promise&lt;RequestArgs&gt; &#x3D;&gt; {
+            // verify required parameter &#x27;authorizationBodyParams&#x27; is not null or undefined
+            assertParamExists(&#x27;authorizationReferenceControllerAuthorizeByReference&#x27;, &#x27;authorizationBodyParams&#x27;, authorizationBodyParams)
+            const localVarPath &#x3D; &#x60;/authorization/by-reference&#x60;;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj &#x3D; new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions &#x3D; configuration.baseOptions;
+            }
+
+            const localVarRequestOptions &#x3D; { method: &#x27;POST&#x27;, ...baseOptions, ...options};
+            const localVarHeaderParameter &#x3D; {} as any;
+            const localVarQueryParameter &#x3D; {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter[&#x27;Content-Type&#x27;] &#x3D; &#x27;application/json&#x27;;
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions &#x3D; baseOptions &amp;&amp; baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers &#x3D; {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data &#x3D; serializeDataIfNeeded(authorizationBodyParams, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AuthorizationApi - functional programming interface
+ * @export
+ */
+export const AuthorizationApiFp &#x3D; function(configuration?: Configuration) {
+    const localVarAxiosParamCreator &#x3D; AuthorizationApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Checks if user is authorized to perform the given operation.
+         * @param {AuthorizationBodyParams} authorizationBodyParams 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams: AuthorizationBodyParams, options?: RawAxiosRequestConfig): Promise&lt;(axios?: AxiosInstance, basePath?: string) &#x3D;&gt; AxiosPromise&lt;AuthorizedReponse&gt;&gt; {
+            const localVarAxiosArgs &#x3D; await localVarAxiosParamCreator.authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams, options);
+            const localVarOperationServerIndex &#x3D; configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath &#x3D; operationServerMap[&#x27;AuthorizationApi.authorizationReferenceControllerAuthorizeByReference&#x27;]?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) &#x3D;&gt; createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AuthorizationApi - factory interface
+ * @export
+ */
+export const AuthorizationApiFactory &#x3D; function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp &#x3D; AuthorizationApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Checks if user is authorized to perform the given operation.
+         * @param {AuthorizationBodyParams} authorizationBodyParams 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams: AuthorizationBodyParams, options?: any): AxiosPromise&lt;AuthorizedReponse&gt; {
+            return localVarFp.authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams, options).then((request) &#x3D;&gt; request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AuthorizationApi - interface
+ * @export
+ * @interface AuthorizationApi
+ */
+export interface AuthorizationApiInterface {
+    /**
+     * 
+     * @summary Checks if user is authorized to perform the given operation.
+     * @param {AuthorizationBodyParams} authorizationBodyParams 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorizationApiInterface
+     */
+    authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams: AuthorizationBodyParams, options?: RawAxiosRequestConfig): AxiosPromise&lt;AuthorizedReponse&gt;;
+
+}
+
+/**
+ * AuthorizationApi - object-oriented interface
+ * @export
+ * @class AuthorizationApi
+ * @extends {BaseAPI}
+ */
+export class AuthorizationApi extends BaseAPI implements AuthorizationApiInterface {
+    /**
+     * 
+     * @summary Checks if user is authorized to perform the given operation.
+     * @param {AuthorizationBodyParams} authorizationBodyParams 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthorizationApi
+     */
+    public authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams: AuthorizationBodyParams, options?: RawAxiosRequestConfig) {
+        return AuthorizationApiFp(this.configuration).authorizationReferenceControllerAuthorizeByReference(authorizationBodyParams, options).then((request) &#x3D;&gt; request(this.axios, this.basePath));
+    }
+}
+
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'AuthorizationApiInterface.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

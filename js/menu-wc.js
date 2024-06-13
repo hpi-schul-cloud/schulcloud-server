@@ -328,6 +328,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/AuthorizationClientModule.html" data-type="entity-link" >AuthorizationClientModule</a>
+                            </li>
+                            <li class="link">
                                 <a href="modules/AuthorizationModule.html" data-type="entity-link" >AuthorizationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -4169,6 +4172,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AuthorApi.html" data-type="entity-link" >AuthorApi</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AuthorizationApi.html" data-type="entity-link" >AuthorizationApi</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AuthorizationBodyParams.html" data-type="entity-link" >AuthorizationBodyParams</a>
                             </li>
                             <li class="link">
@@ -4179,6 +4185,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/AuthorizationError.html" data-type="entity-link" >AuthorizationError</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AuthorizationErrorLoggableException.html" data-type="entity-link" >AuthorizationErrorLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AuthorizationForbiddenLoggableException.html" data-type="entity-link" >AuthorizationForbiddenLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/AuthorizationParams.html" data-type="entity-link" >AuthorizationParams</a>
@@ -4200,6 +4212,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/BaseAPI.html" data-type="entity-link" >BaseAPI</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/BaseAPI-1.html" data-type="entity-link" >BaseAPI</a>
                             </li>
                             <li class="link">
                                 <a href="classes/BaseDO.html" data-type="entity-link" class="deprecated-name">BaseDO</a>
@@ -4545,6 +4560,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Configuration.html" data-type="entity-link" >Configuration</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Configuration-1.html" data-type="entity-link" >Configuration</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ConsentEntity.html" data-type="entity-link" >ConsentEntity</a>
@@ -6227,6 +6245,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RequiredError.html" data-type="entity-link" >RequiredError</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RequiredError-1.html" data-type="entity-link" >RequiredError</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ResolvedAccountDto.html" data-type="entity-link" >ResolvedAccountDto</a>
                             </li>
                             <li class="link">
@@ -7374,6 +7395,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/AntivirusService.html" data-type="entity-link" >AntivirusService</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/AuthorizationClientAdapter.html" data-type="entity-link" >AuthorizationClientAdapter</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/AuthorizationHelper.html" data-type="entity-link" >AuthorizationHelper</a>
                                 </li>
                                 <li class="link">
@@ -8365,7 +8389,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/AuthorizableObject.html" data-type="entity-link" >AuthorizableObject</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/AuthorizationApiInterface.html" data-type="entity-link" >AuthorizationApiInterface</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AuthorizationBodyParams.html" data-type="entity-link" >AuthorizationBodyParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AuthorizationClientConfig.html" data-type="entity-link" >AuthorizationClientConfig</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/AuthorizationContext.html" data-type="entity-link" >AuthorizationContext</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AuthorizationContextParams.html" data-type="entity-link" >AuthorizationContextParams</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/AuthorizationLoaderService.html" data-type="entity-link" >AuthorizationLoaderService</a>
@@ -8375,6 +8411,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/AuthorizationParams.html" data-type="entity-link" >AuthorizationParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AuthorizedReponse.html" data-type="entity-link" >AuthorizedReponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/AutoParameterStrategy.html" data-type="entity-link" >AutoParameterStrategy</a>
@@ -8510,6 +8549,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ConfigurationParameters.html" data-type="entity-link" >ConfigurationParameters</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ConfigurationParameters-1.html" data-type="entity-link" >ConfigurationParameters</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ContextExternalToolEntityProps.html" data-type="entity-link" >ContextExternalToolEntityProps</a>
@@ -9256,6 +9298,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/RequestArgs.html" data-type="entity-link" >RequestArgs</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/RequestArgs-1.html" data-type="entity-link" >RequestArgs</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/RetryOptions.html" data-type="entity-link" >RetryOptions</a>
                             </li>
                             <li class="link">
@@ -9371,6 +9416,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ServerMap.html" data-type="entity-link" >ServerMap</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ServerMap-1.html" data-type="entity-link" >ServerMap</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/Session.html" data-type="entity-link" >Session</a>
