@@ -5,13 +5,13 @@ import { TextEncoder } from 'util';
 import { INestApplication, NotAcceptableException } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { createConfigModuleOptions } from '@src/config';
-import { Logger } from '@src/core/logger';
 import { of, throwError } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
+import { CoreModule } from '@src/core';
 import { TldrawRedisFactory, TldrawRedisService } from '../../redis';
 import { TldrawDrawing } from '../../entities';
 import { TldrawWsService } from '../../service';
@@ -22,6 +22,7 @@ import { TldrawWs } from '..';
 import { WsCloseCode, WsCloseMessage } from '../../types';
 import { TldrawConfig } from '../../config';
 
+// This is a unit test, no api test...need to be refactored
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
 	let gateway: TldrawWs;
@@ -41,6 +42,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
 				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
+				CoreModule,
 			],
 			providers: [
 				TldrawWs,
@@ -53,10 +55,6 @@ describe('WebSocketController (WsAdapter)', () => {
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 				{
 					provide: HttpService,
@@ -79,7 +77,7 @@ describe('WebSocketController (WsAdapter)', () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	describe('when tldraw connection is established', () => {
