@@ -57,7 +57,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Post('/upload-from-url/:schoolId/:parentType/:parentId')
+	@Post('/upload-from-url/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async uploadFromUrl(
 		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
@@ -77,7 +77,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiConsumes('multipart/form-data')
-	@Post('/upload/:schoolId/:parentType/:parentId')
+	@Post('/upload/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async upload(
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
@@ -187,7 +187,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 200, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
-	@Get('/list/:schoolId/:parentType/:parentId')
+	@Get('/list/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async list(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -232,7 +232,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Delete('/delete/:schoolId/:parentType/:parentId')
+	@Delete('/delete/:storageLocation/:storageLocationId/:parentType/:parentId')
 	@UseInterceptors(RequestLoggingInterceptor)
 	async deleteByParent(
 		@Param() params: FileRecordParams,
@@ -266,7 +266,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 201, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
-	@Post('/restore/:schoolId/:parentType/:parentId')
+	@Post('/restore/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async restore(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -299,7 +299,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Post('/copy/:schoolId/:parentType/:parentId')
+	@Post('/copy/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async copy(
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
