@@ -1,28 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserService } from '@modules/user';
+import { UserService } from '@modules/user/service/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course/course.repo';
 import { courseFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client/service/files-storage-client.service';
 import { BoardExternalReferenceType, ColumnBoard } from '../../domain';
 import { columnBoardFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';
-import { BoardNodeCopyService } from './board-node-copy.service';
 import { ColumnBoardCopyService } from './column-board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
+// Important: Don't move the BoardNodeCopyService import up to prevent import cycle!
+import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(ColumnBoardCopyService.name, () => {
 	let module: TestingModule;
 	let service: ColumnBoardCopyService;
 
 	let boardNodeService: DeepMocked<BoardNodeService>;
-	// let columnBoardTitleService: DeepMocked<ColumnBoardTitleService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let userService: DeepMocked<UserService>;
 	let boardNodeCopyService: DeepMocked<BoardNodeCopyService>;
-	// let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
