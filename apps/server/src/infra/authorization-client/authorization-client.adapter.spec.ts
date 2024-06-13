@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
@@ -285,21 +284,22 @@ describe(AuthorizationClientAdapter.name, () => {
 				});
 				const adapter = new AuthorizationClientAdapter(authorizationApi, request);
 
-				return { params, adapter };
+				const error = new Error('Authentication is required.');
+
+				return { params, adapter, error };
 			};
 
 			it('should throw an UnauthorizedException', async () => {
-				const { params, adapter } = setup();
+				const { params, adapter, error } = setup();
 
-				await expect(adapter.hasPermissionsByReference(params)).rejects.toThrowError(UnauthorizedException);
+				const expectedError = new AuthorizationErrorLoggableException(error, params);
+
+				await expect(adapter.hasPermissionsByReference(params)).rejects.toThrowError(expectedError);
 			});
 		});
 
 		describe('when authorizationReferenceControllerAuthorizeByReference returns error', () => {
 			const setup = () => {
-				const error = new Error('testError');
-				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
-
 				const params = {
 					context: {
 						action: Action.READ,
@@ -308,6 +308,9 @@ describe(AuthorizationClientAdapter.name, () => {
 					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
 					referenceId: 'someReferenceId',
 				};
+
+				const error = new Error('testError');
+				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(error);
 
 				return { params, error };
 			};
