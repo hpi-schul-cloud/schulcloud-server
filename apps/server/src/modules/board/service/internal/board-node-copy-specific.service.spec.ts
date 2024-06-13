@@ -42,6 +42,14 @@ import { BoardNodeCopyService } from './board-node-copy.service';
 describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
+	const toolFeatures: IToolFeatures = {
+		ctlToolsTabEnabled: false,
+		ltiToolsTabEnabled: false,
+		maxExternalToolLogoSizeInBytes: 0,
+		backEndUrl: '',
+		ctlToolsCopyEnabled: false,
+		ctlToolsReloadTimeMs: 0,
+	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 
@@ -51,7 +59,7 @@ describe(BoardNodeCopyService.name, () => {
 				BoardNodeCopyService,
 				{
 					provide: ToolFeatures,
-					useValue: createMock<IToolFeatures>(),
+					useValue: toolFeatures,
 				},
 				{
 					provide: ContextExternalToolService,
@@ -242,13 +250,31 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.elements ?? []).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
 		});
 
-		it('should replace the source id in image urls', async () => {
-			const { copyContext, linkElement, fileCopyStatus } = setup();
+		describe('when imageUrl is present', () => {
+			it('should replace the source id in image urls', async () => {
+				const { copyContext, linkElement, fileCopyStatus } = setup();
 
-			const result = await service.copyLinkElement(linkElement, copyContext);
+				const result = await service.copyLinkElement(linkElement, copyContext);
 
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			expect((result.copyEntity as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				expect((result.copyEntity as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
+			});
+		});
+
+		describe('when no imageUrl is present', () => {
+			const setupWithoutImageUrl = () => {
+				const { copyContext, fileCopyStatus } = setup();
+				const linkElement = linkElementFactory.build({ imageUrl: undefined });
+
+				return { copyContext, linkElement, fileCopyStatus };
+			};
+			it('should replace the source id in image urls', async () => {
+				const { copyContext, linkElement } = setupWithoutImageUrl();
+
+				const result = await service.copyLinkElement(linkElement, copyContext);
+
+				expect((result.copyEntity as LinkElement).imageUrl).toBe('');
+			});
 		});
 	});
 
@@ -356,32 +382,120 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(ExternalToolElement);
 		});
 
-		describe('when ctl tools copy is enabled and external tool is attached', () => {
-			const setupToolElement = () => {
-				const { copyContext } = setupContext();
+		describe('when ctl tools copy is enabled', () => {
+			const setupCopyEnabled = () => {
+				const { copyContext, externalToolElement } = setup();
 
-				const tool = contextExternalToolFactory.build();
-				const toolCopy = contextExternalToolFactory.build();
-				contextExternalToolService.findById.mockResolvedValueOnce(tool);
-				contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(toolCopy);
+				toolFeatures.ctlToolsCopyEnabled = true;
 
-				const externalToolElement = externalToolElementFactory.build({
-					contextExternalToolId: tool.id,
-				});
-
-				return { copyContext, externalToolElement, tool, toolCopy };
+				return { copyContext, externalToolElement };
 			};
 
-			it('should copy the external tool', async () => {
-				const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
+			describe('when linked external tool is found', () => {
+				const setupToolElement = () => {
+					const { copyContext, externalToolElement } = setupCopyEnabled();
+
+					const tool = contextExternalToolFactory.build();
+					const toolCopy = contextExternalToolFactory.build();
+					contextExternalToolService.findById.mockResolvedValueOnce(tool);
+					contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(toolCopy);
+					externalToolElement.contextExternalToolId = tool.id;
+
+					return { copyContext, externalToolElement, tool, toolCopy };
+				};
+
+				it('should copy the external tool', async () => {
+					const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
+
+					const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+					expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
+					expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tool, result.copyEntity?.id);
+					expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+				});
+			});
+
+			describe('when linked external tool is not found', () => {
+				const setupToolNotFound = () => {
+					const { copyContext, externalToolElement } = setupCopyEnabled();
+
+					contextExternalToolService.findById.mockResolvedValueOnce(null);
+
+					return { copyContext, externalToolElement };
+				};
+
+				it('should return failure status', async () => {
+					const { copyContext, externalToolElement } = setupToolNotFound();
+
+					const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+					expect(result.status).toEqual(CopyStatusEnum.FAIL);
+				});
+			});
+
+			describe('when no external tool is linked', () => {
+				const setupNoExternalTool = () => {
+					const { copyContext, externalToolElement } = setupCopyEnabled();
+
+					externalToolElement.contextExternalToolId = undefined;
+
+					return { copyContext, externalToolElement };
+				};
+
+				it('should return success status', async () => {
+					const { copyContext, externalToolElement } = setupNoExternalTool();
+
+					const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+					expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+				});
+			});
+		});
+
+		describe('when ctl tools copy is disabled', () => {
+			const setupCopyDisabled = () => {
+				const { copyContext, externalToolElement } = setup();
+
+				toolFeatures.ctlToolsCopyEnabled = false;
+
+				return { copyContext, externalToolElement };
+			};
+
+			it('should return success status', async () => {
+				const { copyContext, externalToolElement } = setupCopyDisabled();
 
 				const result = await service.copyExternalToolElement(externalToolElement, copyContext);
 
-				expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
-				expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tool, result.copyEntity?.id);
-				expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 		});
+
+		// 	describe('when ctl tools copy is enabled and external tool is attached', () => {
+		// 		const setupToolElement = () => {
+		// 			const { copyContext } = setupContext();
+
+		// 			const tool = contextExternalToolFactory.build();
+		// 			const toolCopy = contextExternalToolFactory.build();
+		// 			contextExternalToolService.findById.mockResolvedValueOnce(tool);
+		// 			contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(toolCopy);
+
+		// 			const externalToolElement = externalToolElementFactory.build({
+		// 				contextExternalToolId: tool.id,
+		// 			});
+
+		// 			return { copyContext, externalToolElement, tool, toolCopy };
+		// 		};
+
+		// 		it('should copy the external tool', async () => {
+		// 			const { copyContext, externalToolElement, tool, toolCopy } = setupToolElement();
+
+		// 			const result = await service.copyExternalToolElement(externalToolElement, copyContext);
+
+		// 			expect(contextExternalToolService.findById).toHaveBeenCalledWith(tool.id);
+		// 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(tool, result.copyEntity?.id);
+		// 			expect((result.copyEntity as ExternalToolElement).contextExternalToolId).toEqual(toolCopy.id);
+		// 		});
+		// 	});
 	});
 
 	describe('copy collaborative text editor element', () => {

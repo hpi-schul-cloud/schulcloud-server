@@ -88,6 +88,7 @@ export class BoardNodeCopyService {
 				result = await this.copyMediaExternalToolElement(boardNode as MediaExternalToolElement, context);
 				break;
 			default:
+				/* istanbul ignore next */
 				handleNonExhaustiveSwitch(type);
 		}
 
