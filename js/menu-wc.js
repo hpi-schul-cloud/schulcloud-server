@@ -3455,21 +3455,24 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLicenseModule.html" data-type="entity-link" >UserLicenseModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-UserLicenseModule-40c7eed84ece3c66fc07dd0d2668a4574014da9905a3f7cb5c8f0c428223898ca38fd8711128ea8fea8e01fdebfeb7669fb9a87ad5cbade733486ef77189aad2"' : 'data-bs-target="#xs-injectables-links-module-UserLicenseModule-40c7eed84ece3c66fc07dd0d2668a4574014da9905a3f7cb5c8f0c428223898ca38fd8711128ea8fea8e01fdebfeb7669fb9a87ad5cbade733486ef77189aad2"' }>
+                                        'data-bs-target="#injectables-links-module-UserLicenseModule-e5824a5db0b919c2475e4fd8e22b12d73fd314eb1c9bffb85b2484ef1f21291d5ad95cd370f6ddd5816213798df7c324bc8a394ce9b9a9d100c405aa110e4ea8"' : 'data-bs-target="#xs-injectables-links-module-UserLicenseModule-e5824a5db0b919c2475e4fd8e22b12d73fd314eb1c9bffb85b2484ef1f21291d5ad95cd370f6ddd5816213798df7c324bc8a394ce9b9a9d100c405aa110e4ea8"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLicenseModule-40c7eed84ece3c66fc07dd0d2668a4574014da9905a3f7cb5c8f0c428223898ca38fd8711128ea8fea8e01fdebfeb7669fb9a87ad5cbade733486ef77189aad2"' :
-                                        'id="xs-injectables-links-module-UserLicenseModule-40c7eed84ece3c66fc07dd0d2668a4574014da9905a3f7cb5c8f0c428223898ca38fd8711128ea8fea8e01fdebfeb7669fb9a87ad5cbade733486ef77189aad2"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLicenseModule-e5824a5db0b919c2475e4fd8e22b12d73fd314eb1c9bffb85b2484ef1f21291d5ad95cd370f6ddd5816213798df7c324bc8a394ce9b9a9d100c405aa110e4ea8"' :
+                                        'id="xs-injectables-links-module-UserLicenseModule-e5824a5db0b919c2475e4fd8e22b12d73fd314eb1c9bffb85b2484ef1f21291d5ad95cd370f6ddd5816213798df7c324bc8a394ce9b9a9d100c405aa110e4ea8"' }>
+                                        <li class="link">
+                                            <a href="injectables/MediaSourceRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MediaSourceRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/MediaSourceService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MediaSourceService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/MediaUserLicenseRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MediaUserLicenseRepo</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/MediaUserLicenseService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MediaUserLicenseService</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/UserLicenseRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLicenseRepo</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/UserLicenseService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLicenseService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -3950,6 +3953,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/Material.html" data-type="entity-link" >Material</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/MediaSourceEntity.html" data-type="entity-link" >MediaSourceEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/MediaUserLicenseEntity.html" data-type="entity-link" >MediaUserLicenseEntity</a>
@@ -5744,6 +5750,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MediaLineResponseMapper.html" data-type="entity-link" >MediaLineResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/MediaSource.html" data-type="entity-link" >MediaSource</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MediaSourceMapper.html" data-type="entity-link" >MediaSourceMapper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MediaUserLicense.html" data-type="entity-link" >MediaUserLicense</a>
                             </li>
                             <li class="link">
@@ -5829,6 +5841,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Migration20240606142059.html" data-type="entity-link" >Migration20240606142059</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Migration20240611081033.html" data-type="entity-link" >Migration20240611081033</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Migration20240612122202.html" data-type="entity-link" >Migration20240612122202</a>
@@ -7130,9 +7145,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UserLicenseEntity.html" data-type="entity-link" >UserLicenseEntity</a>
                             </li>
                             <li class="link">
-                                <a href="classes/UserLicenseScope.html" data-type="entity-link" >UserLicenseScope</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/UserListResponse.html" data-type="entity-link" >UserListResponse</a>
                             </li>
                             <li class="link">
@@ -7854,6 +7866,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/MediaLineUc.html" data-type="entity-link" >MediaLineUc</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/MediaSourceRepo.html" data-type="entity-link" >MediaSourceRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/MediaSourceService.html" data-type="entity-link" >MediaSourceService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/MediaUserLicenseRepo.html" data-type="entity-link" >MediaUserLicenseRepo</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/MediaUserLicenseService.html" data-type="entity-link" >MediaUserLicenseService</a>
                                 </li>
                                 <li class="link">
@@ -8224,12 +8245,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserImportUc.html" data-type="entity-link" >UserImportUc</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/UserLicenseRepo.html" data-type="entity-link" >UserLicenseRepo</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/UserLicenseService.html" data-type="entity-link" >UserLicenseService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationRepo.html" data-type="entity-link" >UserLoginMigrationRepo</a>
@@ -9071,6 +9086,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/MediaLineProps.html" data-type="entity-link" >MediaLineProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/MediaSourceEntityProps.html" data-type="entity-link" >MediaSourceEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/MediaSourceProps.html" data-type="entity-link" >MediaSourceProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/MediaUserLicenseEntityProps.html" data-type="entity-link" >MediaUserLicenseEntityProps</a>

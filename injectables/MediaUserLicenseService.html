@@ -137,7 +137,22 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserLicense" >deleteUserLicense</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMediaUserLicensesForUser" >getMediaUserLicensesForUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#hasLicenseForExternalTool" >hasLicenseForExternalTool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#saveUserLicense" >saveUserLicense</a>
                             </li>
                         </ul>
                     </td>
@@ -151,12 +166,212 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(mediaUserLicenseRepo: <a href="../injectables/MediaUserLicenseRepo.html" target="_self">MediaUserLicenseRepo</a>, mediaSourceRepo: <a href="../injectables/MediaSourceRepo.html" target="_self">MediaSourceRepo</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/user-license/service/media-user-license.service.ts:8</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>mediaUserLicenseRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaUserLicenseRepo.html" target="_self" >MediaUserLicenseRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaSourceRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaSourceRepo.html" target="_self" >MediaSourceRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserLicense"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUserLicense</b></span>
+                        <a href="#deleteUserLicense"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserLicense(license: <a href="../classes/MediaUserLicense.html" target="_self">MediaUserLicense</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/user-license/service/media-user-license.service.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>license</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaUserLicense.html" target="_self" >MediaUserLicense</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMediaUserLicensesForUser"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMediaUserLicensesForUser</b></span>
+                        <a href="#getMediaUserLicensesForUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMediaUserLicensesForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/user-license/service/media-user-license.service.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;MediaUserLicense[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -179,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/modules/user-license/service/media-user-license.service.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/user-license/service/media-user-license.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -238,6 +453,76 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saveUserLicense"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>saveUserLicense</b></span>
+                        <a href="#saveUserLicense"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveUserLicense(license: <a href="../classes/MediaUserLicense.html" target="_self">MediaUserLicense</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/user-license/service/media-user-license.service.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>license</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaUserLicense.html" target="_self" >MediaUserLicense</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -247,16 +532,42 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalToolMedium } from &#x27;@modules/tool/external-tool/domain&#x27;;
 import { MediaUserLicense } from &#x27;@modules/user-license&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { MediaSourceRepo, MediaUserLicenseRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class MediaUserLicenseService {
+	constructor(
+		private readonly mediaUserLicenseRepo: MediaUserLicenseRepo,
+		private readonly mediaSourceRepo: MediaSourceRepo
+	) {}
+
+	public async getMediaUserLicensesForUser(userId: EntityId): Promise&lt;MediaUserLicense[]&gt; {
+		const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.mediaUserLicenseRepo.findMediaUserLicensesForUser(userId);
+
+		return mediaUserLicenses;
+	}
+
+	public async saveUserLicense(license: MediaUserLicense): Promise&lt;void&gt; {
+		if (license.mediaSource) {
+			await this.mediaSourceRepo.save(license.mediaSource);
+		}
+
+		await this.mediaUserLicenseRepo.save(license);
+	}
+
+	public async deleteUserLicense(license: MediaUserLicense): Promise&lt;void&gt; {
+		await this.mediaUserLicenseRepo.delete(license);
+	}
+
 	public hasLicenseForExternalTool(
 		externalToolMedium: ExternalToolMedium,
 		mediaUserLicenses: MediaUserLicense[]
 	): boolean {
 		return mediaUserLicenses.some(
 			(license: MediaUserLicense) &#x3D;&gt;
-				license.mediumId &#x3D;&#x3D;&#x3D; externalToolMedium.mediumId &amp;&amp; license.mediaSourceId &#x3D;&#x3D;&#x3D; externalToolMedium.mediaSourceId
+				license.mediumId &#x3D;&#x3D;&#x3D; externalToolMedium.mediumId &amp;&amp;
+				license.mediaSource?.sourceId &#x3D;&#x3D;&#x3D; externalToolMedium.mediaSourceId
 		);
 	}
 }

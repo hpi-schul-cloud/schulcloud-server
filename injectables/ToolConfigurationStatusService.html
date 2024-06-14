@@ -178,12 +178,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>, userLicenseService: <a href="../injectables/UserLicenseService.html" target="_self">UserLicenseService</a>, mediaUserLicenseService: <a href="../injectables/MediaUserLicenseService.html" target="_self">MediaUserLicenseService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>)</code>
+<code>constructor(commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>, mediaUserLicenseService: <a href="../injectables/MediaUserLicenseService.html" target="_self">MediaUserLicenseService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -205,18 +205,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/CommonToolValidationService.html" target="_self" >CommonToolValidationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>userLicenseService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserLicenseService.html" target="_self" >UserLicenseService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -285,8 +273,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -595,8 +583,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -677,8 +665,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-configuration-status.service.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -743,8 +731,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaBoardConfig } from &#x27;@modules/board/media-board.config&#x27;;
-import { MediaUserLicense, UserLicenseService } from &#x27;@modules/user-license&#x27;;
-import { MediaUserLicenseService } from &#x27;@modules/user-license/service&#x27;;
+import { MediaUserLicense, MediaUserLicenseService } from &#x27;@modules/user-license&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
@@ -763,7 +750,6 @@ import { ContextExternalToolLaunchable } from &#x27;../domain&#x27;;
 export class ToolConfigurationStatusService {
 	constructor(
 		private readonly commonToolValidationService: CommonToolValidationService,
-		private readonly userLicenseService: UserLicenseService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly configService: ConfigService&lt;MediaBoardConfig, true&gt;
 	) {}
@@ -823,7 +809,9 @@ export class ToolConfigurationStatusService {
 
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise&lt;boolean&gt; {
 		if (this.configService.get(&#x27;FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED&#x27;)) {
-			const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.userLicenseService.getMediaUserLicensesForUser(userId);
+			const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.mediaUserLicenseService.getMediaUserLicensesForUser(
+				userId
+			);
 
 			const externalToolMedium &#x3D; externalTool.medium;
 			if (externalToolMedium) {

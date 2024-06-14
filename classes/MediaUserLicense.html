@@ -185,7 +185,7 @@
                                     <a href="#mediumId" >mediumId</a>
                                 </li>
                                 <li>
-                                    <a href="#mediaSourceId" >mediaSourceId</a>
+                                    <a href="#mediaSource" >mediaSource</a>
                                 </li>
                             </ul>
                         </td>
@@ -312,7 +312,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:10</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:11</a></div>
                                 </td>
                             </tr>
 
@@ -323,7 +323,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:14</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:15</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -369,69 +369,22 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="mediaSourceId"></a>
-                        <span class="name"><b>mediaSourceId</b><a href="#mediaSourceId"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="mediaSource"></a>
+                        <span class="name"><b>mediaSource</b><a href="#mediaSource"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>mediaSourceId()</code></span>
+                        <span class="accessor"><b>get</b><code>mediaSource()</code></span>
                     </td>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:18</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:19</a></div>
                                 </td>
                             </tr>
 
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>set</b><code>mediaSourceId(value: string | undefined)</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/user-license/domain/media-user-license.ts:22</a></div>
-                                </td>
-                            </tr>
-                    <tr>
-                        <td class="col-md-4">
-
-                                <div class="io-description">
-                                        <b>Parameters :</b>
-                                        <table class="params">
-                                            <thead>
-                                                <tr>
-                                                    <td>Name</td>
-                                                        <td>Type</td>
-                                                    <td>Optional</td>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                    <tr>
-                                                            <td>value</td>
-                                                    
-                                                            <td>
-                                                                        <code>string | undefined</code>
-                                                            </td>
-                                                    
-                                                        <td>
-                                                                No
-                                                        </td>
-                                                        
-                                                    </tr>
-                                            </tbody>
-                                        </table>
-                                </div>
-                                <div>
-                                </div>
-                                <div class="io-description">
-                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                                </div>
-                        </td>
-                    </tr>
             </tbody>
         </table>
 </section>
@@ -439,12 +392,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserLicense, UserLicenseProps } from &#x27;./user-license&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaSource } from &#x27;./media-source&#x27;;
+import { UserLicense, UserLicenseProps } from &#x27;./user-license&#x27;;
 
 export interface MediaUserLicenseProps extends UserLicenseProps {
 	mediumId: string;
 
-	mediaSourceId?: string;
+	mediaSource?: MediaSource;
 }
 
 export class MediaUserLicense extends UserLicense&lt;MediaUserLicenseProps&gt; {
@@ -456,12 +410,8 @@ export class MediaUserLicense extends UserLicense&lt;MediaUserLicenseProps&gt; {
 		this.props.mediumId &#x3D; value;
 	}
 
-	get mediaSourceId(): string | undefined {
-		return this.props.mediaSourceId;
-	}
-
-	set mediaSourceId(value: string | undefined) {
-		this.props.mediaSourceId &#x3D; value;
+	get mediaSource(): MediaSource | undefined {
+		return this.props.mediaSource;
 	}
 }
 </code></pre>

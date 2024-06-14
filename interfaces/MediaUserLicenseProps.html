@@ -148,9 +148,9 @@
                             <ul class="index-list">
                                 <li>
                                             <span class="modifier">Optional</span>
-                                        <a href="#mediaSourceId" 
+                                        <a href="#mediaSource" 
 >
-                                            mediaSourceId
+                                            mediaSource
                                         </a>
                                 </li>
                                 <li>
@@ -174,9 +174,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="mediaSourceId"></a>
-                                        <span class="name "><b>mediaSourceId</b>
-                                            <a href="#mediaSourceId">
+                                        <a name="mediaSource"></a>
+                                        <span class="name "><b>mediaSource</b>
+                                            <a href="#mediaSource">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -184,7 +184,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>mediaSourceId:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>mediaSource:         <code><a href="../classes/MediaSource.html" target="_self" >MediaSource</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -192,7 +192,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <i>Type : </i>        <code><a href="../classes/MediaSource.html" target="_self" >MediaSource</a></code>
 
                                         </td>
                                     </tr>
@@ -246,12 +246,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserLicense, UserLicenseProps } from &#x27;./user-license&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaSource } from &#x27;./media-source&#x27;;
+import { UserLicense, UserLicenseProps } from &#x27;./user-license&#x27;;
 
 export interface MediaUserLicenseProps extends UserLicenseProps {
 	mediumId: string;
 
-	mediaSourceId?: string;
+	mediaSource?: MediaSource;
 }
 
 export class MediaUserLicense extends UserLicense&lt;MediaUserLicenseProps&gt; {
@@ -263,12 +264,8 @@ export class MediaUserLicense extends UserLicense&lt;MediaUserLicenseProps&gt; {
 		this.props.mediumId &#x3D; value;
 	}
 
-	get mediaSourceId(): string | undefined {
-		return this.props.mediaSourceId;
-	}
-
-	set mediaSourceId(value: string | undefined) {
-		this.props.mediaSourceId &#x3D; value;
+	get mediaSource(): MediaSource | undefined {
+		return this.props.mediaSource;
 	}
 }
 </code></pre>

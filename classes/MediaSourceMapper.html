@@ -79,7 +79,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -89,9 +89,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >UserLicenseService</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >MediaSourceMapper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,8 +119,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/user-license/service/user-license.service.ts</code>
+            <code>apps/server/src/modules/user-license/repo/media-source.mapper.ts</code>
         </p>
+
 
 
 
@@ -136,19 +141,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#deleteUserLicense" >deleteUserLicense</a>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapEntityToDo" >mapEntityToDo</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getMediaUserLicensesForUser" >getMediaUserLicensesForUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#saveUserLicense" >saveUserLicense</a>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToEntityProperties" >mapToEntityProperties</a>
                             </li>
                         </ul>
                     </td>
@@ -162,54 +160,7 @@
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(userLicenseRepo: <a href="../injectables/UserLicenseRepo.html" target="_self">UserLicenseRepo</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/user-license/service/user-license.service.ts:8</a></div>
-                            </td>
-                        </tr>
 
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>userLicenseRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserLicenseRepo.html" target="_self" >UserLicenseRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
             <section data-compodoc="block-methods">
     
@@ -220,27 +171,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteUserLicense"></a>
+                    <a name="mapEntityToDo"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteUserLicense</b></span>
-                        <a href="#deleteUserLicense"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Static</span>
+                        <span ><b>mapEntityToDo</b></span>
+                        <a href="#mapEntityToDo"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteUserLicense(license: <a href="../classes/MediaUserLicense.html" target="_self">MediaUserLicense</a>)</code>
+                    <code>mapEntityToDo(entity: <a href="../entitys/MediaSourceEntity.html" target="_self">MediaSourceEntity</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/user-license/service/user-license.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/user-license/repo/media-source.mapper.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -261,9 +211,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>license</td>
+                                                <td>entity</td>
                                             <td>
-                                                            <code><a href="../classes/MediaUserLicense.html" target="_self" >MediaUserLicense</a></code>
+                                                            <code><a href="../entitys/MediaSourceEntity.html" target="_self" >MediaSourceEntity</a></code>
                                             </td>
 
                                             <td>
@@ -276,7 +226,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/MediaSource.html" target="_self" >MediaSource</a></code>
 
                         </div>
                             <div class="io-description">
@@ -290,27 +240,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getMediaUserLicensesForUser"></a>
+                    <a name="mapToEntityProperties"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getMediaUserLicensesForUser</b></span>
-                        <a href="#getMediaUserLicensesForUser"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToEntityProperties</b></span>
+                        <a href="#mapToEntityProperties"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getMediaUserLicensesForUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>mapToEntityProperties(entityDO: <a href="../classes/MediaSource.html" target="_self">MediaSource</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/user-license/service/user-license.service.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/user-license/repo/media-source.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -331,9 +280,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>userId</td>
+                                                <td>entityDO</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../classes/MediaSource.html" target="_self" >MediaSource</a></code>
                                             </td>
 
                                             <td>
@@ -346,77 +295,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;MediaUserLicense[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="saveUserLicense"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>saveUserLicense</b></span>
-                        <a href="#saveUserLicense"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>saveUserLicense(license: <a href="../classes/MediaUserLicense.html" target="_self">MediaUserLicense</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/user-license/service/user-license.service.ts:20</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>license</td>
-                                            <td>
-                                                            <code><a href="../classes/MediaUserLicense.html" target="_self" >MediaUserLicense</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/MediaSource.html" target="_self" >EntityData&lt;MediaSourceEntity&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -428,45 +307,41 @@
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { MediaUserLicense } from &#x27;../domain&#x27;;
-import { UserLicenseType } from &#x27;../entity&#x27;;
-import { UserLicenseRepo } from &#x27;../repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData } from &#x27;@mikro-orm/core&#x27;;
+import { MediaSource } from &#x27;../domain&#x27;;
+import { MediaSourceEntity } from &#x27;../entity&#x27;;
 
-@Injectable()
-export class UserLicenseService {
-	constructor(private readonly userLicenseRepo: UserLicenseRepo) {}
+export class MediaSourceMapper {
+	public static mapToEntityProperties(entityDO: MediaSource): EntityData&lt;MediaSourceEntity&gt; {
+		const entityProps: EntityData&lt;MediaSourceEntity&gt; &#x3D; {
+			name: entityDO.name,
+			sourceId: entityDO.sourceId,
+		};
 
-	public async getMediaUserLicensesForUser(userId: EntityId): Promise&lt;MediaUserLicense[]&gt; {
-		const mediaUserLicenses: MediaUserLicense[] &#x3D; await this.userLicenseRepo.findUserLicenses({
-			userId,
-			type: UserLicenseType.MEDIA_LICENSE,
+		return entityProps;
+	}
+
+	public static mapEntityToDo(entity: MediaSourceEntity): MediaSource {
+		const domainObject &#x3D; new MediaSource({
+			id: entity.id,
+			name: entity.name,
+			sourceId: entity.sourceId,
 		});
 
-		return mediaUserLicenses;
-	}
-
-	public async saveUserLicense(license: MediaUserLicense): Promise&lt;void&gt; {
-		await this.userLicenseRepo.saveUserLicense(license);
-	}
-
-	public async deleteUserLicense(license: MediaUserLicense): Promise&lt;void&gt; {
-		await this.userLicenseRepo.deleteUserLicense(license);
+		return domainObject;
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -501,8 +376,8 @@ export class UserLicenseService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'UserLicenseService.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'MediaSourceMapper.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

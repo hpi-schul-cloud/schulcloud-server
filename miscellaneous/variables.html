@@ -904,6 +904,12 @@
                             <a href="#mediaLineFactory" title="apps/server/src/modules/board/testing/media-line.factory.ts" ><b>mediaLineFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-line.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#mediaSourceEntityFactory" title="apps/server/src/modules/user-license/testing/media-source-entity.factory.ts" ><b>mediaSourceEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-source-entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mediaSourceFactory" title="apps/server/src/modules/user-license/testing/media-source.factory.ts" ><b>mediaSourceFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-source.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#mediaUserLicenseEntityFactory" title="apps/server/src/modules/user-license/testing/media-user-license-entity.factory.ts" ><b>mediaUserLicenseEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../media-user-license-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -2219,6 +2225,7 @@ Do not edit the class manually.</p>
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
 	InstanceEntity,
+	MediaSourceEntity,
 ]</code>
                     </td>
                 </tr>
@@ -16218,6 +16225,67 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/user-license/testing/media-source-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaSourceEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaSourceEntityFactory</b></span>
+                        <a href="#mediaSourceEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaSourceEntity, MediaSourceEntityProps&gt;(
+	MediaSourceEntity,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			name: &#x60;media-source-${sequence}&#x60;,
+			sourceId: &#x60;source-id-${sequence}&#x60;,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/user-license/testing/media-source.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mediaSourceFactory"></a>
+                    <span class="name">
+                        <span ><b>mediaSourceFactory</b></span>
+                        <a href="#mediaSourceFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;MediaSource, MediaSourceProps&gt;(MediaSource, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x60;media-source-${sequence}&#x60;,
+		sourceId: &#x60;source-id-${sequence}&#x60;,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/user-license/testing/media-user-license-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -16237,13 +16305,10 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	MediaUserLicenseEntity,
 	({ sequence }) &#x3D;&gt; {
 		return {
-			id: new ObjectId().toHexString(),
 			user: userFactory.build(),
 			type: UserLicenseType.MEDIA_LICENSE,
 			mediumId: &#x60;medium-${sequence}&#x60;,
-			mediaSourceId: &#x60;media-source-${sequence}&#x60;,
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			mediaSource: mediaSourceEntityFactory.buildWithId(),
 		};
 	}
 )</code>
@@ -16277,7 +16342,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			userId: new ObjectId().toHexString(),
 			type: UserLicenseType.MEDIA_LICENSE,
 			mediumId: &#x60;medium-${sequence}&#x60;,
-			mediaSourceId: &#x60;media-source-${sequence}&#x60;,
+			mediaSource: mediaSourceFactory.build(),
 		};
 	}
 )</code>
@@ -20923,8 +20988,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>Factory.define&lt;SchulconnexLizenzInfoResponse[]&gt;(() &#x3D;&gt; [
-	{
+                        <i>Default value : </i><code>Factory.define&lt;SchulconnexLizenzInfoResponse&gt;(() &#x3D;&gt; {
+	return {
 		target: {
 			uid: &#x27;bildungscloud&#x27;,
 			partOf: &#x27;&#x27;,
@@ -20934,8 +20999,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 				action: [SchulconnexLizenzInfoActionType.EXECUTE],
 			},
 		],
-	},
-])</code>
+	};
+})</code>
                     </td>
                 </tr>
 
