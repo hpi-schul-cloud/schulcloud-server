@@ -200,7 +200,7 @@ describe(SchulconnexRestClient.name, () => {
 		describe('when requesting lizenz-info', () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
-				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.build();
+				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
@@ -235,7 +235,7 @@ describe(SchulconnexRestClient.name, () => {
 			const setup = () => {
 				const accessToken = 'accessToken';
 				const customUrl = 'https://override.url/lizenz-info';
-				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.build();
+				const response: SchulconnexLizenzInfoResponse[] = schulconnexLizenzInfoResponseFactory.buildList(1);
 
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
