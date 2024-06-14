@@ -39,14 +39,9 @@ export class MediaUserLicenseRepo extends BaseDomainObjectRepo<MediaUserLicense,
 			user: this.em.getReference(User, entityDO.userId),
 			type: UserLicenseType.MEDIA_LICENSE,
 			mediumId: entityDO.mediumId,
-			mediaSource: entityDO.mediaSource
-				? new MediaSourceEntity({
-						id: entityDO.mediaSource.id,
-						name: entityDO.mediaSource.name,
-						sourceId: entityDO.mediaSource.sourceId,
-				  })
-				: undefined,
+			mediaSource: entityDO.mediaSource ? this.em.getReference(MediaSourceEntity, entityDO.mediaSource.id) : undefined,
 		};
+
 		return entityProps;
 	}
 

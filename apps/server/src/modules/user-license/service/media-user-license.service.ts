@@ -2,11 +2,14 @@ import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaUserLicense } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaUserLicenseRepo } from '../repo';
+import { MediaSourceRepo, MediaUserLicenseRepo } from '../repo';
 
 @Injectable()
 export class MediaUserLicenseService {
-	constructor(private readonly mediaUserLicenseRepo: MediaUserLicenseRepo) {}
+	constructor(
+		private readonly mediaUserLicenseRepo: MediaUserLicenseRepo,
+		private readonly mediaSourceRepo: MediaSourceRepo
+	) {}
 
 	public async getMediaUserLicensesForUser(userId: EntityId): Promise<MediaUserLicense[]> {
 		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseRepo.findMediaUserLicensesForUser(userId);
@@ -15,6 +18,10 @@ export class MediaUserLicenseService {
 	}
 
 	public async saveUserLicense(license: MediaUserLicense): Promise<void> {
+		if (license.mediaSource) {
+			await this.mediaSourceRepo.save(license.mediaSource);
+		}
+
 		await this.mediaUserLicenseRepo.save(license);
 	}
 

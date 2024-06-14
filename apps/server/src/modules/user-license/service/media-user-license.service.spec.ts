@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaUserLicense } from '../domain';
-import { MediaUserLicenseRepo } from '../repo';
+import { MediaSourceRepo, MediaUserLicenseRepo } from '../repo';
 import { mediaSourceFactory, mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseService } from './media-user-license.service';
 
@@ -12,6 +12,7 @@ describe(MediaUserLicenseService.name, () => {
 	let service: MediaUserLicenseService;
 
 	let mediaUserLicenseRepo: DeepMocked<MediaUserLicenseRepo>;
+	let mediaSourceRepo: DeepMocked<MediaSourceRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,11 +22,16 @@ describe(MediaUserLicenseService.name, () => {
 					provide: MediaUserLicenseRepo,
 					useValue: createMock<MediaUserLicenseRepo>(),
 				},
+				{
+					provide: MediaSourceRepo,
+					useValue: createMock<MediaSourceRepo>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(MediaUserLicenseService);
 		mediaUserLicenseRepo = module.get(MediaUserLicenseRepo);
+		mediaSourceRepo = module.get(MediaSourceRepo);
 	});
 
 	afterAll(async () => {
@@ -64,7 +70,15 @@ describe(MediaUserLicenseService.name, () => {
 	});
 
 	describe('saveUserLicense', () => {
-		it('should call user license repo with correct arguments', async () => {
+		it('should save the media source', async () => {
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			await service.saveUserLicense(mediaUserLicense);
+
+			expect(mediaSourceRepo.save).toHaveBeenCalledWith(mediaUserLicense.mediaSource);
+		});
+
+		it('should save the media user license', async () => {
 			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
 			await service.saveUserLicense(mediaUserLicense);

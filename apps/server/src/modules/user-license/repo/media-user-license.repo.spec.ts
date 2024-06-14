@@ -97,13 +97,12 @@ describe(MediaUserLicenseRepo.name, () => {
 				expect(result).toEqual(mediaUserLicense);
 			});
 
-			it('should save the media user license with its media source', async () => {
-				const { mediaUserLicense, mediaSource } = setup();
+			it('should save the media user license', async () => {
+				const { mediaUserLicense } = setup();
 
 				await repo.save(mediaUserLicense);
 
-				expect(await em.findOne(MediaUserLicenseEntity, { id: mediaUserLicense.id })).toBeDefined();
-				expect(await em.findOne(MediaSourceEntity, { id: mediaSource.id })).toBeDefined();
+				expect(await em.findOne(MediaUserLicenseEntity, { id: mediaUserLicense.id })).not.toBeNull();
 			});
 		});
 	});
