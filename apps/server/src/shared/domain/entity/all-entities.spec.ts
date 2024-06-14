@@ -1,7 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { createCollections } from '@shared/testing';
 import { ALL_ENTITIES } from '.';
 
 describe('BaseRepo', () => {
@@ -17,10 +18,11 @@ describe('BaseRepo', () => {
 
 		em = module.get(EntityManager);
 		orm = module.get(MikroORM);
+
+		await createCollections(em);
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

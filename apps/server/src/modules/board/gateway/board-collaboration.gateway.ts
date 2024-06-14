@@ -2,10 +2,14 @@ import { WsValidationPipe, Socket } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets';
-import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
-import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
-import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
-import { BoardDoAuthorizableService } from '../service';
+import { WsJwtAuthGuard } from '@modules/authentication/guard/ws-jwt-auth.guard';
+import {
+	BoardResponseMapper,
+	CardResponseMapper,
+	ColumnResponseMapper,
+	ContentElementResponseFactory,
+} from '../controller/mapper';
+import { BoardNodeAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
 	CreateCardMessageParams,
@@ -39,7 +43,7 @@ export class BoardCollaborationGateway {
 		private readonly columnUc: ColumnUc,
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
-		private readonly authorizableService: BoardDoAuthorizableService // to be removed
+		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
 	) {}
 
 	private getCurrentUser(socket: Socket) {
@@ -125,9 +129,11 @@ export class BoardCollaborationGateway {
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const card = await this.columnUc.createCard(userId, data.columnId);
+			const newCard = CardResponseMapper.mapToResponse(card);
+
 			const responsePayload = {
 				...data,
-				newCard: card.getProps(),
+				newCard,
 			};
 
 			await emitter.emitToClientAndRoom(responsePayload);
@@ -341,7 +347,7 @@ export class BoardCollaborationGateway {
 
 	private async getRootIdForId(id: string) {
 		const authorizable = await this.authorizableService.findById(id);
-		const rootId = authorizable.rootDo.id;
+		const rootId = authorizable.rootNode.id;
 
 		return rootId;
 	}

@@ -1,4 +1,3 @@
-import { ConsoleWriterModule } from '@infra/console';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
@@ -9,29 +8,31 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
+import { BoardNodeFactory } from './domain';
+import { BoardNodeRepo } from './repo';
 import {
-	BoardDoAuthorizableService,
-	BoardDoService,
-	CardService,
+	BoardCommonToolService,
+	BoardNodeAuthorizableService,
+	BoardNodeService,
 	ColumnBoardService,
-	ColumnService,
-	ContentElementService,
 	MediaBoardService,
-	MediaElementService,
-	MediaLineService,
-	SubmissionItemService,
 	UserDeletedEventHandlerService,
 } from './service';
-import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
-import { ColumnBoardCopyService } from './service/column-board-copy.service';
+import {
+	BoardNodeCopyService,
+	ColumnBoardCopyService,
+	ColumnBoardLinkService,
+	ColumnBoardReferenceService,
+	ColumnBoardTitleService,
+	ContentElementUpdateService,
+	BoardNodeDeleteHooksService,
+	BoardContextService,
+} from './service/internal';
 
 @Module({
 	imports: [
-		ConsoleWriterModule,
 		CopyHelperModule,
 		FilesStorageClientModule,
 		LoggerModule,
@@ -45,41 +46,31 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
-		BoardDoAuthorizableService,
-		BoardDoRepo,
-		BoardDoService,
+		BoardContextService,
+		BoardNodeAuthorizableService,
 		BoardNodeRepo,
-		CardService,
+		BoardNodeService,
+		BoardNodeFactory,
+		BoardNodeCopyService,
+		BoardCommonToolService,
+		BoardNodeDeleteHooksService,
 		ColumnBoardService,
-		ColumnService,
-		ContentElementService,
-		ContentElementFactory,
+		ContentElementUpdateService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
-		RecursiveDeleteVisitor,
-		SubmissionItemService,
-		BoardDoCopyService,
 		ColumnBoardCopyService,
-		SchoolSpecificFileCopyServiceFactory,
-		MediaBoardService,
-		MediaLineService,
-		MediaElementService,
+		ColumnBoardLinkService,
+		ColumnBoardReferenceService,
+		ColumnBoardTitleService,
 		UserDeletedEventHandlerService,
+		// TODO replace by import of MediaBoardModule (fix dependency cycle)
+		MediaBoardService,
 	],
 	exports: [
-		BoardDoAuthorizableService,
-		CardService,
+		BoardNodeAuthorizableService,
+		BoardNodeFactory,
+		BoardNodeService,
+		BoardCommonToolService,
 		ColumnBoardService,
-		ColumnService,
-		ContentElementService,
-		SubmissionItemService,
-		ColumnBoardCopyService,
-		/**
-		 * @deprecated - exported only deprecated learnraum module
-		 */
-		BoardNodeRepo,
-		MediaBoardService,
-		MediaLineService,
-		MediaElementService,
 	],
 })
 export class BoardModule {}

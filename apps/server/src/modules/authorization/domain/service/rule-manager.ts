@@ -3,7 +3,7 @@ import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import
 import { BaseDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import {
-	BoardDoRule,
+	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -29,7 +29,7 @@ export class RuleManager {
 	private readonly rules: Rule[];
 
 	constructor(
-		private readonly boardDoRule: BoardDoRule,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly courseGroupRule: CourseGroupRule,
 		private readonly courseRule: CourseRule,
@@ -49,7 +49,7 @@ export class RuleManager {
 		private readonly instanceRule: InstanceRule
 	) {
 		this.rules = [
-			this.boardDoRule,
+			this.boardNodeRule,
 			this.contextExternalToolRule,
 			this.courseGroupRule,
 			this.courseRule,

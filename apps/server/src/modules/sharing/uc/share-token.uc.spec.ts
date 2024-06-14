@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { BoardDoAuthorizableService, ColumnBoardCopyService, ColumnBoardService } from '@modules/board';
+import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
+import { boardNodeAuthorizableFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
@@ -11,11 +12,8 @@ import { schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import {
-	boardDoAuthorizableFactory,
-	columnBoardFactory,
 	courseFactory,
 	lessonFactory,
 	schoolEntityFactory,
@@ -36,10 +34,9 @@ describe('ShareTokenUC', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
-	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let courseService: DeepMocked<CourseService>;
-	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
@@ -70,16 +67,12 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<TaskCopyService>(),
 				},
 				{
-					provide: ColumnBoardCopyService,
-					useValue: createMock<ColumnBoardCopyService>(),
-				},
-				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
 					provide: LessonService,
@@ -109,10 +102,9 @@ describe('ShareTokenUC', () => {
 		courseCopyService = module.get(CourseCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		taskCopyService = module.get(TaskCopyService);
-		columnBoardCopyService = module.get(ColumnBoardCopyService);
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseService);
-		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		lessonService = module.get(LessonService);
 		taskService = module.get(TaskService);
 		columnBoardService = module.get(ColumnBoardService);
@@ -339,13 +331,13 @@ describe('ShareTokenUC', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const columnBoard = columnBoardFactory.build();
-				const boardDoAuthorizable = boardDoAuthorizableFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				columnBoardService.findById.mockResolvedValueOnce(columnBoard);
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(boardDoAuthorizable);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValue(boardNodeAuthorizable);
 
-				return { user, columnBoard, boardDoAuthorizable };
+				return { user, columnBoard, boardNodeAuthorizable };
 			};
 
 			it('should throw if the feature is not enabled', async () => {
@@ -361,7 +353,7 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should check permission for parent', async () => {
-				const { user, columnBoard, boardDoAuthorizable } = setup();
+				const { user, columnBoard, boardNodeAuthorizable } = setup();
 
 				await uc.createShareToken(user.id, {
 					parentId: columnBoard.id,
@@ -370,7 +362,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
-					boardDoAuthorizable,
+					boardNodeAuthorizable,
 					AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 				);
 			});
@@ -1124,7 +1116,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken, course, columnBoard } = setup();
 				const newName = 'NewName';
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
-				expect(columnBoardCopyService.copyColumnBoard).toHaveBeenCalledWith({
+				expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith({
 					originalColumnBoardId: columnBoard.id,
 					destinationExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
 					userId: user.id,
@@ -1138,7 +1130,7 @@ describe('ShareTokenUC', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: columnBoard,
 				};
-				columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(status);
+				columnBoardService.copyColumnBoard.mockResolvedValueOnce(status);
 				const newName = 'NewName';
 
 				const result = await uc.importShareToken(user.id, shareToken.token, newName, columnBoard.id);

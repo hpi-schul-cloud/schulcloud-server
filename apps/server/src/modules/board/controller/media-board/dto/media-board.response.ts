@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MediaBoardLayoutType } from '../../../domain';
+import { BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
 import { MediaLineResponse } from './media-line.response';
 
@@ -17,11 +17,11 @@ export class MediaBoardResponse {
 	timestamps: TimestampsResponse;
 
 	@ApiProperty({
-		enum: MediaBoardLayoutType,
+		enum: BoardLayout,
 		enumName: 'MediaBoardLayoutType',
 		description: 'Layout of media board',
 	})
-	layout: MediaBoardLayoutType;
+	layout: BoardLayout;
 
 	constructor(props: MediaBoardResponse) {
 		this.id = props.id;

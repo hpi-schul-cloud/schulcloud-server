@@ -1,8 +1,10 @@
-import { BoardDoAuthorizableService } from '@modules/board';
-
-import { LessonService } from '@modules/lesson';
-import { ContextExternalToolAuthorizableService } from '@modules/tool';
+// TODO fix modules circular dependency
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { BoardNodeAuthorizableService } from '@modules/board/service';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 import { ExternalToolAuthorizableService } from '@modules/tool/external-tool/service';
+import { LessonService } from '@modules/lesson';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
@@ -21,7 +23,7 @@ import { InstanceService } from '../../../instance';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
-	| BoardDoAuthorizableService
+	| BoardNodeAuthorizableService
 	| ContextExternalToolAuthorizableService
 	| CourseGroupRepo
 	| CourseRepo
@@ -54,7 +56,7 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
 		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
 		private readonly instanceService: InstanceService

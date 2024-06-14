@@ -2,8 +2,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 
 import { User } from '@shared/domain/entity';
-import { accountFactory } from '@src/modules/account/testing';
-import { LocalAuthorizationBodyParams } from '@src/modules/authentication/controllers/dto';
+import { accountFactory } from '@modules/account/testing';
+import { LocalAuthorizationBodyParams } from '@modules/authentication/controllers/dto';
 import { Socket, io } from 'socket.io-client';
 import request from 'supertest';
 

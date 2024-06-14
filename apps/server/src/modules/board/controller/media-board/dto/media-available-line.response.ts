@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MediaBoardColors } from '../../../domain';
+import { MediaBoardColors } from '../../../domain/media-board/types';
 import { MediaAvailableLineElementResponse } from './media-available-line-element.response';
 
 export class MediaAvailableLineResponse {

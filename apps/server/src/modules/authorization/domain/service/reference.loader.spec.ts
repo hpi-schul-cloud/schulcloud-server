@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardDoAuthorizableService } from '@modules/board';
 import { InstanceService } from '@modules/instance';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService, ExternalToolAuthorizableService } from '@modules/tool';
@@ -18,6 +17,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
+import { BoardNodeAuthorizableService } from '@src/modules/board';
 import { AuthorizableReferenceType } from '../type';
 import { ReferenceLoader } from './reference.loader';
 
@@ -32,7 +32,7 @@ describe('reference.loader', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
 	let externalToolAuthorizableService: DeepMocked<ExternalToolAuthorizableService>;
 	let instanceService: DeepMocked<InstanceService>;
@@ -81,8 +81,8 @@ describe('reference.loader', () => {
 					useValue: createMock<SchoolExternalToolRepo>(),
 				},
 				{
-					provide: BoardDoAuthorizableService,
-					useValue: createMock<BoardDoAuthorizableService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
 					provide: ContextExternalToolAuthorizableService,
@@ -109,7 +109,7 @@ describe('reference.loader', () => {
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
+		boardNodeAuthorizableService = await module.get(BoardNodeAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
 		externalToolAuthorizableService = await module.get(ExternalToolAuthorizableService);
 		instanceService = await module.get(InstanceService);

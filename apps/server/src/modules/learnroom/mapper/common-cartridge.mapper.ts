@@ -1,3 +1,4 @@
+import { LinkElement, RichTextElement } from '@modules/board/domain';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -11,7 +12,6 @@ import {
 } from '@modules/common-cartridge';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LinkElement, RichTextElement } from '@shared/domain/domainobject';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
 import { LearnroomConfig } from '../learnroom.config';
 
