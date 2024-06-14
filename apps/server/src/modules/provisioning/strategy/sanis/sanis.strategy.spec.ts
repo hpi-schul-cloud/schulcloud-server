@@ -173,7 +173,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					}),
 				];
 				const schulconnexLizenzInfoResponses: SchulconnexLizenzInfoResponse[] =
-					schulconnexLizenzInfoResponseFactory.build();
+					schulconnexLizenzInfoResponseFactory.buildList(1);
 				const schulconnexLizenzInfoResponse = schulconnexLizenzInfoResponses[0];
 				const licenses: ExternalLicenseDto[] = SchulconnexResponseMapper.mapToExternalLicenses([
 					schulconnexLizenzInfoResponse,

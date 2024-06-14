@@ -4,7 +4,7 @@ import { contextExternalToolEntityFactory } from '@modules/tool/context-external
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicenseEntity } from '@modules/user-license/entity';
-import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
+import { mediaSourceEntityFactory, mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, type DatesToStrings } from '@shared/testing';
@@ -498,8 +498,14 @@ describe('Media Board (API)', () => {
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
+				const mediaSource = mediaSourceEntityFactory.build();
 				const externalTool = externalToolEntityFactory.build();
-				const licensedUnusedExternalTool = externalToolEntityFactory.withMedium().build();
+				const licensedUnusedExternalTool = externalToolEntityFactory
+					.withMedium({
+						mediumId: 'mediumId',
+						mediaSourceId: mediaSource.sourceId,
+					})
+					.build();
 				const unusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'notLicensedByUser' } });
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					tool: externalTool,
@@ -531,7 +537,7 @@ describe('Media Board (API)', () => {
 				const userLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({
 					user: studentUser,
 					mediumId: 'mediumId',
-					mediaSourceId: 'mediaSourceId',
+					mediaSource,
 				});
 
 				await em.persistAndFlush([

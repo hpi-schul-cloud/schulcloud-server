@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { UserLicenseRepo } from './repo';
-import { MediaUserLicenseService, UserLicenseService } from './service';
+import { MediaSourceRepo, MediaUserLicenseRepo } from './repo';
+import { MediaSourceService, MediaUserLicenseService } from './service';
 
 @Module({
-	providers: [UserLicenseRepo, UserLicenseService, MediaUserLicenseService],
-	exports: [UserLicenseService, MediaUserLicenseService],
+	providers: [MediaUserLicenseRepo, MediaUserLicenseService, MediaSourceRepo, MediaSourceService],
+	exports: [MediaUserLicenseService, MediaSourceService],
 })
 export class UserLicenseModule {}

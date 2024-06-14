@@ -28,7 +28,7 @@ describe('SchoolExternalToolCreatedLoggable', () => {
 					userId: license.userId,
 					schoolId: schoolExternalTool.schoolId,
 					mediumId: license.mediumId,
-					mediaSourceId: license.mediaSourceId,
+					mediaSourceId: license.mediaSource?.sourceId,
 					schoolExternalToolId: schoolExternalTool.id,
 				},
 			});

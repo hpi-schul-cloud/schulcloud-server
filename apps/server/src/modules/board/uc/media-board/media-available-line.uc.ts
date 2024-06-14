@@ -1,13 +1,13 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
 import { MediaAvailableLine, MediaBoard } from '../../domain';
+import { MediaBoardColors } from '../../domain/media-board/types';
 import type { MediaBoardConfig } from '../../media-board.config';
 import {
 	BoardNodePermissionService,
@@ -15,7 +15,6 @@ import {
 	MediaAvailableLineService,
 	MediaBoardService,
 } from '../../service';
-import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaAvailableLineUc {
@@ -26,7 +25,6 @@ export class MediaAvailableLineUc {
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly userLicenseService: UserLicenseService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService
 	) {}
 
@@ -95,7 +93,9 @@ export class MediaAvailableLineUc {
 		userId: EntityId,
 		matchedTools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
-		const mediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(userId);
+		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
+			userId
+		);
 
 		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;

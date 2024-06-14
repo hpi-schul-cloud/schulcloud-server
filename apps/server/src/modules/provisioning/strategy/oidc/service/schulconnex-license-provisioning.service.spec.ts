@@ -1,5 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService, UserLicenseType } from '@modules/user-license';
+import {
+	MediaSource,
+	mediaSourceFactory,
+	MediaSourceService,
+	MediaUserLicense,
+	mediaUserLicenseFactory,
+	MediaUserLicenseService,
+	UserLicenseType,
+} from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -10,7 +18,8 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 	let module: TestingModule;
 	let service: SchulconnexLicenseProvisioningService;
 
-	let userLicenseService: DeepMocked<UserLicenseService>;
+	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
+	let mediaSourceService: DeepMocked<MediaSourceService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -18,14 +27,19 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 			providers: [
 				SchulconnexLicenseProvisioningService,
 				{
-					provide: UserLicenseService,
-					useValue: createMock<UserLicenseService>(),
+					provide: MediaUserLicenseService,
+					useValue: createMock<MediaUserLicenseService>(),
+				},
+				{
+					provide: MediaSourceService,
+					useValue: createMock<MediaSourceService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(SchulconnexLicenseProvisioningService);
-		userLicenseService = module.get(UserLicenseService);
+		mediaUserLicenseService = module.get(MediaUserLicenseService);
+		mediaSourceService = module.get(MediaSourceService);
 	});
 
 	afterAll(async () => {
@@ -41,9 +55,9 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 			it('should not call services', async () => {
 				await service.provisionExternalLicenses('userId', undefined);
 
-				expect(userLicenseService.getMediaUserLicensesForUser).not.toHaveBeenCalled();
-				expect(userLicenseService.saveUserLicense).not.toHaveBeenCalled();
-				expect(userLicenseService.deleteUserLicense).not.toHaveBeenCalled();
+				expect(mediaUserLicenseService.getMediaUserLicensesForUser).not.toHaveBeenCalled();
+				expect(mediaUserLicenseService.saveUserLicense).not.toHaveBeenCalled();
+				expect(mediaUserLicenseService.deleteUserLicense).not.toHaveBeenCalled();
 			});
 		});
 
@@ -51,38 +65,67 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 			const setup = () => {
 				const user: UserEntity = userFactory.build();
 
-				const newExternalLicense: ExternalLicenseDto = {
+				const newExternalLicense1: ExternalLicenseDto = {
 					mediumId: 'newMediumId',
-					mediaSourceId: 'nMediaSourceId',
+					mediaSourceId: 'newMediaSourceId',
+				};
+				const newExternalLicense2: ExternalLicenseDto = {
+					mediumId: 'newMediumId',
 				};
 				const existingExternalLicense: ExternalLicenseDto = {
 					mediumId: 'existingMediumId',
 					mediaSourceId: 'existingMediaSourceId',
 				};
-				const externalLicenses: ExternalLicenseDto[] = [newExternalLicense];
+				const externalLicenses: ExternalLicenseDto[] = [
+					newExternalLicense1,
+					newExternalLicense2,
+					existingExternalLicense,
+				];
 
-				const existingMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
-				existingMediaUserLicense.mediumId = existingExternalLicense.mediumId;
-				existingMediaUserLicense.mediaSourceId = existingExternalLicense.mediaSourceId;
-				existingMediaUserLicense.userId = user.id;
+				const mediaSource: MediaSource = mediaSourceFactory.build({
+					sourceId: 'existingMediaSourceId',
+				});
+				const existingMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({
+					mediumId: existingExternalLicense.mediumId,
+					mediaSource,
+					userId: user.id,
+				});
 
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([existingMediaUserLicense]);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([existingMediaUserLicense]);
+				mediaSourceService.findBySourceId.mockResolvedValueOnce(null);
 
-				return { user, externalLicenses, newExternalLicense };
+				return {
+					user,
+					externalLicenses,
+					newExternalLicense1,
+					newExternalLicense2,
+				};
 			};
 
 			it('should provision new licenses', async () => {
-				const { user, externalLicenses, newExternalLicense } = setup();
+				const { user, externalLicenses, newExternalLicense1, newExternalLicense2 } = setup();
 
 				await service.provisionExternalLicenses(user.id, externalLicenses);
 
-				expect(userLicenseService.saveUserLicense).toHaveBeenCalledWith(
-					expect.objectContaining({
+				expect(mediaUserLicenseService.saveUserLicense).toHaveBeenCalledWith(
+					new MediaUserLicense({
 						id: expect.any(String),
 						type: UserLicenseType.MEDIA_LICENSE,
 						userId: user.id,
-						mediumId: newExternalLicense.mediumId,
-						mediaSourceId: newExternalLicense.mediaSourceId,
+						mediumId: newExternalLicense1.mediumId,
+						mediaSource: new MediaSource({
+							id: expect.any(String),
+							sourceId: newExternalLicense1.mediaSourceId as string,
+						}),
+					})
+				);
+				expect(mediaUserLicenseService.saveUserLicense).toHaveBeenCalledWith(
+					new MediaUserLicense({
+						id: expect.any(String),
+						type: UserLicenseType.MEDIA_LICENSE,
+						userId: user.id,
+						mediumId: newExternalLicense2.mediumId,
+						mediaSource: undefined,
 					})
 				);
 			});
@@ -94,47 +137,50 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 				const activeExternalLicense: ExternalLicenseDto = {
 					mediumId: 'activeMediumId',
-					mediaSourceId: 'activeMediaSourceId',
+					mediaSourceId: 'mediaSourceId',
 				};
 
-				const existingMediaUserLicenses: MediaUserLicense[] = mediaUserLicenseFactory.buildList(1, {
+				const mediaSource: MediaSource = mediaSourceFactory.build({
+					sourceId: 'mediaSourceId',
+				});
+				const expiredMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({
 					userId: user.id,
-					mediumId: 'toDeleteMediumId',
-					mediaSourceId: 'toDeleteMediaSourceId',
+					mediumId: 'expiredMediumId',
+					mediaSource,
+				});
+				const activeMediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({
+					userId: user.id,
+					mediumId: 'activeMediumId',
+					mediaSource,
 				});
 
-				userLicenseService.getMediaUserLicensesForUser.mockResolvedValue(existingMediaUserLicenses);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([
+					activeMediaUserLicense,
+					expiredMediaUserLicense,
+				]);
 
-				return { user, existingMediaUserLicense: existingMediaUserLicenses[0], activeExternalLicense };
+				return {
+					user,
+					expiredMediaUserLicense,
+					activeExternalLicense,
+					activeMediaUserLicense,
+				};
 			};
 
 			it('should delete the expired license', async () => {
-				const { user, existingMediaUserLicense } = setup();
-
-				await service.provisionExternalLicenses(user.id, []);
-
-				expect(userLicenseService.deleteUserLicense).toHaveBeenCalledWith(
-					expect.objectContaining({
-						id: existingMediaUserLicense.id,
-						type: existingMediaUserLicense.type,
-						userId: existingMediaUserLicense.userId,
-						mediumId: existingMediaUserLicense.mediumId,
-						mediaSourceId: existingMediaUserLicense.mediaSourceId,
-					})
-				);
-			});
-
-			it('should not delete active licenses', async () => {
-				const { user, activeExternalLicense } = setup();
+				const { user, expiredMediaUserLicense, activeExternalLicense } = setup();
 
 				await service.provisionExternalLicenses(user.id, [activeExternalLicense]);
 
-				expect(userLicenseService.deleteUserLicense).not.toHaveBeenCalledWith(
-					expect.objectContaining({
-						mediumId: activeExternalLicense.mediumId,
-						mediaSourceId: activeExternalLicense.mediaSourceId,
-					})
-				);
+				expect(mediaUserLicenseService.deleteUserLicense).toHaveBeenCalledWith(expiredMediaUserLicense);
+			});
+
+			it('should not delete active licenses', async () => {
+				const { user, activeExternalLicense, activeMediaUserLicense } = setup();
+
+				await service.provisionExternalLicenses(user.id, [activeExternalLicense]);
+
+				expect(mediaUserLicenseService.deleteUserLicense).not.toHaveBeenCalledWith(activeMediaUserLicense);
 			});
 		});
 	});
