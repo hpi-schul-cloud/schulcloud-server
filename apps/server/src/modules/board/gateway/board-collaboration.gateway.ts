@@ -43,7 +43,7 @@ import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 @UseGuards(WsJwtAuthGuard)
 export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@WebSocketServer()
-	server?: Server;
+	server!: Server;
 
 	// TODO: use loggables instead of legacy logger
 	constructor(
@@ -69,10 +69,6 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	private async updateRoomsAndUsersMetrics(socket: Socket) {
-		if (!this.server) {
-			throw new Error('Server is not initialized');
-		}
-
 		const roomCount = Array.from(this.server.of('/').adapter.rooms.keys()).filter((key) =>
 			key.startsWith('board_')
 		).length;
