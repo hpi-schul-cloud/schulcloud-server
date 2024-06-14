@@ -171,7 +171,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, contentElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>)</code>
+<code>constructor(schoolToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, boardCommonToolService: <a href="../injectables/BoardCommonToolService.html" target="_self">BoardCommonToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -218,10 +218,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>contentElementService</td>
+                                                        <td>boardCommonToolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                                        <code><a href="../injectables/BoardCommonToolService.html" target="_self" >BoardCommonToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -539,7 +539,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContentElementService } from &#x27;@modules/board&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardCommonToolService } from &#x27;@modules/board&#x27;;
 import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
@@ -555,8 +555,8 @@ export class CommonToolMetadataService {
 	constructor(
 		private readonly schoolToolRepo: SchoolExternalToolRepo,
 		private readonly contextToolRepo: ContextExternalToolRepo,
-		@Inject(forwardRef(() &#x3D;&gt; ContentElementService))
-		private readonly contentElementService: ContentElementService
+		@Inject(forwardRef(() &#x3D;&gt; BoardCommonToolService))
+		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
 	async getMetadataForExternalTool(toolId: EntityId): Promise&lt;ExternalToolMetadata&gt; {
@@ -615,7 +615,7 @@ export class CommonToolMetadataService {
 	): Promise&lt;number&gt; {
 		let count &#x3D; 0;
 		if (contextType &#x3D;&#x3D;&#x3D; ContextExternalToolType.BOARD_ELEMENT) {
-			count &#x3D; await this.contentElementService.countBoardUsageForExternalTools(contextExternalTools);
+			count &#x3D; await this.boardCommonToolService.countBoardUsageForExternalTools(contextExternalTools);
 		} else {
 			const contextIds: EntityId[] &#x3D; contextExternalTools.map(
 				(contextExternalTool: ContextExternalTool): EntityId &#x3D;&gt; contextExternalTool.contextRef.id

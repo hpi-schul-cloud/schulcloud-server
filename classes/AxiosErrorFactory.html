@@ -235,9 +235,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpStatus } from &#x27;@nestjs/common&#x27;;
-import { axiosResponseFactory } from &#x27;@shared/testing&#x27;;
 import { AxiosError, AxiosHeaders } from &#x27;axios&#x27;;
 import { Factory } from &#x27;fishery&#x27;;
+import { axiosResponseFactory } from &#x27;./axios-response.factory&#x27;;
 
 class AxiosErrorFactory extends Factory&lt;AxiosError&gt; {
 	withError(error: unknown): this {

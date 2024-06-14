@@ -252,7 +252,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:16</a></code>
 </div>
                         </td>
                     </tr>
@@ -568,7 +568,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:47</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:48</a></code>
 </div>
                         </td>
                     </tr>
@@ -875,7 +875,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:60</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:61</a></code>
 </div>
                         </td>
                     </tr>
@@ -1080,7 +1080,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:32</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:33</a></code>
 </div>
                         </td>
                     </tr>
@@ -1425,11 +1425,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Role, TeamUserEntity } from &#x27;@shared/domain/entity&#x27;;
-import { BaseFactory } from &#x27;@shared/testing/factory/base.factory&#x27;;
-import { roleFactory } from &#x27;@shared/testing/factory/role.factory&#x27;;
-import { userFactory } from &#x27;@shared/testing/factory/user.factory&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
+import { BaseFactory } from &#x27;./base.factory&#x27;;
+import { roleFactory } from &#x27;./role.factory&#x27;;
 import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
+import { userFactory } from &#x27;./user.factory&#x27;;
 
 class TeamUserFactory extends BaseFactory&lt;TeamUserEntity, TeamUserEntity&gt; {
 	withRoleAndUserId(role: Role, userId: string): this {

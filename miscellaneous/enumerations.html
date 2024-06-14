@@ -130,19 +130,19 @@
                             <a href="#BBBStatus" title="apps/server/src/modules/video-conference/bbb/response/bbb-status.enum.ts" ><b>BBBStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../bbb-status.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardExternalReferenceType" title="apps/server/src/shared/domain/domainobject/board/types/board-external-reference.ts" ><b>BoardExternalReferenceType</b>&nbsp;&nbsp;&nbsp;(apps/.../board-external-reference.ts)</a>
+                            <a href="#BoardExternalReferenceType" title="apps/server/src/modules/board/domain/types/board-external-reference.ts" ><b>BoardExternalReferenceType</b>&nbsp;&nbsp;&nbsp;(apps/.../board-external-reference.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardLayout" title="apps/server/src/shared/domain/domainobject/board/types/board-layout.enum.ts" ><b>BoardLayout</b>&nbsp;&nbsp;&nbsp;(apps/.../board-layout.enum.ts)</a>
+                            <a href="#BoardLayout" title="apps/server/src/modules/board/domain/types/board-layout.enum.ts" ><b>BoardLayout</b>&nbsp;&nbsp;&nbsp;(apps/.../board-layout.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardNodeType" title="apps/server/src/shared/domain/entity/boardnode/types/board-node-type.ts" ><b>BoardNodeType</b>&nbsp;&nbsp;&nbsp;(apps/.../board-node-type.ts)</a>
+                            <a href="#BoardNodeType" title="apps/server/src/modules/board/domain/types/board-node-type.enum.ts" ><b>BoardNodeType</b>&nbsp;&nbsp;&nbsp;(apps/.../board-node-type.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#BoardObjectType" title="apps/server/src/modules/board/gateway/types.ts" ><b>BoardObjectType</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardRoles" title="apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts" ><b>BoardRoles</b>&nbsp;&nbsp;&nbsp;(apps/.../board-do-authorizable.ts)</a>
+                            <a href="#BoardRoles" title="apps/server/src/modules/board/domain/board-node-authorizable.do.ts" ><b>BoardRoles</b>&nbsp;&nbsp;&nbsp;(apps/.../board-node-authorizable.do.ts)</a>
                         </li>
                         <li>
                             <a href="#CacheStoreType" title="apps/server/src/infra/cache/interface/cache-store-type.enum.ts" ><b>CacheStoreType</b>&nbsp;&nbsp;&nbsp;(apps/.../cache-store-type.enum.ts)</a>
@@ -181,7 +181,7 @@
                             <a href="#ConfigureAction" title="apps/server/src/infra/identity-management/keycloak-configuration/service/keycloak-configuration.service.ts" ><b>ConfigureAction</b>&nbsp;&nbsp;&nbsp;(apps/.../keycloak-configuration.service.ts)</a>
                         </li>
                         <li>
-                            <a href="#ContentElementType" title="apps/server/src/shared/domain/domainobject/board/types/content-elements.enum.ts" ><b>ContentElementType</b>&nbsp;&nbsp;&nbsp;(apps/.../content-elements.enum.ts)</a>
+                            <a href="#ContentElementType" title="apps/server/src/modules/board/domain/types/content-element-type.enum.ts" ><b>ContentElementType</b>&nbsp;&nbsp;&nbsp;(apps/.../content-element-type.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#ContextExternalToolType" title="apps/server/src/modules/tool/context-external-tool/entity/context-external-tool-type.enum.ts" ><b>ContextExternalToolType</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool-type.enum.ts)</a>
@@ -355,10 +355,7 @@
                             <a href="#MatchType" title="apps/server/src/modules/user-import/controller/dto/match-type.ts" ><b>MatchType</b>&nbsp;&nbsp;&nbsp;(apps/.../match-type.ts)</a>
                         </li>
                         <li>
-                            <a href="#MediaBoardColors" title="apps/server/src/modules/board/domain/interface/media-colors.enum.ts" ><b>MediaBoardColors</b>&nbsp;&nbsp;&nbsp;(apps/.../media-colors.enum.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#MediaBoardLayoutType" title="apps/server/src/modules/board/domain/interface/layout-type.enum.ts" ><b>MediaBoardLayoutType</b>&nbsp;&nbsp;&nbsp;(apps/.../layout-type.enum.ts)</a>
+                            <a href="#MediaBoardColors" title="apps/server/src/modules/board/domain/media-board/types/media-colors.enum.ts" ><b>MediaBoardColors</b>&nbsp;&nbsp;&nbsp;(apps/.../media-colors.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#NewsTargetModel" title="apps/server/src/shared/domain/types/news.types.ts" ><b>NewsTargetModel</b>&nbsp;&nbsp;&nbsp;(apps/.../news.types.ts)</a>
@@ -873,7 +870,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/shared/domain/domainobject/board/types/board-external-reference.ts</h3>
+    <h3>apps/server/src/modules/board/domain/types/board-external-reference.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -906,7 +903,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/shared/domain/domainobject/board/types/board-layout.enum.ts</h3>
+    <h3>apps/server/src/modules/board/domain/types/board-layout.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -936,10 +933,20 @@
                                 <i>Value : </i><code>list</code>
                             </td>
                         </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;GRID
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>grid</code>
+                            </td>
+                        </tr>
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/shared/domain/entity/boardnode/types/board-node-type.ts</h3>
+    <h3>apps/server/src/modules/board/domain/types/board-node-type.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -1195,7 +1202,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts</h3>
+    <h3>apps/server/src/modules/board/domain/board-node-authorizable.do.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -1785,7 +1792,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/shared/domain/domainobject/board/types/content-elements.enum.ts</h3>
+    <h3>apps/server/src/modules/board/domain/types/content-element-type.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -5359,7 +5366,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/board/domain/interface/media-colors.enum.ts</h3>
+    <h3>apps/server/src/modules/board/domain/media-board/types/media-colors.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -5567,39 +5574,6 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>blueGrey</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-</section>
-    <h3>apps/server/src/modules/board/domain/interface/layout-type.enum.ts</h3>
-    <section data-compodoc="block-enums">
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="MediaBoardLayoutType"></a>
-                        <span class="name "><b>MediaBoardLayoutType</b><a href="#MediaBoardLayoutType"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;GRID
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>grid</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;LIST
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>list</code>
                             </td>
                         </tr>
             </tbody>

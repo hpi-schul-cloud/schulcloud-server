@@ -463,9 +463,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
-import { BoardLayout } from &#x27;@shared/domain/domainobject&#x27;;
-import { ColumnResponse } from &#x27;./column.response&#x27;;
+import { BoardLayout } from &#x27;../../../domain&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
+import { ColumnResponse } from &#x27;./column.response&#x27;;
 
 export class BoardResponse {
 	constructor({ id, title, columns, timestamps, isVisible, layout }: BoardResponse) {

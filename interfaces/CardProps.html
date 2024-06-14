@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/card.do.ts</code>
+            <code>apps/server/src/modules/board/domain/types/board-node-props.ts</code>
         </p>
 
 
@@ -131,7 +131,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/BoardCompositeProps.html" target="_self" >BoardCompositeProps</a></code>
+                            <code><a href="../interfaces/BoardNodeProps.html" target="_self" >BoardNodeProps</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -153,6 +153,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#title" 
 >
                                             title
@@ -229,6 +230,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -240,64 +246,106 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
-import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
-import { CollaborativeTextEditorElement } from &#x27;./collaborative-text-editor-element.do&#x27;;
-import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
-import { FileElement } from &#x27;./file-element.do&#x27;;
-import { LinkElement } from &#x27;./link-element.do&#x27;;
-import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
-import { SubmissionContainerElement } from &#x27;./submission-container-element.do&#x27;;
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { EntityId, InputFormat } from &#x27;@shared/domain/types&#x27;;
+import type { AnyBoardNode } from &#x27;./any-board-node&#x27;;
+import type { BoardExternalReference } from &#x27;./board-external-reference&#x27;;
+import { BoardLayout } from &#x27;./board-layout.enum&#x27;;
+import type { MediaBoardColors } from &#x27;../media-board&#x27;;
 
-export class Card extends BoardComposite&lt;CardProps&gt; {
-	get title(): string {
-		return this.props.title;
-	}
-
-	set title(title: string) {
-		this.props.title &#x3D; title;
-	}
-
-	get height(): number {
-		return this.props.height;
-	}
-
-	set height(height: number) {
-		this.props.height &#x3D; height;
-	}
-
-	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed &#x3D;
-			domainObject instanceof FileElement ||
-			domainObject instanceof DrawingElement ||
-			domainObject instanceof LinkElement ||
-			domainObject instanceof RichTextElement ||
-			domainObject instanceof SubmissionContainerElement ||
-			domainObject instanceof ExternalToolElement ||
-			domainObject instanceof CollaborativeTextEditorElement;
-		return allowed;
-	}
-
-	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitCard(this);
-	}
-
-	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
-		await visitor.visitCardAsync(this);
-	}
+export interface BoardNodeProps {
+	id: EntityId;
+	path: string;
+	level: number;
+	position: number;
+	children: AnyBoardNode[];
+	createdAt: Date;
+	updatedAt: Date;
 }
 
-export interface CardProps extends BoardCompositeProps {
+export interface ColumnBoardProps extends BoardNodeProps {
 	title: string;
+	context: BoardExternalReference;
+	isVisible: boolean;
+	layout: BoardLayout;
+}
+
+export interface ColumnProps extends BoardNodeProps {
+	title?: string;
+}
+
+export interface CardProps extends BoardNodeProps {
+	title?: string;
 	height: number;
 }
 
-export type CardInitProps &#x3D; Omit&lt;CardProps, keyof BoardCompositeProps&gt;;
+export interface CollaborativeTextEditorElementProps extends BoardNodeProps {}
 
-export function isCard(reference: unknown): reference is Card {
-	return reference instanceof Card;
+export interface DrawingElementProps extends BoardNodeProps {
+	description: string;
 }
+
+export interface ExternalToolElementProps extends BoardNodeProps {
+	contextExternalToolId?: string;
+}
+
+export interface FileElementProps extends BoardNodeProps {
+	alternativeText?: string;
+	caption?: string;
+}
+export interface LinkElementProps extends BoardNodeProps {
+	title: string;
+	url: string;
+	description?: string;
+	imageUrl?: string;
+}
+
+export interface RichTextElementProps extends BoardNodeProps {
+	text: string;
+	inputFormat: InputFormat;
+}
+
+export interface SubmissionContainerElementProps extends BoardNodeProps {
+	dueDate?: Date;
+}
+
+export interface SubmissionItemProps extends BoardNodeProps {
+	completed: boolean;
+	userId: EntityId;
+}
+
+export interface MediaBoardProps extends BoardNodeProps {
+	context: BoardExternalReference;
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
+	layout: BoardLayout;
+}
+
+// TODO use only one interface for media-external-tool and external-tool
+export interface MediaExternalToolElementProps extends BoardNodeProps {
+	contextExternalToolId: string;
+}
+
+export interface MediaLineProps extends BoardNodeProps {
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
+	title: string;
+}
+
+export type MediaBoardNodeProps &#x3D; MediaBoardProps | MediaExternalToolElementProps | MediaLineProps;
+
+export type AnyBoardNodeProps &#x3D;
+	| CardProps
+	| CollaborativeTextEditorElementProps
+	| ColumnBoardProps
+	| ColumnProps
+	| DrawingElementProps
+	| ExternalToolElementProps
+	| FileElementProps
+	| LinkElementProps
+	| RichTextElementProps
+	| SubmissionContainerElementProps
+	| SubmissionItemProps
+	| MediaBoardNodeProps;
 </code></pre>
     </div>
 </div>

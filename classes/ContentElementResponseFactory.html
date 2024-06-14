@@ -314,7 +314,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(element: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                    <code>mapToResponse(element: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>)</code>
                 </td>
             </tr>
 
@@ -345,7 +345,7 @@
                                         <tr>
                                                 <td>element</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
                                             </td>
 
                                             <td>
@@ -379,7 +379,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, FileElement, RichTextElement } from &#x27;@shared/domain/domainobject&#x27;;
+import { AnyBoardNode, FileElement, RichTextElement } from &#x27;../../domain&#x27;;
 import {
 	AnyContentElementResponse,
 	FileElementResponse,
@@ -407,7 +407,7 @@ export class ContentElementResponseFactory {
 		CollaborativeTextEditorElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {
+	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
 		const elementMapper &#x3D; this.mappers.find((mapper) &#x3D;&gt; mapper.canMap(element));
 
 		if (!elementMapper) {

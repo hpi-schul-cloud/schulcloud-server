@@ -154,7 +154,6 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#title" >title</a>
                             </li>
                         </ul>
@@ -339,7 +338,6 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>title</b></span>
                         <a href="#title"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -383,8 +381,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
-import { CardSkeletonResponse } from &#x27;./card-skeleton.response&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
+import { CardSkeletonResponse } from &#x27;./card-skeleton.response&#x27;;
 
 export class ColumnResponse {
 	constructor({ id, title, cards, timestamps }: ColumnResponse) {
@@ -401,7 +399,7 @@ export class ColumnResponse {
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title?: string;
+	title: string;
 
 	@ApiProperty({
 		type: [CardSkeletonResponse],

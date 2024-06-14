@@ -172,12 +172,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, mediaBoardService: <a href="../injectables/MediaBoardService.html" target="_self">MediaBoardService</a>, mediaLineService: <a href="../injectables/MediaLineService.html" target="_self">MediaLineService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardNodeService: <a href="../injectables/BoardNodeService.html" target="_self">BoardNodeService</a>, boardNodePermissionService: <a href="../injectables/BoardNodePermissionService.html" target="_self">BoardNodePermissionService</a>, mediaBoardNodeFactory: <a href="../injectables/MediaBoardNodeFactory.html" target="_self">MediaBoardNodeFactory</a>, mediaBoardService: <a href="../injectables/MediaBoardService.html" target="_self">MediaBoardService</a>, configService: <a href="../classes/MediaBoard.html" target="_self">ConfigService&lt;MediaBoardConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -207,34 +207,46 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>boardNodeService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodeService.html" target="_self" >BoardNodeService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardNodePermissionService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodePermissionService.html" target="_self" >BoardNodePermissionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaBoardNodeFactory</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaBoardNodeFactory.html" target="_self" >MediaBoardNodeFactory</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>mediaBoardService</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/MediaBoardService.html" target="_self" >MediaBoardService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>mediaLineService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/MediaLineService.html" target="_self" >MediaLineService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>boardDoAuthorizableService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -290,8 +302,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -330,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -412,8 +424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -475,15 +487,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setLayout(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, layout: <a href="../undefineds/MediaBoardLayoutType.html" target="_self">MediaBoardLayoutType</a>)</code>
+                    <code>setLayout(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, layout: <a href="../undefineds/BoardLayout.html" target="_self">BoardLayout</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/media-board/media-board.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -530,7 +542,7 @@
                                         <tr>
                                                 <td>layout</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#MediaBoardLayoutType" target="_self" >MediaBoardLayoutType</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#BoardLayout" target="_self" >BoardLayout</a></code>
                                             </td>
 
                                             <td>
@@ -559,29 +571,32 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { FeatureDisabledLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import {
-	BoardDoAuthorizable,
-	BoardExternalReferenceType,
-	type MediaBoard,
-	type MediaLine,
-} from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import type { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { MediaBoardLayoutType } from &#x27;../../domain&#x27;;
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardLayout,
+	MediaBoard,
+	MediaBoardColors,
+	MediaBoardNodeFactory,
+	MediaLine,
+} from &#x27;../../domain&#x27;;
 import type { MediaBoardConfig } from &#x27;../../media-board.config&#x27;;
-import { BoardDoAuthorizableService, MediaBoardService, MediaLineService } from &#x27;../../service&#x27;;
+import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from &#x27;../../service&#x27;;
 
 @Injectable()
 export class MediaBoardUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
 		private readonly mediaBoardService: MediaBoardService,
-		private readonly mediaLineService: MediaLineService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly configService: ConfigService&lt;MediaBoardConfig, true&gt;
 	) {}
 
@@ -591,19 +606,24 @@ export class MediaBoardUc {
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.read([]));
 
-		const boardIds: EntityId[] &#x3D; await this.mediaBoardService.findIdsByExternalReference({
+		const context: BoardExternalReference &#x3D; {
 			type: BoardExternalReferenceType.User,
 			id: user.id,
-		});
+		};
+
+		const existingBoards: MediaBoard[] &#x3D; await this.mediaBoardService.findByExternalReference(context);
 
 		let board: MediaBoard;
-		if (!boardIds.length) {
-			board &#x3D; await this.mediaBoardService.create({
-				type: BoardExternalReferenceType.User,
-				id: user.id,
+		if (!existingBoards.length) {
+			board &#x3D; this.mediaBoardNodeFactory.buildMediaBoard({
+				context,
+				layout: BoardLayout.LIST,
+				backgroundColor: MediaBoardColors.TRANSPARENT,
+				collapsed: false,
 			});
+			await this.boardNodeService.addRoot(board);
 		} else {
-			board &#x3D; await this.mediaBoardService.findById(boardIds[0]);
+			board &#x3D; existingBoards[0];
 		}
 
 		return board;
@@ -612,27 +632,28 @@ export class MediaBoardUc {
 	public async createLine(userId: EntityId, boardId: EntityId): Promise&lt;MediaLine&gt; {
 		this.checkFeatureEnabled();
 
-		const board: MediaBoard &#x3D; await this.mediaBoardService.findById(boardId);
+		const board: MediaBoard &#x3D; await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(board);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		const line: MediaLine &#x3D; await this.mediaLineService.create(board);
+		const line &#x3D; this.mediaBoardNodeFactory.buildMediaLine({
+			title: &#x27;&#x27;,
+			backgroundColor: MediaBoardColors.TRANSPARENT,
+			collapsed: false,
+		});
+		await this.boardNodeService.addToParent(board, line);
 
 		return line;
 	}
 
-	public async setLayout(userId: EntityId, boardId: EntityId, layout: MediaBoardLayoutType): Promise&lt;void&gt; {
+	public async setLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise&lt;void&gt; {
 		this.checkFeatureEnabled();
 
-		const board: MediaBoard &#x3D; await this.mediaBoardService.findById(boardId);
+		const board: MediaBoard &#x3D; await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(board);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		await this.mediaBoardService.setLayout(board, layout);
+		await this.mediaBoardService.updateLayout(board, layout);
 	}
 
 	private checkFeatureEnabled(): void {

@@ -137,24 +137,15 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#create" >create</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#delete" >delete</a>
+                                <a href="#copyColumnBoard" >copyColumnBoard</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteByCourseId" >deleteByCourseId</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteColumnBoardById" >deleteColumnBoardById</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findByDescendant" >findByDescendant</a>
+                                <a href="#findByExternalReference" >findByExternalReference</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -162,19 +153,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findIdsByExternalReference" >findIdsByExternalReference</a>
+                                <a href="#swapLinkedIds" >swapLinkedIds</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#getBoardObjectTitlesById" >getBoardObjectTitlesById</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateBoardVisibility" >updateBoardVisibility</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateTitle" >updateTitle</a>
+                                <a href="#updateVisibility" >updateVisibility</a>
                             </li>
                         </ul>
                     </td>
@@ -194,12 +177,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
+<code>constructor(boardNodeRepo: <a href="../injectables/BoardNodeRepo.html" target="_self">BoardNodeRepo</a>, boardNodeService: <a href="../injectables/BoardNodeService.html" target="_self">BoardNodeService</a>, columnBoardCopyService: <a href="../injectables/ColumnBoardCopyService.html" target="_self">ColumnBoardCopyService</a>, clumnBoardLinkService: <a href="../injectables/ColumnBoardLinkService.html" target="_self">ColumnBoardLinkService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -217,10 +200,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>boardDoRepo</td>
+                                                        <td>boardNodeRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoRepo.html" target="_self" >BoardDoRepo</a></code>
+                                                                        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -229,10 +212,34 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardDoService</td>
+                                                        <td>boardNodeService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoService.html" target="_self" >BoardDoService</a></code>
+                                                                        <code><a href="../injectables/BoardNodeService.html" target="_self" >BoardNodeService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>columnBoardCopyService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardCopyService.html" target="_self" >ColumnBoardCopyService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>clumnBoardLinkService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardLinkService.html" target="_self" >ColumnBoardLinkService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -258,26 +265,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="create"></a>
+                    <a name="copyColumnBoard"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>copyColumnBoard</b></span>
+                        <a href="#copyColumnBoard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(context: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>, layout: <a href="../undefineds/BoardLayout.html" target="_self">BoardLayout</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>copyColumnBoard(props: literal type)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -298,33 +305,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>context</td>
+                                                <td>props</td>
                                             <td>
-                                                            <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>layout</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#BoardLayout" target="_self" >BoardLayout</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>title</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        <code>literal type</code>
                                             </td>
 
                                             <td>
@@ -337,76 +320,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="delete"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>delete</b></span>
-                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(board: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:59</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>board</td>
-                                            <td>
-                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -438,8 +352,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -489,226 +403,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteColumnBoardById"></a>
+                    <a name="findByExternalReference"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>deleteColumnBoardById</b></span>
-                        <a href="#deleteColumnBoardById"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByExternalReference</b></span>
+                        <a href="#findByExternalReference"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteColumnBoardById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:74</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>id</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findByDescendant"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findByDescendant</b></span>
-                        <a href="#findByDescendant"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByDescendant(boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:31</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>boardDo</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard | MediaBoard&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findById"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findById</b></span>
-                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:19</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>boardId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findIdsByExternalReference"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findIdsByExternalReference</b></span>
-                        <a href="#findIdsByExternalReference"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findIdsByExternalReference(reference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>)</code>
+                    <code>findByExternalReference(reference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -748,11 +454,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -766,26 +484,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getBoardObjectTitlesById"></a>
+                    <a name="findById"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>getBoardObjectTitlesById</b></span>
-                        <a href="#getBoardObjectTitlesById"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findById</b></span>
+                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getBoardObjectTitlesById(boardIds: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -806,9 +524,102 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>boardIds</td>
+                                                <td>id</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="swapLinkedIds"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>swapLinkedIds</b></span>
+                        <a href="#swapLinkedIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>swapLinkedIds(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, idMap: <a href="../undefineds/EntityId.html" target="_self">Map&lt;EntityId | EntityId&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>idMap</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Map&lt;EntityId | EntityId&gt;</a></code>
                                             </td>
 
                                             <td>
@@ -821,7 +632,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;Record&lt;EntityId, string&gt;&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -835,26 +646,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateBoardVisibility"></a>
+                    <a name="updateVisibility"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>updateBoardVisibility</b></span>
-                        <a href="#updateBoardVisibility"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateVisibility</b></span>
+                        <a href="#updateVisibility"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateBoardVisibility(board: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, isVisible: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                    <code>updateVisibility(columbBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, visibility: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -875,7 +686,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>board</td>
+                                                <td>columbBoard</td>
                                             <td>
                                                             <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
                                             </td>
@@ -887,90 +698,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>isVisible</td>
+                                                <td>visibility</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateTitle"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>updateTitle</b></span>
-                        <a href="#updateTitle"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateTitle(board: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:82</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>board</td>
-                                            <td>
-                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>title</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -999,95 +729,68 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	AnyBoardDo,
-	BoardExternalReference,
-	BoardExternalReferenceType,
-	BoardLayout,
-	ColumnBoard,
-	MediaBoard,
-} from &#x27;@shared/domain/domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { BoardDoRepo } from &#x27;../repo&#x27;;
-import { BoardDoService } from &#x27;./board-do.service&#x27;;
+import { CopyStatus } from &#x27;@modules/copy-helper&#x27;;
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, isColumnBoard } from &#x27;../domain&#x27;;
+import { BoardNodeRepo } from &#x27;../repo&#x27;;
+import { BoardNodeService } from &#x27;./board-node.service&#x27;;
+import { ColumnBoardCopyService } from &#x27;./internal/column-board-copy.service&#x27;;
+import { ColumnBoardLinkService } from &#x27;./internal/column-board-link.service&#x27;;
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly boardNodeService: BoardNodeService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly clumnBoardLinkService: ColumnBoardLinkService
+	) {}
 
-	async findById(boardId: EntityId): Promise&lt;ColumnBoard&gt; {
-		const board &#x3D; await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
-
-		return board;
-	}
-
-	async findIdsByExternalReference(reference: BoardExternalReference): Promise&lt;EntityId[]&gt; {
-		const ids &#x3D; this.boardDoRepo.findIdsByExternalReference(reference);
-
-		return ids;
-	}
-
-	async findByDescendant(boardDo: AnyBoardDo): Promise&lt;ColumnBoard | MediaBoard&gt; {
-		const rootboardDo &#x3D; this.boardDoService.getRootBoardDo(boardDo);
-
-		return rootboardDo;
-	}
-
-	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise&lt;Record&lt;EntityId, string&gt;&gt; {
-		const titleMap &#x3D; this.boardDoRepo.getTitlesByIds(boardIds);
-		return titleMap;
-	}
-
-	async create(context: BoardExternalReference, layout: BoardLayout, title: string): Promise&lt;ColumnBoard&gt; {
-		const columnBoard &#x3D; new ColumnBoard({
-			id: new ObjectId().toHexString(),
-			title,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			context,
-			isVisible: false,
-			layout,
-		});
-
-		await this.boardDoRepo.save(columnBoard);
+	async findById(id: EntityId, depth?: number): Promise&lt;ColumnBoard&gt; {
+		const columnBoard &#x3D; this.boardNodeService.findByClassAndId(ColumnBoard, id, depth);
 
 		return columnBoard;
 	}
 
-	async delete(board: ColumnBoard): Promise&lt;void&gt; {
-		await this.boardDoService.deleteWithDescendants(board);
+	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise&lt;ColumnBoard[]&gt; {
+		const boardNodes &#x3D; await this.boardNodeRepo.findByExternalReference(reference, depth);
+
+		const boards &#x3D; boardNodes.filter((bn) &#x3D;&gt; isColumnBoard(bn));
+
+		return boards as ColumnBoard[];
 	}
 
+	async updateVisibility(columbBoard: ColumnBoard, visibility: boolean): Promise&lt;void&gt; {
+		await this.boardNodeService.updateVisibility(columbBoard, visibility);
+	}
+
+	// called from feathers
+	// TODO remove when not needed anymore
 	async deleteByCourseId(courseId: EntityId): Promise&lt;void&gt; {
-		const columnBoardsId &#x3D; await this.findIdsByExternalReference({
+		const boardNodes &#x3D; await this.findByExternalReference({
 			type: BoardExternalReferenceType.Course,
 			id: courseId,
 		});
 
-		const deletePromises &#x3D; columnBoardsId.map((columnBoardId) &#x3D;&gt; this.deleteColumnBoardById(columnBoardId));
-
-		await Promise.all(deletePromises);
+		await this.boardNodeRepo.delete(boardNodes);
 	}
 
-	private async deleteColumnBoardById(id: EntityId): Promise&lt;void&gt; {
-		const columnBoardToDeletion &#x3D; await this.boardDoRepo.findByClassAndId(ColumnBoard, id);
+	async copyColumnBoard(props: {
+		originalColumnBoardId: EntityId;
+		destinationExternalReference: BoardExternalReference;
+		userId: EntityId;
+		copyTitle?: string;
+	}): Promise&lt;CopyStatus&gt; {
+		const copyStatus &#x3D; await this.columnBoardCopyService.copyColumnBoard(props);
 
-		if (columnBoardToDeletion) {
-			await this.boardDoService.deleteWithDescendants(columnBoardToDeletion);
-		}
+		return copyStatus;
 	}
 
-	async updateTitle(board: ColumnBoard, title: string): Promise&lt;void&gt; {
-		board.title &#x3D; title;
-		await this.boardDoRepo.save(board);
-	}
+	async swapLinkedIds(boardId: EntityId, idMap: Map&lt;EntityId, EntityId&gt;): Promise&lt;ColumnBoard&gt; {
+		const board &#x3D; await this.clumnBoardLinkService.swapLinkedIds(boardId, idMap);
 
-	async updateBoardVisibility(board: ColumnBoard, isVisible: boolean): Promise&lt;void&gt; {
-		board.isVisible &#x3D; isVisible;
-		await this.boardDoRepo.save(board);
+		return board;
 	}
 }
 </code></pre>

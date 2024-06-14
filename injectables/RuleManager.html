@@ -177,7 +177,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, groupRule: <a href="../injectables/GroupRule.html" target="_self">GroupRule</a>, legaySchoolRule: <a href="../injectables/LegacySchoolRule.html" target="_self">LegacySchoolRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, schoolSystemOptionsRule: <a href="../injectables/SchoolSystemOptionsRule.html" target="_self">SchoolSystemOptionsRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, systemRule: <a href="../injectables/SystemRule.html" target="_self">SystemRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, externalToolRule: <a href="../injectables/ExternalToolRule.html" target="_self">ExternalToolRule</a>, instanceRule: <a href="../injectables/InstanceRule.html" target="_self">InstanceRule</a>)</code>
+<code>constructor(boardNodeRule: <a href="../injectables/BoardNodeRule.html" target="_self">BoardNodeRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, groupRule: <a href="../injectables/GroupRule.html" target="_self">GroupRule</a>, legaySchoolRule: <a href="../injectables/LegacySchoolRule.html" target="_self">LegacySchoolRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, schoolSystemOptionsRule: <a href="../injectables/SchoolSystemOptionsRule.html" target="_self">SchoolSystemOptionsRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, systemRule: <a href="../injectables/SystemRule.html" target="_self">SystemRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, externalToolRule: <a href="../injectables/ExternalToolRule.html" target="_self">ExternalToolRule</a>, instanceRule: <a href="../injectables/InstanceRule.html" target="_self">InstanceRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -200,10 +200,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>boardDoRule</td>
+                                                        <td>boardNodeRule</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoRule.html" target="_self" >BoardDoRule</a></code>
+                                                                        <code><a href="../injectables/BoardNodeRule.html" target="_self" >BoardNodeRule</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -636,7 +636,7 @@ import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;; // 
 import { BaseDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import {
-	BoardDoRule,
+	BoardNodeRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
@@ -662,7 +662,7 @@ export class RuleManager {
 	private readonly rules: Rule[];
 
 	constructor(
-		private readonly boardDoRule: BoardDoRule,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly courseGroupRule: CourseGroupRule,
 		private readonly courseRule: CourseRule,
@@ -682,7 +682,7 @@ export class RuleManager {
 		private readonly instanceRule: InstanceRule
 	) {
 		this.rules &#x3D; [
-			this.boardDoRule,
+			this.boardNodeRule,
 			this.contextExternalToolRule,
 			this.courseGroupRule,
 			this.courseRule,

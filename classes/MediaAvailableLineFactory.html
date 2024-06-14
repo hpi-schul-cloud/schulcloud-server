@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/domainobject/board/media-available-line.do.factory.ts</code>
+            <code>apps/server/src/modules/board/testing/media-available-line.factory.ts</code>
         </p>
 
 
@@ -249,7 +249,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:15</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:16</a></code>
 </div>
                         </td>
                     </tr>
@@ -284,8 +284,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="7"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/board/media-available-line.do.factory.ts:7</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/board/testing/media-available-line.factory.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -493,7 +493,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:47</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:48</a></code>
 </div>
                         </td>
                     </tr>
@@ -800,7 +800,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:60</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:61</a></code>
 </div>
                         </td>
                     </tr>
@@ -1005,7 +1005,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:32</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:33</a></code>
 </div>
                         </td>
                     </tr>
@@ -1349,10 +1349,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaBoardColors } from &#x27;@modules/board/domain&#x27;;
-import { MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps } from &#x27;@shared/domain/domainobject&#x27;;
-import { DeepPartial } from &#x27;fishery&#x27;;
-import { BaseFactory } from &#x27;../../base.factory&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
+import { BaseFactory } from &#x27;@shared/testing&#x27;;
+import { MediaBoardColors, MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps } from &#x27;../domain&#x27;;
 
 class MediaAvailableLineFactory extends BaseFactory&lt;MediaAvailableLine, MediaAvailableLineProps&gt; {
 	withElement(element: MediaAvailableLineElement): this {

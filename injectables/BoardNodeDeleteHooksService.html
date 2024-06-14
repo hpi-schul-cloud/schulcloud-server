@@ -1,0 +1,1016 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >BoardNodeDeleteHooksService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDelete" >afterDelete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDeleteCollaborativeTextEditorElement" >afterDeleteCollaborativeTextEditorElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDeleteDrawingElement" >afterDeleteDrawingElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDeleteExternalToolElement" >afterDeleteExternalToolElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDeleteFileElement" >afterDeleteFileElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDeleteLinkElement" >afterDeleteLinkElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#afterDeleteMediaExternalToolElement" >afterDeleteMediaExternalToolElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#singleAfterDelete" >singleAfterDelete</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, drawingElementAdapterService: <a href="../injectables/DrawingElementAdapterService.html" target="_self">DrawingElementAdapterService</a>, collaborativeTextEditorService: <a href="../injectables/CollaborativeTextEditorService.html" target="_self">CollaborativeTextEditorService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:24</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>filesStorageClientAdapterService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FilesStorageClientAdapterService.html" target="_self" >FilesStorageClientAdapterService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>contextExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContextExternalToolService.html" target="_self" >ContextExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>drawingElementAdapterService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/DrawingElementAdapterService.html" target="_self" >DrawingElementAdapterService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>collaborativeTextEditorService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CollaborativeTextEditorService.html" target="_self" >CollaborativeTextEditorService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDelete"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDelete</b></span>
+                        <a href="#afterDelete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDelete(boardNode: <a href="../classes/BoardNode.html" target="_self">AnyBoardNode | AnyBoardNode[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardNode.html" target="_self" >AnyBoardNode | AnyBoardNode[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDeleteCollaborativeTextEditorElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDeleteCollaborativeTextEditorElement</b></span>
+                        <a href="#afterDeleteCollaborativeTextEditorElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDeleteCollaborativeTextEditorElement(collaborativeTextEditorElement: <a href="../classes/CollaborativeTextEditorElement.html" target="_self">CollaborativeTextEditorElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>collaborativeTextEditorElement</td>
+                                            <td>
+                                                            <code><a href="../classes/CollaborativeTextEditorElement.html" target="_self" >CollaborativeTextEditorElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDeleteDrawingElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDeleteDrawingElement</b></span>
+                        <a href="#afterDeleteDrawingElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDeleteDrawingElement(drawingElement: <a href="../classes/DrawingElement.html" target="_self">DrawingElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>drawingElement</td>
+                                            <td>
+                                                            <code><a href="../classes/DrawingElement.html" target="_self" >DrawingElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDeleteExternalToolElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDeleteExternalToolElement</b></span>
+                        <a href="#afterDeleteExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDeleteExternalToolElement(externalToolElement: <a href="../classes/ExternalToolElement.html" target="_self">ExternalToolElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalToolElement</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalToolElement.html" target="_self" >ExternalToolElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDeleteFileElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDeleteFileElement</b></span>
+                        <a href="#afterDeleteFileElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDeleteFileElement(fileElement: <a href="../classes/FileElement.html" target="_self">FileElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileElement</td>
+                                            <td>
+                                                            <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDeleteLinkElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDeleteLinkElement</b></span>
+                        <a href="#afterDeleteLinkElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDeleteLinkElement(linkElement: <a href="../classes/LinkElement.html" target="_self">LinkElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>linkElement</td>
+                                            <td>
+                                                            <code><a href="../classes/LinkElement.html" target="_self" >LinkElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterDeleteMediaExternalToolElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>afterDeleteMediaExternalToolElement</b></span>
+                        <a href="#afterDeleteMediaExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>afterDeleteMediaExternalToolElement(mediaElement: <a href="../classes/MediaExternalToolElement.html" target="_self">MediaExternalToolElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mediaElement</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaExternalToolElement.html" target="_self" >MediaExternalToolElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="singleAfterDelete"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>singleAfterDelete</b></span>
+                        <a href="#singleAfterDelete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>singleAfterDelete(boardNode: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-delete-hooks.service.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Utils } from &#x27;@mikro-orm/core&#x27;;
+import { CollaborativeTextEditorService } from &#x27;@modules/collaborative-text-editor&#x27;;
+import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
+import { DrawingElementAdapterService } from &#x27;@modules/tldraw-client&#x27;;
+import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool/service&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import {
+	AnyBoardNode,
+	CollaborativeTextEditorElement,
+	DrawingElement,
+	ExternalToolElement,
+	FileElement,
+	isCollaborativeTextEditorElement,
+	isDrawingElement,
+	isExternalToolElement,
+	isFileElement,
+	isLinkElement,
+	isMediaExternalToolElement,
+	LinkElement,
+	MediaExternalToolElement,
+} from &#x27;../../domain&#x27;;
+
+@Injectable()
+export class BoardNodeDeleteHooksService {
+	constructor(
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly drawingElementAdapterService: DrawingElementAdapterService,
+		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
+	) {}
+
+	async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise&lt;void&gt; {
+		const boardNodes &#x3D; Utils.asArray(boardNode);
+
+		await Promise.allSettled(boardNodes.map(async (bn) &#x3D;&gt; this.singleAfterDelete(bn)));
+	}
+
+	private async singleAfterDelete(boardNode: AnyBoardNode): Promise&lt;void&gt; {
+		// TODO improve this e.g. using exhaustive check or discriminated union
+		if (isFileElement(boardNode)) {
+			await this.afterDeleteFileElement(boardNode);
+		} else if (isLinkElement(boardNode)) {
+			await this.afterDeleteLinkElement(boardNode);
+		} else if (isDrawingElement(boardNode)) {
+			await this.afterDeleteDrawingElement(boardNode);
+		} else if (isExternalToolElement(boardNode)) {
+			await this.afterDeleteExternalToolElement(boardNode);
+		} else if (isCollaborativeTextEditorElement(boardNode)) {
+			await this.afterDeleteCollaborativeTextEditorElement(boardNode);
+		} else if (isMediaExternalToolElement(boardNode)) {
+			await this.afterDeleteMediaExternalToolElement(boardNode);
+		} else {
+			// noop
+		}
+		await Promise.allSettled(boardNode.children.map(async (child) &#x3D;&gt; this.afterDelete(child)));
+	}
+
+	async afterDeleteFileElement(fileElement: FileElement): Promise&lt;void&gt; {
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
+	}
+
+	async afterDeleteLinkElement(linkElement: LinkElement): Promise&lt;void&gt; {
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(linkElement.id);
+	}
+
+	async afterDeleteDrawingElement(drawingElement: DrawingElement): Promise&lt;void&gt; {
+		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(drawingElement.id);
+	}
+
+	async afterDeleteExternalToolElement(externalToolElement: ExternalToolElement): Promise&lt;void&gt; {
+		if (externalToolElement.contextExternalToolId) {
+			const linkedTool &#x3D; await this.contextExternalToolService.findById(externalToolElement.contextExternalToolId);
+
+			if (linkedTool) {
+				await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+			}
+		}
+	}
+
+	async afterDeleteCollaborativeTextEditorElement(
+		collaborativeTextEditorElement: CollaborativeTextEditorElement
+	): Promise&lt;void&gt; {
+		await this.collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId(
+			collaborativeTextEditorElement.id
+		);
+	}
+
+	async afterDeleteMediaExternalToolElement(mediaElement: MediaExternalToolElement): Promise&lt;void&gt; {
+		const linkedTool &#x3D; await this.contextExternalToolService.findById(mediaElement.contextExternalToolId);
+
+		if (linkedTool) {
+			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+		}
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'BoardNodeDeleteHooksService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

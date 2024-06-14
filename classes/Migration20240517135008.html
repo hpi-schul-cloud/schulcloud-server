@@ -262,7 +262,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Migration } from &#x27;@mikro-orm/migrations-mongodb&#x27;;
-import { MediaBoardColors, MediaBoardLayoutType } from &#x27;@modules/board/domain&#x27;;
+import { MediaBoardColors, BoardLayout } from &#x27;@modules/board/domain&#x27;;
 
 export class Migration20240517135008 extends Migration {
 	async up(): Promise&lt;void&gt; {
@@ -270,7 +270,7 @@ export class Migration20240517135008 extends Migration {
 			&#x27;boardnodes&#x27;,
 			{ type: &#x27;media-board&#x27; },
 			{
-				layout: MediaBoardLayoutType.LIST,
+				layout: BoardLayout.LIST,
 				mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
 				mediaAvailableLineCollapsed: false,
 			}

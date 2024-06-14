@@ -171,7 +171,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, collaborativeTextEditorService: <a href="../injectables/CollaborativeTextEditorService.html" target="_self">CollaborativeTextEditorService</a>, contentElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, collaborativeTextEditorService: <a href="../injectables/CollaborativeTextEditorService.html" target="_self">CollaborativeTextEditorService</a>, boardNodeService: <a href="../injectables/BoardNodeService.html" target="_self">BoardNodeService</a>, boardNodeAuthorizableService: <a href="../injectables/BoardNodeAuthorizableService.html" target="_self">BoardNodeAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -218,10 +218,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>contentElementService</td>
+                                                        <td>boardNodeService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                                        <code><a href="../injectables/BoardNodeService.html" target="_self" >BoardNodeService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -230,10 +230,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardDoAuthorizableService</td>
+                                                        <td>boardNodeAuthorizableService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
+                                                                        <code><a href="../injectables/BoardNodeAuthorizableService.html" target="_self" >BoardNodeAuthorizableService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -579,8 +579,8 @@
 import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { BoardDoAuthorizableService, ContentElementService } from &#x27;@src/modules/board&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { BoardNodeAuthorizableService, BoardNodeService } from &#x27;@modules/board&#x27;;
 import { CollaborativeTextEditor } from &#x27;../domain/do/collaborative-text-editor&#x27;;
 import { CollaborativeTextEditorService } from &#x27;../service/collaborative-text-editor.service&#x27;;
 import {
@@ -593,8 +593,8 @@ export class CollaborativeTextEditorUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly collaborativeTextEditorService: CollaborativeTextEditorService,
-		private readonly contentElementService: ContentElementService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
 	async getOrCreateCollaborativeTextEditorForParent(
@@ -627,8 +627,8 @@ export class CollaborativeTextEditorUc {
 	}
 
 	private async authorizeForContentElement(params: GetCollaborativeTextEditorForParentParams, user: User) {
-		const contentElement &#x3D; await this.contentElementService.findById(params.parentId);
-		const contentElementDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(contentElement);
+		const contentElement &#x3D; await this.boardNodeService.findContentElementById(params.parentId);
+		const contentElementDoAuthorizable &#x3D; await this.boardNodeAuthorizableService.getBoardAuthorizable(contentElement);
 
 		this.authorizationService.checkPermission(
 			user,

@@ -240,11 +240,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardDoAuthorizableService } from &#x27;@modules/board&#x27;;
-
-import { LessonService } from &#x27;@modules/lesson&#x27;;
-import { ContextExternalToolAuthorizableService } from &#x27;@modules/tool&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardNodeAuthorizableService } from &#x27;@modules/board/service&#x27;;
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { ContextExternalToolAuthorizableService } from &#x27;@modules/tool/context-external-tool/service&#x27;;
 import { ExternalToolAuthorizableService } from &#x27;@modules/tool/external-tool/service&#x27;;
+import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { BaseDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -263,7 +263,7 @@ import { InstanceService } from &#x27;../../../instance&#x27;;
 import { AuthorizableReferenceType } from &#x27;../type&#x27;;
 
 type RepoType &#x3D;
-	| BoardDoAuthorizableService
+	| BoardNodeAuthorizableService
 	| ContextExternalToolAuthorizableService
 	| CourseGroupRepo
 	| CourseRepo
@@ -296,7 +296,7 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService,
 		private readonly externalToolAuthorizableService: ExternalToolAuthorizableService,
 		private readonly instanceService: InstanceService

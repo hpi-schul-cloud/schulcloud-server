@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/submission-container-element.do.ts</code>
+            <code>apps/server/src/modules/board/domain/types/board-node-props.ts</code>
         </p>
 
 
@@ -131,7 +131,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/BoardCompositeProps.html" target="_self" >BoardCompositeProps</a></code>
+                            <code><a href="../interfaces/BoardNodeProps.html" target="_self" >BoardNodeProps</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -147,6 +147,7 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#dueDate" 
 >
                                             dueDate
@@ -177,7 +178,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>dueDate:     <code>Date | null</code>
+                                        <code>dueDate:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -185,11 +186,16 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>    <code>Date | null</code>
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
 
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -201,40 +207,106 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
-import { SubmissionItem } from &#x27;./submission-item.do&#x27;;
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { EntityId, InputFormat } from &#x27;@shared/domain/types&#x27;;
+import type { AnyBoardNode } from &#x27;./any-board-node&#x27;;
+import type { BoardExternalReference } from &#x27;./board-external-reference&#x27;;
+import { BoardLayout } from &#x27;./board-layout.enum&#x27;;
+import type { MediaBoardColors } from &#x27;../media-board&#x27;;
 
-export class SubmissionContainerElement extends BoardComposite&lt;SubmissionContainerElementProps&gt; {
-	get dueDate(): Date | null {
-		return this.props.dueDate;
-	}
-
-	set dueDate(value: Date | null) {
-		this.props.dueDate &#x3D; value;
-	}
-
-	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed &#x3D; domainObject instanceof SubmissionItem;
-		return allowed;
-	}
-
-	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitSubmissionContainerElement(this);
-	}
-
-	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
-		await visitor.visitSubmissionContainerElementAsync(this);
-	}
+export interface BoardNodeProps {
+	id: EntityId;
+	path: string;
+	level: number;
+	position: number;
+	children: AnyBoardNode[];
+	createdAt: Date;
+	updatedAt: Date;
 }
 
-export interface SubmissionContainerElementProps extends BoardCompositeProps {
-	dueDate: Date | null;
+export interface ColumnBoardProps extends BoardNodeProps {
+	title: string;
+	context: BoardExternalReference;
+	isVisible: boolean;
+	layout: BoardLayout;
 }
 
-export function isSubmissionContainerElement(reference: unknown): reference is SubmissionContainerElement {
-	return reference instanceof SubmissionContainerElement;
+export interface ColumnProps extends BoardNodeProps {
+	title?: string;
 }
+
+export interface CardProps extends BoardNodeProps {
+	title?: string;
+	height: number;
+}
+
+export interface CollaborativeTextEditorElementProps extends BoardNodeProps {}
+
+export interface DrawingElementProps extends BoardNodeProps {
+	description: string;
+}
+
+export interface ExternalToolElementProps extends BoardNodeProps {
+	contextExternalToolId?: string;
+}
+
+export interface FileElementProps extends BoardNodeProps {
+	alternativeText?: string;
+	caption?: string;
+}
+export interface LinkElementProps extends BoardNodeProps {
+	title: string;
+	url: string;
+	description?: string;
+	imageUrl?: string;
+}
+
+export interface RichTextElementProps extends BoardNodeProps {
+	text: string;
+	inputFormat: InputFormat;
+}
+
+export interface SubmissionContainerElementProps extends BoardNodeProps {
+	dueDate?: Date;
+}
+
+export interface SubmissionItemProps extends BoardNodeProps {
+	completed: boolean;
+	userId: EntityId;
+}
+
+export interface MediaBoardProps extends BoardNodeProps {
+	context: BoardExternalReference;
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
+	layout: BoardLayout;
+}
+
+// TODO use only one interface for media-external-tool and external-tool
+export interface MediaExternalToolElementProps extends BoardNodeProps {
+	contextExternalToolId: string;
+}
+
+export interface MediaLineProps extends BoardNodeProps {
+	backgroundColor: MediaBoardColors;
+	collapsed: boolean;
+	title: string;
+}
+
+export type MediaBoardNodeProps &#x3D; MediaBoardProps | MediaExternalToolElementProps | MediaLineProps;
+
+export type AnyBoardNodeProps &#x3D;
+	| CardProps
+	| CollaborativeTextEditorElementProps
+	| ColumnBoardProps
+	| ColumnProps
+	| DrawingElementProps
+	| ExternalToolElementProps
+	| FileElementProps
+	| LinkElementProps
+	| RichTextElementProps
+	| SubmissionContainerElementProps
+	| SubmissionItemProps
+	| MediaBoardNodeProps;
 </code></pre>
     </div>
 </div>

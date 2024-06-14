@@ -137,15 +137,58 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByContextExternalToolIds" >findByContextExternalToolIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByExternalReference" >findByExternalReference</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByIds" >findByIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findDescendants" >findDescendants</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findDescendantsOfMany" >findDescendantsOfMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#flush" >flush</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getProps" >getProps</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#persist" >persist</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#remove" >remove</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#save" >save</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#setProps" >setProps</a>
                             </li>
                         </ul>
                     </td>
@@ -170,7 +213,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -217,6 +260,237 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="delete"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>delete(boardNode: <a href="../classes/BoardNode.html" target="_self">AnyBoardNode | AnyBoardNode[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:104</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardNode.html" target="_self" >AnyBoardNode | AnyBoardNode[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByContextExternalToolIds"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByContextExternalToolIds</b></span>
+                        <a href="#findByContextExternalToolIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByContextExternalToolIds(contextExternalToolIds: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contextExternalToolIds</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;AnyBoardNode[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByExternalReference"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByExternalReference</b></span>
+                        <a href="#findByExternalReference"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByExternalReference(reference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>reference</td>
+                                            <td>
+                                                            <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;AnyBoardNode[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -228,15 +502,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -268,11 +542,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;BoardNode&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;AnyBoardNode&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -286,26 +572,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findDescendants"></a>
+                    <a name="findByIds"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>findDescendants</b></span>
-                        <a href="#findDescendants"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByIds</b></span>
+                        <a href="#findByIds"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findDescendants(node: <a href="../classes/BoardNode.html" target="_self">BoardNode</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>findByIds(ids: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -326,9 +612,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>node</td>
+                                                <td>ids</td>
                                             <td>
-                                                            <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
                                             </td>
 
                                             <td>
@@ -353,7 +639,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;BoardNode[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;AnyBoardNode[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -367,26 +653,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findDescendantsOfMany"></a>
+                    <a name="findDescendants"></a>
                     <span class="name">
+                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findDescendantsOfMany</b></span>
-                        <a href="#findDescendantsOfMany"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findDescendants</b></span>
+                        <a href="#findDescendants"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findDescendantsOfMany(nodes: <a href="../classes/BoardNode.html" target="_self">BoardNode[]</a>)</code>
+                    <code>findDescendants(props: <a href="../entitys/BoardNodeEntity.html" target="_self">BoardNodeEntity</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -407,9 +694,212 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>nodes</td>
+                                                <td>props</td>
                                             <td>
-                                                            <code><a href="../classes/BoardNode.html" target="_self" >BoardNode[]</a></code>
+                                                            <code><a href="../entitys/BoardNodeEntity.html" target="_self" >BoardNodeEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;BoardNodeEntity[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findDescendantsOfMany"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findDescendantsOfMany</b></span>
+                        <a href="#findDescendantsOfMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findDescendantsOfMany(entities: <a href="../classes/BoardNode.html" target="_self">BoardNodeEntity[]</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:119</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>entities</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardNode.html" target="_self" >BoardNodeEntity[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;Record&lt;string, BoardNodeEntity[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="flush"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>flush</b></span>
+                        <a href="#flush"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>flush()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:189</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getProps"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getProps</b></span>
+                        <a href="#getProps"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getProps(boardNode: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:193</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
                                             </td>
 
                                             <td>
@@ -422,7 +912,295 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/BoardNode.html" target="_self" >Promise&lt;Record&lt;string, BoardNode[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../entitys/BoardNodeEntity.html" target="_self" >BoardNodeEntity</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="persist"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>persist</b></span>
+                        <a href="#persist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>persist(boardNode: <a href="../classes/BoardNode.html" target="_self">AnyBoardNode | AnyBoardNode[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardNode.html" target="_self" >AnyBoardNode | AnyBoardNode[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="remove"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>remove</b></span>
+                        <a href="#remove"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>remove(boardNode: <a href="../classes/BoardNode.html" target="_self">AnyBoardNode | AnyBoardNode[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="178"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:178</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardNode.html" target="_self" >AnyBoardNode | AnyBoardNode[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="save"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>save</b></span>
+                        <a href="#save"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>save(boardNode: <a href="../classes/BoardNode.html" target="_self">AnyBoardNode | AnyBoardNode[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardNode.html" target="_self" >AnyBoardNode | AnyBoardNode[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setProps"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>setProps</b></span>
+                        <a href="#setProps"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setProps(boardNode: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>, props: <a href="../entitys/BoardNodeEntity.html" target="_self">BoardNodeEntity</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:200</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNodeEntity.html" target="_self" >BoardNodeEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
                             <div class="io-description">
@@ -438,66 +1216,209 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilterQuery, Utils } from &#x27;@mikro-orm/core&#x27;;
+import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardNode } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { AnyBoardNode, BoardExternalReference, getBoardNodeType } from &#x27;../domain&#x27;;
+import { pathOfChildren } from &#x27;../domain/path-utils&#x27;;
+import { BoardNodeEntity } from &#x27;./entity/board-node.entity&#x27;;
+import { TreeBuilder } from &#x27;./tree-builder&#x27;;
 
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise&lt;BoardNode&gt; {
-		let entity &#x3D; this.em.getUnitOfWork().getById&lt;BoardNode&gt;(BoardNode.name, id);
-		if (entity) {
-			return entity;
-		}
+	async findById(id: EntityId, depth?: number): Promise&lt;AnyBoardNode&gt; {
+		const props &#x3D; await this.em.findOneOrFail(BoardNodeEntity, { id });
+		const descendants &#x3D; await this.findDescendants(props, depth);
 
-		entity &#x3D; await this.em.findOneOrFail(BoardNode, id);
-		return entity;
+		const builder &#x3D; new TreeBuilder(descendants);
+		const boardNode &#x3D; builder.build(props);
+
+		return boardNode;
 	}
 
-	async findDescendants(node: BoardNode, depth?: number): Promise&lt;BoardNode[]&gt; {
-		const levelQuery &#x3D; depth !&#x3D;&#x3D; undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
+	async findByIds(ids: EntityId[], depth?: number): Promise&lt;AnyBoardNode[]&gt; {
+		const entities &#x3D; await this.em.find(BoardNodeEntity, { id: { $in: ids } });
 
-		const descendants &#x3D; await this.em.find(BoardNode, {
-			path: { $re: &#x60;^${node.pathOfChildren}&#x60; },
+		// TODO refactor descendants mapping, more DRY?
+		const descendantsMap &#x3D; await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes &#x3D; entities.map((props) &#x3D;&gt; {
+			const descentants &#x3D; descendantsMap[pathOfChildren(props)];
+			const builder &#x3D; new TreeBuilder(descentants);
+			const boardNode &#x3D; builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise&lt;AnyBoardNode[]&gt; {
+		const entities &#x3D; await this.em.find(BoardNodeEntity, {
+			context: {
+				_contextId: new ObjectId(reference.id),
+				_contextType: reference.type,
+			} as FilterQuery&lt;BoardExternalReference&gt;,
+		});
+
+		// TODO refactor descendants mapping, more DRY?
+		const descendantsMap &#x3D; await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes &#x3D; entities.map((props) &#x3D;&gt; {
+			const children &#x3D; descendantsMap[pathOfChildren(props)];
+			const builder &#x3D; new TreeBuilder(children);
+			const boardNode &#x3D; builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	async findByContextExternalToolIds(contextExternalToolIds: EntityId[], depth?: number): Promise&lt;AnyBoardNode[]&gt; {
+		const entities &#x3D; await this.em.find(BoardNodeEntity, {
+			contextExternalToolId: { $in: contextExternalToolIds },
+		});
+
+		// TODO refactor descendants mapping, more DRY?
+		const descendantsMap &#x3D; await this.findDescendantsOfMany(entities, depth);
+
+		const boardNodes &#x3D; entities.map((props) &#x3D;&gt; {
+			const children &#x3D; descendantsMap[pathOfChildren(props)];
+			const builder &#x3D; new TreeBuilder(children);
+			const boardNode &#x3D; builder.build(props);
+
+			return boardNode;
+		});
+
+		return boardNodes;
+	}
+
+	// TODO maybe we don&#x27;t need that method
+	// async findCommonParentOfIds(ids: EntityId[], depth?: number): Promise&lt;AnyBoardNode&gt; {
+	// 	const entities &#x3D; await this.em.find(BoardNodeEntity, { id: { $in: ids } });
+	// 	const sortedPaths &#x3D; entities.map((e) &#x3D;&gt; e.path).sort();
+	// 	const commonPath &#x3D; sortedPaths[0];
+	// 	const dontMatch &#x3D; sortedPaths.some((p) &#x3D;&gt; !p.startsWith(commonPath));
+
+	// 	if (!commonPath || commonPath &#x3D;&#x3D;&#x3D; ROOT_PATH || dontMatch) {
+	// 		throw new EntityNotFoundError(&#x60;Parent node of [${ids.join(&#x27;,&#x27;)}] not found&#x60;);
+	// 	}
+
+	// 	const commonAncestorIds &#x3D; commonPath.split(&#x27;,&#x27;).filter((id) &#x3D;&gt; id !&#x3D;&#x3D; &#x27;&#x27;);
+	// 	const parentId &#x3D; commonAncestorIds[commonAncestorIds.length - 1];
+	// 	const parentNode &#x3D; await this.findById(parentId, depth);
+
+	// 	return parentNode;
+	// }
+
+	async save(boardNode: AnyBoardNode | AnyBoardNode[]): Promise&lt;void&gt; {
+		return this.persist(boardNode).flush();
+	}
+
+	async delete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise&lt;void&gt; {
+		await this.remove(boardNode).flush();
+	}
+
+	private async findDescendants(props: BoardNodeEntity, depth?: number): Promise&lt;BoardNodeEntity[]&gt; {
+		const levelQuery &#x3D; depth !&#x3D;&#x3D; undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
+
+		const descendants &#x3D; await this.em.find(BoardNodeEntity, {
+			path: { $re: &#x60;^${pathOfChildren(props)}&#x60; },
 			level: levelQuery,
 		});
 
 		return descendants;
 	}
 
-	async findDescendantsOfMany(nodes: BoardNode[]): Promise&lt;Record&lt;string, BoardNode[]&gt;&gt; {
-		const pathQueries &#x3D; nodes.map((node) &#x3D;&gt; {
-			return { path: { $re: &#x60;^${node.pathOfChildren}&#x60; } };
+	private async findDescendantsOfMany(
+		entities: BoardNodeEntity[],
+		depth?: number
+	): Promise&lt;Record&lt;string, BoardNodeEntity[]&gt;&gt; {
+		const pathQueries &#x3D; entities.map((props) &#x3D;&gt; {
+			const levelQuery &#x3D; depth !&#x3D;&#x3D; undefined ? { $gt: props.level, $lte: props.level + depth } : { $gt: props.level };
+
+			return { path: { $re: &#x60;^${pathOfChildren(props)}&#x60; }, level: levelQuery };
 		});
 
-		const map: Record&lt;string, BoardNode[]&gt; &#x3D; {};
+		const map: Record&lt;string, BoardNodeEntity[]&gt; &#x3D; {};
 		if (pathQueries.length &#x3D;&#x3D;&#x3D; 0) {
 			return map;
 		}
 
-		const descendants &#x3D; await this.em.find(BoardNode, {
+		const descendants &#x3D; await this.em.find(BoardNodeEntity, {
 			$or: pathQueries,
 		});
 
-		// this is for finding tha ancestors of a descendant
+		// this is for finding the ancestors of a descendant
 		// we use this to group the descendants by ancestor
 		// TODO we probably need a more efficient way to do the grouping
-		const matchAncestors &#x3D; (descendant: BoardNode): BoardNode[] &#x3D;&gt; {
-			const result &#x3D; nodes.filter((n) &#x3D;&gt; descendant.path.match(&#x60;^${n.pathOfChildren}&#x60;));
+		const matchAncestors &#x3D; (descendant: BoardNodeEntity): BoardNodeEntity[] &#x3D;&gt; {
+			const result &#x3D; entities.filter((props) &#x3D;&gt; descendant.path.match(&#x60;^${pathOfChildren(props)}&#x60;));
 			return result;
 		};
 
 		for (const desc of descendants) {
-			const ancestorNodes &#x3D; matchAncestors(desc);
-			ancestorNodes.forEach((node) &#x3D;&gt; {
-				map[node.pathOfChildren] ||&#x3D; [];
-				map[node.pathOfChildren].push(desc);
+			const ancestors &#x3D; matchAncestors(desc);
+			ancestors.forEach((props) &#x3D;&gt; {
+				map[pathOfChildren(props)] ||&#x3D; [];
+				map[pathOfChildren(props)].push(desc);
 			});
 		}
 		return map;
+	}
+
+	private persist(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes &#x3D; Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) &#x3D;&gt; {
+			bn.children.forEach((child) &#x3D;&gt; this.persist(child));
+
+			const props &#x3D; this.getProps(bn);
+
+			if (!(props instanceof BoardNodeEntity)) {
+				const entity &#x3D; this.em.create(BoardNodeEntity, props);
+				entity.type &#x3D; getBoardNodeType(bn);
+				this.setProps(bn, entity);
+				this.em.persist(entity);
+			} else {
+				// for the unlikely case that the props are not managed yet
+				this.em.persist(props);
+			}
+		});
+
+		return this;
+	}
+
+	private remove(boardNode: AnyBoardNode | AnyBoardNode[]): BoardNodeRepo {
+		const boardNodes &#x3D; Utils.asArray(boardNode);
+
+		boardNodes.forEach((bn) &#x3D;&gt; {
+			this.em.remove(this.getProps(bn));
+			bn.children.forEach((child) &#x3D;&gt; this.remove(child));
+		});
+
+		return this;
+	}
+
+	private async flush(): Promise&lt;void&gt; {
+		return this.em.flush();
+	}
+
+	private getProps(boardNode: AnyBoardNode): BoardNodeEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } &#x3D; boardNode;
+		return props as BoardNodeEntity;
+	}
+
+	private setProps(boardNode: AnyBoardNode, props: BoardNodeEntity): void {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		boardNode.props &#x3D; props;
 	}
 }
 </code></pre>

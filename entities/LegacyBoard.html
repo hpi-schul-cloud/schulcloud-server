@@ -238,14 +238,14 @@ import { BadRequestException, NotFoundException } from &#x27;@nestjs/common&#x27
 import { LearnroomElement } from &#x27;../../interface&#x27;;
 import { EntityId } from &#x27;../../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;../base.entity&#x27;;
+import { ColumnBoardNode } from &#x27;../column-board-node.entity&#x27;;
 import type { Course } from &#x27;../course.entity&#x27;;
 import { LessonEntity } from &#x27;../lesson.entity&#x27;;
 import { Task } from &#x27;../task.entity&#x27;;
-import { LegacyBoardElement, LegacyBoardElementReference } from &#x27;./legacy-boardelement.entity&#x27;;
 import { ColumnboardBoardElement } from &#x27;./column-board-boardelement&#x27;;
+import { LegacyBoardElement, LegacyBoardElementReference } from &#x27;./legacy-boardelement.entity&#x27;;
 import { LessonBoardElement } from &#x27;./lesson-boardelement.entity&#x27;;
 import { TaskBoardElement } from &#x27;./task-boardelement.entity&#x27;;
-import { ColumnBoardNode } from &#x27;../boardnode/column-board-node.entity&#x27;;
 
 export type BoardProps &#x3D; {
 	references: LegacyBoardElement[];

@@ -119,7 +119,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts</code>
+            <code>apps/server/src/modules/board/domain/media-board/media-board.do.ts</code>
         </p>
 
 
@@ -128,7 +128,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+                            <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
             </p>
 
 
@@ -162,26 +162,34 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#accept" >accept</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#acceptAsync" >acceptAsync</a>
-                            </li>
-                            <li>
-                                <a href="#isAllowedAsChild" >isAllowedAsChild</a>
+                                <a href="#canHaveChild" >canHaveChild</a>
                             </li>
                             <li>
                                 <a href="#addChild" >addChild</a>
                             </li>
                             <li>
-                                <a href="#getChildrenOfType" >getChildrenOfType</a>
-                            </li>
-                            <li>
                                 <a href="#hasChild" >hasChild</a>
                             </li>
                             <li>
+                                <a href="#hasParent" >hasParent</a>
+                            </li>
+                            <li>
+                                <a href="#isRoot" >isRoot</a>
+                            </li>
+                            <li>
                                 <a href="#removeChild" >removeChild</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#resetPath" >resetPath</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#updatePath" >updatePath</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#updatePosition" >updatePosition</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -210,10 +218,10 @@
                                     <a href="#layout" >layout</a>
                                 </li>
                                 <li>
-                                    <a href="#mediaAvailableLineBackgroundColor" >mediaAvailableLineBackgroundColor</a>
+                                    <a href="#backgroundColor" >backgroundColor</a>
                                 </li>
                                 <li>
-                                    <a href="#mediaAvailableLineCollapsed" >mediaAvailableLineCollapsed</a>
+                                    <a href="#collapsed" >collapsed</a>
                                 </li>
                             </ul>
                         </td>
@@ -273,29 +281,29 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="accept"></a>
+                    <a name="canHaveChild"></a>
                     <span class="name">
-                        <span ><b>accept</b></span>
-                        <a href="#accept"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>canHaveChild</b></span>
+                        <a href="#canHaveChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>accept(visitor: <a href="../interfaces/BoardCompositeVisitor.html" target="_self">BoardCompositeVisitor</a>)</code>
+<code>canHaveChild(childNode: <a href="../undefineds/AnyMediaBoardNode.html" target="_self">AnyMediaBoardNode</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
 </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:41</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -317,157 +325,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>visitor</td>
+                                                <td>childNode</td>
                                             <td>
-                                                            <code><a href="../interfaces/BoardCompositeVisitor.html" target="_self" >BoardCompositeVisitor</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="acceptAsync"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>acceptAsync</b></span>
-                        <a href="#acceptAsync"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>acceptAsync(visitor: <a href="../interfaces/BoardCompositeVisitorAsync.html" target="_self">BoardCompositeVisitorAsync</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:45</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>visitor</td>
-                                            <td>
-                                                            <code><a href="../interfaces/BoardCompositeVisitorAsync.html" target="_self" >BoardCompositeVisitorAsync</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isAllowedAsChild"></a>
-                    <span class="name">
-                        <span ><b>isAllowedAsChild</b></span>
-                        <a href="#isAllowedAsChild"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>isAllowedAsChild(domainObject: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:35</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>domainObject</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyMediaBoardNode" target="_self" >AnyMediaBoardNode</a></code>
                                             </td>
 
                                             <td>
@@ -503,20 +363,20 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addChild(child: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>addChild(child: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
 </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:19</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:54</a></code>
 </div>
                         </td>
                     </tr>
@@ -540,7 +400,7 @@
                                         <tr>
                                                 <td>child</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
                                             </td>
 
                                             <td>
@@ -579,83 +439,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getChildrenOfType"></a>
-                    <span class="name">
-                        <span ><b>getChildrenOfType</b></span>
-                        <a href="#getChildrenOfType"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getChildrenOfType(type)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:45</a></code>
-</div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Type parameters :</b>
-                            <ul class="type-parameters">
-                                    <li>U</li>
-                            </ul>
-                        </td>
-                    </tr>
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>type</td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>U[]</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="hasChild"></a>
                     <span class="name">
                         <span ><b>hasChild</b></span>
@@ -665,20 +448,20 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>hasChild(child: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+<code>hasChild(child: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
 </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:39</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:74</a></code>
 </div>
                         </td>
                     </tr>
@@ -702,7 +485,7 @@
                                         <tr>
                                                 <td>child</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
                                             </td>
 
                                             <td>
@@ -729,6 +512,92 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="hasParent"></a>
+                    <span class="name">
+                        <span ><b>hasParent</b></span>
+                        <a href="#hasParent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>hasParent()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:29</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isRoot"></a>
+                    <span class="name">
+                        <span ><b>isRoot</b></span>
+                        <a href="#isRoot"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isRoot()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:38</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="removeChild"></a>
                     <span class="name">
                         <span ><b>removeChild</b></span>
@@ -738,20 +607,20 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeChild(child: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+<code>removeChild(child: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
 </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:35</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:81</a></code>
 </div>
                         </td>
                     </tr>
@@ -775,7 +644,202 @@
                                         <tr>
                                                 <td>child</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resetPath"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>resetPath</b></span>
+                        <a href="#resetPath"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resetPath()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:103</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updatePath"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>updatePath</b></span>
+                        <a href="#updatePath"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updatePath(parent: <a href="../interfaces/BoardNodeProps.html" target="_self">BoardNode&lt;BoardNodeProps&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:95</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parent</td>
+                                            <td>
+                                                            <code><a href="../interfaces/BoardNodeProps.html" target="_self" >BoardNode&lt;BoardNodeProps&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updatePosition"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>updatePosition</b></span>
+                        <a href="#updatePosition"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updatePosition(position: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/BoardNode.html" target="_self" >BoardNode</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardNode.html#source" target="_self" >BoardNode:111</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>position</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                             </td>
 
                                             <td>
@@ -869,7 +933,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:7</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:7</a></div>
                                 </td>
                             </tr>
 
@@ -891,18 +955,18 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:11</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:15</a></div>
                                 </td>
                             </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>set</b><code>layout(layout: <a href="../undefineds/MediaBoardLayoutType.html" target="_self">MediaBoardLayoutType</a>)</code></span>
+                        <span class="accessor"><b>set</b><code>layout(layout: <a href="../undefineds/BoardLayout.html" target="_self">BoardLayout</a>)</code></span>
                     </td>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:15</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:11</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -923,7 +987,7 @@
                                                             <td>layout</td>
                                                     
                                                             <td>
-                                                                            <code><a href="../miscellaneous/enumerations.html#MediaBoardLayoutType" target="_self" >MediaBoardLayoutType</a></code>
+                                                                            <code><a href="../miscellaneous/enumerations.html#BoardLayout" target="_self" >BoardLayout</a></code>
                                                             </td>
                                                     
                                                         <td>
@@ -948,30 +1012,30 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="mediaAvailableLineBackgroundColor"></a>
-                        <span class="name"><b>mediaAvailableLineBackgroundColor</b><a href="#mediaAvailableLineBackgroundColor"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="backgroundColor"></a>
+                        <span class="name"><b>backgroundColor</b><a href="#backgroundColor"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>mediaAvailableLineBackgroundColor()</code></span>
+                        <span class="accessor"><b>get</b><code>backgroundColor()</code></span>
                     </td>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:19</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:19</a></div>
                                 </td>
                             </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>set</b><code>mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: <a href="../undefineds/MediaBoardColors.html" target="_self">MediaBoardColors</a>)</code></span>
+                        <span class="accessor"><b>set</b><code>backgroundColor(backgroundColor: <a href="../undefineds/MediaBoardColors.html" target="_self">MediaBoardColors</a>)</code></span>
                     </td>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:23</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:23</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -989,7 +1053,7 @@
                                             </thead>
                                             <tbody>
                                                     <tr>
-                                                            <td>mediaAvailableLineBackgroundColor</td>
+                                                            <td>backgroundColor</td>
                                                     
                                                             <td>
                                                                             <code><a href="../miscellaneous/enumerations.html#MediaBoardColors" target="_self" >MediaBoardColors</a></code>
@@ -1017,30 +1081,30 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="mediaAvailableLineCollapsed"></a>
-                        <span class="name"><b>mediaAvailableLineCollapsed</b><a href="#mediaAvailableLineCollapsed"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="collapsed"></a>
+                        <span class="name"><b>collapsed</b><a href="#collapsed"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>mediaAvailableLineCollapsed()</code></span>
+                        <span class="accessor"><b>get</b><code>collapsed()</code></span>
                     </td>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:27</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:27</a></div>
                                 </td>
                             </tr>
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>set</b><code>mediaAvailableLineCollapsed(collapsed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code></span>
+                        <span class="accessor"><b>set</b><code>collapsed(collapsed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code></span>
                     </td>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/media-board/media-board.do.ts:31</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/board/domain/media-board/media-board.do.ts:31</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -1087,61 +1151,48 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MediaBoardColors, MediaBoardLayoutType } from &#x27;@modules/board/domain&#x27;;
-import { BoardComposite, BoardCompositeProps } from &#x27;../board-composite.do&#x27;;
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from &#x27;../types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { BoardExternalReference, BoardLayout, MediaBoardProps } from &#x27;../types&#x27;;
+import type { AnyMediaBoardNode, MediaBoardColors } from &#x27;./types&#x27;;
 import { MediaLine } from &#x27;./media-line.do&#x27;;
+import { BoardNode } from &#x27;../board-node.do&#x27;;
 
-export class MediaBoard extends BoardComposite&lt;MediaBoardProps&gt; {
+export class MediaBoard extends BoardNode&lt;MediaBoardProps&gt; {
 	get context(): BoardExternalReference {
 		return this.props.context;
 	}
 
-	get layout(): MediaBoardLayoutType {
-		return this.props.layout;
-	}
-
-	set layout(layout: MediaBoardLayoutType) {
+	set layout(layout: BoardLayout) {
 		this.props.layout &#x3D; layout;
 	}
 
-	get mediaAvailableLineBackgroundColor(): MediaBoardColors {
-		return this.props.mediaAvailableLineBackgroundColor;
+	get layout(): BoardLayout {
+		return this.props.layout;
 	}
 
-	set mediaAvailableLineBackgroundColor(mediaAvailableLineBackgroundColor: MediaBoardColors) {
-		this.props.mediaAvailableLineBackgroundColor &#x3D; mediaAvailableLineBackgroundColor;
+	get backgroundColor(): MediaBoardColors {
+		return this.props.backgroundColor;
 	}
 
-	get mediaAvailableLineCollapsed(): boolean {
-		return this.props.mediaAvailableLineCollapsed;
+	set backgroundColor(backgroundColor: MediaBoardColors) {
+		this.props.backgroundColor &#x3D; backgroundColor;
 	}
 
-	set mediaAvailableLineCollapsed(collapsed: boolean) {
-		this.props.mediaAvailableLineCollapsed &#x3D; collapsed;
+	get collapsed(): boolean {
+		return this.props.collapsed;
 	}
 
-	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed: boolean &#x3D; domainObject instanceof MediaLine;
+	set collapsed(collapsed: boolean) {
+		this.props.collapsed &#x3D; collapsed;
+	}
+
+	canHaveChild(childNode: AnyMediaBoardNode): boolean {
+		const allowed: boolean &#x3D; childNode instanceof MediaLine;
 
 		return allowed;
 	}
-
-	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitMediaBoard(this);
-	}
-
-	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
-		await visitor.visitMediaBoardAsync(this);
-	}
 }
 
-export interface MediaBoardProps extends BoardCompositeProps {
-	context: BoardExternalReference;
-	layout: MediaBoardLayoutType;
-	mediaAvailableLineBackgroundColor: MediaBoardColors;
-	mediaAvailableLineCollapsed: boolean;
-}
+export const isMediaBoard &#x3D; (reference: unknown): reference is MediaBoard &#x3D;&gt; reference instanceof MediaBoard;
 </code></pre>
     </div>
 </div>

@@ -142,6 +142,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#layout" >layout</a>
                             </li>
                             <li>
@@ -188,6 +189,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>layout</b></span>
                         <a href="#layout"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -204,13 +206,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The layout of the board&#x27;, default: undefined, enum: BoardLayout, enumName: &#x27;BoardLayout&#x27;})<br />@IsEnum(BoardLayout, {})<br />
+                            @ApiProperty({description: &#x27;The layout of the board&#x27;, default: undefined, enum: BoardLayout, enumName: &#x27;BoardLayout&#x27;})<br />@IsEnum(BoardLayout, {})<br />@NotEquals(undefined)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/board/controller/dto/board/create-board.body.params.ts:39</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/board/controller/dto/board/create-board.body.params.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -344,8 +346,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { SanitizeHtml } from &#x27;@shared/controller&#x27;;
-import { BoardExternalReferenceType, BoardLayout } from &#x27;@shared/domain/domainobject&#x27;;
-import { IsEnum, IsMongoId, MaxLength, MinLength } from &#x27;class-validator&#x27;;
+import { IsEnum, IsMongoId, NotEquals, MaxLength, MinLength } from &#x27;class-validator&#x27;;
+import { BoardExternalReferenceType, BoardLayout } from &#x27;../../../domain&#x27;;
 
 export class CreateBoardBodyParams {
 	@ApiProperty({
@@ -380,6 +382,7 @@ export class CreateBoardBodyParams {
 		enumName: &#x27;BoardLayout&#x27;,
 	})
 	@IsEnum(BoardLayout, {})
+	@NotEquals(BoardLayout[BoardLayout.GRID])
 	layout!: BoardLayout;
 }
 </code></pre>

@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/types/board-external-reference.ts</code>
+            <code>apps/server/src/modules/board/domain/types/board-external-reference.ts</code>
         </p>
 
 
@@ -234,11 +234,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { EntityId } from &#x27;@shared/domain/types&#x27;;
 
 export enum BoardExternalReferenceType {
 	&#x27;Course&#x27; &#x3D; &#x27;course&#x27;,
 	&#x27;User&#x27; &#x3D; &#x27;user&#x27;,
+	// TODO
+	// &#x27;ExternalTool&#x27; &#x3D; &#x27;external-tool&#x27;,
 }
 
 export interface BoardExternalReference {

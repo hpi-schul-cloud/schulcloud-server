@@ -304,10 +304,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { AnyBoardDo } from &#x27;@shared/domain/domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { AnyBoardNode } from &#x27;../../domain&#x27;;
 import type { AnyContentElementResponse } from &#x27;../dto&#x27;;
 
-export interface BaseResponseMapper&lt;T &#x3D; AnyBoardDo&gt; {
+export interface BaseResponseMapper&lt;T &#x3D; AnyBoardNode&gt; {
 	mapToResponse(element: T): AnyContentElementResponse;
 
 	canMap(element: T): boolean;

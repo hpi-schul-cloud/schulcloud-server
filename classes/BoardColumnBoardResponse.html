@@ -499,9 +499,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardLayout } from &#x27;@modules/board&#x27;;
+import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
-import { BoardLayout } from &#x27;@shared/domain/domainobject&#x27;;
 
 export class BoardColumnBoardResponse {
 	constructor({ id, columnBoardId, title, published, createdAt, updatedAt, layout }: BoardColumnBoardResponse) {

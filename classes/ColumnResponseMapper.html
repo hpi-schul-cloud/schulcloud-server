@@ -243,14 +243,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, HttpStatus } from &#x27;@nestjs/common&#x27;;
-import { Card, Column } from &#x27;@shared/domain/domainobject&#x27;;
+import { Card, Column } from &#x27;../../domain&#x27;;
 import { CardSkeletonResponse, ColumnResponse, TimestampsResponse } from &#x27;../dto&#x27;;
 
 export class ColumnResponseMapper {
 	static mapToResponse(column: Column): ColumnResponse {
 		const result &#x3D; new ColumnResponse({
 			id: column.id,
-			title: column.title,
+			title: column.title ?? &#x27;&#x27;,
 			cards: column.children.map((card) &#x3D;&gt; {
 				/* istanbul ignore next */
 				if (!(card instanceof Card)) {

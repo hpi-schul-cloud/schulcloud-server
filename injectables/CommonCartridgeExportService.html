@@ -300,15 +300,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addCardElementToOrganization(element: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, organizationBuilder: <a href="../classes/CommonCartridgeOrganizationBuilder.html" target="_self">CommonCartridgeOrganizationBuilder</a>)</code>
+                    <code>addCardElementToOrganization(element: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>, organizationBuilder: <a href="../classes/CommonCartridgeOrganizationBuilder.html" target="_self">CommonCartridgeOrganizationBuilder</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="154"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:154</a></div>
                         </td>
                     </tr>
 
@@ -331,7 +331,7 @@
                                         <tr>
                                                 <td>element</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
                                             </td>
 
                                             <td>
@@ -388,8 +388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="146"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:146</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -563,8 +563,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="134"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:134</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -644,8 +644,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="173"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:173</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -1064,15 +1064,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-	CommonCartridgeFileBuilder,
-	CommonCartridgeOrganizationBuilder,
-	CommonCartridgeVersion,
-} from &#x27;@modules/common-cartridge&#x27;;
-import { LessonService } from &#x27;@modules/lesson&#x27;;
-import { TaskService } from &#x27;@modules/task&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	AnyBoardDo,
+	AnyBoardNode,
 	BoardExternalReferenceType,
 	Card,
 	Column,
@@ -1080,7 +1072,15 @@ import {
 	isColumn,
 	isLinkElement,
 	isRichTextElement,
-} from &#x27;@shared/domain/domainobject&#x27;;
+} from &#x27;@modules/board/domain&#x27;;
+import {
+	CommonCartridgeFileBuilder,
+	CommonCartridgeOrganizationBuilder,
+	CommonCartridgeVersion,
+} from &#x27;@modules/common-cartridge&#x27;;
+import { LessonService } from &#x27;@modules/lesson&#x27;;
+import { TaskService } from &#x27;@modules/task&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ComponentProperties } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ColumnBoardService } from &#x27;@src/modules/board&#x27;;
@@ -1175,16 +1175,14 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		exportedColumnBoards: string[]
 	): Promise&lt;void&gt; {
-		const columnBoardIds &#x3D; (
-			await this.columnBoardService.findIdsByExternalReference({
+		const columnBoards &#x3D; (
+			await this.columnBoardService.findByExternalReference({
 				type: BoardExternalReferenceType.Course,
 				id: courseId,
 			})
-		).filter((id) &#x3D;&gt; exportedColumnBoards.includes(id));
+		).filter((cb) &#x3D;&gt; exportedColumnBoards.includes(cb.id));
 
-		for await (const columnBoardId of columnBoardIds) {
-			const columnBoard &#x3D; await this.columnBoardService.findById(columnBoardId);
-
+		for (const columnBoard of columnBoards) {
 			const organization &#x3D; builder.addOrganization({
 				title: columnBoard.title,
 				identifier: createIdentifier(columnBoard.id),
@@ -1199,7 +1197,7 @@ export class CommonCartridgeExportService {
 	private addColumnToOrganization(column: Column, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
 		const { id } &#x3D; column;
 		const columnOrganization &#x3D; organizationBuilder.addSubOrganization({
-			title: column.title,
+			title: column.title ?? &#x27;&#x27;,
 			identifier: createIdentifier(id),
 		});
 
@@ -1211,7 +1209,7 @@ export class CommonCartridgeExportService {
 	private addCardToOrganization(card: Card, organizationBuilder: CommonCartridgeOrganizationBuilder): void {
 		const { id } &#x3D; card;
 		const cardOrganization &#x3D; organizationBuilder.addSubOrganization({
-			title: card.title,
+			title: card.title ?? &#x27;&#x27;,
 			identifier: createIdentifier(id),
 		});
 
@@ -1219,7 +1217,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private addCardElementToOrganization(
-		element: AnyBoardDo,
+		element: AnyBoardNode,
 		organizationBuilder: CommonCartridgeOrganizationBuilder
 	): void {
 		if (isRichTextElement(element)) {

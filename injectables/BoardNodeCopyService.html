@@ -1,0 +1,2167 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >BoardNodeCopyService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/board/service/internal/board-node-copy.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildSpecificProps" >buildSpecificProps</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copy" >copy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyCard" >copyCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyChildrenOf" >copyChildrenOf</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyCollaborativeTextEditorElement" >copyCollaborativeTextEditorElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyColumn" >copyColumn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyColumnBoard" >copyColumnBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyDrawingElement" >copyDrawingElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyExternalToolElement" >copyExternalToolElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyFileElement" >copyFileElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyLinkElement" >copyLinkElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyMediaBoard" >copyMediaBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyMediaExternalToolElement" >copyMediaExternalToolElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyMediaLine" >copyMediaLine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyRichTextElement" >copyRichTextElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copySubmissionContainerElement" >copySubmissionContainerElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#copySubmissionItem" >copySubmissionItem</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:35</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>toolFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>contextExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContextExternalToolService.html" target="_self" >ContextExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>copyHelperService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CopyHelperService.html" target="_self" >CopyHelperService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildSpecificProps"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>buildSpecificProps</b></span>
+                        <a href="#buildSpecificProps"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildSpecificProps(childrenResults: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="397"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:397</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>childrenResults</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >CopyStatus[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>literal type</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copy"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copy</b></span>
+                        <a href="#copy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copy(boardNode: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyCard"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyCard</b></span>
+                        <a href="#copyCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyCard(original: <a href="../classes/Card.html" target="_self">Card</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:135</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/Card.html" target="_self" >Card</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyChildrenOf"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>copyChildrenOf</b></span>
+                        <a href="#copyChildrenOf"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyChildrenOf(boardNode: <a href="../undefineds/AnyBoardNode.html" target="_self">AnyBoardNode</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="369"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:369</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardNode" target="_self" >AnyBoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyCollaborativeTextEditorElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyCollaborativeTextEditorElement</b></span>
+                        <a href="#copyCollaborativeTextEditorElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyCollaborativeTextEditorElement(original: <a href="../classes/CollaborativeTextEditorElement.html" target="_self">CollaborativeTextEditorElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="315"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:315</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/CollaborativeTextEditorElement.html" target="_self" >CollaborativeTextEditorElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyColumn"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyColumn</b></span>
+                        <a href="#copyColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyColumn(original: <a href="../classes/Column.html" target="_self">Column</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:117</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyColumnBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyColumnBoard</b></span>
+                        <a href="#copyColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyColumnBoard(original: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:98</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyDrawingElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyDrawingElement</b></span>
+                        <a href="#copyDrawingElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyDrawingElement(original: <a href="../classes/DrawingElement.html" target="_self">DrawingElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="235"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:235</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/DrawingElement.html" target="_self" >DrawingElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyExternalToolElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyExternalToolElement</b></span>
+                        <a href="#copyExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyExternalToolElement(original: <a href="../classes/ExternalToolElement.html" target="_self">ExternalToolElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="282"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:282</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalToolElement.html" target="_self" >ExternalToolElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyFileElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyFileElement</b></span>
+                        <a href="#copyFileElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyFileElement(original: <a href="../classes/FileElement.html" target="_self">FileElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:153</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyLinkElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyLinkElement</b></span>
+                        <a href="#copyLinkElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyLinkElement(original: <a href="../classes/LinkElement.html" target="_self">LinkElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:180</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/LinkElement.html" target="_self" >LinkElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyMediaBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyMediaBoard</b></span>
+                        <a href="#copyMediaBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyMediaBoard(original: <a href="../classes/MediaBoard.html" target="_self">MediaBoard</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="333"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:333</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaBoard.html" target="_self" >MediaBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyMediaExternalToolElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyMediaExternalToolElement</b></span>
+                        <a href="#copyMediaExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyMediaExternalToolElement(original: <a href="../classes/MediaExternalToolElement.html" target="_self">MediaExternalToolElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:358</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaExternalToolElement.html" target="_self" >MediaExternalToolElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyMediaLine"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyMediaLine</b></span>
+                        <a href="#copyMediaLine"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyMediaLine(original: <a href="../classes/MediaLine.html" target="_self">MediaLine</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="345"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:345</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/MediaLine.html" target="_self" >MediaLine</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyRichTextElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copyRichTextElement</b></span>
+                        <a href="#copyRichTextElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyRichTextElement(original: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:219</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copySubmissionContainerElement"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copySubmissionContainerElement</b></span>
+                        <a href="#copySubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copySubmissionContainerElement(original: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="250"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:250</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copySubmissionItem"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>copySubmissionItem</b></span>
+                        <a href="#copySubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copySubmissionItem(original: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>, context: <a href="../interfaces/CopyContext.html" target="_self">CopyContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="272"
+                                    class="link-to-prism">apps/server/src/modules/board/service/internal/board-node-copy.service.ts:272</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>original</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/CopyContext.html" target="_self" >CopyContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@modules/copy-helper&#x27;;
+import { CopyFileDto } from &#x27;@modules/files-storage-client/dto&#x27;;
+import { ContextExternalToolService } from &#x27;@modules/tool/context-external-tool&#x27;;
+import { ContextExternalTool } from &#x27;@modules/tool/context-external-tool/domain&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;@modules/tool/tool-config&#x27;;
+import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import {
+	AnyBoardNode,
+	BoardNodeType,
+	Card,
+	CollaborativeTextEditorElement,
+	Column,
+	ColumnBoard,
+	DrawingElement,
+	ExternalToolElement,
+	FileElement,
+	getBoardNodeType,
+	handleNonExhaustiveSwitch,
+	LinkElement,
+	MediaBoard,
+	MediaExternalToolElement,
+	MediaLine,
+	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
+} from &#x27;../../domain&#x27;;
+
+export interface CopyContext {
+	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise&lt;CopyFileDto[]&gt;;
+}
+
+@Injectable()
+export class BoardNodeCopyService {
+	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly copyHelperService: CopyHelperService
+	) {}
+
+	async copy(boardNode: AnyBoardNode, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const type &#x3D; getBoardNodeType(boardNode);
+
+		let result!: CopyStatus;
+
+		switch (type) {
+			case BoardNodeType.COLUMN_BOARD:
+				result &#x3D; await this.copyColumnBoard(boardNode as ColumnBoard, context);
+				break;
+			case BoardNodeType.COLUMN:
+				result &#x3D; await this.copyColumn(boardNode as Column, context);
+				break;
+			case BoardNodeType.CARD:
+				result &#x3D; await this.copyCard(boardNode as Card, context);
+				break;
+			case BoardNodeType.FILE_ELEMENT:
+				result &#x3D; await this.copyFileElement(boardNode as FileElement, context);
+				break;
+			case BoardNodeType.LINK_ELEMENT:
+				result &#x3D; await this.copyLinkElement(boardNode as LinkElement, context);
+				break;
+			case BoardNodeType.RICH_TEXT_ELEMENT:
+				result &#x3D; await this.copyRichTextElement(boardNode as RichTextElement, context);
+				break;
+			case BoardNodeType.DRAWING_ELEMENT:
+				result &#x3D; await this.copyDrawingElement(boardNode as DrawingElement, context);
+				break;
+			case BoardNodeType.SUBMISSION_CONTAINER_ELEMENT:
+				result &#x3D; await this.copySubmissionContainerElement(boardNode as SubmissionContainerElement, context);
+				break;
+			case BoardNodeType.SUBMISSION_ITEM:
+				result &#x3D; await this.copySubmissionItem(boardNode as SubmissionItem, context);
+				break;
+			case BoardNodeType.EXTERNAL_TOOL:
+				result &#x3D; await this.copyExternalToolElement(boardNode as ExternalToolElement, context);
+				break;
+			case BoardNodeType.COLLABORATIVE_TEXT_EDITOR:
+				result &#x3D; await this.copyCollaborativeTextEditorElement(boardNode as CollaborativeTextEditorElement, context);
+				break;
+			case BoardNodeType.MEDIA_BOARD:
+				result &#x3D; await this.copyMediaBoard(boardNode as MediaBoard, context);
+				break;
+			case BoardNodeType.MEDIA_LINE:
+				result &#x3D; await this.copyMediaLine(boardNode as MediaLine, context);
+				break;
+			case BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT:
+				result &#x3D; await this.copyMediaExternalToolElement(boardNode as MediaExternalToolElement, context);
+				break;
+			default:
+				/* istanbul ignore next */
+				handleNonExhaustiveSwitch(type);
+		}
+
+		return result;
+	}
+
+	async copyColumnBoard(original: ColumnBoard, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const childrenResults &#x3D; await this.copyChildrenOf(original, context);
+		const childrenCopyStatus &#x3D; this.copyHelperService.deriveStatusFromElements(childrenResults);
+
+		const copy &#x3D; new ColumnBoard({
+			...original.getProps(),
+			...this.buildSpecificProps(childrenResults),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.COLUMNBOARD,
+			status: childrenCopyStatus,
+			elements: childrenResults,
+		};
+
+		return result;
+	}
+
+	async copyColumn(original: Column, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const childrenResults &#x3D; await this.copyChildrenOf(original, context);
+
+		const copy &#x3D; new Column({
+			...original.getProps(),
+			...this.buildSpecificProps(childrenResults),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.COLUMN,
+			status: CopyStatusEnum.SUCCESS,
+			elements: childrenResults,
+		};
+
+		return result;
+	}
+
+	async copyCard(original: Card, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const childrenResults &#x3D; await this.copyChildrenOf(original, context);
+
+		const copy &#x3D; new Card({
+			...original.getProps(),
+			...this.buildSpecificProps(childrenResults),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.CARD,
+			status: CopyStatusEnum.SUCCESS,
+			elements: childrenResults,
+		};
+
+		return result;
+	}
+
+	async copyFileElement(original: FileElement, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const copy &#x3D; new FileElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const fileCopy &#x3D; await context.copyFilesOfParent(original.id, copy.id);
+
+		const fileCopyStatus &#x3D; fileCopy.map((copyFileDto) &#x3D;&gt; {
+			return {
+				type: CopyElementType.FILE,
+				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+				title: copyFileDto.name ?? &#x60;(old fileid: ${copyFileDto.sourceId})&#x60;,
+			};
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.FILE_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: fileCopyStatus,
+		};
+
+		return result;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyLinkElement(original: LinkElement, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const copy &#x3D; new LinkElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.LINK_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		};
+
+		if (original.imageUrl) {
+			const fileCopy &#x3D; await context.copyFilesOfParent(original.id, copy.id);
+
+			fileCopy.forEach((copyFileDto) &#x3D;&gt; {
+				if (copyFileDto.id) {
+					if (copy.imageUrl.includes(copyFileDto.sourceId)) {
+						copy.imageUrl &#x3D; copy.imageUrl.replace(copyFileDto.sourceId, copyFileDto.id);
+					} else {
+						copy.imageUrl &#x3D; &#x27;&#x27;;
+					}
+				}
+			});
+
+			const fileCopyStatus &#x3D; fileCopy.map((copyFileDto) &#x3D;&gt; {
+				return {
+					type: CopyElementType.FILE,
+					status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+					title: copyFileDto.name ?? &#x60;(old fileid: ${copyFileDto.sourceId})&#x60;,
+				};
+			});
+			result.elements &#x3D; fileCopyStatus;
+		}
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyRichTextElement(original: RichTextElement, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const copy &#x3D; new RichTextElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.RICHTEXT_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyDrawingElement(original: DrawingElement, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const copy &#x3D; new DrawingElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.DRAWING_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	async copySubmissionContainerElement(
+		original: SubmissionContainerElement,
+		context: CopyContext
+	): Promise&lt;CopyStatus&gt; {
+		const childrenResults &#x3D; await this.copyChildrenOf(original, context);
+
+		const copy &#x3D; new SubmissionContainerElement({
+			...original.getProps(),
+			...this.buildSpecificProps(childrenResults),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.SUBMISSION_CONTAINER_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: childrenResults,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copySubmissionItem(original: SubmissionItem, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const result: CopyStatus &#x3D; {
+			type: CopyElementType.SUBMISSION_ITEM,
+			status: CopyStatusEnum.NOT_DOING,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyExternalToolElement(original: ExternalToolElement, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const copy &#x3D; new ExternalToolElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		let status: CopyStatusEnum;
+		if (this.toolFeatures.ctlToolsCopyEnabled &amp;&amp; original.contextExternalToolId) {
+			const linkedTool &#x3D; await this.contextExternalToolService.findById(original.contextExternalToolId);
+
+			if (linkedTool) {
+				const contextExternalToolCopy: ContextExternalTool &#x3D;
+					await this.contextExternalToolService.copyContextExternalTool(linkedTool, copy.id);
+
+				copy.contextExternalToolId &#x3D; contextExternalToolCopy.id;
+
+				status &#x3D; CopyStatusEnum.SUCCESS;
+			} else {
+				status &#x3D; CopyStatusEnum.FAIL;
+			}
+		} else {
+			status &#x3D; CopyStatusEnum.SUCCESS;
+		}
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+			status,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	async copyCollaborativeTextEditorElement(
+		original: CollaborativeTextEditorElement,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		context: CopyContext
+	): Promise&lt;CopyStatus&gt; {
+		const copy &#x3D; new CollaborativeTextEditorElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus &#x3D; {
+			copyEntity: copy,
+			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
+			status: CopyStatusEnum.PARTIAL,
+		};
+		return Promise.resolve(result);
+	}
+
+	async copyMediaBoard(original: MediaBoard, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const childrenResults &#x3D; await this.copyChildrenOf(original, context);
+
+		const result: CopyStatus &#x3D; {
+			type: CopyElementType.MEDIA_BOARD,
+			status: CopyStatusEnum.NOT_DOING,
+			elements: childrenResults,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	async copyMediaLine(original: MediaLine, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const childrenResults &#x3D; await this.copyChildrenOf(original, context);
+
+		const result: CopyStatus &#x3D; {
+			type: CopyElementType.MEDIA_LINE,
+			status: CopyStatusEnum.NOT_DOING,
+			elements: childrenResults,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async copyMediaExternalToolElement(original: MediaExternalToolElement, context: CopyContext): Promise&lt;CopyStatus&gt; {
+		const result: CopyStatus &#x3D; {
+			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
+			status: CopyStatusEnum.NOT_DOING,
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// ----
+
+	private async copyChildrenOf(boardNode: AnyBoardNode, context: CopyContext): Promise&lt;CopyStatus[]&gt; {
+		const allSettled &#x3D; await Promise.allSettled(
+			boardNode.children.map(async (child) &#x3D;&gt; {
+				return {
+					id: child.id,
+					status: await this.copy(child, context),
+				};
+			})
+		);
+
+		const resultMap &#x3D; new Map&lt;EntityId, CopyStatus&gt;();
+		allSettled.forEach((res) &#x3D;&gt; {
+			if (res.status &#x3D;&#x3D;&#x3D; &#x27;fulfilled&#x27;) {
+				resultMap.set(res.value.id, res.value.status);
+			}
+		});
+
+		const results: CopyStatus[] &#x3D; [];
+		boardNode.children.forEach((child) &#x3D;&gt; {
+			const childStatus &#x3D; resultMap.get(child.id);
+			if (childStatus) {
+				results.push(childStatus);
+			}
+		});
+
+		return results;
+	}
+
+	private buildSpecificProps(childrenResults: CopyStatus[]): {
+		id: EntityId;
+		createdAt: Date;
+		updatedAt: Date;
+		children: AnyBoardNode[];
+	} {
+		return {
+			id: new ObjectId().toHexString(),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			children: childrenResults.map((r) &#x3D;&gt; r.copyEntity).filter((c) &#x3D;&gt; c !&#x3D;&#x3D; undefined) as AnyBoardNode[],
+		};
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'BoardNodeCopyService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -120,12 +120,6 @@
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../classes/BaseUc.html" target="_self" >BaseUc</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -177,19 +171,6 @@
                                     <span class="modifier">Async</span>
                                 <a href="#updateVisibility" >updateVisibility</a>
                             </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#checkPermission" >checkPermission</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#isUserBoardEditor" >isUserBoardEditor</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#isUserBoardReader" >isUserBoardReader</a>
-                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -208,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnBoardCopyService: <a href="../injectables/ColumnBoardCopyService.html" target="_self">ColumnBoardCopyService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardPermissionService: <a href="../injectables/BoardNodePermissionService.html" target="_self">BoardNodePermissionService</a>, boardNodeService: <a href="../injectables/BoardNodeService.html" target="_self">BoardNodeService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, boardNodeFactory: <a href="../injectables/BoardNodeFactory.html" target="_self">BoardNodeFactory</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -243,10 +224,22 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardDoAuthorizableService</td>
+                                                        <td>boardPermissionService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
+                                                                        <code><a href="../injectables/BoardNodePermissionService.html" target="_self" >BoardNodePermissionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardNodeService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodeService.html" target="_self" >BoardNodeService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -259,30 +252,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ColumnBoardService.html" target="_self" >ColumnBoardService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>columnBoardCopyService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ColumnBoardCopyService.html" target="_self" >ColumnBoardCopyService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>columnService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ColumnService.html" target="_self" >ColumnService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -307,6 +276,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardNodeFactory</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodeFactory.html" target="_self" >BoardNodeFactory</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -431,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -512,8 +493,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -593,8 +574,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -642,7 +623,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -755,8 +736,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -836,8 +817,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -909,7 +890,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -941,8 +922,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -1002,7 +983,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -1034,8 +1015,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="138"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:138</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -1095,281 +1076,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkPermission"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>checkPermission</b></span>
-                        <a href="#checkPermission"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, anyBoardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../s/Action.html" target="_self">Action</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BaseUc.html" target="_self" >BaseUc</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:13</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>anyBoardDo</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>action</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/variables.html#Action" target="_self" >Action</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isUserBoardEditor"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                        <span ><b>isUserBoardEditor</b></span>
-                        <a href="#isUserBoardEditor"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isUserBoardEditor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userBoardRoles: <a href="../classes/User.html" target="_self">UserWithBoardRoles[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BaseUc.html" target="_self" >BaseUc</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:21</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>userBoardRoles</td>
-                                            <td>
-                                                            <code><a href="../classes/User.html" target="_self" >UserWithBoardRoles[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isUserBoardReader"></a>
-                    <span class="name">
-                            <span class="modifier">Protected</span>
-                        <span ><b>isUserBoardReader</b></span>
-                        <a href="#isUserBoardReader"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isUserBoardReader(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userBoardRoles: <a href="../classes/User.html" target="_self">UserWithBoardRoles[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/BaseUc.html" target="_self" >BaseUc</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:31</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>userBoardRoles</td>
-                                            <td>
-                                                            <code><a href="../classes/User.html" target="_self" >UserWithBoardRoles[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1386,32 +1093,28 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { CopyStatus } from &#x27;@modules/copy-helper&#x27;;
 import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReference, Column, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
 import { CreateBoardBodyParams } from &#x27;../controller/dto&#x27;;
-import { ColumnBoardService, ColumnService } from &#x27;../service&#x27;;
-import { BoardDoAuthorizableService } from &#x27;../service/board-do-authorizable.service&#x27;;
-import { ColumnBoardCopyService } from &#x27;../service/column-board-copy.service&#x27;;
-import { BaseUc } from &#x27;./base.uc&#x27;;
+import { BoardExternalReference, BoardNodeFactory, Column, ColumnBoard } from &#x27;../domain&#x27;;
+import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from &#x27;../service&#x27;;
 
 @Injectable()
-export class BoardUc extends BaseUc {
+export class BoardUc {
 	constructor(
-		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService))
-		protected readonly authorizationService: AuthorizationService,
-		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService)) // TODO is this needed?
+		private readonly authorizationService: AuthorizationService,
+		private readonly boardPermissionService: BoardNodePermissionService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
-		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger,
-		private readonly courseRepo: CourseRepo
+		private readonly courseRepo: CourseRepo,
+		private readonly boardNodeFactory: BoardNodeFactory
 	) {
-		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
 	}
 
@@ -1426,9 +1129,13 @@ export class BoardUc extends BaseUc {
 			requiredPermissions: [Permission.COURSE_EDIT],
 		});
 
-		const context &#x3D; { type: params.parentType, id: params.parentId };
+		const board &#x3D; this.boardNodeFactory.buildColumnBoard({
+			context: { type: params.parentType, id: params.parentId },
+			title: params.title,
+			layout: params.layout,
+		});
 
-		const board &#x3D; await this.columnBoardService.create(context, params.layout, params.title);
+		await this.boardNodeService.addRoot(board);
 
 		return board;
 	}
@@ -1436,8 +1143,9 @@ export class BoardUc extends BaseUc {
 	async findBoard(userId: EntityId, boardId: EntityId): Promise&lt;ColumnBoard&gt; {
 		this.logger.debug({ action: &#x27;findBoard&#x27;, userId, boardId });
 
-		const board &#x3D; await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
+		// TODO set depth&#x3D;2 to reduce data?
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 
 		return board;
 	}
@@ -1445,40 +1153,40 @@ export class BoardUc extends BaseUc {
 	async findBoardContext(userId: EntityId, boardId: EntityId): Promise&lt;BoardExternalReference&gt; {
 		this.logger.debug({ action: &#x27;findBoardContext&#x27;, userId, boardId });
 
-		const board &#x3D; await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.read);
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 
 		return board.context;
 	}
 
-	async deleteBoard(userId: EntityId, boardId: EntityId): Promise&lt;ColumnBoard&gt; {
+	async deleteBoard(userId: EntityId, boardId: EntityId): Promise&lt;void&gt; {
 		this.logger.debug({ action: &#x27;deleteBoard&#x27;, userId, boardId });
 
-		const board &#x3D; await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
-		await this.columnBoardService.delete(board);
-
-		return board;
+		await this.boardNodeService.delete(board);
 	}
 
-	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise&lt;ColumnBoard&gt; {
+	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise&lt;void&gt; {
 		this.logger.debug({ action: &#x27;updateBoardTitle&#x27;, userId, boardId, title });
 
-		const board &#x3D; await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
-		await this.columnBoardService.updateTitle(board, title);
-		return board;
+		await this.boardNodeService.updateTitle(board, title);
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise&lt;Column&gt; {
 		this.logger.debug({ action: &#x27;createColumn&#x27;, userId, boardId });
 
-		const board &#x3D; await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
-		const column &#x3D; await this.columnService.create(board);
+		const column &#x3D; this.boardNodeFactory.buildColumn();
+
+		await this.boardNodeService.addToParent(board, column);
+
 		return column;
 	}
 
@@ -1487,33 +1195,34 @@ export class BoardUc extends BaseUc {
 		columnId: EntityId,
 		targetBoardId: EntityId,
 		targetPosition: number
-	): Promise&lt;Column&gt; {
+	): Promise&lt;void&gt; {
 		this.logger.debug({ action: &#x27;moveColumn&#x27;, userId, columnId, targetBoardId, targetPosition });
 
-		const column &#x3D; await this.columnService.findById(columnId);
-		const targetBoard &#x3D; await this.columnBoardService.findById(targetBoardId);
+		const column &#x3D; await this.boardNodeService.findByClassAndId(Column, columnId);
+		const targetBoard &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
 
-		await this.checkPermission(userId, column, Action.write);
-		await this.checkPermission(userId, targetBoard, Action.write);
+		await this.boardPermissionService.checkPermission(userId, column, Action.write);
+		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
 
-		await this.columnService.move(column, targetBoard, targetPosition);
-		return column;
+		await this.boardNodeService.move(column, targetBoard, targetPosition);
 	}
 
 	async copyBoard(userId: EntityId, boardId: EntityId): Promise&lt;CopyStatus&gt; {
 		this.logger.debug({ action: &#x27;copyBoard&#x27;, userId, boardId });
 
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const board &#x3D; await this.columnBoardService.findById(boardId);
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+
+		// TODO - should not use course repo
 		const course &#x3D; await this.courseRepo.findById(board.context.id);
 
-		await this.checkPermission(userId, board, Action.read);
+		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 		this.authorizationService.checkPermission(user, course, {
 			action: Action.write,
-			requiredPermissions: [],
+			requiredPermissions: [], // TODO - what permissions are required? COURSE_EDIT?
 		});
 
-		const copyStatus &#x3D; await this.columnBoardCopyService.copyColumnBoard({
+		const copyStatus &#x3D; await this.columnBoardService.copyColumnBoard({
 			userId,
 			originalColumnBoardId: boardId,
 			destinationExternalReference: board.context,
@@ -1522,12 +1231,11 @@ export class BoardUc extends BaseUc {
 		return copyStatus;
 	}
 
-	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise&lt;ColumnBoard&gt; {
-		const board &#x3D; await this.columnBoardService.findById(boardId);
-		await this.checkPermission(userId, board, Action.write);
+	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise&lt;void&gt; {
+		const board &#x3D; await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
-		await this.columnBoardService.updateBoardVisibility(board, isVisible);
-		return board;
+		await this.boardNodeService.updateVisibility(board, isVisible);
 	}
 }
 </code></pre>

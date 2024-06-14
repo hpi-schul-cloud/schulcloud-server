@@ -408,7 +408,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContentElementType, SubmissionContainerElement } from &#x27;@shared/domain/domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContentElementType, SubmissionContainerElement } from &#x27;../../domain&#x27;;
 import { SubmissionContainerElementContent, SubmissionContainerElementResponse, TimestampsResponse } from &#x27;../dto&#x27;;
 import { BaseResponseMapper } from &#x27;./base-mapper.interface&#x27;;
 
@@ -429,7 +429,7 @@ export class SubmissionContainerElementResponseMapper implements BaseResponseMap
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.SUBMISSION_CONTAINER,
 			content: new SubmissionContainerElementContent({
-				dueDate: element.dueDate,
+				dueDate: element.dueDate ?? null,
 			}),
 		});
 
