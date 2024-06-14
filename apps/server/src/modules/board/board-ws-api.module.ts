@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
-import { UserModule } from '../user';
+import { AuthorizationModule } from '@modules/authorization';
+import { UserModule } from '@modules/user';
 import { BoardModule } from './board.module';
 import { BoardCollaborationGateway } from './gateway/board-collaboration.gateway';
 import { MetricsService } from './metrics/metrics.service';
