@@ -13,8 +13,8 @@ import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/
 // DTO's and Entity properties have to use @ApiProperty decorator to add their properties
 const config = new DocumentBuilder()
 	.addServer('/api/v3/') // add default path as server to have correct urls ald let 'try out' work
-	.setTitle('HPI Schul-Cloud Server API')
-	.setDescription('This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.')
+	.setTitle('Schulcloud-Verbund-Software Server API')
+	.setDescription('This is v3 of Schulcloud-Verbund-Software Server. Checkout /docs for v1.')
 	.setVersion('3.0')
 	/** set authentication for all routes enabled by default */
 	.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })

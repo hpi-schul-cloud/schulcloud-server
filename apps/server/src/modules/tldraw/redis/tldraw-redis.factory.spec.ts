@@ -1,17 +1,14 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@src/config';
-import { INestApplication } from '@nestjs/common';
-import { WsAdapter } from '@nestjs/platform-ws';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { DomainErrorHandler } from '@src/core';
 import { RedisConnectionTypeEnum } from '../types';
 import { TldrawConfig } from '../config';
 import { tldrawTestConfig } from '../testing';
 import { TldrawRedisFactory } from './tldraw-redis.factory';
 
 describe('TldrawRedisFactory', () => {
-	let app: INestApplication;
 	let configService: ConfigService<TldrawConfig, true>;
 	let redisFactory: TldrawRedisFactory;
 
@@ -21,21 +18,14 @@ describe('TldrawRedisFactory', () => {
 			providers: [
 				TldrawRedisFactory,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
 
 		configService = testingModule.get(ConfigService);
 		redisFactory = testingModule.get(TldrawRedisFactory);
-		app = testingModule.createNestApplication();
-		app.useWebSocketAdapter(new WsAdapter(app));
-		await app.init();
-	});
-
-	afterAll(async () => {
-		await app.close();
 	});
 
 	it('should check if factory was created', () => {

@@ -5,11 +5,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../src/logger');
 
 // /api/1/
-module.exports = function MockServer(
-	url = 'http://localhost:58373',
-	path = Configuration.get('ETHERPAD_API_PATH'),
-	resolver
-) {
+module.exports = function MockServer(url = 'http://localhost:58373', path = '/api', resolver) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies

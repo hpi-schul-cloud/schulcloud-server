@@ -11,8 +11,8 @@ module.exports = function swaggerSetup(app) {
 				security: [{ jwtBearer: [] }],
 				schemes: ['http', 'https'],
 				info: {
-					title: 'HPI Schul-Cloud API',
-					description: 'This is the HPI Schul-Cloud API.',
+					title: 'Schulcloud-Verbund-Software API',
+					description: 'This is the Schulcloud-Verbund-Software API.',
 					termsOfServiceUrl: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE',
 					contact: {
 						name: 'support',
