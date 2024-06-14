@@ -1,26 +1,31 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, UserLicenseService } from '@modules/user-license';
 import { MediaUserLicenseService } from '@modules/user-license/service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { BoardDoAuthorizable, MediaAvailableLine, type MediaBoard } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { MediaBoardColors } from '../../domain';
+import { MediaAvailableLine, MediaBoard } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardDoAuthorizableService, MediaAvailableLineService, MediaBoardService } from '../../service';
+import {
+	BoardNodePermissionService,
+	BoardNodeService,
+	MediaAvailableLineService,
+	MediaBoardService,
+} from '../../service';
+import { MediaBoardColors } from '../../domain/media-board/types';
 
 @Injectable()
 export class MediaAvailableLineUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
+		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly userLicenseService: UserLicenseService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService
 	) {}
@@ -28,14 +33,11 @@ export class MediaAvailableLineUc {
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
 		this.checkFeatureEnabled();
 
-		const mediaBoard: MediaBoard = await this.mediaBoardService.findById(boardId);
+		const mediaBoard: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(
-			mediaBoard
-		);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.read([]));
+		await this.boardNodePermissionService.checkPermission(userId, mediaBoard, Action.read);
 
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
 
@@ -62,13 +64,11 @@ export class MediaAvailableLineUc {
 	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: MediaBoardColors): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		await this.mediaBoardService.updateAvailableLineColor(board, color);
+		await this.mediaBoardService.updateBackgroundColor(board, color);
 	}
 
 	public async collapseAvailableLine(
@@ -78,13 +78,11 @@ export class MediaAvailableLineUc {
 	): Promise<void> {
 		this.checkFeatureEnabled();
 
-		const board: MediaBoard = await this.mediaBoardService.findById(boardId);
+		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable: BoardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(board);
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, AuthorizationContextBuilder.write([]));
+		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
 
-		await this.mediaBoardService.collapseAvailableLine(board, mediaAvailableLineCollapsed);
+		await this.mediaBoardService.updateCollapsed(board, mediaAvailableLineCollapsed);
 	}
 
 	private checkFeatureEnabled(): void {

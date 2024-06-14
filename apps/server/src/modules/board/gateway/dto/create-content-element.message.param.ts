@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain/domainobject';
+import { ContentElementType } from '@modules/board/domain';
 import { IsEnum, IsInt, IsMongoId, IsOptional, Min } from 'class-validator';
 
 export class CreateContentElementMessageParams {

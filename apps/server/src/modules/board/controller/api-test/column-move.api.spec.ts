@@ -1,70 +1,33 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@modules/authentication';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { ColumnNode } from '@shared/domain/entity';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	courseFactory,
-	mapUserToCurrentUser,
-	userFactory,
-} from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
+import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { BoardExternalReferenceType } from '../../domain';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { MoveColumnBodyParams } from '../dto';
 
 const baseRouteName = '/columns';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async move(columnId: string, toBoardId: string, toPosition: number) {
-		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${columnId}/position`)
-			.set('Accept', 'application/json')
-			.send({ toBoardId, toPosition });
-
-		return {
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
 
 describe(`column move (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		testApiClient = new TestApiClient(app, baseRouteName);
+	});
+
+	beforeEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
@@ -72,57 +35,81 @@ describe(`column move (api)`, () => {
 	});
 
 	const setup = async () => {
-		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+		const course = courseFactory.build({ teachers: [teacherUser] });
+		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+
+		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 
 		const columnNodes = new Array(10)
 			.fill(1)
-			.map((_, i) => columnNodeFactory.buildWithId({ parent: columnBoardNode, position: i }));
+			.map((_, i) => columnEntityFactory.withParent(columnBoardNode).build({ position: i }));
 		const columnToMove = columnNodes[2];
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnToMove });
+		const cardNode = cardEntityFactory.withParent(columnToMove).build();
 
-		await em.persistAndFlush([user, cardNode, ...columnNodes, columnBoardNode]);
+		await em.persistAndFlush([cardNode, ...columnNodes, columnBoardNode]);
 		em.clear();
 
-		return { user, cardNode, columnToMove, columnBoardNode };
+		const loggedInClient = await testApiClient.login(teacherAccount);
+
+		return { loggedInClient, cardNode, columnToMove, columnBoardNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 204', async () => {
-			const { user, columnToMove, columnBoardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnToMove, columnBoardNode } = await setup();
 
-			const response = await api.move(columnToMove.id, columnBoardNode.id, 5);
+			const params: MoveColumnBodyParams = {
+				toBoardId: columnBoardNode.id,
+				toPosition: 5,
+			};
+
+			const response = await loggedInClient.put(`${columnToMove.id}/position`, params);
 
 			expect(response.status).toEqual(204);
 		});
 
 		it('should actually move the column', async () => {
-			const { user, columnToMove, columnBoardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnToMove, columnBoardNode } = await setup();
 
-			await api.move(columnToMove.id, columnBoardNode.id, 5);
-			const result = await em.findOneOrFail(ColumnNode, columnToMove.id);
+			const params: MoveColumnBodyParams = {
+				toBoardId: columnBoardNode.id,
+				toPosition: 5,
+			};
+
+			await loggedInClient.put(`${columnToMove.id}/position`, params);
+			const result = await em.findOneOrFail(BoardNodeEntity, columnToMove.id);
 
 			expect(result.position).toEqual(5);
 		});
 	});
 
 	describe('with invalid user', () => {
+		const setupNoAccess = async () => {
+			const vars = await setup();
+
+			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
+			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			const loggedInClient = await testApiClient.login(noAccessAccount);
+
+			return {
+				...vars,
+				loggedInClient,
+			};
+		};
+
 		it('should return status 403', async () => {
-			const { columnToMove, columnBoardNode } = await setup();
+			const { loggedInClient, columnToMove, columnBoardNode } = await setupNoAccess();
 
-			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
-			currentUser = mapUserToCurrentUser(invalidUser);
+			const params: MoveColumnBodyParams = {
+				toBoardId: columnBoardNode.id,
+				toPosition: 5,
+			};
 
-			const response = await api.move(columnToMove.id, columnBoardNode.id, 5);
+			const response = await loggedInClient.put(`${columnToMove.id}/position`, params);
 
 			expect(response.status).toEqual(403);
 		});

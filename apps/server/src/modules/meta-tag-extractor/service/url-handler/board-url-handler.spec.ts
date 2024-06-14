@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ColumnBoardService } from '@modules/board';
+import { ColumnBoardService, ColumnBoard } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ColumnBoard } from '@shared/domain/domainobject';
 import { setupEntities } from '@shared/testing';
 import { BoardUrlHandler } from './board-url-handler';
 

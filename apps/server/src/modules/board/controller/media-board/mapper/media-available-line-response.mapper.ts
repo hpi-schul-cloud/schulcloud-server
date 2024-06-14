@@ -1,4 +1,4 @@
-import { MediaAvailableLine, MediaAvailableLineElement } from '@shared/domain/domainobject';
+import { MediaAvailableLine, MediaAvailableLineElement } from '../../../domain';
 import { MediaAvailableLineElementResponse, MediaAvailableLineResponse } from '../dto';
 
 export class MediaAvailableLineResponseMapper {

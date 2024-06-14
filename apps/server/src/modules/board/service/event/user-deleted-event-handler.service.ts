@@ -13,15 +13,17 @@ import {
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { MediaBoardService } from '../media-board';
+import { BoardExternalReferenceType, MediaBoard } from '../../domain';
+import { BoardNodeService } from '../board-node.service';
+import { MediaBoardService } from '../media-board/media-board.service';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
 export class UserDeletedEventHandlerService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
+		private readonly boardNodeService: BoardNodeService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
@@ -42,15 +44,19 @@ export class UserDeletedEventHandlerService implements DeletionService, IEventHa
 			new DataDeletionDomainOperationLoggable('Deleting data from Board', DomainName.BOARD, userId, StatusModel.PENDING)
 		);
 
-		const boardIds: EntityId[] = await this.mediaBoardService.findIdsByExternalReference({
+		const mediaBoards: MediaBoard[] = await this.mediaBoardService.findByExternalReference({
 			type: BoardExternalReferenceType.User,
 			id: userId,
 		});
 
-		const numberOfDeletedBoards: number = await this.mediaBoardService.deleteByExternalReference({
-			type: BoardExternalReferenceType.User,
-			id: userId,
-		});
+		await Promise.all(
+			mediaBoards.map(async (mb) => {
+				await this.boardNodeService.delete(mb);
+			})
+		);
+
+		const numberOfDeletedBoards = mediaBoards.length;
+		const boardIds = mediaBoards.map((mb) => mb.id);
 
 		const result: DomainDeletionReport = DomainDeletionReportBuilder.build(DomainName.BOARD, [
 			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedBoards, boardIds),

@@ -1,4 +1,4 @@
-import { ContentElementType, FileElement } from '@shared/domain/domainobject';
+import { ContentElementType, FileElement } from '../../domain';
 import { FileElementContent, FileElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 

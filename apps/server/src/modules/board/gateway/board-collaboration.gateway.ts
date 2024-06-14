@@ -1,5 +1,6 @@
-import { WsValidationPipe, Socket } from '@infra/socketio';
+import { Socket, WsValidationPipe } from '@infra/socketio';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { WsJwtAuthGuard } from '@modules/authentication';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import {
 	OnGatewayDisconnect,
@@ -8,12 +9,16 @@ import {
 	WebSocketServer,
 	WsException,
 } from '@nestjs/websockets';
-import { WsJwtAuthGuard } from '@src/modules/authentication/guard/ws-jwt-auth.guard';
 import { Server } from 'socket.io';
-import { BoardResponseMapper, CardResponseMapper, ContentElementResponseFactory } from '../controller/mapper';
-import { ColumnResponseMapper } from '../controller/mapper/column-response.mapper';
+import {
+	BoardResponseMapper,
+	CardResponseMapper,
+	ColumnResponseMapper,
+	ContentElementResponseFactory,
+} from '../controller/mapper';
 import { MetricsService } from '../metrics/metrics.service';
-import { BoardDoAuthorizableService } from '../service';
+import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
+import { BoardNodeAuthorizableService } from '../service';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
 	CreateCardMessageParams,
@@ -36,7 +41,6 @@ import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibilit
 import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
 import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
 import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
-import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -53,7 +57,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
-		private readonly authorizableService: BoardDoAuthorizableService // to be removed
+		private readonly authorizableService: BoardNodeAuthorizableService // to be removed
 	) {}
 
 	trackExecutionTime(methodName: string, executionTimeMs: number) {
@@ -166,9 +170,11 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const card = await this.columnUc.createCard(userId, data.columnId);
+			const newCard = CardResponseMapper.mapToResponse(card);
+
 			const responsePayload = {
 				...data,
-				newCard: card.getProps(),
+				newCard,
 			};
 
 			await emitter.emitToClientAndRoom(responsePayload);
@@ -398,7 +404,7 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 
 	private async getRootIdForId(id: string) {
 		const authorizable = await this.authorizableService.findById(id);
-		const rootId = authorizable.rootDo.id;
+		const rootId = authorizable.rootNode.id;
 
 		return rootId;
 	}

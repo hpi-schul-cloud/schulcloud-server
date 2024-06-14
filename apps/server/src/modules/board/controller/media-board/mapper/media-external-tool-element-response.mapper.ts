@@ -1,4 +1,4 @@
-import type { MediaExternalToolElement } from '@shared/domain/domainobject';
+import type { MediaExternalToolElement } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
 import { MediaExternalToolElementContent, MediaExternalToolElementResponse } from '../dto';
 

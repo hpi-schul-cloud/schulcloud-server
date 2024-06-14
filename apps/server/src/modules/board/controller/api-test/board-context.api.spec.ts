@@ -2,15 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	courseFactory,
-} from '@shared/testing';
-import { BoardContextResponse } from '../dto/board/board-context.reponse';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { columnBoardEntityFactory } from '../../testing';
+import { BoardExternalReferenceType } from '../../domain';
 
 const baseRouteName = '/boards';
 
@@ -45,7 +39,7 @@ describe('board get context (api)', () => {
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, teacherAccount, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
@@ -70,12 +64,7 @@ describe('board get context (api)', () => {
 
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 
-			const expectedBody: BoardContextResponse = {
-				id: columnBoardNode.context.id,
-				type: columnBoardNode.context.type,
-			};
-
-			expect(response.body).toEqual(expectedBody);
+			expect(response.body).toEqual({ id: columnBoardNode.context?.id, type: columnBoardNode.context?.type });
 		});
 	});
 });

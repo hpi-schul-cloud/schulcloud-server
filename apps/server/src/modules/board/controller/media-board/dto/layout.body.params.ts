@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
-import { MediaBoardLayoutType } from '../../../domain';
+import { IsEnum, NotEquals } from 'class-validator';
+import { BoardLayout } from '../../../domain/types';
 
 export class LayoutBodyParams {
-	@IsEnum(MediaBoardLayoutType)
-	@ApiProperty({ enum: MediaBoardLayoutType, enumName: 'MediaBoardLayoutType' })
-	layout!: MediaBoardLayoutType;
+	@IsEnum(BoardLayout)
+	@NotEquals(BoardLayout[BoardLayout.COLUMNS])
+	@ApiProperty({ enum: BoardLayout, enumName: 'MediaBoardLayoutType' })
+	layout!: BoardLayout;
 }

@@ -1,299 +1,163 @@
-import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, MediaBoard } from '@shared/domain/domainobject';
-import { columnBoardFactory, mediaBoardFactory, mediaLineFactory } from '@shared/testing';
-import { MediaBoardColors, MediaBoardLayoutType } from '../../domain';
-import { InvalidBoardTypeLoggableException } from '../../loggable';
-import { BoardDoRepo } from '../../repo';
-import { BoardDoService } from '../board-do.service';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
+import { BoardExternalReference, BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../domain';
+import { BoardNodeRepo } from '../../repo';
 import { MediaBoardService } from './media-board.service';
 
-describe(MediaBoardService.name, () => {
+describe('MediaBoardService', () => {
 	let module: TestingModule;
 	let service: MediaBoardService;
-
-	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	let boardDoService: DeepMocked<BoardDoService>;
+	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				MediaBoardService,
 				{
-					provide: BoardDoRepo,
-					useValue: createMock<BoardDoRepo>(),
+					provide: BoardNodeRepo,
+					useValue: createMock<BoardNodeRepo>(),
 				},
 				{
-					provide: BoardDoService,
-					useValue: createMock<BoardDoService>(),
+					provide: ContextExternalToolService,
+					useValue: createMock<ContextExternalToolService>(),
 				},
 			],
 		}).compile();
 
-		service = module.get(MediaBoardService);
-		boardDoRepo = module.get(BoardDoRepo);
-		boardDoService = module.get(BoardDoService);
+		service = module.get<MediaBoardService>(MediaBoardService);
+		boardNodeRepo = module.get(BoardNodeRepo);
+		contextExternalToolService = module.get(ContextExternalToolService);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
 		jest.resetAllMocks();
 	});
 
-	describe('findById', () => {
-		describe('when a board with the id exists', () => {
-			const setup = () => {
-				const board = mediaBoardFactory.build();
-
-				boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
-
-				return {
-					board,
-				};
-			};
-
-			it('should return the board', async () => {
-				const { board } = setup();
-
-				const result = await service.findById(board.id);
-
-				expect(result).toEqual(board);
-			});
+	describe('findByExternalReference', () => {
+		const setup = () => {
+			const mediaBoard = mediaBoardFactory.build();
+			boardNodeRepo.findByExternalReference.mockResolvedValueOnce([mediaBoard]);
+			return { mediaBoard };
+		};
+		it('should call boardNodeRepo.findByExternalReference', async () => {
+			const reference: BoardExternalReference = { type: BoardExternalReferenceType.User, id: 'id' };
+			await service.findByExternalReference(reference);
+			expect(boardNodeRepo.findByExternalReference).toHaveBeenCalledWith(reference);
+		});
+		it('should return MediaBoard', async () => {
+			const { mediaBoard } = setup();
+			const reference: BoardExternalReference = { type: BoardExternalReferenceType.User, id: 'id' };
+			const result = await service.findByExternalReference(reference);
+			expect(result).toEqual([mediaBoard]);
 		});
 	});
 
-	describe('findIdsByExternalReference', () => {
-		describe('when a board for the context exists', () => {
+	describe('checkElementExists', () => {
+		describe('when element does not exist', () => {
 			const setup = () => {
-				const boardId = new ObjectId().toHexString();
-				const userId = new ObjectId().toHexString();
-
-				boardDoRepo.findIdsByExternalReference.mockResolvedValueOnce([boardId]);
-
-				return {
-					boardId,
-					userId,
-				};
-			};
-
-			it('should return the board id', async () => {
-				const { boardId, userId } = setup();
-
-				const result = await service.findIdsByExternalReference({ type: BoardExternalReferenceType.User, id: userId });
-
-				expect(result).toEqual([boardId]);
-			});
-		});
-	});
-
-	describe('create', () => {
-		describe('when creating a new board', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-
-				return {
-					userId,
-				};
-			};
-
-			it('should return the board', async () => {
-				const { userId } = setup();
-
-				const result = await service.create({ type: BoardExternalReferenceType.User, id: userId });
-
-				expect(result).toEqual(
-					expect.objectContaining({
-						id: expect.any(String),
-						children: [],
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-						context: {
-							type: BoardExternalReferenceType.User,
-							id: userId,
-						},
-						layout: MediaBoardLayoutType.LIST,
-						mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
-						mediaAvailableLineCollapsed: false,
-					})
-				);
-			});
-
-			it('should save the new board', async () => {
-				const { userId } = setup();
-
-				const result = await service.create({ type: BoardExternalReferenceType.User, id: userId });
-
-				expect(boardDoRepo.save).toHaveBeenCalledWith(result);
-			});
-		});
-	});
-
-	describe('updateAvailableLineColor', () => {
-		describe('when changing the color of the available line', () => {
-			const setup = () => {
-				const board = mediaBoardFactory.build({
-					mediaAvailableLineBackgroundColor: MediaBoardColors.TRANSPARENT,
+				const schoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool = contextExternalToolFactory.build({ schoolToolRef: schoolExternalTool });
+				const mediaExternalToolElement = mediaExternalToolElementFactory.build({
+					contextExternalToolId: contextExternalTool.id,
 				});
+				const mediaLine = mediaLineFactory.build({ children: [mediaExternalToolElement] });
+				const mediaBoard = mediaBoardFactory.build({ children: [mediaLine] });
 
-				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
 
-				return {
-					board,
-				};
+				return { schoolExternalTool, mediaBoard };
 			};
-
-			it('should set the color of the line', async () => {
-				const { board } = setup();
-
-				await service.updateAvailableLineColor(board, MediaBoardColors.RED);
-
-				expect(boardDoRepo.save).toHaveBeenCalledWith(
-					new MediaBoard({ ...board.getProps(), mediaAvailableLineBackgroundColor: MediaBoardColors.RED })
-				);
-			});
-		});
-	});
-
-	describe('collapseAvailableLine', () => {
-		describe('when changing the visibility of the available line', () => {
-			const setup = () => {
-				const board = mediaBoardFactory.build({
-					mediaAvailableLineCollapsed: false,
-				});
-
-				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
-
-				return {
-					board,
-				};
-			};
-
-			it('should set the visibility of the line', async () => {
-				const { board } = setup();
-
-				await service.collapseAvailableLine(board, true);
-
-				expect(boardDoRepo.save).toHaveBeenCalledWith(
-					new MediaBoard({ ...board.getProps(), mediaAvailableLineCollapsed: true })
-				);
-			});
-		});
-	});
-
-	describe('setLayout', () => {
-		describe('when changing the layout of the board', () => {
-			const setup = () => {
-				const board = mediaBoardFactory.build({
-					layout: MediaBoardLayoutType.LIST,
-				});
-
-				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
-
-				return {
-					board,
-				};
-			};
-
-			it('should set the layout of the board', async () => {
-				const { board } = setup();
-
-				await service.setLayout(board, MediaBoardLayoutType.GRID);
-
-				expect(boardDoRepo.save).toHaveBeenCalledWith(
-					new MediaBoard({ ...board.getProps(), layout: MediaBoardLayoutType.GRID })
-				);
-			});
-		});
-	});
-
-	describe('delete', () => {
-		describe('when deleting a board', () => {
-			const setup = () => {
-				const board = mediaBoardFactory.build();
-
-				return {
-					board,
-				};
-			};
-
-			it('should delete the board', async () => {
-				const { board } = setup();
-
-				await service.delete(board);
-
-				expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
-			});
-		});
-	});
-
-	describe('deleteByExternalReference', () => {
-		describe('when deleting a board', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-
-				return {
-					userId,
-				};
-			};
-
-			it('should delete the board', async () => {
-				const { userId } = setup();
-
-				await service.deleteByExternalReference({ type: BoardExternalReferenceType.User, id: userId });
-
-				expect(boardDoRepo.deleteByExternalReference).toHaveBeenCalledWith({
-					type: BoardExternalReferenceType.User,
-					id: userId,
+			it('should call findContextExternalTools', async () => {
+				const schoolExternalTool = schoolExternalToolFactory.build();
+				const mediaBoard = mediaBoardFactory.build();
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([]);
+				await service.checkElementExists(mediaBoard, schoolExternalTool);
+				expect(contextExternalToolService.findContextExternalTools).toHaveBeenCalledWith({
+					schoolToolRef: { schoolToolId: schoolExternalTool.id },
 				});
 			});
+			it('should return false if element does not exist in MediaBoard', async () => {
+				const { schoolExternalTool, mediaBoard } = setup();
+				const exists = await service.checkElementExists(mediaBoard, schoolExternalTool);
+				expect(exists).toBe(false);
+			});
+		});
+
+		describe('when element exists', () => {
+			const setup = () => {
+				const schoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool = contextExternalToolFactory.build({ schoolToolRef: schoolExternalTool });
+				const mediaExternalToolElement = mediaExternalToolElementFactory.build({
+					contextExternalToolId: contextExternalTool.id,
+				});
+				const mediaLine = mediaLineFactory.build({ children: [mediaExternalToolElement] });
+				const mediaBoard = mediaBoardFactory.build({ children: [mediaLine] });
+
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
+
+				return { schoolExternalTool, mediaBoard };
+			};
+			it('should return true if element exists in MediaBoard', async () => {
+				const { schoolExternalTool, mediaBoard } = setup();
+				const exists = await service.checkElementExists(mediaBoard, schoolExternalTool);
+				expect(exists).toBe(true);
+			});
 		});
 	});
 
-	describe('findByDescendant', () => {
-		describe('when a board for a descendant exists', () => {
-			const setup = () => {
-				const board = mediaBoardFactory.build();
-				const line = mediaLineFactory.build();
+	describe('createContextExternalToolForMediaBoard', () => {
+		const setup = () => {
+			const mediaBoard = mediaBoardFactory.build();
+			const schoolExternalTool = schoolExternalToolFactory.build();
+			const contextExternalTool = contextExternalToolFactory.build();
+			contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
+			return { mediaBoard, schoolExternalTool, contextExternalTool };
+		};
+		it('should call saveContextExternalTool', async () => {
+			const { mediaBoard, schoolExternalTool } = setup();
+			await service.createContextExternalToolForMediaBoard('1', schoolExternalTool, mediaBoard);
+			expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalled();
+		});
+		it('should return contextExternalTool', async () => {
+			const { mediaBoard, schoolExternalTool, contextExternalTool } = setup();
+			const result = await service.createContextExternalToolForMediaBoard('1', schoolExternalTool, mediaBoard);
+			expect(result).toBe(contextExternalTool);
+		});
+	});
 
-				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
-
-				return {
-					board,
-					line,
-				};
-			};
-
-			it('should return the board', async () => {
-				const { board, line } = setup();
-
-				const result = await service.findByDescendant(line);
-
-				expect(result).toEqual(board);
-			});
+	describe('update functions', () => {
+		const setup = () => {
+			const mediaBoard = mediaBoardFactory.build();
+			return { mediaBoard };
+		};
+		it('should update MediaBoard backgroundColor', async () => {
+			const { mediaBoard } = setup();
+			await service.updateBackgroundColor(mediaBoard, MediaBoardColors.TRANSPARENT);
+			expect(mediaBoard.backgroundColor).toBe(MediaBoardColors.TRANSPARENT);
+			expect(boardNodeRepo.save).toHaveBeenCalledWith(mediaBoard);
 		});
 
-		describe('when the board does not have the correct type', () => {
-			const setup = () => {
-				const board = columnBoardFactory.build();
-				const line = mediaLineFactory.build();
+		it('should update MediaBoard collapsed state', async () => {
+			const { mediaBoard } = setup();
+			await service.updateCollapsed(mediaBoard, true);
+			expect(mediaBoard.collapsed).toBe(true);
+			expect(boardNodeRepo.save).toHaveBeenCalledWith(mediaBoard);
+		});
 
-				boardDoService.getRootBoardDo.mockResolvedValueOnce(board);
-
-				return {
-					board,
-					line,
-				};
-			};
-
-			it('should throw an exception', async () => {
-				const { line } = setup();
-
-				await expect(service.findByDescendant(line)).rejects.toThrow(InvalidBoardTypeLoggableException);
-			});
+		it('should update MediaBoard layout', async () => {
+			const { mediaBoard } = setup();
+			await service.updateLayout(mediaBoard, BoardLayout.GRID);
+			expect(mediaBoard.layout).toBe(BoardLayout.GRID);
+			expect(boardNodeRepo.save).toHaveBeenCalledWith(mediaBoard);
 		});
 	});
 });
