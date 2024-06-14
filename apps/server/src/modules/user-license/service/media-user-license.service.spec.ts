@@ -1,6 +1,9 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaUserLicense } from '../domain';
+import { MediaUserLicenseRepo } from '../repo';
 import { mediaSourceFactory, mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseService } from './media-user-license.service';
 
@@ -8,12 +11,21 @@ describe(MediaUserLicenseService.name, () => {
 	let module: TestingModule;
 	let service: MediaUserLicenseService;
 
+	let mediaUserLicenseRepo: DeepMocked<MediaUserLicenseRepo>;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [MediaUserLicenseService],
+			providers: [
+				MediaUserLicenseService,
+				{
+					provide: MediaUserLicenseRepo,
+					useValue: createMock<MediaUserLicenseRepo>(),
+				},
+			],
 		}).compile();
 
 		service = module.get(MediaUserLicenseService);
+		mediaUserLicenseRepo = module.get(MediaUserLicenseRepo);
 	});
 
 	afterAll(async () => {
@@ -22,6 +34,53 @@ describe(MediaUserLicenseService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('getMediaUserLicensesForUser', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			mediaUserLicenseRepo.findMediaUserLicensesForUser.mockResolvedValue([mediaUserLicense]);
+
+			return { userId, mediaUserLicense };
+		};
+
+		it('should call user license repo with correct arguments', async () => {
+			const { userId } = setup();
+
+			await service.getMediaUserLicensesForUser(userId);
+
+			expect(mediaUserLicenseRepo.findMediaUserLicensesForUser).toHaveBeenCalledWith(userId);
+		});
+
+		it('should return media user licenses for user', async () => {
+			const { userId, mediaUserLicense } = setup();
+
+			const result: MediaUserLicense[] = await service.getMediaUserLicensesForUser(userId);
+
+			expect(result).toEqual([mediaUserLicense]);
+		});
+	});
+
+	describe('saveUserLicense', () => {
+		it('should call user license repo with correct arguments', async () => {
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			await service.saveUserLicense(mediaUserLicense);
+
+			expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicense);
+		});
+	});
+
+	describe('deleteUserLicense', () => {
+		it('should call user license repo with correct arguments', async () => {
+			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+
+			await service.deleteUserLicense(mediaUserLicense);
+
+			expect(mediaUserLicenseRepo.delete).toHaveBeenCalledWith(mediaUserLicense);
+		});
 	});
 
 	describe('hasLicenseForExternalTool', () => {

@@ -3,7 +3,7 @@ import {
 	MediaSource,
 	MediaSourceService,
 	MediaUserLicense,
-	UserLicenseService,
+	MediaUserLicenseService,
 	UserLicenseType,
 } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +13,7 @@ import { ExternalLicenseDto } from '../../../dto';
 @Injectable()
 export class SchulconnexLicenseProvisioningService {
 	constructor(
-		private readonly userLicenseService: UserLicenseService,
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSourceService: MediaSourceService
 	) {}
 
@@ -22,9 +22,8 @@ export class SchulconnexLicenseProvisioningService {
 			return;
 		}
 
-		const existingMediaUserLicenses: MediaUserLicense[] = await this.userLicenseService.getMediaUserLicensesForUser(
-			userId
-		);
+		const existingMediaUserLicenses: MediaUserLicense[] =
+			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 		await this.provisionNewLicenses(externalLicenses, existingMediaUserLicenses, userId);
 
@@ -46,7 +45,7 @@ export class SchulconnexLicenseProvisioningService {
 
 				if (!existingLicense) {
 					const newLicense: MediaUserLicense = await this.buildLicense(externalLicense, userId);
-					await this.userLicenseService.saveUserLicense(newLicense);
+					await this.mediaUserLicenseService.saveUserLicense(newLicense);
 				}
 			})
 		);
@@ -65,7 +64,7 @@ export class SchulconnexLicenseProvisioningService {
 				);
 
 				if (!existingExternalLicense) {
-					await this.userLicenseService.deleteUserLicense(mediaUserLicense);
+					await this.mediaUserLicenseService.deleteUserLicense(mediaUserLicense);
 				}
 			})
 		);

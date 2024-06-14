@@ -5,8 +5,7 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, mediaUserLicenseFactory, UserLicenseService } from '@modules/user-license';
-import { MediaUserLicenseService } from '@modules/user-license/service';
+import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -42,7 +41,6 @@ describe(MediaAvailableLineUc.name, () => {
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
 	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
-	let userLicenseService: DeepMocked<UserLicenseService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 
 	beforeAll(async () => {
@@ -72,10 +70,6 @@ describe(MediaAvailableLineUc.name, () => {
 					useValue: createMock<MediaBoardService>(),
 				},
 				{
-					provide: UserLicenseService,
-					useValue: createMock<UserLicenseService>(),
-				},
-				{
 					provide: MediaUserLicenseService,
 					useValue: createMock<MediaUserLicenseService>(),
 				},
@@ -88,7 +82,6 @@ describe(MediaAvailableLineUc.name, () => {
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
 		configService = module.get(ConfigService);
 		mediaBoardService = module.get(MediaBoardService);
-		userLicenseService = module.get(UserLicenseService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 	});
 
@@ -241,7 +234,7 @@ describe(MediaAvailableLineUc.name, () => {
 					const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool2.id });
 					const boardDoAuthorizable: BoardDoAuthorizable = boardDoAuthorizableFactory.build();
 
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
 					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -315,7 +308,7 @@ describe(MediaAvailableLineUc.name, () => {
 					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 					mediaUserlicense.mediumId = 'mediumId';
 
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
 					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
@@ -384,7 +377,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 					const mediaUserlicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-					userLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([mediaUserlicense]);
 					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
 
 					mediaBoardService.findById.mockResolvedValueOnce(mediaBoard);
