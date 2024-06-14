@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import { AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { AuthorizationContext, Rule } from '../type';
 
 @Injectable()
-export class UserRule implements Rule {
+export class UserRule implements Rule<User> {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: User): boolean {
-		const isMatched = entity instanceof User;
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched = object instanceof User;
 
 		return isMatched;
 	}

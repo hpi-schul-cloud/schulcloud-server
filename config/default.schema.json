@@ -783,56 +783,40 @@
 			"default": true,
 			"description": "Etherpad feature enabled"
 		},
-		"ETHERPAD_API_KEY": {
-			"default": "",
-			"type": "string",
-			"description": "The etherpad api key for sending requests."
-		},
-		"ETHERPAD_API_PATH": {
-			"type": "string",
-			"default": "/api/1",
-			"description": "The etherpad api path."
-		},
-		"ETHERPAD_URI": {
-			"type": "string",
-			"default": "https://dbildungscloud.de/etherpad/api/1",
-			"description": "The etherpad api version uri."
-		},
-		"ETHERPAD_OLD_PAD_URI": {
-			"type": "string",
-			"default": "https://etherpad.dbildungscloud.de/p",
-			"description": "The etherpad api version uri."
-		},
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
 			"required": ["PAD_URI"],
 			"properties": {
+				"URI": {
+					"type": "string",
+					"description": "The etherpad api version uri."
+				},
 				"PAD_URI": {
 					"type": "string",
 					"format": "uri",
 					"pattern": ".*(?<!/)$",
 					"description": "The etherpad pad uri"
+				},
+				"OLD_PAD_URI": {
+					"type": "string",
+					"description": "The etherpad api version uri."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "The etherpad api key for sending requests."
+				},
+				"COOKIE_EXPIRES_SECONDS": {
+					"type": "integer",
+					"default": 7200,
+					"description": "Number of seconds after an etherpad cookie expires."
+				},
+				"COOKIE_RELEASE_THRESHOLD": {
+					"type": "integer",
+					"default": 7200,
+					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
-			},
-			"default": {
-				"PAD_URI": "https://dbildungscloud.de/etherpad/p"
 			}
-		},
-		"ETHERPAD_OLD_PAD_DOMAIN": {
-			"type": "string",
-			"default": "etherpad.dbildungscloud.de",
-			"description": "The old etherpad domain."
-		},
-		"ETHERPAD_COOKIE_EXPIRES_SECONDS": {
-			"type": "integer",
-			"default": 28800,
-			"description": "Number of seconds after an etherpad cookie expires."
-		},
-		"ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
-			"type": "integer",
-			"default": 7200,
-			"description": "If Session Valid time is smaller than this, a new session is created on request."
 		},
 		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
