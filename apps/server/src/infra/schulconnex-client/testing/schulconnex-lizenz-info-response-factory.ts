@@ -1,8 +1,8 @@
 import { Factory } from 'fishery';
 import { SchulconnexLizenzInfoActionType, SchulconnexLizenzInfoResponse } from '../response';
 
-export const schulconnexLizenzInfoResponseFactory = Factory.define<SchulconnexLizenzInfoResponse[]>(() => [
-	{
+export const schulconnexLizenzInfoResponseFactory = Factory.define<SchulconnexLizenzInfoResponse>(() => {
+	return {
 		target: {
 			uid: 'bildungscloud',
 			partOf: '',
@@ -12,5 +12,5 @@ export const schulconnexLizenzInfoResponseFactory = Factory.define<SchulconnexLi
 				action: [SchulconnexLizenzInfoActionType.EXECUTE],
 			},
 		],
-	},
-]);
+	};
+});

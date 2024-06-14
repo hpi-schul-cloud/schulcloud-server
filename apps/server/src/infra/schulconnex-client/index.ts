@@ -17,5 +17,5 @@ export {
 	SchulconnexPersonenkontextResponse,
 	SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from './response';
-export { schulconnexResponseFactory } from './testing/schulconnex-response-factory';
+export { schulconnexResponseFactory, schulconnexLizenzInfoResponseFactory } from './testing';
 export { SchulconnexClientConfig } from './schulconnex-client-config';
